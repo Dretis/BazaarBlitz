@@ -38,6 +38,8 @@ public class CombatManager : MonoBehaviour
     private bool isFightingAI = false;
     private int playersLastAttack = 0;
 
+    public CombatUIManager combatUIManager;
+
     private void Awake()
     {
         if (Instance)
@@ -49,9 +51,14 @@ public class CombatManager : MonoBehaviour
 
         itemsQueuedAttack = new List<int>();
         itemsQueuedDefend = new List<int>();
+
+        combatUIManager = GetComponent<CombatUIManager>();
     }
 
     public void initializeCombat() {
+        player1.fightingPosition = CombatUIManager.FightingPosition.Left;
+        player2.fightingPosition = CombatUIManager.FightingPosition.Right;
+
       combatActive = true;
       isAggressorTurn = true;
       aggressorAttacking = true;
@@ -83,6 +90,10 @@ public class CombatManager : MonoBehaviour
       attacker = aggressor; // These are the current atk/defenders, changes every turn unlike above
       defender = retaliator;
 
+      combatUIManager.UpdateActionText(attacker, Action.PhaseTypes.Attack);
+      combatUIManager.UpdateActionText(defender, Action.PhaseTypes.Defend);
+
+      //combatUIManager.UpdateAction2Text(defender, Action.PhaseTypes.Defend);
     }
 
     public void passTurn() {
@@ -106,8 +117,9 @@ public class CombatManager : MonoBehaviour
           attacker = retaliator;
           defender = aggressor;
         }
-
-      }
+          combatUIManager.UpdateActionText(attacker, Action.PhaseTypes.Attack);
+          combatUIManager.UpdateActionText(defender, Action.PhaseTypes.Defend);
+        }
 
       if ((!isAggressorTurn && !aggressorAttacking) && isFightingAI) {
         attackerAction = decideAttackAI();

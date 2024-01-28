@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerStats : MonoBehaviour
 {
+    public string playerName; // Name for the player
+
     public int playerID; // 1-4 for final game, 1-2 (where 1 is attacker for this).
     public float[] strDie;
     public float[] dexDie; // Roll 0-5 index for all of these.
@@ -20,6 +22,7 @@ public class PlayerStats : MonoBehaviour
     // 4 = shotgun (passive), grants + 3 damage to damage items
     // 5 = ???
 
-
-
+    public List<Action> attackActions;
+    public List<Action> defendActions;
+    public CombatUIManager.FightingPosition fightingPosition; // Just for the combat, will change
 }
