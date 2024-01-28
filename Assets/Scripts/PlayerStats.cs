@@ -9,7 +9,7 @@ public class PlayerStats : MonoBehaviour
     public float[] dexDie; // Roll 0-5 index for all of these.
     public float[] intDie;
     public float health;
-    public int[] inventory; // spaghetti implementation: list of int IDs of items
+    public List<int> inventory; // spaghetti implementation: list of int IDs of items
     // LIST OF INVENTORY ITEM IDS:
     // 0 = probably some debug item or empty space slot
     // 1 = potato, can be thrown for ???

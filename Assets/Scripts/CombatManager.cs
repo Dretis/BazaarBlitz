@@ -236,10 +236,9 @@ public class CombatManager : MonoBehaviour
     private void activateItem(int itemID, bool isFromAttacker) {
 
       if (isFromAttacker) { // If attacker uses items
-        curTarget = defender;
 
-        if (itemsQueuedAttack.Contains(itemID)) {
-          itemsQueuedAttack.Remove(itemID);
+        if (attacker.inventory.Contains(itemID)) {
+          attacker.inventory.Remove(itemID);
         } else {
           Debug.Log("You don't have that!");
           return;
@@ -271,8 +270,8 @@ public class CombatManager : MonoBehaviour
       else { // If defender uses items (seperated because they might act differently)
         curTarget = attacker;
 
-        if (itemsQueuedDefend.Contains(itemID)) {
-          itemsQueuedDefend.Remove(itemID);
+        if (defender.inventory.Contains(itemID)) {
+          defender.inventory.Remove(itemID);
         } else {
           Debug.Log("You don't have that!");
           return;
