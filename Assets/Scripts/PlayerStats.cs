@@ -10,6 +10,8 @@ public class PlayerStats : MonoBehaviour
     public float[] intDie;
     public float health;
     public List<int> inventory; // spaghetti implementation: list of int IDs of items
+    public bool isEnemy;
+    public int favoredAttack;
     // LIST OF INVENTORY ITEM IDS:
     // 0 = probably some debug item or empty space slot
     // 1 = potato, can be thrown for ???

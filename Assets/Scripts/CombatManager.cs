@@ -24,6 +24,7 @@ public class CombatManager : MonoBehaviour
     private PlayerStats attacker;
     private PlayerStats defender;
     private PlayerStats curTarget;
+    private PlayerStats curEnemy;
 
     private List<int> itemsQueuedAttack;
     private List<int> itemsQueuedDefend;
@@ -34,7 +35,8 @@ public class CombatManager : MonoBehaviour
     private int defenderBonusRoll = 0;
     private int attackerBonusRoll = 0;
 
-
+    private bool isFightingAI = false;
+    private int playersLastAttack = 0;
 
     private void Awake()
     {
@@ -54,15 +56,28 @@ public class CombatManager : MonoBehaviour
       isAggressorTurn = true;
       aggressorAttacking = true;
       retaliatorAttacking = false;
+      playersLastAttack = 0;
 
-      int whosFirst = Random.Range(0, 2); // Add button prompt later
-
-      if (whosFirst == 0) {
+      if (player2.isEnemy) {
         aggressor = player1;
         retaliator = player2;
-      } else {
+        isFightingAI = true;
+        curEnemy = player2;
+      } else if (player1.isEnemy) {
         aggressor = player2;
         retaliator = player1;
+        isFightingAI = true;
+        curEnemy = player1;
+      } else {
+        int whosFirst = Random.Range(0, 2); // Add button prompt later
+
+        if (whosFirst == 0) {
+          aggressor = player1;
+          retaliator = player2;
+        } else {
+          aggressor = player2;
+          retaliator = player1;
+        }
       }
 
       attacker = aggressor; // These are the current atk/defenders, changes every turn unlike above
@@ -72,6 +87,11 @@ public class CombatManager : MonoBehaviour
 
     public void passTurn() {
       isAggressorTurn = toggleBool(isAggressorTurn);
+
+      if ((!isAggressorTurn && aggressorAttacking) && isFightingAI) {
+        defenderAction = decideAttackAI();
+        isAggressorTurn = toggleBool(isAggressorTurn); // Now well just finish the turn.
+      }
 
       if(isAggressorTurn) { // Both players acted. Play the turn, then toggle attacker and defender
         playTurn();
@@ -87,6 +107,11 @@ public class CombatManager : MonoBehaviour
           defender = aggressor;
         }
 
+      }
+
+      if ((!isAggressorTurn && !aggressorAttacking) && isFightingAI) {
+        attackerAction = decideAttackAI();
+        passTurn();
       }
 
     }
@@ -237,6 +262,11 @@ public class CombatManager : MonoBehaviour
       defenderBonusRoll = 0;
       attackerBuffDamage = 0;
 
+      if (aggressorAttacking && isFightingAI) {
+        playersLastAttack = attackerAction;
+      }
+
+
     }
 
     // Here attacker means the current guy attacking, not original attacker
@@ -332,6 +362,44 @@ public class CombatManager : MonoBehaviour
         attackerAction = ActionID;
       } else {
         defenderAction = ActionID;
+      }
+    }
+
+    private int decideAttackAI() {
+      int roll = Random.Range(0, 8);
+      if (roll < 4) {
+        return curEnemy.favoredAttack;
+      } else if (roll < 5) {
+        return 1;
+      } else if (roll < 6) {
+        return 2;
+      } else if (roll < 7) {
+        return 3;
+      } else {
+        return 4;
+      }
+    }
+
+    private int decideDefendAI() {
+      int roll = Random.Range(0, 8);
+      if (roll < 4) {
+        if (playersLastAttack == 1) {
+          return 1; // I forgot the type advantage system and so did the enemies
+        } else if (playersLastAttack == 2) {
+          return 2;
+        } else if (playersLastAttack == 3) {
+          return 3;
+        } else {
+          return 4;
+        }
+      } else if (roll < 5) {
+        return 1;
+      } else if (roll < 6) {
+        return 2;
+      } else if (roll < 7) {
+        return 3;
+      } else {
+        return 4;
       }
     }
 
