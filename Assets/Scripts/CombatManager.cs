@@ -30,6 +30,10 @@ public class CombatManager : MonoBehaviour
     private int attackerAction;
     private int defenderAction;
 
+    private int attackerBuffDamage = 0;
+    private int defenderBonusRoll = 0;
+    private int attackerBonusRoll = 0;
+
 
 
     private void Awake()
@@ -146,12 +150,24 @@ public class CombatManager : MonoBehaviour
       {
         case 1:
           damage += attacker.strDie[roll];
+          for (int i = 0; i < attackerBonusRoll; i++) {
+            roll = Random.Range(0, 6);
+            damage += attacker.strDie[roll];
+          }
           break;
         case 2:
           damage += attacker.dexDie[roll];
+          for (int i = 0; i < attackerBonusRoll; i++) {
+            roll = Random.Range(0, 6);
+            damage += attacker.dexDie[roll];
+          }
           break;
         case 3:
           damage += attacker.intDie[roll];
+          for (int i = 0; i < attackerBonusRoll; i++) {
+            roll = Random.Range(0, 6);
+            damage += attacker.intDie[roll];
+          }
           break;
         case 4:
           damage += attacker.strDie[roll];
@@ -159,6 +175,10 @@ public class CombatManager : MonoBehaviour
           damage += attacker.dexDie[roll];
           roll = Random.Range(0, 6);
           damage += attacker.intDie[roll];
+          for (int i = 0; i < attackerBonusRoll; i++) {
+            roll = Random.Range(0, 6);
+            damage += attacker.intDie[roll];
+          }
           break;
         default:
           damage += 0;
@@ -171,12 +191,24 @@ public class CombatManager : MonoBehaviour
       {
         case 1:
           damage -= defender.strDie[roll] * defendMultiplier;
+          for (int i = 0; i < defenderBonusRoll; i++) {
+            roll = Random.Range(0, 6);
+            damage -= attacker.strDie[roll] * defendMultiplier;
+          }
           break;
         case 2:
           damage -= defender.dexDie[roll] * defendMultiplier;
+          for (int i = 0; i < defenderBonusRoll; i++) {
+            roll = Random.Range(0, 6);
+            damage -= attacker.dexDie[roll] * defendMultiplier;
+          }
           break;
         case 3:
           damage -= defender.intDie[roll] * defendMultiplier;
+          for (int i = 0; i < defenderBonusRoll; i++) {
+            roll = Random.Range(0, 6);
+            damage -= attacker.intDie[roll] * defendMultiplier;
+          }
           break;
         case 4:
           if (attackerAction == 4) {
@@ -190,6 +222,7 @@ public class CombatManager : MonoBehaviour
           damage -= 0;
           break;
       }
+      damage += attackerBuffDamage;
       if (damage < 0) {
         damage = 0;
       }
@@ -215,10 +248,19 @@ public class CombatManager : MonoBehaviour
         switch (itemID)
         {
           case 1:
-            Debug.Log("Potato Thrown!");
+            Debug.Log("Potato Eaten!");
+            attacker.health += Random.Range(1, 4); // 1-3 hp heal, 1,1,2,2,3,3 dice.
             break;
           case 2:
-            Debug.Log("Super Potato thrown!");
+            Debug.Log("Mutated Potato Power!");
+            attacker.health += 1;
+            attackerBuffDamage += 3;
+            break;
+          case 3:
+            Debug.Log("It failed!");
+            break;
+          case 4:
+            attackerBonusRoll = 1;
             break;
           default:
             print("Used a blank item.");
@@ -239,10 +281,17 @@ public class CombatManager : MonoBehaviour
         switch (itemID)
         {
           case 1:
-            Debug.Log("Potato Thrown!");
+            Debug.Log("Potato Eaten!");
+            attacker.health += 1;
             break;
           case 2:
-            Debug.Log("Super Potato thrown!");
+            Debug.Log("It failed!");
+            break;
+          case 3:
+            attackerBuffDamage -= 2;
+            break;
+          case 4:
+            defenderBonusRoll = 1;
             break;
           default:
             print("Used a blank item.");
@@ -254,9 +303,19 @@ public class CombatManager : MonoBehaviour
 
     public void addItem(int itemID, bool isAttacker) { // Call whenever someone chooses to use one
       if (isAttacker) {
-        itemsQueuedAttack.Add(itemID);
+        if (itemsQueuedAttack.Count < 1) {
+          itemsQueuedAttack.Add(itemID);
+        } else {
+          itemsQueuedAttack.Clear();
+          itemsQueuedAttack.Add(itemID);
+        }
       } else {
-        itemsQueuedDefend.Add(itemID);
+        if (itemsQueuedDefend.Count < 1) {
+          itemsQueuedDefend.Add(itemID);
+        } else {
+          itemsQueuedDefend.Clear();
+          itemsQueuedDefend.Add(itemID);
+        }
       }
     }
 

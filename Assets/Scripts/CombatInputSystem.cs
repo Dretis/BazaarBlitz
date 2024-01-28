@@ -59,6 +59,15 @@ public class CombatInputSystem : MonoBehaviour
       if (Input.GetKeyDown(KeyCode.Alpha9)) {
           CombatManager.Instance.addItem(9, currentPlayer);
       }
+      // 1 potato
+      // 2 mutated potato
+      // 3 cloth
+      // 4 ice dice
+      // 5 milk
+      // 6 chicken nuggest
+      // 7 metal
+      // 8 lightbulb
+      // 9 the whole street lamp
 
     }
 }
