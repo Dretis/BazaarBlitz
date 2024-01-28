@@ -14,6 +14,9 @@ public class Action : ScriptableObject
     [Tooltip("What phase the action is used in")]
     public PhaseTypes phase;
 
+    public int diesToRoll;
+    public int bonusDamage;
+
     [Tooltip("What weapon type is the action")]
     public WeaponTypes type;
 

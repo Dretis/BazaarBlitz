@@ -15,7 +15,7 @@ public class CombatInputSystem : MonoBehaviour
     {
       bool currentPlayer = CombatManager.Instance.isAggressorTurn;
       if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)) {
-          CombatManager.Instance.chooseAction(1, currentPlayer);
+          CombatManager.Instance.chooseAction(3, currentPlayer);
           CombatManager.Instance.passTurn();
       }
       if (Input.GetKeyDown(KeyCode.X) || Input.GetKeyDown(KeyCode.DownArrow)) {
@@ -23,11 +23,11 @@ public class CombatInputSystem : MonoBehaviour
           CombatManager.Instance.passTurn();
       }
       if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) {
-          CombatManager.Instance.chooseAction(3, currentPlayer);
+          CombatManager.Instance.chooseAction(4, currentPlayer);
           CombatManager.Instance.passTurn();
       }
       if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) {
-          CombatManager.Instance.chooseAction(4, currentPlayer);
+          CombatManager.Instance.chooseAction(1, currentPlayer);
           CombatManager.Instance.passTurn();
       }
 

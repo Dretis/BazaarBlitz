@@ -148,8 +148,6 @@ public class CombatManager : MonoBehaviour
         endCombat(true);
       }
 
-      Debug.Log("Player1 Health = " + player1.health);
-      Debug.Log("Player2 Health = " + player2.health);
 
 
 
@@ -168,105 +166,119 @@ public class CombatManager : MonoBehaviour
 
     private void playActions(int attackerAction, int defenderAction) {
       // run through the actions taken by both parties, dealing damage accordingly
-      float defendMultiplier = 0.5f;
-      if (attackerAction == defenderAction) {
-        defendMultiplier = 1f;
-      } else if (attackerAction == 1 && defenderAction == 3) {
-        defendMultiplier = 0.25f;
-      } else if (attackerAction == 2 && defenderAction == 1) {
-        defendMultiplier = 0.25f;
-      } else if (attackerAction == 3 && defenderAction == 2) {
-        defendMultiplier = 0.25f;
-      } else {
-        defendMultiplier = 0.5f;
-      }
+
 
 
 
       float damage = 0;
 
+      Action attack = attacker.attackActions[attackerAction - 1];
+      Action defend = defender.defendActions[defenderAction - 1];
+
+      float defendMultiplier = 0.5f;
+      if (attack.type == defend.type) {
+        defendMultiplier = 1f;
+      } else if (attack.type == Action.WeaponTypes.Melee && defend.type == Action.WeaponTypes.Magic) {
+        defendMultiplier = 0.25f;
+      } else if (attack.type == Action.WeaponTypes.Gun && defend.type == Action.WeaponTypes.Melee) {
+        defendMultiplier = 0.25f;
+      } else if (attack.type == Action.WeaponTypes.Magic && defend.type == Action.WeaponTypes.Gun) {
+        defendMultiplier = 0.25f;
+      } else if (attack.type == Action.WeaponTypes.Special ) {
+        defendMultiplier = 1f; // Slight nerf to hammer, average 2x die damage vs 2.5
+      } else  {
+        defendMultiplier = 0.5f;
+      }
+
       int roll = Random.Range(0, 6);
-      switch (attackerAction)
+      switch (attack.type)
       {
-        case 1:
+        case Action.WeaponTypes.Melee:
           damage += attacker.strDie[roll];
-          for (int i = 0; i < attackerBonusRoll; i++) {
+          for (int i = 0; i < attackerBonusRoll + attack.diesToRoll; i++) {
             roll = Random.Range(0, 6);
             damage += attacker.strDie[roll];
           }
+          Debug.Log("MeleeAttack");
           break;
-        case 2:
+        case Action.WeaponTypes.Gun:
           damage += attacker.dexDie[roll];
-          for (int i = 0; i < attackerBonusRoll; i++) {
+          for (int i = 0; i < attackerBonusRoll + attack.diesToRoll; i++) {
             roll = Random.Range(0, 6);
             damage += attacker.dexDie[roll];
           }
+          Debug.Log("GunAttack");
           break;
-        case 3:
+        case Action.WeaponTypes.Magic:
           damage += attacker.intDie[roll];
-          for (int i = 0; i < attackerBonusRoll; i++) {
+          for (int i = 0; i < attackerBonusRoll + attack.diesToRoll; i++) {
             roll = Random.Range(0, 6);
             damage += attacker.intDie[roll];
           }
+          Debug.Log("MagicAttack");
           break;
-        case 4:
+        case Action.WeaponTypes.Special:
           damage += attacker.strDie[roll];
           roll = Random.Range(0, 6);
           damage += attacker.dexDie[roll];
           roll = Random.Range(0, 6);
           damage += attacker.intDie[roll];
-          for (int i = 0; i < attackerBonusRoll; i++) {
+          for (int i = 0; i < attackerBonusRoll + attack.diesToRoll; i++) {
             roll = Random.Range(0, 6);
             damage += attacker.intDie[roll];
           }
+          Debug.Log("HammerAttack");
           break;
         default:
           damage += 0;
           break;
       }
+      damage += (attackerBuffDamage + attack.bonusDamage);
       Debug.Log("Attacker Roll: " + damage);
 
       roll = Random.Range(0, 6);
-      switch (defenderAction)
+      switch (defend.type)
       {
-        case 1:
+        case Action.WeaponTypes.Melee:
           damage -= defender.strDie[roll] * defendMultiplier;
           for (int i = 0; i < defenderBonusRoll; i++) {
             roll = Random.Range(0, 6);
             damage -= attacker.strDie[roll] * defendMultiplier;
           }
+          Debug.Log("MeleeDefense");
           break;
-        case 2:
+        case Action.WeaponTypes.Gun:
           damage -= defender.dexDie[roll] * defendMultiplier;
           for (int i = 0; i < defenderBonusRoll; i++) {
             roll = Random.Range(0, 6);
             damage -= attacker.dexDie[roll] * defendMultiplier;
           }
+          Debug.Log("GunDefense");
           break;
-        case 3:
+        case Action.WeaponTypes.Magic:
           damage -= defender.intDie[roll] * defendMultiplier;
           for (int i = 0; i < defenderBonusRoll; i++) {
             roll = Random.Range(0, 6);
             damage -= attacker.intDie[roll] * defendMultiplier;
           }
+          Debug.Log("MagicDefense");
           break;
-        case 4:
-          if (attackerAction == 4) {
+        case Action.WeaponTypes.Special:
+          if (attack.type == Action.WeaponTypes.Special) {
             attacker.health -= damage;
             damage = 0;
           } else {
             damage -= 1;
           }
+          Debug.Log("HammerDefense");
           break;
         default:
           damage -= 0;
           break;
       }
-      damage += attackerBuffDamage;
       if (damage < 0) {
         damage = 0;
       }
-      Debug.Log("- Defend roll now: " + damage + " w/ multiplier of " + defendMultiplier);
 
       defender.health -= damage;
 
