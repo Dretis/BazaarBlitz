@@ -37,6 +37,8 @@ public class GameplayTest : MonoBehaviour
 
     public MapNode wantedNode;
 
+    ///private Scene currentCombat;
+
     //public PlayerInput playerInput;
     //public PlayerControls input;
 
@@ -86,7 +88,7 @@ public class GameplayTest : MonoBehaviour
     {
         if (phase == 1 && Input.GetKeyDown(KeyCode.Space))
         {
-            diceRoll = Random.Range(1, 7); // Roll from 1 to 6 
+            diceRoll = Random.Range(1, 7); // Roll from 1 to 6
             rollText.text = "" + diceRoll;
             p.movementTotal = p.movementLeft = diceRoll;
 
@@ -190,6 +192,7 @@ public class GameplayTest : MonoBehaviour
         }
         else if (m.CompareTag("Encounter") && otherPlayer != null && otherPlayer != currentPlayer) // Player Fight
         {
+            ///
             encounterScreen.SetActive(true);
             int yoinkValue = 4;
 
@@ -202,7 +205,7 @@ public class GameplayTest : MonoBehaviour
                 resultInfo.text = "<size=45>[PLAYER ENCOUNTER]</size>\nRoll higher than " + yoinkValue + "!!! \n<size=30> [SPACE] to proceed the roll. </size>";
 
                 if (Input.GetKeyDown(KeyCode.Space))
-                    yoinkRoll = Random.Range(1, 7); // Roll from 1 to 6 
+                    yoinkRoll = Random.Range(1, 7); // Roll from 1 to 6
             }
             else
             {
@@ -221,7 +224,16 @@ public class GameplayTest : MonoBehaviour
                 encounterOver = true;
                 phase++;
             }
-            
+            ///
+
+            // instance combat scene
+            // Combat scene gets a reference to GameplayTest
+            // Combat scene calls function in gameplay test when someone wins, with winner
+            //   and player objects (so items stay used)
+            // That returns the winner, and points are stolen accordingly w/ phase++;encounterOver
+
+
+
         }
         else if (m.CompareTag("Encounter")) // Regular Encounter
         {
@@ -231,7 +243,11 @@ public class GameplayTest : MonoBehaviour
             resultInfo.text = "<size=45>[ENCOUNTER]</size>\nRock, Paper, Scissors!!! \n<size=30> Rock = 1 or J | Paper = 2 or K | Scissors = 3 or L </size>";
 
             var playerPick = 0;
-            //var monsterPick = Random.Range(1, 4); //
+            /// monsterPick = Random.Range(1, 10);
+
+
+
+
 
             if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.J))
             { // Rock
@@ -281,6 +297,9 @@ public class GameplayTest : MonoBehaviour
                     resultInfo.text = "YOU WIN!!!";
                     p.heldPoints += 2;
                 }
+
+
+                //
                 encounterOver = true;
                 phase++;
             }
