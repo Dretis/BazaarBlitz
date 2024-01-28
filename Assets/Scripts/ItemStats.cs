@@ -4,7 +4,7 @@ using UnityEngine;
 using TMPro;
 
 [CreateAssetMenu]
-public class Action : ScriptableObject
+public class ItemStats : ScriptableObject
 {
     public enum PhaseTypes { Attack, Defend, Both }
     public enum WeaponTypes { Melee, Gun, Magic, Special}
