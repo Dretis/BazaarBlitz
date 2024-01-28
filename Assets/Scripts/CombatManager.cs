@@ -44,6 +44,9 @@ public class CombatManager : MonoBehaviour
         }
         Instance = this;
         initializeCombat();
+
+        itemsQueuedAttack = new List<int>();
+        itemsQueuedDefend = new List<int>();
     }
 
     public void initializeCombat() {
@@ -152,7 +155,7 @@ public class CombatManager : MonoBehaviour
           damage += attacker.strDie[roll];
           for (int i = 0; i < attackerBonusRoll; i++) {
             roll = Random.Range(0, 6);
-            damage += attacker.strDie[roll];
+            //damage += attacker.strDie[roll];
           }
           break;
         case 2:
@@ -230,6 +233,10 @@ public class CombatManager : MonoBehaviour
 
       defender.health -= damage;
 
+      attackerBonusRoll = 0;
+      defenderBonusRoll = 0;
+      attackerBuffDamage = 0;
+
     }
 
     // Here attacker means the current guy attacking, not original attacker
@@ -252,7 +259,7 @@ public class CombatManager : MonoBehaviour
             break;
           case 2:
             Debug.Log("Mutated Potato Power!");
-            attacker.health += 1;
+            attacker.health -= 1;
             attackerBuffDamage += 3;
             break;
           case 3:
