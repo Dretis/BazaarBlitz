@@ -77,7 +77,7 @@ public class CombatManager : MonoBehaviour
     }
 
     public void playTurn() {
-      foreach (int itemID in itemsQueuedDefend) {
+      /*foreach (int itemID in itemsQueuedDefend) {
         activateItem(itemID, true);
       }
       itemsQueuedDefend.Clear();
@@ -85,7 +85,7 @@ public class CombatManager : MonoBehaviour
       foreach (int itemID in itemsQueuedAttack) {
         activateItem(itemID, false); // Can defenders use items?
       }
-      itemsQueuedAttack.Clear();
+      itemsQueuedAttack.Clear();*/
 
       playActions(attackerAction, defenderAction);
 
@@ -105,7 +105,7 @@ public class CombatManager : MonoBehaviour
 
 
     public void endCombat(bool aggressorWon) {
-      combatActive = false;
+      //combatActive = false;
       if (aggressorWon) {
         Debug.Log("Attacker Wins!");
       } else {
@@ -116,21 +116,57 @@ public class CombatManager : MonoBehaviour
 
     private void playActions(int attackerAction, int defenderAction) {
       // run through the actions taken by both parties, dealing damage accordingly
-      float attackMultiplier = 1;
+      float defendMultiplier = 0.5f;
       if (attackerAction == defenderAction) {
-        attackMultiplier = 0.5f;
+        defendMultiplier = 1f;
       } else if (attackerAction == 1 && defenderAction == 3) {
-        attackMultiplier = 2;
+        defendMultiplier = 0.25f;
       } else if (attackerAction == 2 && defenderAction == 1) {
-        attackMultiplier = 2;
+        defendMultiplier = 0.25f;
       } else if (attackerAction == 3 && defenderAction == 2) {
-        attackMultiplier = 2;
+        defendMultiplier = 0.25f;
       } else {
-        attackMultiplier = 1;
+        defendMultiplier = 0.5f;
       }
 
+
+
+      float damage = 0;
+
       int roll = Random.Range(0, 6);
-      defender.health -= attacker.strDie[roll];
+      switch (attackerAction)
+      {
+        case 1:
+          damage += attacker.strDie[roll];
+          break;
+        case 2:
+          damage += attacker.dexDie[roll];
+          break;
+        default:
+          damage += attacker.intDie[roll];
+          break;
+      }
+      Debug.Log("Attacker Roll: " + damage);
+
+      roll = Random.Range(0, 6);
+      switch (defenderAction)
+      {
+        case 1:
+          damage -= defender.strDie[roll] * defendMultiplier;
+          break;
+        case 2:
+          damage -= defender.dexDie[roll] * defendMultiplier;
+          break;
+        default:
+          damage -= defender.intDie[roll] * defendMultiplier;
+          break;
+      }
+      if (damage < 0) {
+        damage = 0;
+      }
+      Debug.Log("- Defend roll now: " + damage);
+
+      defender.health -= damage;
 
     }
 
