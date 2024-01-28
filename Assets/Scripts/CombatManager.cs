@@ -155,7 +155,7 @@ public class CombatManager : MonoBehaviour
           damage += attacker.strDie[roll];
           for (int i = 0; i < attackerBonusRoll; i++) {
             roll = Random.Range(0, 6);
-            //damage += attacker.strDie[roll];
+            damage += attacker.strDie[roll];
           }
           break;
         case 2:
@@ -267,6 +267,7 @@ public class CombatManager : MonoBehaviour
             break;
           case 4:
             attackerBonusRoll = 1;
+            print("Ice Dice attack x 2");
             break;
           default:
             print("Used a blank item.");
@@ -298,6 +299,7 @@ public class CombatManager : MonoBehaviour
             break;
           case 4:
             defenderBonusRoll = 1;
+            print("Ice Dice defend x 2");
             break;
           default:
             print("Used a blank item.");
