@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class GameManager : MonoBehaviour
+public class CombatManager : MonoBehaviour
 {
-    public static GameManager Instance;
+    public static CombatManager CombatInstance;
 
     public static bool isAggressorTurn = false;
     public static bool aggressorAttacking = false;
@@ -27,18 +27,19 @@ public class GameManager : MonoBehaviour
 
     private List<int> itemsQueuedAttack;
     private List<int> itemsQueuedDefend;
-    public int attackerAction;
-    public int defenderAction;
+    private int attackerAction;
+    private int defenderAction;
 
 
 
     private void Awake()
     {
-        if (Instance)
+        if (CombatInstance)
         {
             Destroy(this);
         }
-        Instance = this;
+        CombatInstance = this;
+        initializeCombat();
     }
 
     public void initializeCombat() {
@@ -95,6 +96,9 @@ public class GameManager : MonoBehaviour
         endCombat(true);
       }
 
+      Debug.Log("Player1 Health = " + player1.health);
+      Debug.Log("Player2 Health = " + player2.health);
+
 
 
     }
@@ -112,6 +116,22 @@ public class GameManager : MonoBehaviour
 
     private void playActions(int attackerAction, int defenderAction) {
       // run through the actions taken by both parties, dealing damage accordingly
+      float attackMultiplier = 1;
+      if (attackerAction == defenderAction) {
+        attackMultiplier = 0.5f;
+      } else if (attackerAction == 1 && defenderAction == 3) {
+        attackMultiplier = 2;
+      } else if (attackerAction == 2 && defenderAction == 1) {
+        attackMultiplier = 2;
+      } else if (attackerAction == 3 && defenderAction == 2) {
+        attackMultiplier = 2;
+      } else {
+        attackMultiplier = 1;
+      }
+
+      int roll = Random.Range(0, 6);
+      defender.health -= attacker.strDie[roll];
+
     }
 
     // Here attacker means the current guy attacking, not original attacker
