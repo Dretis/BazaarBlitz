@@ -2,10 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/PlayerStats", order = 1)]
-public class PlayerStats : ScriptableObject
+public class PlayerStats : MonoBehaviour
 {
-    public int playerID; // 1-4 for final game, 1-2 (where 1 is attacker) for this.
+    public int playerID; // 1-4 for final game, 1-2 (where 1 is attacker for this).
     public float[] strDie;
     public float[] dexDie; // Roll 0-5 index for all of these.
     public float[] intDie;
