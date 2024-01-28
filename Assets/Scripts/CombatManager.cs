@@ -48,10 +48,18 @@ public class CombatManager : MonoBehaviour
       aggressorAttacking = true;
       retaliatorAttacking = false;
 
-      aggressor = player1; // Temporary, in final ver it'll be selected dynamically
-      retaliator = player2;
-      attacker = player1; // These are the current atk/defenders, changes every turn unlike above
-      defender = player2;
+      whosFirst = Random.Range(0, 2); // Add button prompt later
+
+      if (whosFirst == 0) {
+        aggressor = player1;
+        retaliator = player2;
+      } else {
+        aggressor = player2;
+        retaliator = player1;
+      }
+
+      attacker = aggressor; // These are the current atk/defenders, changes every turn unlike above
+      defender = retaliator;
 
     }
 
@@ -77,7 +85,7 @@ public class CombatManager : MonoBehaviour
     }
 
     public void playTurn() {
-      /*foreach (int itemID in itemsQueuedDefend) {
+      foreach (int itemID in itemsQueuedDefend) {
         activateItem(itemID, true);
       }
       itemsQueuedDefend.Clear();
@@ -85,7 +93,7 @@ public class CombatManager : MonoBehaviour
       foreach (int itemID in itemsQueuedAttack) {
         activateItem(itemID, false); // Can defenders use items?
       }
-      itemsQueuedAttack.Clear();*/
+      itemsQueuedAttack.Clear();
 
       playActions(attackerAction, defenderAction);
 
@@ -164,7 +172,7 @@ public class CombatManager : MonoBehaviour
       if (damage < 0) {
         damage = 0;
       }
-      Debug.Log("- Defend roll now: " + damage);
+      Debug.Log("- Defend roll now: " + damage + " w/ multiplier of " + defendMultiplier);
 
       defender.health -= damage;
 
