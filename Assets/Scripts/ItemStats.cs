@@ -11,7 +11,7 @@ public class Action : ScriptableObject
 
     public string actionName;
 
-    [Tooltip("What phase the action is used in")]
+    [Tooltip("What phase is the item usable in")]
     public PhaseTypes phase;
 
     public int diesToRoll;
