@@ -5,12 +5,12 @@ using UnityEngine;
 
 public class CombatManager : MonoBehaviour
 {
-    public static CombatManager CombatInstance;
+    public static CombatManager Instance;
 
-    public static bool isAggressorTurn = false;
-    public static bool aggressorAttacking = false;
-    public static bool retaliatorAttacking = false;
-    public static bool combatActive = false;
+    public bool isAggressorTurn = false;
+    public bool aggressorAttacking = false;
+    public bool retaliatorAttacking = false;
+    public bool combatActive = false;
 
     [SerializeField] public PlayerStats player1;
     [SerializeField] public PlayerStats player2;
@@ -34,11 +34,11 @@ public class CombatManager : MonoBehaviour
 
     private void Awake()
     {
-        if (CombatInstance)
+        if (Instance)
         {
             Destroy(this);
         }
-        CombatInstance = this;
+        Instance = this;
         initializeCombat();
     }
 
@@ -139,13 +139,21 @@ public class CombatManager : MonoBehaviour
 
       if (isFromAttacker) { // If attacker uses items
         curTarget = defender;
+
+        if (itemsQueuedAttack.Contains(itemID)) {
+          itemsQueuedAttack.Remove(itemID);
+        } else {
+          Debug.Log("You don't have that!");
+          return;
+        }
+
         switch (itemID)
         {
           case 1:
-            //throwpotato
+            Debug.Log("Potato Thrown!");
             break;
           case 2:
-            //throwSUPERpotato
+            Debug.Log("Super Potato thrown!");
             break;
           default:
             print("Used a blank item.");
@@ -155,13 +163,21 @@ public class CombatManager : MonoBehaviour
 
       else { // If defender uses items (seperated because they might act differently)
         curTarget = attacker;
+
+        if (itemsQueuedDefend.Contains(itemID)) {
+          itemsQueuedDefend.Remove(itemID);
+        } else {
+          Debug.Log("You don't have that!");
+          return;
+        }
+
         switch (itemID)
         {
           case 1:
-            //throwpotato
+            Debug.Log("Potato Thrown!");
             break;
           case 2:
-            //throwSUPERpotato
+            Debug.Log("Super Potato thrown!");
             break;
           default:
             print("Used a blank item.");
