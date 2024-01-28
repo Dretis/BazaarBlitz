@@ -48,7 +48,7 @@ public class CombatManager : MonoBehaviour
       aggressorAttacking = true;
       retaliatorAttacking = false;
 
-      whosFirst = Random.Range(0, 2); // Add button prompt later
+      int whosFirst = Random.Range(0, 2); // Add button prompt later
 
       if (whosFirst == 0) {
         aggressor = player1;
@@ -150,8 +150,18 @@ public class CombatManager : MonoBehaviour
         case 2:
           damage += attacker.dexDie[roll];
           break;
-        default:
+        case 3:
           damage += attacker.intDie[roll];
+          break;
+        case 4:
+          damage += attacker.strDie[roll];
+          roll = Random.Range(0, 6);
+          damage += attacker.dexDie[roll];
+          roll = Random.Range(0, 6);
+          damage += attacker.intDie[roll];
+          break;
+        default:
+          damage += 0;
           break;
       }
       Debug.Log("Attacker Roll: " + damage);
@@ -165,8 +175,19 @@ public class CombatManager : MonoBehaviour
         case 2:
           damage -= defender.dexDie[roll] * defendMultiplier;
           break;
-        default:
+        case 3:
           damage -= defender.intDie[roll] * defendMultiplier;
+          break;
+        case 4:
+          if (attackerAction == 4) {
+            attacker.health -= damage;
+            damage = 0;
+          } else {
+            damage -= 1;
+          }
+          break;
+        default:
+          damage -= 0;
           break;
       }
       if (damage < 0) {
