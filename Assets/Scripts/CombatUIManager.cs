@@ -20,17 +20,8 @@ public class CombatUIManager : MonoBehaviour
     public List<TextMeshProUGUI> player1ActionTexts;
     public List<TextMeshProUGUI> player2ActionTexts;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public Animator player1Animator;
+    public Animator player2Animator;
 
     public void UpdateActionText(PlayerStats ps, Action.PhaseTypes phase)
     {
@@ -134,5 +125,20 @@ public class CombatUIManager : MonoBehaviour
             player2ActionTexts[count].text = a.actionName;
             count++;
         }
+    }
+
+    public void UpdateActionAnimation(int actionID, FightingPosition fp)
+    {
+        Animator animator = null;
+        if (fp == FightingPosition.Left)
+        {
+            animator = player1Animator;
+        }
+        else
+        {
+            animator = player2Animator;
+        }
+
+        animator.SetInteger("ActionState", actionID);
     }
 }

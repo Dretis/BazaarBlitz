@@ -573,7 +573,7 @@ GameObject:
   - component: {fileID: 355217512}
   - component: {fileID: 355217511}
   m_Layer: 0
-  m_Name: Square
+  m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -619,7 +619,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_Sprite: {fileID: 21300000, guid: f6031dde18528c8459bfbc4f91d5060c, type: 3}
   m_Color: {r: 0.8773585, g: 0.8502268, b: 0.7669989, a: 1}
   m_FlipX: 0
@@ -812,6 +812,8 @@ MonoBehaviour:
   - {fileID: 500350135}
   - {fileID: 500350134}
   - {fileID: 500350132}
+  player1Animator: {fileID: 0}
+  player2Animator: {fileID: 0}
 --- !u!1 &378761041
 GameObject:
   m_ObjectHideFlags: 0
@@ -938,6 +940,8 @@ MonoBehaviour:
   - {fileID: 500350135}
   - {fileID: 500350134}
   - {fileID: 500350132}
+  player1Animator: {fileID: 0}
+  player2Animator: {fileID: 0}
 --- !u!4 &438293062
 Transform:
   m_ObjectHideFlags: 0
