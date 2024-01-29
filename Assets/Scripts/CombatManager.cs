@@ -170,12 +170,21 @@ public class CombatManager : MonoBehaviour
     }
 
     private void playActions(int attackerAction, int defenderAction) {
-      // run through the actions taken by both parties, dealing damage accordingly
+        // run through the actions taken by both parties, dealing damage accordingly
+
+        if (player1 == attacker)
+        {
+            combatUIManager.UpdateActionAnimation(attackerAction, player1.fightingPosition);
+            combatUIManager.UpdateActionAnimation(defenderAction + 4, player2.fightingPosition);
+        }
+        else
+        {
+            combatUIManager.UpdateActionAnimation(attackerAction, player2.fightingPosition);
+            combatUIManager.UpdateActionAnimation(defenderAction + 4, player1.fightingPosition);
+        }
 
 
-
-
-      float damage = 0;
+        float damage = 0;
 
       Action attack = attacker.attackActions[attackerAction - 1];
       Action defend = defender.defendActions[defenderAction - 1];
@@ -387,7 +396,9 @@ public class CombatManager : MonoBehaviour
     }
 
     public void chooseAction(int ActionID, bool isAttacker) {
-      if (isAttacker) {
+        combatUIManager.UpdateActionAnimation(0, player1.fightingPosition);
+        combatUIManager.UpdateActionAnimation(0, player2.fightingPosition);
+        if (isAttacker) {
         attackerAction = ActionID;
       } else {
         defenderAction = ActionID;
