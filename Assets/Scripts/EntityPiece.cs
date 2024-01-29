@@ -5,6 +5,7 @@ using UnityEngine;
 public class EntityPiece : MonoBehaviour
 {
     public string nickname;
+    public int id;
     public Color playerColor; // idk man
     public SpriteRenderer playerSprite; // idk man
     public MapNode occupiedNode; // Node player is currently on

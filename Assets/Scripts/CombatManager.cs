@@ -46,10 +46,10 @@ public class CombatManager : MonoBehaviour
         {
             Destroy(this);
         }
-        SceneManager sceneManager = GameObject.FindWithTag("SceneManager").GetComponent<SceneManager>();
+        SceneGameManager sceneManager = GameObject.FindWithTag("SceneManager").GetComponent<SceneGameManager>();
         if (sceneManager) {
-            player1 = sceneManager.GameObject.transform.GetChild( sceneManager.player1ID ).gameObject.PlayerStats;
-            player2 = sceneManager.GameObject.transform.GetChild( sceneManager.player2ID ).gameObject.PlayerStats;
+            player1 = sceneManager.transform.gameObject.transform.GetChild( sceneManager.player1ID ).gameObject.GetComponent<PlayerStats>();
+            player2 = sceneManager.transform.gameObject.transform.GetChild( sceneManager.player2ID ).gameObject.GetComponent<PlayerStats>();
         }
         Instance = this;
         initializeCombat();

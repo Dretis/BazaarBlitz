@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class SceneManager : MonoBehaviour
+public class SceneGameManager : MonoBehaviour
 {
     public PlayerStats player1;
     public PlayerStats player2;
@@ -17,8 +19,8 @@ public class SceneManager : MonoBehaviour
         DontDestroyOnLoad(this.gameObject);
     }
 
-    public void LoadCombatScene(PlayerStats player1, PlayerStats player2)
-    { 
-        SceneManager.LoadScene(combatSceneName, LoadSceneMode.Additive);
+    public void LoadCombatScene()
+    {
+        SceneManager.LoadScene("CombatTest", LoadSceneMode.Additive);
     }
 }

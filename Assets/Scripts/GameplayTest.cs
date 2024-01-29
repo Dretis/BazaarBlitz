@@ -6,6 +6,7 @@ using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
 
 public class GameplayTest : MonoBehaviour
 {
@@ -36,15 +37,16 @@ public class GameplayTest : MonoBehaviour
     public bool encounterOver = false;
 
     public MapNode wantedNode;
-
+    private SceneGameManager sceneManager;
     ///private Scene currentCombat;
 
     //public PlayerInput playerInput;
     //public PlayerControls input;
-
+    private bool encounterStarted = false;
     // Start is called before the first frame update
     void Start()
     {
+        sceneManager = GameObject.FindGameObjectWithTag("SceneManager").GetComponent<SceneGameManager>();
         playerUnits.AddRange(FindObjectsOfType<EntityPiece>());
         //nextPlayers = playerUnits;
         encounterScreen.SetActive(false);
@@ -192,6 +194,7 @@ public class GameplayTest : MonoBehaviour
         }
         else if (m.CompareTag("Encounter") && otherPlayer != null && otherPlayer != currentPlayer) // Player Fight
         {
+            /*
             ///
             encounterScreen.SetActive(true);
             int yoinkValue = 4;
@@ -225,7 +228,17 @@ public class GameplayTest : MonoBehaviour
                 phase++;
             }
             ///
+            */
 
+            
+            if(!encounterStarted)
+            {
+                encounterStarted = true;
+                sceneManager.player1ID = currentPlayer.id;
+                sceneManager.player2ID = otherPlayer.id;
+                sceneManager.LoadCombatScene();
+            }
+            
             // instance combat scene
             // Combat scene gets a reference to GameplayTest
             // Combat scene calls function in gameplay test when someone wins, with winner
