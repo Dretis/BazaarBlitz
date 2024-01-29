@@ -21,8 +21,18 @@ public class GameplayTest : MonoBehaviour
     public Dictionary<Vector2Int, GameObject> map = new Dictionary<Vector2Int, GameObject>();
     public Dictionary<Vector2Int, GameObject> unitPos = new Dictionary<Vector2Int, GameObject>();
 
+    public enum GamePhase
+    {
+        RollDice,
+        PickDirection,
+        MoveAround,
+        EncounterTime,
+        ConfirmContinue,
+        EndTurn
+    }
+
     public int turn = 1;
-    public int phase = 1;
+    public GamePhase phase = GamePhase.RollDice;
     public int diceRoll;
     private int yoinkRoll;
 
@@ -46,6 +56,7 @@ public class GameplayTest : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Debug.Log("Beginning of Start" + phase);
         sceneManager = GameObject.FindGameObjectWithTag("SceneManager").GetComponent<SceneGameManager>();
         playerUnits.AddRange(FindObjectsOfType<EntityPiece>());
         //nextPlayers = playerUnits;
@@ -62,120 +73,125 @@ public class GameplayTest : MonoBehaviour
         currentPlayerInitialNode = currentPlayer.occupiedNode;
         turnText.text = currentPlayer.nickname + "'s Turn!";
         turnText.color = currentPlayer.playerColor;
+        Debug.Log("End of Start" + phase);
     }
 
     // Update is called once per frame
     void Update()
     {
-        // Roll Phase (1)
-        RollDice(currentPlayer);
+        switch (phase)
+        {
+            // Roll Phase 
+            case GamePhase.RollDice:
+                RollDice(currentPlayer);
+                break;
 
-        // Pick Direction to Go Phase (2)
-        PickDirection(currentPlayer);
+            // Pick Direction to Go Phase 
+            case GamePhase.PickDirection:
+                PickDirection(currentPlayer);
+                break;
 
-        // Move-to Node (3)
-        MoveAround(currentPlayer);
+            // Move-to Node Phase
+            case GamePhase.MoveAround:
+                MoveAround(currentPlayer);
+                break;
 
-        // Battle-Event Phase (4)
-        EncounterTime(currentPlayer, currentPlayer.occupiedNode);
+            // Battle-Event Phase
+            case GamePhase.EncounterTime:
+                EncounterTime(currentPlayer, currentPlayer.occupiedNode);
+                break;
 
-        // Confirmation Portion (5)
-        ConfirmContinue(currentPlayer);
+            // Confirmation Phase
+            case GamePhase.ConfirmContinue:
+                ConfirmContinue(currentPlayer);
+                break;
 
-        // End of turn, next player! (5)
-        EndOfTurn(currentPlayer);
+            // End of turn, next player!
+            case GamePhase.EndTurn:
+                EndOfTurn(currentPlayer);
+                break;
+        }
     }
 
     void RollDice(EntityPiece p)
     {
-        if (phase == 1 && Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             diceRoll = Random.Range(1, 7); // Roll from 1 to 6
+            Debug.Log(diceRoll);
             rollText.text = "" + diceRoll;
             p.movementTotal = p.movementLeft = diceRoll;
 
-            phase++;
+            phase = GamePhase.PickDirection;
         }
     }
 
     void PickDirection(EntityPiece p)
     {
-        if (phase != 2)
-            return;
-        else
+        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
+            wantedNode = p.occupiedNode.north;
+
+        if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
+            wantedNode = p.occupiedNode.east;
+
+        if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
+            wantedNode = p.occupiedNode.south;
+
+        if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
+            wantedNode = p.occupiedNode.west;
+
+        if (wantedNode != null)
         {
-            if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
-                wantedNode = p.occupiedNode.north;
-
-            if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
-                wantedNode = p.occupiedNode.east;
-
-            if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
-                wantedNode = p.occupiedNode.south;
-
-            if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
-                wantedNode = p.occupiedNode.west;
-
-            if (wantedNode != null)
-            {
-                phase++;
-            }
-        }
+            phase = GamePhase.MoveAround;
+        }  
     }
 
     void MoveAround(EntityPiece p)
     {
-        if (phase != 3)
-            return;
-        else
+        var lastEle = p.traveledNodes.Count;
+        var lastNode = p.traveledNodes[lastEle - 1];
+
+        if (wantedNode == lastNode) // The direction you picked was the node you just came from (Redo)
         {
-            var lastEle = p.traveledNodes.Count;
-            var lastNode = p.traveledNodes[lastEle - 1];
+            p.traveledNodes.Remove(lastNode);
+            p.occupiedNode = lastNode;
 
-            if (wantedNode == lastNode) // The direction you picked was the node you just came from (Redo)
-            {
-                p.traveledNodes.Remove(lastNode);
-                p.occupiedNode = lastNode;
+            p.movementLeft++;
+            rollText.text = "" + p.movementLeft;
 
-                p.movementLeft++;
-                rollText.text = "" + p.movementLeft;
+            p.transform.DOMove(lastNode.transform.position, .25f)
+                .SetEase(Ease.OutQuint);
 
-                p.transform.DOMove(lastNode.transform.position, .25f)
-                    .SetEase(Ease.OutQuint);
-
-                wantedNode = null;
-                phase--; // Go back to picking direction
-            }
-            else if(wantedNode != null) // Go to that new node and occupy it
-            {
-                p.traveledNodes.Add(p.occupiedNode);
-                p.occupiedNode = wantedNode;
-
-                p.movementLeft--;
-                rollText.text = "" + p.movementLeft;
-
-                p.transform.DOMove(wantedNode.transform.position, .25f)
-                    .SetEase(Ease.OutQuint);
-
-                wantedNode = null;
-                if (p.movementLeft <= 0)
-                {
-                    p.traveledNodes.Clear(); // Forget all the nodes traveled to
-                    p.traveledNodes.Add(p.occupiedNode); //i need this i guess
-
-                    phase++; // next phase
-                }
-                else
-                    phase--; // Go back to picking direction
-            }
+            wantedNode = null;
+            phase = GamePhase.PickDirection; // Go back to picking direction
         }
+        else if(wantedNode != null) // Go to that new node and occupy it
+        {
+            p.traveledNodes.Add(p.occupiedNode);
+            p.occupiedNode = wantedNode;
+
+            p.movementLeft--;
+            rollText.text = "" + p.movementLeft;
+
+            p.transform.DOMove(wantedNode.transform.position, .25f)
+                .SetEase(Ease.OutQuint);
+
+            wantedNode = null;
+            if (p.movementLeft <= 0)
+            {
+                p.traveledNodes.Clear(); // Forget all the nodes traveled to
+                p.traveledNodes.Add(p.occupiedNode); //i need this i guess
+
+                phase = GamePhase.EncounterTime; // next phase
+            }
+            else
+                phase = GamePhase.PickDirection; // Go back to picking direction
+        }
+        
     }
 
     void EncounterTime(EntityPiece p, MapNode m)
     {
-        if (phase != 4)
-            return;
-
         var otherPlayer = p.occupiedNode.playerOccupied;
 
         if (m.CompareTag("Castle")) //Stash your points
@@ -190,7 +206,7 @@ public class GameplayTest : MonoBehaviour
             p.heldPoints = 0;
 
             encounterOver = true;
-            phase++;
+            phase = GamePhase.ConfirmContinue;
         }
         else if (m.CompareTag("Encounter") && otherPlayer != null && otherPlayer != currentPlayer) // Player Fight
         {
@@ -314,19 +330,16 @@ public class GameplayTest : MonoBehaviour
 
                 //
                 encounterOver = true;
-                phase++;
+                phase = GamePhase.ConfirmContinue;
             }
         }
     }
 
     void ConfirmContinue(EntityPiece p)
     {
-        if (phase != 5)
-            return;
-
         if (encounterOver && Input.GetKeyDown(KeyCode.Space))
         {
-            phase++;
+            phase = GamePhase.EndTurn;
             encounterOver = false;
             encounterScreen.SetActive(false);
             UpdatePoints();
@@ -335,9 +348,6 @@ public class GameplayTest : MonoBehaviour
 
     void EndOfTurn(EntityPiece p)
     {
-        if (phase != 6)
-            return;
-
         Debug.Log("initial node player: " + currentPlayerInitialNode.playerOccupied);
         Debug.Log("initial node player: " + currentPlayer);
 
@@ -357,7 +367,7 @@ public class GameplayTest : MonoBehaviour
             turnText.color = currentPlayer.playerColor;
 
             currentPlayerInitialNode = currentPlayer.occupiedNode;
-            phase = 1;
+            phase = GamePhase.RollDice;
         }
         else
         {
@@ -370,7 +380,7 @@ public class GameplayTest : MonoBehaviour
             turnText.color = currentPlayer.playerColor;
 
             currentPlayerInitialNode = currentPlayer.occupiedNode;
-            phase = 1;
+            phase = GamePhase.RollDice;
         }
     }
 
