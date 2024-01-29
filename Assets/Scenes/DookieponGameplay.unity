@@ -1718,88 +1718,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c55da4c6d718614981e03050dbd4362, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &791174958
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 791174959}
-  - component: {fileID: 791174960}
-  m_Layer: 0
-  m_Name: Player3
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &791174959
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 791174958}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.15909517, y: -3.087548, z: -0.033827666}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1305503039}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &791174960
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 791174958}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aced3dd383528c245acc609f064b0501, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerName: pp3
-  playerID: 3
-  strDie:
-  - 1
-  - 2
-  - 3
-  - 4
-  - 5
-  - 6
-  dexDie:
-  - 1
-  - 2
-  - 3
-  - 4
-  - 5
-  - 6
-  intDie:
-  - 1
-  - 2
-  - 3
-  - 4
-  - 5
-  - 6
-  health: 15
-  inventory: 01000000020000000300000004000000
-  isEnemy: 0
-  favoredAttack: 0
-  attackActions:
-  - {fileID: 11400000, guid: 4226c660c7644224e8fb9b338308165b, type: 2}
-  - {fileID: 11400000, guid: 6ca9e4123ea095d4fb087a3cc7c9a44d, type: 2}
-  - {fileID: 11400000, guid: 092cf3b3af66061478bc3530f1af01f9, type: 2}
-  - {fileID: 11400000, guid: 32a37866383854b4d80b76bd6c92a71b, type: 2}
-  defendActions:
-  - {fileID: 11400000, guid: 5153769221d5a6c4abc3e93c5052db99, type: 2}
-  - {fileID: 11400000, guid: 704ee6dbca2f62140ad5caf58846a975, type: 2}
-  - {fileID: 11400000, guid: 188957564c85adc4a8e2ce5c7b8466f5, type: 2}
-  - {fileID: 11400000, guid: 5b8f525effb08414abb503dfc27d55f6, type: 2}
-  fightingPosition: 0
 --- !u!1 &797826332
 GameObject:
   m_ObjectHideFlags: 0
@@ -4922,88 +4840,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 882918291}
   m_CullTransparentMesh: 1
---- !u!1 &893789457
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 893789458}
-  - component: {fileID: 893789459}
-  m_Layer: 0
-  m_Name: Player2
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &893789458
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 893789457}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.15909517, y: -3.087548, z: -0.033827666}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1305503039}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &893789459
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 893789457}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aced3dd383528c245acc609f064b0501, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerName: boyo2
-  playerID: 2
-  strDie:
-  - 1
-  - 2
-  - 3
-  - 4
-  - 5
-  - 6
-  dexDie:
-  - 1
-  - 2
-  - 3
-  - 4
-  - 5
-  - 6
-  intDie:
-  - 1
-  - 2
-  - 3
-  - 4
-  - 5
-  - 6
-  health: 15
-  inventory: 01000000020000000300000004000000
-  isEnemy: 0
-  favoredAttack: 0
-  attackActions:
-  - {fileID: 11400000, guid: 4226c660c7644224e8fb9b338308165b, type: 2}
-  - {fileID: 11400000, guid: 6ca9e4123ea095d4fb087a3cc7c9a44d, type: 2}
-  - {fileID: 11400000, guid: 092cf3b3af66061478bc3530f1af01f9, type: 2}
-  - {fileID: 11400000, guid: 32a37866383854b4d80b76bd6c92a71b, type: 2}
-  defendActions:
-  - {fileID: 11400000, guid: 5153769221d5a6c4abc3e93c5052db99, type: 2}
-  - {fileID: 11400000, guid: 704ee6dbca2f62140ad5caf58846a975, type: 2}
-  - {fileID: 11400000, guid: 188957564c85adc4a8e2ce5c7b8466f5, type: 2}
-  - {fileID: 11400000, guid: 5b8f525effb08414abb503dfc27d55f6, type: 2}
-  fightingPosition: 1
 --- !u!1 &990018810
 GameObject:
   m_ObjectHideFlags: 0
@@ -5223,88 +5059,6 @@ Transform:
   m_Father: {fileID: 1273892898}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1012653477
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1012653478}
-  - component: {fileID: 1012653479}
-  m_Layer: 0
-  m_Name: Player1
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1012653478
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1012653477}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.15909517, y: -3.087548, z: -0.033827666}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1305503039}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1012653479
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1012653477}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aced3dd383528c245acc609f064b0501, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerName: pp1
-  playerID: 1
-  strDie:
-  - 1
-  - 2
-  - 3
-  - 4
-  - 5
-  - 6
-  dexDie:
-  - 1
-  - 2
-  - 3
-  - 4
-  - 5
-  - 6
-  intDie:
-  - 1
-  - 2
-  - 3
-  - 4
-  - 5
-  - 6
-  health: 15
-  inventory: 01000000020000000300000004000000
-  isEnemy: 0
-  favoredAttack: 0
-  attackActions:
-  - {fileID: 11400000, guid: 4226c660c7644224e8fb9b338308165b, type: 2}
-  - {fileID: 11400000, guid: 6ca9e4123ea095d4fb087a3cc7c9a44d, type: 2}
-  - {fileID: 11400000, guid: 092cf3b3af66061478bc3530f1af01f9, type: 2}
-  - {fileID: 11400000, guid: 32a37866383854b4d80b76bd6c92a71b, type: 2}
-  defendActions:
-  - {fileID: 11400000, guid: 5153769221d5a6c4abc3e93c5052db99, type: 2}
-  - {fileID: 11400000, guid: 704ee6dbca2f62140ad5caf58846a975, type: 2}
-  - {fileID: 11400000, guid: 188957564c85adc4a8e2ce5c7b8466f5, type: 2}
-  - {fileID: 11400000, guid: 5b8f525effb08414abb503dfc27d55f6, type: 2}
-  fightingPosition: 0
 --- !u!1 &1032940733
 GameObject:
   m_ObjectHideFlags: 0
@@ -7143,7 +6897,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nickname: Player 2
-  id: 0
+  id: 1
   playerColor: {r: 0.2462323, g: 0.33904976, b: 0.9433962, a: 1}
   playerSprite: {fileID: 990241279}
   occupiedNode: {fileID: 726026664}
@@ -7153,6 +6907,57 @@ MonoBehaviour:
   movementLeft: 0
   finalPoints: 1
   heldPoints: 0
+  combatStats: {fileID: 0}
+--- !u!114 &1273892901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1273892897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aced3dd383528c245acc609f064b0501, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerName: Jonathan
+  playerID: 1
+  strDie:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  dexDie:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  intDie:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  health: 10
+  inventory: 01000000020000000300000004000000
+  isEnemy: 0
+  favoredAttack: 0
+  attackActions:
+  - {fileID: 11400000, guid: 4226c660c7644224e8fb9b338308165b, type: 2}
+  - {fileID: 11400000, guid: 6ca9e4123ea095d4fb087a3cc7c9a44d, type: 2}
+  - {fileID: 11400000, guid: 092cf3b3af66061478bc3530f1af01f9, type: 2}
+  - {fileID: 11400000, guid: 32a37866383854b4d80b76bd6c92a71b, type: 2}
+  defendActions:
+  - {fileID: 11400000, guid: 5153769221d5a6c4abc3e93c5052db99, type: 2}
+  - {fileID: 11400000, guid: 704ee6dbca2f62140ad5caf58846a975, type: 2}
+  - {fileID: 11400000, guid: 188957564c85adc4a8e2ce5c7b8466f5, type: 2}
+  - {fileID: 11400000, guid: 5b8f525effb08414abb503dfc27d55f6, type: 2}
+  fightingPosition: 0
 --- !u!1 &1305503037
 GameObject:
   m_ObjectHideFlags: 0
@@ -7181,11 +6986,7 @@ Transform:
   m_LocalPosition: {x: 1.382829, y: 2.5425968, z: 0.033827666}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1012653478}
-  - {fileID: 893789458}
-  - {fileID: 791174959}
-  - {fileID: 1700590219}
+  m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -7201,10 +7002,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecae2eb90d781ba43a87fa3b48e57d2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player1: {fileID: 0}
-  player2: {fileID: 0}
-  player3: {fileID: 0}
-  player4: {fileID: 0}
+  players: []
   player1ID: 0
   player2ID: 0
 --- !u!1 &1367163596
@@ -9089,7 +8887,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nickname: Player 4
-  id: 0
+  id: 3
   playerColor: {r: 0.11878477, g: 0.8584906, b: 0.4671354, a: 1}
   playerSprite: {fileID: 453942726}
   occupiedNode: {fileID: 861823800}
@@ -9099,6 +8897,57 @@ MonoBehaviour:
   movementLeft: 0
   finalPoints: 1
   heldPoints: 0
+  combatStats: {fileID: 0}
+--- !u!114 &1419713628
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1419713624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aced3dd383528c245acc609f064b0501, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerName: Jasper
+  playerID: 3
+  strDie:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  dexDie:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  intDie:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  health: 4
+  inventory: 01000000020000000300000004000000
+  isEnemy: 0
+  favoredAttack: 0
+  attackActions:
+  - {fileID: 11400000, guid: 4226c660c7644224e8fb9b338308165b, type: 2}
+  - {fileID: 11400000, guid: 6ca9e4123ea095d4fb087a3cc7c9a44d, type: 2}
+  - {fileID: 11400000, guid: 092cf3b3af66061478bc3530f1af01f9, type: 2}
+  - {fileID: 11400000, guid: 32a37866383854b4d80b76bd6c92a71b, type: 2}
+  defendActions:
+  - {fileID: 11400000, guid: 5153769221d5a6c4abc3e93c5052db99, type: 2}
+  - {fileID: 11400000, guid: 704ee6dbca2f62140ad5caf58846a975, type: 2}
+  - {fileID: 11400000, guid: 188957564c85adc4a8e2ce5c7b8466f5, type: 2}
+  - {fileID: 11400000, guid: 5b8f525effb08414abb503dfc27d55f6, type: 2}
+  fightingPosition: 0
 --- !u!1 &1421270775
 GameObject:
   m_ObjectHideFlags: 0
@@ -10954,88 +10803,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1673688512}
   m_CullTransparentMesh: 1
---- !u!1 &1700590218
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1700590219}
-  - component: {fileID: 1700590220}
-  m_Layer: 0
-  m_Name: Player4
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1700590219
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1700590218}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.15909517, y: -3.087548, z: -0.033827666}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1305503039}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1700590220
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1700590218}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aced3dd383528c245acc609f064b0501, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerName: pp4
-  playerID: 4
-  strDie:
-  - 1
-  - 2
-  - 3
-  - 4
-  - 5
-  - 6
-  dexDie:
-  - 1
-  - 2
-  - 3
-  - 4
-  - 5
-  - 6
-  intDie:
-  - 1
-  - 2
-  - 3
-  - 4
-  - 5
-  - 6
-  health: 15
-  inventory: 01000000020000000300000004000000
-  isEnemy: 0
-  favoredAttack: 0
-  attackActions:
-  - {fileID: 11400000, guid: 4226c660c7644224e8fb9b338308165b, type: 2}
-  - {fileID: 11400000, guid: 6ca9e4123ea095d4fb087a3cc7c9a44d, type: 2}
-  - {fileID: 11400000, guid: 092cf3b3af66061478bc3530f1af01f9, type: 2}
-  - {fileID: 11400000, guid: 32a37866383854b4d80b76bd6c92a71b, type: 2}
-  defendActions:
-  - {fileID: 11400000, guid: 5153769221d5a6c4abc3e93c5052db99, type: 2}
-  - {fileID: 11400000, guid: 704ee6dbca2f62140ad5caf58846a975, type: 2}
-  - {fileID: 11400000, guid: 188957564c85adc4a8e2ce5c7b8466f5, type: 2}
-  - {fileID: 11400000, guid: 5b8f525effb08414abb503dfc27d55f6, type: 2}
-  fightingPosition: 1
 --- !u!1 &1707007754
 GameObject:
   m_ObjectHideFlags: 0
@@ -11153,6 +10920,57 @@ MonoBehaviour:
   movementLeft: 0
   finalPoints: 1
   heldPoints: 0
+  combatStats: {fileID: 0}
+--- !u!114 &1751578438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1751578433}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aced3dd383528c245acc609f064b0501, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerName: Nam
+  playerID: 0
+  strDie:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  dexDie:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  intDie:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  health: 15
+  inventory: 01000000020000000300000004000000
+  isEnemy: 0
+  favoredAttack: 0
+  attackActions:
+  - {fileID: 11400000, guid: 4226c660c7644224e8fb9b338308165b, type: 2}
+  - {fileID: 11400000, guid: 6ca9e4123ea095d4fb087a3cc7c9a44d, type: 2}
+  - {fileID: 11400000, guid: 092cf3b3af66061478bc3530f1af01f9, type: 2}
+  - {fileID: 11400000, guid: 32a37866383854b4d80b76bd6c92a71b, type: 2}
+  defendActions:
+  - {fileID: 11400000, guid: 5153769221d5a6c4abc3e93c5052db99, type: 2}
+  - {fileID: 11400000, guid: 704ee6dbca2f62140ad5caf58846a975, type: 2}
+  - {fileID: 11400000, guid: 188957564c85adc4a8e2ce5c7b8466f5, type: 2}
+  - {fileID: 11400000, guid: 5b8f525effb08414abb503dfc27d55f6, type: 2}
+  fightingPosition: 0
 --- !u!1 &1784744900 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4581765840797956287, guid: 593d54cc189a0544a8760b3a73027f89, type: 3}
@@ -11171,7 +10989,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nickname: Player 3
-  id: 0
+  id: 2
   playerColor: {r: 0.94509804, g: 0.7690049, b: 0.24705881, a: 1}
   playerSprite: {fileID: 1981033896}
   occupiedNode: {fileID: 1406319207}
@@ -11181,11 +10999,62 @@ MonoBehaviour:
   movementLeft: 0
   finalPoints: 1
   heldPoints: 0
+  combatStats: {fileID: 0}
 --- !u!4 &1784744903 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4581765840797956285, guid: 593d54cc189a0544a8760b3a73027f89, type: 3}
   m_PrefabInstance: {fileID: 844007356}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1784744905
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1784744900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aced3dd383528c245acc609f064b0501, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerName: Russell
+  playerID: 2
+  strDie:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  dexDie:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  intDie:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  health: 5
+  inventory: 01000000020000000300000004000000
+  isEnemy: 0
+  favoredAttack: 0
+  attackActions:
+  - {fileID: 11400000, guid: 4226c660c7644224e8fb9b338308165b, type: 2}
+  - {fileID: 11400000, guid: 6ca9e4123ea095d4fb087a3cc7c9a44d, type: 2}
+  - {fileID: 11400000, guid: 092cf3b3af66061478bc3530f1af01f9, type: 2}
+  - {fileID: 11400000, guid: 32a37866383854b4d80b76bd6c92a71b, type: 2}
+  defendActions:
+  - {fileID: 11400000, guid: 5153769221d5a6c4abc3e93c5052db99, type: 2}
+  - {fileID: 11400000, guid: 704ee6dbca2f62140ad5caf58846a975, type: 2}
+  - {fileID: 11400000, guid: 188957564c85adc4a8e2ce5c7b8466f5, type: 2}
+  - {fileID: 11400000, guid: 5b8f525effb08414abb503dfc27d55f6, type: 2}
+  fightingPosition: 0
 --- !u!1 &1850108889
 GameObject:
   m_ObjectHideFlags: 0

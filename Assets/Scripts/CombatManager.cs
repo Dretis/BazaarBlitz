@@ -48,8 +48,17 @@ public class CombatManager : MonoBehaviour
         }
         SceneGameManager sceneManager = GameObject.FindWithTag("SceneManager").GetComponent<SceneGameManager>();
         if (sceneManager) {
-            player1 = sceneManager.transform.gameObject.transform.GetChild( sceneManager.player1ID ).gameObject.GetComponent<PlayerStats>();
-            player2 = sceneManager.transform.gameObject.transform.GetChild( sceneManager.player2ID ).gameObject.GetComponent<PlayerStats>();
+            foreach(var player in sceneManager.players)
+            {
+                if(sceneManager.player1ID == player.id)
+                {
+                    player1 = player.combatStats;
+                }
+                else if(sceneManager.player2ID == player.id)
+                {
+                    player2 = player.combatStats;
+                }
+            }
         }
         Instance = this;
         initializeCombat();

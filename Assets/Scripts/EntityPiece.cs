@@ -17,10 +17,13 @@ public class EntityPiece : MonoBehaviour
     public int movementLeft;
     public int finalPoints = 1;
     public int heldPoints = 0;
+    [SerializeField]
+    public PlayerStats combatStats;
 
     // Start is called before the first frame update
     void Start()
     {
+        combatStats = this.GetComponent<PlayerStats>();
         playerSprite.color = playerColor;
         transform.position = occupiedNode.transform.position;
         occupiedNodeCopy = occupiedNode;
