@@ -234,7 +234,7 @@ public class GameplayTest : MonoBehaviour
             if(!encounterStarted)
             {
                 encounterStarted = true;
-                sceneManager.player1ID = currentPlayer.id;
+                sceneManager.player1ID = 2;
                 sceneManager.player2ID = otherPlayer.id;
                 sceneManager.LoadCombatScene();
             }
