@@ -56,7 +56,6 @@ public class GameplayTest : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log("Beginning of Start" + phase);
         sceneManager = GameObject.FindGameObjectWithTag("SceneManager").GetComponent<SceneGameManager>();
         playerUnits.AddRange(FindObjectsOfType<EntityPiece>());
         //nextPlayers = playerUnits;
@@ -73,7 +72,6 @@ public class GameplayTest : MonoBehaviour
         currentPlayerInitialNode = currentPlayer.occupiedNode;
         turnText.text = currentPlayer.nickname + "'s Turn!";
         turnText.color = currentPlayer.playerColor;
-        Debug.Log("End of Start" + phase);
     }
 
     // Update is called once per frame
@@ -118,7 +116,6 @@ public class GameplayTest : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             diceRoll = Random.Range(1, 7); // Roll from 1 to 6
-            Debug.Log(diceRoll);
             rollText.text = "" + diceRoll;
             p.movementTotal = p.movementLeft = diceRoll;
 
