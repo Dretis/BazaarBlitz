@@ -46,6 +46,11 @@ public class CombatManager : MonoBehaviour
         {
             Destroy(this);
         }
+        SceneManager sceneManager = GameObject.FindWithTag("SceneManager").GetComponent<SceneManager>();
+        if (sceneManager) {
+            player1 = sceneManager.GameObject.transform.GetChild( sceneManager.player1ID ).gameObject.PlayerStats;
+            player2 = sceneManager.GameObject.transform.GetChild( sceneManager.player2ID ).gameObject.PlayerStats;
+        }
         Instance = this;
         initializeCombat();
 
