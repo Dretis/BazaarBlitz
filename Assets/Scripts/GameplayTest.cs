@@ -66,6 +66,10 @@ public class GameplayTest : MonoBehaviour
         {
             nextPlayers.Add(player);
             gameInfo.text += "\n" + player.nickname + ": " + player.heldPoints + " | " + player.finalPoints;
+
+            // Allow starting nodes to detect the player on them.
+            var initialNode = player.occupiedNode;
+            initialNode.playerOccupied = player;
         }
 
         currentPlayer = nextPlayers[playerUnits.Count - 1];
@@ -207,6 +211,7 @@ public class GameplayTest : MonoBehaviour
         }
         else if (m.CompareTag("Encounter") && otherPlayer != null && otherPlayer != currentPlayer) // Player Fight
         {
+            Debug.Log(otherPlayer.nickname);
             /*
             ///
             encounterScreen.SetActive(true);
@@ -246,8 +251,12 @@ public class GameplayTest : MonoBehaviour
             
             if(!encounterStarted)
             {
+                Debug.Log("Your Player: " + currentPlayer.nickname);
+                Debug.Log("Other Player: " + otherPlayer.nickname);
                 encounterStarted = true;
-                sceneManager.player1ID = 2;
+
+                // Set IDs of players entering combat.
+                sceneManager.player1ID = currentPlayer.id;
                 sceneManager.player2ID = otherPlayer.id;
                 sceneManager.LoadCombatScene();
             }
