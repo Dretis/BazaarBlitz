@@ -169,12 +169,16 @@ public class CombatManager : MonoBehaviour
 
 
     public void endCombat(bool aggressorWon) {
-      //combatActive = false;
+
+      SceneGameManager sceneManager = GameObject.FindWithTag("SceneManager").GetComponent<SceneGameManager>();
+        //combatActive = false;
       if (aggressorWon) {
         Debug.Log("Attacker Wins!");
       } else {
         Debug.Log("Defender Wins!");
       }
+
+      sceneManager.UnloadCombatScene();
       // wrap up the scene and transition back to board in the final game.
     }
 

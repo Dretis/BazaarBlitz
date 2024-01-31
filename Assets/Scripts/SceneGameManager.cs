@@ -21,4 +21,9 @@ public class SceneGameManager : MonoBehaviour
     {
         SceneManager.LoadScene("CombatTest", LoadSceneMode.Additive);
     }
+
+    public void UnloadCombatScene()
+    {
+        SceneManager.UnloadSceneAsync("CombatTest");
+    }
 }
