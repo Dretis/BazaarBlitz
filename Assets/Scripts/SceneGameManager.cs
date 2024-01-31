@@ -6,10 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class SceneGameManager : MonoBehaviour
 {
-    public PlayerStats player1;
-    public PlayerStats player2;
-    public PlayerStats player3;
-    public PlayerStats player4;
+    public List<EntityPiece> players = new List<EntityPiece>();
 
     public int player1ID;
     public int player2ID;
@@ -17,6 +14,7 @@ public class SceneGameManager : MonoBehaviour
     void Awake()
     {
         DontDestroyOnLoad(this.gameObject);
+        players.AddRange(FindObjectsOfType<EntityPiece>());
     }
 
     public void LoadCombatScene()
