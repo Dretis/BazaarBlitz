@@ -186,6 +186,7 @@ public class CombatManager : MonoBehaviour
       }
         foreach (GameObject a in sceneManager.overworldSceneGameObjects)
             a.SetActive(true);
+        sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
         sceneManager.UnloadCombatScene();
       // wrap up the scene and transition back to board in the final game.
     }

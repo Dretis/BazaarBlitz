@@ -12,11 +12,13 @@ public class SceneGameManager : MonoBehaviour
     public int player2ID;
 
     public List<GameObject> overworldSceneGameObjects;
+    private GameplayTest overworldScene;
 
     void Awake()
     {
         DontDestroyOnLoad(this.gameObject);
         players.AddRange(FindObjectsOfType<EntityPiece>());
+        overworldScene = GameObject.Find("Input Manager").GetComponent<GameplayTest>();
     }
 
     public void LoadCombatScene()
@@ -28,5 +30,11 @@ public class SceneGameManager : MonoBehaviour
     public void UnloadCombatScene()
     {
         SceneManager.UnloadSceneAsync("CombatTest");
+    }
+
+    public void ChangeGamePhase(GameplayTest.GamePhase phase)
+    {
+        overworldScene = GameObject.Find("Input Manager").GetComponent<GameplayTest>();
+        overworldScene.phase = phase;
     }
 }
