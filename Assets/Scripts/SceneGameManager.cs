@@ -11,6 +11,8 @@ public class SceneGameManager : MonoBehaviour
     public int player1ID;
     public int player2ID;
 
+    public List<GameObject> overworldSceneGameObjects;
+
     void Awake()
     {
         DontDestroyOnLoad(this.gameObject);
@@ -19,6 +21,7 @@ public class SceneGameManager : MonoBehaviour
 
     public void LoadCombatScene()
     {
+        overworldSceneGameObjects = new List<GameObject>(FindObjectsOfType<GameObject>());
         SceneManager.LoadScene("CombatTest", LoadSceneMode.Additive);
     }
 

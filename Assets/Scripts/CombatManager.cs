@@ -63,6 +63,13 @@ public class CombatManager : MonoBehaviour
         Instance = this;
         initializeCombat();
 
+        foreach (GameObject a in sceneManager.overworldSceneGameObjects)
+        {
+            if (a != sceneManager.gameObject)
+                a.SetActive(false);
+        }
+            
+
         itemsQueuedAttack = new List<int>();
         itemsQueuedDefend = new List<int>();
 
@@ -177,8 +184,9 @@ public class CombatManager : MonoBehaviour
       } else {
         Debug.Log("Defender Wins!");
       }
-
-      sceneManager.UnloadCombatScene();
+        foreach (GameObject a in sceneManager.overworldSceneGameObjects)
+            a.SetActive(true);
+        sceneManager.UnloadCombatScene();
       // wrap up the scene and transition back to board in the final game.
     }
 
