@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 
 public class CombatManager : MonoBehaviour
 {
@@ -38,7 +38,10 @@ public class CombatManager : MonoBehaviour
     private bool isFightingAI = false;
     private int playersLastAttack = 0;
 
+    public int combatSceneIndex;
+
     public CombatUIManager combatUIManager;
+    public SceneGameManager sceneManager;
 
     private void Awake()
     {
@@ -46,7 +49,7 @@ public class CombatManager : MonoBehaviour
         {
             Destroy(this);
         }
-        SceneGameManager sceneManager = GameObject.FindWithTag("SceneManager").GetComponent<SceneGameManager>();
+        sceneManager = GameObject.FindWithTag("SceneManager").GetComponent<SceneGameManager>();
         if (sceneManager) {
             foreach(var player in sceneManager.players)
             {
@@ -60,6 +63,9 @@ public class CombatManager : MonoBehaviour
                 }
             }
         }
+
+        // Get the scene index of the combat scene.
+        combatSceneIndex = SceneManager.sceneCount-1;
 
         Instance = this;
         initializeCombat();
@@ -189,8 +195,6 @@ public class CombatManager : MonoBehaviour
     }
 
     public void endCombat(bool aggressorWon) {
-
-      SceneGameManager sceneManager = GameObject.FindWithTag("SceneManager").GetComponent<SceneGameManager>();
         //combatActive = false;
       if (aggressorWon) {
         Debug.Log("Attacker Wins!");
@@ -199,8 +203,9 @@ public class CombatManager : MonoBehaviour
       }
         foreach (GameObject a in sceneManager.overworldSceneGameObjects)
             a.SetActive(true);
+
         sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
-        sceneManager.UnloadCombatScene();
+        sceneManager.UnloadCombatScene(combatSceneIndex);
       // wrap up the scene and transition back to board in the final game.
     }
 

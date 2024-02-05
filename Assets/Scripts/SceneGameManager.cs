@@ -25,11 +25,12 @@ public class SceneGameManager : MonoBehaviour
     {
         overworldSceneGameObjects = new List<GameObject>(FindObjectsOfType<GameObject>());
         SceneManager.LoadScene("CombatTest", LoadSceneMode.Additive);
+        Debug.Log(SceneManager.GetActiveScene().name);
     }
 
-    public void UnloadCombatScene()
+    public void UnloadCombatScene(int sceneIndex)
     {
-        SceneManager.UnloadSceneAsync("CombatTest");
+        SceneManager.UnloadSceneAsync(sceneIndex);
     }
 
     public void ChangeGamePhase(GameplayTest.GamePhase phase)
