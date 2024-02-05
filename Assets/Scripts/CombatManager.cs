@@ -60,6 +60,7 @@ public class CombatManager : MonoBehaviour
                 }
             }
         }
+
         Instance = this;
         initializeCombat();
 
@@ -69,84 +70,97 @@ public class CombatManager : MonoBehaviour
                 a.SetActive(false);
         }
             
-
         itemsQueuedAttack = new List<int>();
         itemsQueuedDefend = new List<int>();
 
         combatUIManager = GetComponent<CombatUIManager>();
     }
 
-    public void initializeCombat() {
+    public void initializeCombat() 
+    {
         player1.fightingPosition = CombatUIManager.FightingPosition.Left;
         player2.fightingPosition = CombatUIManager.FightingPosition.Right;
 
-      combatActive = true;
-      isAggressorTurn = true;
-      aggressorAttacking = true;
-      retaliatorAttacking = false;
-      playersLastAttack = 0;
+        combatActive = true;
+        isAggressorTurn = true;
+        aggressorAttacking = true;
+        retaliatorAttacking = false;
+        playersLastAttack = 0;
 
-      if (player2.isEnemy) {
-        aggressor = player1;
-        retaliator = player2;
-        isFightingAI = true;
-        curEnemy = player2;
-      } else if (player1.isEnemy) {
-        aggressor = player2;
-        retaliator = player1;
-        isFightingAI = true;
-        curEnemy = player1;
-      } else {
-        int whosFirst = Random.Range(0, 2); // Add button prompt later
+        if (player2.isEnemy) 
+        {
+            aggressor = player1;
+            retaliator = player2;
+            isFightingAI = true;
+            curEnemy = player2;
+        } 
+        else if (player1.isEnemy) 
+        {
+            aggressor = player2;
+            retaliator = player1;
+            isFightingAI = true;
+            curEnemy = player1;
+        } 
+        else 
+        {
+            int whosFirst = Random.Range(0, 2); // Add button prompt later
 
-        if (whosFirst == 0) {
-          aggressor = player1;
-          retaliator = player2;
-        } else {
-          aggressor = player2;
-          retaliator = player1;
+            if (whosFirst == 0) 
+            {
+                aggressor = player1;
+                retaliator = player2;
+            } else {
+                aggressor = player2;
+                retaliator = player1;
+            }
         }
-      }
 
-      attacker = aggressor; // These are the current atk/defenders, changes every turn unlike above
-      defender = retaliator;
+        attacker = aggressor; // These are the current atk/defenders, changes every turn unlike above
+        defender = retaliator;
 
-      combatUIManager.UpdateActionText(attacker, Action.PhaseTypes.Attack);
-      combatUIManager.UpdateActionText(defender, Action.PhaseTypes.Defend);
+        combatUIManager.UpdateActionText(attacker, Action.PhaseTypes.Attack);
+        combatUIManager.UpdateActionText(defender, Action.PhaseTypes.Defend);
 
-      //combatUIManager.UpdateAction2Text(defender, Action.PhaseTypes.Defend);
+        //combatUIManager.UpdateAction2Text(defender, Action.PhaseTypes.Defend);
     }
 
-    public void passTurn() {
-      isAggressorTurn = toggleBool(isAggressorTurn);
+    public void passTurn() 
+    {
+        isAggressorTurn = toggleBool(isAggressorTurn);
 
-      if ((!isAggressorTurn && aggressorAttacking) && isFightingAI) {
-        defenderAction = decideAttackAI();
-        isAggressorTurn = toggleBool(isAggressorTurn); // Now well just finish the turn.
-      }
-
-      if(isAggressorTurn) { // Both players acted. Play the turn, then toggle attacker and defender
-        playTurn();
-
-        aggressorAttacking = toggleBool(aggressorAttacking);
-        retaliatorAttacking = toggleBool(retaliatorAttacking);
-
-        if (aggressorAttacking) {
-          attacker = aggressor;
-          defender = retaliator;
-        } else {
-          attacker = retaliator;
-          defender = aggressor;
-        }
-          combatUIManager.UpdateActionText(attacker, Action.PhaseTypes.Attack);
-          combatUIManager.UpdateActionText(defender, Action.PhaseTypes.Defend);
+        if ((!isAggressorTurn && aggressorAttacking) && isFightingAI) 
+        {
+            defenderAction = decideAttackAI();
+            isAggressorTurn = toggleBool(isAggressorTurn); // Now well just finish the turn.
         }
 
-      if ((!isAggressorTurn && !aggressorAttacking) && isFightingAI) {
-        attackerAction = decideAttackAI();
-        passTurn();
-      }
+        if(isAggressorTurn) 
+        { 
+            // Both players acted. Play the turn, then toggle attacker and defender
+            playTurn();
 
+            aggressorAttacking = toggleBool(aggressorAttacking);
+            retaliatorAttacking = toggleBool(retaliatorAttacking);
+
+            if (aggressorAttacking) 
+            {
+                attacker = aggressor;
+                defender = retaliator;
+            } 
+            else 
+            {
+                attacker = retaliator;
+                defender = aggressor;
+            }
+
+            combatUIManager.UpdateActionText(attacker, Action.PhaseTypes.Attack);
+            combatUIManager.UpdateActionText(defender, Action.PhaseTypes.Defend);
+        }
+
+        if ((!isAggressorTurn && !aggressorAttacking) && isFightingAI) {
+            attackerAction = decideAttackAI();
+            passTurn();
+        }
     }
 
     public void playTurn() {
@@ -173,7 +187,6 @@ public class CombatManager : MonoBehaviour
 
 
     }
-
 
     public void endCombat(bool aggressorWon) {
 
