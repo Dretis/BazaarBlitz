@@ -55,7 +55,7 @@ public class GameplayTest : MonoBehaviour
     public bool encounterStarted = false;
     // Start is called before the first frame update
     void Start()
-    {
+    { 
         sceneManager = GameObject.FindGameObjectWithTag("SceneManager").GetComponent<SceneGameManager>();
         playerUnits.AddRange(FindObjectsOfType<EntityPiece>());
         //nextPlayers = playerUnits;
@@ -117,13 +117,20 @@ public class GameplayTest : MonoBehaviour
 
     void RollDice(EntityPiece p)
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if(p.combatStats.combatSceneIndex == -1)
         {
-            diceRoll = Random.Range(1, 7); // Roll from 1 to 6
-            rollText.text = "" + diceRoll;
-            p.movementTotal = p.movementLeft = diceRoll;
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                diceRoll = Random.Range(1, 7); // Roll from 1 to 6
+                rollText.text = "" + diceRoll;
+                p.movementTotal = p.movementLeft = diceRoll;
 
-            phase = GamePhase.PickDirection;
+                phase = GamePhase.PickDirection;
+            }
+        }
+        else
+        {
+            // In Combat
         }
     }
 
