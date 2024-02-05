@@ -67,6 +67,10 @@ public class CombatManager : MonoBehaviour
         // Get the scene index of the combat scene.
         combatSceneIndex = SceneManager.sceneCount-1;
 
+        // Indicate which combat scene each player is in.
+        player1.combatSceneIndex = combatSceneIndex;
+        player2.combatSceneIndex = combatSceneIndex;
+
         Instance = this;
         initializeCombat();
 
@@ -203,6 +207,10 @@ public class CombatManager : MonoBehaviour
       }
         foreach (GameObject a in sceneManager.overworldSceneGameObjects)
             a.SetActive(true);
+
+        // Players exit combat.
+        player1.combatSceneIndex = -1;
+        player2.combatSceneIndex = -1;
 
         sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
         sceneManager.UnloadCombatScene(combatSceneIndex);

@@ -247,9 +247,10 @@ public class GameplayTest : MonoBehaviour
             }
             ///
             */
-
+            // If current player is not in combat scene and other player is not in combat scene, begin combat.
+            // If current player is in combat scene, skip roll dice and load back here
             
-            if(!encounterStarted)
+            if (!encounterStarted)
             {
                 Debug.Log("Your Player: " + currentPlayer.nickname);
                 Debug.Log("Other Player: " + otherPlayer.nickname);
