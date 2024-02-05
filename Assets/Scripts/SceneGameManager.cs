@@ -31,6 +31,7 @@ public class SceneGameManager : MonoBehaviour
     public void UnloadCombatScene(int sceneIndex)
     {
         SceneManager.UnloadSceneAsync(sceneIndex);
+        overworldScene.encounterStarted = false;
     }
 
     public void ChangeGamePhase(GameplayTest.GamePhase phase)
