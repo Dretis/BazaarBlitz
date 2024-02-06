@@ -192,13 +192,11 @@ public class CombatManager : MonoBehaviour
       }
       else
       {
-            /*
             // Pause combat scene and re-enable overworld scene
             sceneManager.DisableScene(combatSceneIndex);
             sceneManager.EnableScene(0);
 
             sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
-            */
         }
 
     }
