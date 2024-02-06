@@ -64,8 +64,9 @@ public class CombatManager : MonoBehaviour
             }
         }
 
-        // Get the scene index of the combat scene.
+        // Get the scene index of the combat scene and set it to the active scene.
         combatSceneIndex = SceneManager.sceneCount-1;
+        SceneManager.SetActiveScene(SceneManager.GetSceneAt(combatSceneIndex));
 
         // Indicate which combat scene each player is in.
         player1.combatSceneIndex = combatSceneIndex;
@@ -74,11 +75,8 @@ public class CombatManager : MonoBehaviour
         Instance = this;
         initializeCombat();
 
-        foreach (GameObject a in sceneManager.overworldSceneGameObjects)
-        {
-            if (a != sceneManager.gameObject)
-                a.SetActive(false);
-        }
+        // Disable overworld scene.
+        sceneManager.DisableScene(0);
             
         itemsQueuedAttack = new List<int>();
         itemsQueuedDefend = new List<int>();
@@ -205,8 +203,9 @@ public class CombatManager : MonoBehaviour
       } else {
         Debug.Log("Defender Wins!");
       }
-        foreach (GameObject a in sceneManager.overworldSceneGameObjects)
-            a.SetActive(true);
+
+        // Re-enable scene
+        sceneManager.EnableScene(0);
 
         // Players exit combat.
         player1.combatSceneIndex = -1;

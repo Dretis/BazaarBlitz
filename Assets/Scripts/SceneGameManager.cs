@@ -25,13 +25,41 @@ public class SceneGameManager : MonoBehaviour
     {
         overworldSceneGameObjects = new List<GameObject>(FindObjectsOfType<GameObject>());
         SceneManager.LoadScene("CombatTest", LoadSceneMode.Additive);
+        SceneManager.SetActiveScene(SceneManager.GetSceneAt(SceneManager.sceneCount - 1));
         Debug.Log(SceneManager.GetActiveScene().name);
     }
 
     public void UnloadCombatScene(int sceneIndex)
     {
         SceneManager.UnloadSceneAsync(sceneIndex);
+        SceneManager.SetActiveScene(SceneManager.GetSceneAt(0));
         overworldScene.encounterStarted = false;
+    }
+
+    public void EnableScene(int sceneIndex)
+    {
+        Scene scene = SceneManager.GetSceneAt(sceneIndex);
+        List<GameObject> sceneObjects = new List<GameObject>();
+        scene.GetRootGameObjects(sceneObjects);
+
+        foreach (GameObject obj in sceneObjects) 
+        {
+            obj.SetActive(true);
+        }
+
+        SceneManager.SetActiveScene(SceneManager.GetSceneAt(sceneIndex));
+    }
+
+    public void DisableScene(int sceneIndex)
+    {
+        Scene scene = SceneManager.GetSceneAt(sceneIndex);
+        List<GameObject> sceneObjects = new List<GameObject>();
+        scene.GetRootGameObjects(sceneObjects);
+
+        foreach (GameObject obj in sceneObjects)
+        {
+            obj.SetActive(false);
+        }      
     }
 
     public void ChangeGamePhase(GameplayTest.GamePhase phase)
