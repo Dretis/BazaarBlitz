@@ -52,7 +52,7 @@ public class GameplayTest : MonoBehaviour
 
     //public PlayerInput playerInput;
     //public PlayerControls input;
-    public bool encounterStarted = false;
+    private bool encounterStarted = false;
     // Start is called before the first frame update
     void Start()
     {
