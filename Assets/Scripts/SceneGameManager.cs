@@ -25,8 +25,7 @@ public class SceneGameManager : MonoBehaviour
     {
         overworldSceneGameObjects = new List<GameObject>(FindObjectsOfType<GameObject>());
         SceneManager.LoadScene("CombatTest", LoadSceneMode.Additive);
-        SceneManager.SetActiveScene(SceneManager.GetSceneAt(SceneManager.sceneCount - 1));
-        Debug.Log(SceneManager.GetActiveScene().name);
+        SetActiveSceneAfterWait();
     }
 
     public void UnloadCombatScene(int sceneIndex)
@@ -66,5 +65,12 @@ public class SceneGameManager : MonoBehaviour
     {
         overworldScene = GameObject.Find("Input Manager").GetComponent<GameplayTest>();
         overworldScene.phase = phase;
+    }
+    IEnumerator SetActiveSceneAfterWait()
+    {
+        yield return new WaitForSeconds(1.0f);
+
+        SceneManager.SetActiveScene(SceneManager.GetSceneAt(SceneManager.sceneCount-1));
+        Debug.Log(SceneManager.GetActiveScene().name);
     }
 }

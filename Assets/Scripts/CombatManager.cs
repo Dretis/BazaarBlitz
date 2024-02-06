@@ -66,7 +66,7 @@ public class CombatManager : MonoBehaviour
 
         // Get the scene index of the combat scene and set it to the active scene.
         combatSceneIndex = SceneManager.sceneCount-1;
-        SceneManager.SetActiveScene(SceneManager.GetSceneAt(combatSceneIndex));
+       // SceneManager.SetActiveScene(SceneManager.GetSceneAt(combatSceneIndex));
 
         // Indicate which combat scene each player is in.
         player1.combatSceneIndex = combatSceneIndex;
@@ -190,9 +190,16 @@ public class CombatManager : MonoBehaviour
       } else if (retaliator.health <= 0) {
         endCombat(true);
       }
+      else
+      {
+            /*
+            // Pause combat scene and re-enable overworld scene
+            sceneManager.DisableScene(combatSceneIndex);
+            sceneManager.EnableScene(0);
 
-
-
+            sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
+            */
+        }
 
     }
 
