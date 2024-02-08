@@ -11,7 +11,6 @@ public class SceneGameManager : MonoBehaviour
     public int player1ID;
     public int player2ID;
 
-    public List<GameObject> overworldSceneGameObjects;
     private GameplayTest overworldScene;
 
     void Awake()
@@ -23,7 +22,6 @@ public class SceneGameManager : MonoBehaviour
 
     public void LoadCombatScene()
     {
-        overworldSceneGameObjects = new List<GameObject>(FindObjectsOfType<GameObject>());
         SceneManager.LoadScene("CombatTest", LoadSceneMode.Additive);
         SetActiveSceneAfterWait();
     }
@@ -63,7 +61,6 @@ public class SceneGameManager : MonoBehaviour
 
     public void ChangeGamePhase(GameplayTest.GamePhase phase)
     {
-        overworldScene = GameObject.Find("Input Manager").GetComponent<GameplayTest>();
         overworldScene.phase = phase;
     }
     IEnumerator SetActiveSceneAfterWait()
