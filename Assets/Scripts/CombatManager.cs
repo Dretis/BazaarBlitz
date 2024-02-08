@@ -74,9 +74,6 @@ public class CombatManager : MonoBehaviour
 
         Instance = this;
         initializeCombat();
-
-        // Disable overworld scene.
-        sceneManager.DisableScene(0);
             
         itemsQueuedAttack = new List<int>();
         itemsQueuedDefend = new List<int>();
@@ -197,8 +194,7 @@ public class CombatManager : MonoBehaviour
             sceneManager.EnableScene(0);
 
             sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
-        }
-
+      }
     }
 
     public void endCombat(bool aggressorWon) {

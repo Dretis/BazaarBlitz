@@ -27,6 +27,7 @@ public class GameplayTest : MonoBehaviour
         PickDirection,
         MoveAround,
         EncounterTime,
+        CombatTime,
         ConfirmContinue,
         EndTurn
     }
@@ -204,8 +205,9 @@ public class GameplayTest : MonoBehaviour
         // Player has started combat
         if (p.combatStats.combatSceneIndex != -1)
         {
-            sceneManager.EnableScene(p.combatStats.combatSceneIndex);
+            phase = GamePhase.CombatTime;
             sceneManager.DisableScene(0);
+            sceneManager.EnableScene(p.combatStats.combatSceneIndex);
         }
         // Player has not started combat
         else
@@ -268,6 +270,8 @@ public class GameplayTest : MonoBehaviour
 
                 if (otherPlayer.combatStats.combatSceneIndex == -1)
                 {
+                    phase = GamePhase.CombatTime;
+
                     Debug.Log("Your Player: " + currentPlayer.nickname);
                     Debug.Log("Other Player: " + otherPlayer.nickname);
                     encounterStarted = true;
@@ -360,6 +364,11 @@ public class GameplayTest : MonoBehaviour
                 }
             }
         }      
+    }
+
+    void CombatTime()
+    {
+
     }
 
     void ConfirmContinue(EntityPiece p)

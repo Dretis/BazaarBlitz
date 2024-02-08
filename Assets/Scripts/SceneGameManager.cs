@@ -22,6 +22,7 @@ public class SceneGameManager : MonoBehaviour
 
     public void LoadCombatScene()
     {
+        DisableScene(0);
         SceneManager.LoadScene("CombatTest", LoadSceneMode.Additive);
         SetActiveSceneAfterWait();
     }
@@ -43,7 +44,7 @@ public class SceneGameManager : MonoBehaviour
         {
             obj.SetActive(true);
         }
-
+        Debug.Log(scene.name + " " + sceneIndex + " enabled!");
         SceneManager.SetActiveScene(SceneManager.GetSceneAt(sceneIndex));
     }
 
@@ -56,7 +57,8 @@ public class SceneGameManager : MonoBehaviour
         foreach (GameObject obj in sceneObjects)
         {
             obj.SetActive(false);
-        }      
+        }
+        Debug.Log(scene.name + " " + sceneIndex + " disabled!");
     }
 
     public void ChangeGamePhase(GameplayTest.GamePhase phase)
