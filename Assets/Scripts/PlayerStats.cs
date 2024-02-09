@@ -11,7 +11,7 @@ public class PlayerStats : MonoBehaviour
     public float[] dexDie; // Roll 0-5 index for all of these.
     public float[] intDie;
     public float health;
-    public List<int> inventory; // spaghetti implementation: list of int IDs of items
+    public List<ItemStats> inventory; // spaghetti implementation: list of int IDs of items
     public bool isEnemy;
     public int favoredAttack;
     // LIST OF INVENTORY ITEM IDS:
