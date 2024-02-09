@@ -134,6 +134,7 @@ public class GameplayTest : MonoBehaviour
                 rollText.text = "" + diceRoll;
                 p.movementTotal = p.movementLeft = diceRoll;
 
+                audioSource.PlayOneShot(moveSFX, 2f);
                 phase = GamePhase.PickDirection;
             }
         }
