@@ -26,8 +26,8 @@ public class CombatManager : MonoBehaviour
     private PlayerStats curTarget;
     private PlayerStats curEnemy;
 
-    private List<int> itemsQueuedAttack;
-    private List<int> itemsQueuedDefend;
+    private List<ItemStats> itemsQueuedAttack;
+    private List<ItemStats> itemsQueuedDefend;
     private int attackerAction;
     private int defenderAction;
 
@@ -85,8 +85,8 @@ public class CombatManager : MonoBehaviour
         Instance = this;
         initializeCombat();
 
-        itemsQueuedAttack = new List<int>();
-        itemsQueuedDefend = new List<int>();
+        itemsQueuedAttack = new List<ItemStats>();
+        itemsQueuedDefend = new List<ItemStats>();
 
         combatUIManager = GetComponent<CombatUIManager>();
     }
@@ -188,15 +188,15 @@ public class CombatManager : MonoBehaviour
 
     public void playTurn()
     {
-        foreach (int itemID in itemsQueuedDefend)
+        foreach (ItemStats item in itemsQueuedDefend)
         {
-            activateItem(itemID, true);
+            activateItem(item, true);
         }
         itemsQueuedDefend.Clear();
 
-        foreach (int itemID in itemsQueuedAttack)
+        foreach (ItemStats item in itemsQueuedAttack)
         {
-            activateItem(itemID, false); // Can defenders use items?
+            activateItem(item, false); // Can defenders use items?
         }
         itemsQueuedAttack.Clear();
 
@@ -414,110 +414,93 @@ public class CombatManager : MonoBehaviour
     }
 
     // Here attacker means the current guy attacking, not original attacker
-    private void activateItem(int itemID, bool isFromAttacker)
+    private void activateItem(ItemStats item, bool isFromAttacker)
     {
 
         if (isFromAttacker)
         { // If attacker uses items
 
-            if (attacker.inventory.Contains(itemID))
-            {
-                attacker.inventory.Remove(itemID);
-            }
-            else
-            {
-                Debug.Log("You don't have that!");
-                return;
+            if ( !(item.phase == ItemStats.PhaseTypes.Both || item.phase == ItemStats.PhaseTypes.Attack) ) {
+              Debug.Log(item.itemName + " can't be used in this attack phase!");
+              return;
+            } else if ( !(attacker.inventory.Contains(item)) ) {
+              Debug.Log("You don't have that!");
+              return;
+            } else {
+              attacker.inventory.Remove(item);
             }
 
-            switch (itemID)
-            {
-                case 1:
-                    Debug.Log("Potato Eaten!");
-                    attacker.health += Random.Range(1, 4); // 1-3 hp heal, 1,1,2,2,3,3 dice.
-                    break;
-                case 2:
-                    Debug.Log("Mutated Potato Power!");
-                    attacker.health -= 1;
-                    attackerBuffDamage += 3;
-                    break;
-                case 3:
-                    Debug.Log("It failed!");
-                    break;
-                case 4:
-                    attackerBonusRoll = 1;
-                    print("Ice Dice attack x 2");
-                    break;
-                default:
-                    print("Used a blank item.");
-                    break;
-            }
+            //Min-Max heal, ex 0-0
+            attacker.health -= Random.Range(item.playerDamageMin, item.playerDamageMax+1);
+            // subtract opponent hp for armor piercing
+            attackerBuffDamage = Random.Range(item.bonusDamageMin, item.bonusDamageMax+1);
+            attackerBonusRoll = item.diesToRoll;
+
+            Debug.Log("Used " + item.itemName);
+
+            // //For special effects
+            // switch (item.specialID)
+            // {
+            // case "SomeSuperCoolProperty":
+            //   Debug.Log("Used an item!");
+            //   attackerBuffDamage = 9999;
+            //   break;
+            // default:
+            //   Debug.Log("Used something?");
+            //   break;
+            // }
         }
 
         else
         { // If defender uses items (seperated because they might act differently)
-            curTarget = attacker;
+          if ( !(item.phase == ItemStats.PhaseTypes.Both || item.phase == ItemStats.PhaseTypes.Defend) ) {
+            Debug.Log(item.itemName + " can't be used in this defend phase!");
+            return;
+          } else if ( !(defender.inventory.Contains(item)) ) {
+            Debug.Log("You don't have that!");
+            return;
+          } else {
+            defender.inventory.Remove(item);
+          }
 
-            if (defender.inventory.Contains(itemID))
-            {
-                defender.inventory.Remove(itemID);
-            }
-            else
-            {
-                Debug.Log("You don't have that!");
-                return;
-            }
+          //Min-Max heal, ex 0-0
+          defender.health -= Random.Range(item.playerDamageMin, item.playerDamageMax+1);
+          // subtract opponent hp for armor piercing
+          attacker.health -= Random.Range(item.bonusDamageMin, item.bonusDamageMax+1); // Defender attack items just deal damage
+          attackerBonusRoll = item.diesToRoll;
 
-            switch (itemID)
-            {
-                case 1:
-                    Debug.Log("Potato Eaten!");
-                    attacker.health += 1;
-                    break;
-                case 2:
-                    Debug.Log("It failed!");
-                    break;
-                case 3:
-                    attackerBuffDamage -= 2;
-                    break;
-                case 4:
-                    defenderBonusRoll = 1;
-                    print("Ice Dice defend x 2");
-                    break;
-                default:
-                    print("Used a blank item.");
-                    break;
-            }
+          // //For special effects
+          // switch (item.specialID)
+          // {
+          // case "SomeSuperCoolProperty":
+          //   Debug.Log("Used an item!");
+          //   attackerBuffDamage = -9999;
+          //   break;
+          // default:
+          //   Debug.Log("Used a blank item?");
+          //   break;
+          // }
         }
 
     }
 
-    public void addItem(int itemID, bool isAttacker)
+    public void addItem(ItemStats item, bool isAttacker)
     { // Call whenever someone chooses to use one
-        if (isAttacker)
-        {
-            if (itemsQueuedAttack.Count < 1)
-            {
-                itemsQueuedAttack.Add(itemID);
-            }
-            else
-            {
-                itemsQueuedAttack.Clear();
-                itemsQueuedAttack.Add(itemID);
-            }
+      if (isAttacker) {
+        if (itemsQueuedAttack.Count < 1) {
+          itemsQueuedAttack.Add(item);
+        } else {
+          itemsQueuedAttack.Clear();
+          itemsQueuedAttack.Add(item);
         }
-        else
-        {
-            if (itemsQueuedDefend.Count < 1)
-            {
-                itemsQueuedDefend.Add(itemID);
-            }
-            else
-            {
-                itemsQueuedDefend.Clear();
-                itemsQueuedDefend.Add(itemID);
-            }
+      } else {
+        if (itemsQueuedDefend.Count < 1) {
+          itemsQueuedDefend.Add(item);
+        } else {
+          itemsQueuedDefend.Clear();
+          itemsQueuedDefend.Add(item);
         }
+      }
     }
 
     public void chooseAction(int ActionID, bool isAttacker)
