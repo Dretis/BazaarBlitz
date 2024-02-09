@@ -15,6 +15,8 @@ public class StoreManager : MonoBehaviour
         playerOwner = GetComponent<MapNode>().playerOccupied;
         item1 = GameplayTest.instance.item1;
         item2 = GameplayTest.instance.item2;
+
+        // Debug
         storeInventory.Add(item1, 1);
         storeInventory.Add(item2, 1);
     }
