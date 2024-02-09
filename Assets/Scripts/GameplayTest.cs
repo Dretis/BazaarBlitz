@@ -27,6 +27,7 @@ public class GameplayTest : MonoBehaviour
         PickDirection,
         MoveAround,
         EncounterTime,
+        CombatTime,
         ConfirmContinue,
         EndTurn
     }
@@ -52,10 +53,10 @@ public class GameplayTest : MonoBehaviour
 
     //public PlayerInput playerInput;
     //public PlayerControls input;
-    private bool encounterStarted = false;
+    public bool encounterStarted = false;
     // Start is called before the first frame update
     void Start()
-    {
+    { 
         sceneManager = GameObject.FindGameObjectWithTag("SceneManager").GetComponent<SceneGameManager>();
         playerUnits.AddRange(FindObjectsOfType<EntityPiece>());
         //nextPlayers = playerUnits;
@@ -117,13 +118,21 @@ public class GameplayTest : MonoBehaviour
 
     void RollDice(EntityPiece p)
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if(p.combatStats.combatSceneIndex == -1)
         {
-            diceRoll = Random.Range(1, 7); // Roll from 1 to 6
-            rollText.text = "" + diceRoll;
-            p.movementTotal = p.movementLeft = diceRoll;
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                diceRoll = Random.Range(1, 7); // Roll from 1 to 6
+                rollText.text = "" + diceRoll;
+                p.movementTotal = p.movementLeft = diceRoll;
 
-            phase = GamePhase.PickDirection;
+                phase = GamePhase.PickDirection;
+            }
+        }
+        else
+        {
+            // In Combat
+            phase = GamePhase.EncounterTime;
         }
     }
 
@@ -193,152 +202,173 @@ public class GameplayTest : MonoBehaviour
 
     void EncounterTime(EntityPiece p, MapNode m)
     {
-        var otherPlayer = p.occupiedNode.playerOccupied;
-
-        if (m.CompareTag("Castle")) //Stash your points
+        // Player has started combat
+        if (p.combatStats.combatSceneIndex != -1)
         {
-            encounterScreen.SetActive(true);
-            p1fight.text = "";
-            p2fight.text = "";
-            resultInfo.text = "<size=45>[STASHING]</size>\n" + p.heldPoints + " point(s) have been stashed. \n<size=30> You are now at " + p.finalPoints + ". </size>";
-
-            if (p.heldPoints != 0)
-                p.finalPoints += p.heldPoints;
-            p.heldPoints = 0;
-
-            encounterOver = true;
-            phase = GamePhase.ConfirmContinue;
+            phase = GamePhase.CombatTime;
+            sceneManager.DisableScene(0);
+            sceneManager.EnableScene(p.combatStats.combatSceneIndex);
         }
-        else if (m.CompareTag("Encounter") && otherPlayer != null && otherPlayer != currentPlayer) // Player Fight
+        // Player has not started combat
+        else
         {
-            Debug.Log(otherPlayer.nickname);
-            /*
-            ///
-            encounterScreen.SetActive(true);
-            int yoinkValue = 4;
-
-            if (yoinkRoll <= 0)
+            var otherPlayer = p.occupiedNode.playerOccupied;
+            if (m.CompareTag("Castle")) //Stash your points
             {
                 encounterScreen.SetActive(true);
-                p1fight.text = "" + p.heldPoints;
-                p2fight.text = "" + otherPlayer.heldPoints;
+                p1fight.text = "";
+                p2fight.text = "";
+                resultInfo.text = "<size=45>[STASHING]</size>\n" + p.heldPoints + " point(s) have been stashed. \n<size=30> You are now at " + p.finalPoints + ". </size>";
 
-                resultInfo.text = "<size=45>[PLAYER ENCOUNTER]</size>\nRoll higher than " + yoinkValue + "!!! \n<size=30> [SPACE] to proceed the roll. </size>";
+                if (p.heldPoints != 0)
+                    p.finalPoints += p.heldPoints;
+                p.heldPoints = 0;
 
-                if (Input.GetKeyDown(KeyCode.Space))
-                    yoinkRoll = Random.Range(1, 7); // Roll from 1 to 6
-            }
-            else
-            {
-                if (yoinkRoll > yoinkValue)
-                {
-                    resultInfo.text = "<size=45>[SUCCESS]</size><size=30>\nYou rolled a... </size>\n" + yoinkRoll + "! \n<size=30> Their points are now yours. </size>";
-                    p.heldPoints += otherPlayer.heldPoints;
-                    otherPlayer.heldPoints = 0;
-                }
-                else
-                {
-                    resultInfo.text = "<size=45>[FAIL]</size><size=30>\nYou rolled a... </size>\n" + yoinkRoll + ". \n<size=30> Half your points dropped due to carelessness. </size>";
-                    p.heldPoints /= 2;
-                }
-                yoinkRoll = 0;
-                encounterOver = true;
-                phase++;
-            }
-            ///
-            */
-
-            
-            if(!encounterStarted)
-            {
-                Debug.Log("Your Player: " + currentPlayer.nickname);
-                Debug.Log("Other Player: " + otherPlayer.nickname);
-                encounterStarted = true;
-
-                // Set IDs of players entering combat.
-                sceneManager.player1ID = currentPlayer.id;
-                sceneManager.player2ID = otherPlayer.id;
-                sceneManager.LoadCombatScene();
-            }
-            
-            // instance combat scene
-            // Combat scene gets a reference to GameplayTest
-            // Combat scene calls function in gameplay test when someone wins, with winner
-            //   and player objects (so items stay used)
-            // That returns the winner, and points are stolen accordingly w/ phase++;encounterOver
-
-
-
-        }
-        else if (m.CompareTag("Encounter")) // Regular Encounter
-        {
-            encounterScreen.SetActive(true);
-            p1fight.text = "";
-            p2fight.text = "";
-            resultInfo.text = "<size=45>[ENCOUNTER]</size>\nRock, Paper, Scissors!!! \n<size=30> Rock = 1 or J | Paper = 2 or K | Scissors = 3 or L </size>";
-
-            var playerPick = 0;
-            /// monsterPick = Random.Range(1, 10);
-
-
-
-
-
-            if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.J))
-            { // Rock
-                playerPick = 1;
-                p1fight.text = "ROCK";
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.K))
-            {// Paper
-                playerPick = 2;
-                p1fight.text = "PAPER";
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.L))
-            {// Scissors
-                playerPick = 3;
-                p1fight.text = "SCISSORS";
-            }
-            if (playerPick != 0)
-            {
-                var monsterPick = Random.Range(1, 4); // Rock = 1, Paper = 2, Scissors = 3
-
-                switch (monsterPick)
-                {
-                    case 1:
-                        p2fight.text = "ROCK";
-                        break;
-                    case 2:
-                        p2fight.text = "PAPER";
-                        break;
-                    case 3:
-                        p2fight.text = "SCISSORS";
-                        break;
-
-                }
-                if (playerPick == monsterPick) // Tie
-                {
-                    resultInfo.text = "TIE.";
-                }
-                else if ((playerPick == 1 && monsterPick == 2) ||
-                         (playerPick == 2 && monsterPick == 3) ||
-                         (playerPick == 3 && monsterPick == 1))
-                {
-                    resultInfo.text = "YOU LOSE...";
-                    p.heldPoints -= 1;
-                }
-                else
-                {
-                    resultInfo.text = "YOU WIN!!!";
-                    p.heldPoints += 2;
-                }
-
-
-                //
                 encounterOver = true;
                 phase = GamePhase.ConfirmContinue;
             }
-        }
+            else if (m.CompareTag("Encounter") && otherPlayer != null && otherPlayer != currentPlayer) // Player Fight
+            {
+                //Debug.Log(otherPlayer.nickname);
+                /*
+                ///
+                encounterScreen.SetActive(true);
+                int yoinkValue = 4;
+
+                if (yoinkRoll <= 0)
+                {
+                    encounterScreen.SetActive(true);
+                    p1fight.text = "" + p.heldPoints;
+                    p2fight.text = "" + otherPlayer.heldPoints;
+
+                    resultInfo.text = "<size=45>[PLAYER ENCOUNTER]</size>\nRoll higher than " + yoinkValue + "!!! \n<size=30> [SPACE] to proceed the roll. </size>";
+
+                    if (Input.GetKeyDown(KeyCode.Space))
+                        yoinkRoll = Random.Range(1, 7); // Roll from 1 to 6
+                }
+                else
+                {
+                    if (yoinkRoll > yoinkValue)
+                    {
+                        resultInfo.text = "<size=45>[SUCCESS]</size><size=30>\nYou rolled a... </size>\n" + yoinkRoll + "! \n<size=30> Their points are now yours. </size>";
+                        p.heldPoints += otherPlayer.heldPoints;
+                        otherPlayer.heldPoints = 0;
+                    }
+                    else
+                    {
+                        resultInfo.text = "<size=45>[FAIL]</size><size=30>\nYou rolled a... </size>\n" + yoinkRoll + ". \n<size=30> Half your points dropped due to carelessness. </size>";
+                        p.heldPoints /= 2;
+                    }
+                    yoinkRoll = 0;
+                    encounterOver = true;
+                    phase++;
+                }
+                ///
+                */
+                // If current player is not in combat scene and other player is not in combat scene, begin combat.
+                // If current player is in combat scene, skip roll dice and load back here
+
+                if (otherPlayer.combatStats.combatSceneIndex == -1)
+                {
+                    phase = GamePhase.CombatTime;
+
+                    //Debug.Log("Your Player: " + currentPlayer.nickname);
+                    //Debug.Log("Other Player: " + otherPlayer.nickname);
+                    encounterStarted = true;
+
+                    // Set IDs of players entering combat.
+                    sceneManager.player1ID = currentPlayer.id;
+                    sceneManager.player2ID = otherPlayer.id;
+                    sceneManager.LoadCombatScene();
+                }
+                else
+                {
+                    phase = GamePhase.EndTurn;
+                }
+                // instance combat scene
+                // Combat scene gets a reference to GameplayTest
+                // Combat scene calls function in gameplay test when someone wins, with winner
+                //   and player objects (so items stay used)
+                // That returns the winner, and points are stolen accordingly w/ phase++;encounterOver
+
+
+
+            }
+            else if (m.CompareTag("Encounter")) // Regular Encounter
+            {
+                encounterScreen.SetActive(true);
+                p1fight.text = "";
+                p2fight.text = "";
+                resultInfo.text = "<size=45>[ENCOUNTER]</size>\nRock, Paper, Scissors!!! \n<size=30> Rock = 1 or J | Paper = 2 or K | Scissors = 3 or L </size>";
+
+                var playerPick = 0;
+                /// monsterPick = Random.Range(1, 10);
+
+
+
+
+
+                if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.J))
+                { // Rock
+                    playerPick = 1;
+                    p1fight.text = "ROCK";
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.K))
+                {// Paper
+                    playerPick = 2;
+                    p1fight.text = "PAPER";
+                }
+                if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.L))
+                {// Scissors
+                    playerPick = 3;
+                    p1fight.text = "SCISSORS";
+                }
+                if (playerPick != 0)
+                {
+                    var monsterPick = Random.Range(1, 4); // Rock = 1, Paper = 2, Scissors = 3
+
+                    switch (monsterPick)
+                    {
+                        case 1:
+                            p2fight.text = "ROCK";
+                            break;
+                        case 2:
+                            p2fight.text = "PAPER";
+                            break;
+                        case 3:
+                            p2fight.text = "SCISSORS";
+                            break;
+
+                    }
+                    if (playerPick == monsterPick) // Tie
+                    {
+                        resultInfo.text = "TIE.";
+                    }
+                    else if ((playerPick == 1 && monsterPick == 2) ||
+                             (playerPick == 2 && monsterPick == 3) ||
+                             (playerPick == 3 && monsterPick == 1))
+                    {
+                        resultInfo.text = "YOU LOSE...";
+                        p.heldPoints -= 1;
+                    }
+                    else
+                    {
+                        resultInfo.text = "YOU WIN!!!";
+                        p.heldPoints += 2;
+                    }
+
+
+                    //
+                    encounterOver = true;
+                    phase = GamePhase.ConfirmContinue;
+                }
+            }
+        }      
+    }
+
+    void CombatTime()
+    {
+
     }
 
     void ConfirmContinue(EntityPiece p)
@@ -354,8 +384,8 @@ public class GameplayTest : MonoBehaviour
 
     void EndOfTurn(EntityPiece p)
     {
-        Debug.Log("initial node player: " + currentPlayerInitialNode.playerOccupied);
-        Debug.Log("initial node player: " + currentPlayer);
+        //Debug.Log("initial node player: " + currentPlayerInitialNode.playerOccupied);
+        //Debug.Log("initial node player: " + currentPlayer);
 
         if (currentPlayerInitialNode.playerOccupied == currentPlayer)
         {
