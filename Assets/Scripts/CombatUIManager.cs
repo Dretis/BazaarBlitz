@@ -24,21 +24,6 @@ public class CombatUIManager : MonoBehaviour
     public Animator player1Animator;
     public Animator player2Animator;
 
-    private FightingPosition defenderPosition;
-    public TextMeshProUGUI floatingDamageNumber;
-
-    public IEnumerator DamageDisplay(int damage)
-    {
-        yield return new WaitForSeconds(1.0f);
-
-        floatingDamageNumber.text = "" + damage;
-
-        yield return new WaitForSeconds(0.5f);
-
-        floatingDamageNumber.text = "";
-
-        yield return null;
-    }
     public void UpdateActionText(PlayerStats ps, Action.PhaseTypes phase)
     {
         List<TextMeshProUGUI> stateTexts = null;
@@ -58,15 +43,6 @@ public class CombatUIManager : MonoBehaviour
             actionTexts = player2ActionTexts;
         }
 
-        if (defenderPosition == FightingPosition.Left)
-        {
-            floatingDamageNumber.rectTransform.anchoredPosition = new Vector3(-450, 0, 0);
-        }
-        else // Right Side
-        {
-            floatingDamageNumber.rectTransform.anchoredPosition = new Vector3(450, 0, 0);
-        }
-
         stateTexts[0].text = ps.playerName;
         stateTexts[1].text = "HP: " + ps.health;
 
@@ -77,7 +53,6 @@ public class CombatUIManager : MonoBehaviour
         }
         else
         {
-            defenderPosition = ps.fightingPosition; // Keep track of defender's pos (to deal the dmg in that spot)
             actions = ps.defendActions;
             stateTexts[2].text = "<color=#65BCFF>[Defending]</color>";
         }
@@ -85,30 +60,7 @@ public class CombatUIManager : MonoBehaviour
         var count = 0;
         foreach (Action a in actions)
         {
-            var typeIconIndex = 0; // the tag to use based off the TMPro sprite asset
-            Color32 actionColor = Color.white;
-            // Change text color and icon based off action type
-            switch (a.type)
-            {
-                case Action.WeaponTypes.Melee:
-                    typeIconIndex = 0;
-                    actionColor = new Color32(242, 108, 124, 255);
-                    break;
-                case Action.WeaponTypes.Gun:
-                    typeIconIndex = 1;
-                    actionColor = new Color32(109, 159, 242, 255);
-                    break;
-                case Action.WeaponTypes.Magic:
-                    typeIconIndex = 2;
-                    actionColor = new Color32(225, 142, 255, 255);
-                    break;
-                default: // Temporary Special
-                    actionColor = Color.yellow;
-                    break;
-            }
-
-            actionTexts[count].color = actionColor;
-            actionTexts[count].text = "<sprite=" + typeIconIndex + ">" + a.actionName;
+            actionTexts[count].text = a.actionName;
             count++;
         }
     }
@@ -190,7 +142,7 @@ public class CombatUIManager : MonoBehaviour
 
         animator.SetInteger("ActionState", actionID);
     }
-    /*
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.R))
@@ -198,5 +150,4 @@ public class CombatUIManager : MonoBehaviour
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
     }
-    */
 }
