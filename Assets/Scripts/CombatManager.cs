@@ -40,6 +40,8 @@ public class CombatManager : MonoBehaviour
 
     public CombatUIManager combatUIManager;
 
+    private int numPhases = 0;
+
     private void Awake()
     {
         if (Instance)
@@ -176,15 +178,24 @@ public class CombatManager : MonoBehaviour
 
       playActions(attackerAction, defenderAction);
 
-
+      numPhases++;
+        
       if (aggressor.health <= 0) {
         endCombat(false);
       } else if (retaliator.health <= 0) {
         endCombat(true);
       }
+      else if (numPhases == 2)
+      {
+            numPhases = 0;
+            Debug.Log("I'm in scene" + combatSceneIndex);
+            // Pause combat scene and re-enable overworld scene
+            sceneManager.DisableScene(combatSceneIndex);
+            sceneManager.EnableScene(0);
 
-
-
+            sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
+            Debug.Log("I have left scene" + combatSceneIndex);
+      }
 
     }
 
