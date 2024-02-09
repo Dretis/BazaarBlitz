@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class CombatInputSystem : MonoBehaviour
 {
+    public List<ItemStats> itemsAtButton;
     // Start is called before the first frame update
     void Start()
     {
@@ -33,31 +34,31 @@ public class CombatInputSystem : MonoBehaviour
 
 
       if (Input.GetKeyDown(KeyCode.Alpha1)) {
-          CombatManager.Instance.addItem(1, currentPlayer);
+          CombatManager.Instance.addItem(itemsAtButton[0], currentPlayer);
       }
       if (Input.GetKeyDown(KeyCode.Alpha2)) {
-          CombatManager.Instance.addItem(2, currentPlayer);
+          CombatManager.Instance.addItem(itemsAtButton[1], currentPlayer);
       }
       if (Input.GetKeyDown(KeyCode.Alpha3)) {
-          CombatManager.Instance.addItem(3, currentPlayer);
+          CombatManager.Instance.addItem(itemsAtButton[2], currentPlayer);
       }
       if (Input.GetKeyDown(KeyCode.Alpha4)) {
-          CombatManager.Instance.addItem(4, currentPlayer);
+          CombatManager.Instance.addItem(itemsAtButton[3], currentPlayer);
       }
       if (Input.GetKeyDown(KeyCode.Alpha5)) {
-          CombatManager.Instance.addItem(5, currentPlayer);
+          CombatManager.Instance.addItem(itemsAtButton[4], currentPlayer);
       }
       if (Input.GetKeyDown(KeyCode.Alpha6)) {
-          CombatManager.Instance.addItem(6, currentPlayer);
+          CombatManager.Instance.addItem(itemsAtButton[5], currentPlayer);
       }
       if (Input.GetKeyDown(KeyCode.Alpha7)) {
-          CombatManager.Instance.addItem(7, currentPlayer);
+          CombatManager.Instance.addItem(itemsAtButton[6], currentPlayer);
       }
       if (Input.GetKeyDown(KeyCode.Alpha8)) {
-          CombatManager.Instance.addItem(8, currentPlayer);
+          CombatManager.Instance.addItem(itemsAtButton[7], currentPlayer);
       }
       if (Input.GetKeyDown(KeyCode.Alpha9)) {
-          CombatManager.Instance.addItem(9, currentPlayer);
+          CombatManager.Instance.addItem(itemsAtButton[8], currentPlayer);
       }
       // 1 potato
       // 2 mutated potato
