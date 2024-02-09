@@ -8,7 +8,7 @@ using TMPro;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
 
-public class GameplayTest : MonoBehaviour
+public class GameplayTest : MonoBehaviourW
 {
     // Tile Data and Shit IGNORE THIS SECTION FOR NOW
     [SerializeField]
@@ -53,10 +53,18 @@ public class GameplayTest : MonoBehaviour
 
     //public PlayerInput playerInput;
     //public PlayerControls input;
-    public bool encounterStarted = false;
+
+    private bool encounterStarted = false;
+
+    //SOUND SHIT
+    public AudioClip moveSFX;
+    public AudioClip reverseSFX;
+    public AudioSource audioSource;
+
     // Start is called before the first frame update
     void Start()
-    { 
+    {
+        audioSource = GetComponent<AudioSource>();
         sceneManager = GameObject.FindGameObjectWithTag("SceneManager").GetComponent<SceneGameManager>();
         playerUnits.AddRange(FindObjectsOfType<EntityPiece>());
         //nextPlayers = playerUnits;
@@ -173,6 +181,7 @@ public class GameplayTest : MonoBehaviour
                 .SetEase(Ease.OutQuint);
 
             wantedNode = null;
+            audioSource.PlayOneShot(reverseSFX, 1.2f);
             phase = GamePhase.PickDirection; // Go back to picking direction
         }
         else if(wantedNode != null) // Go to that new node and occupy it
@@ -182,11 +191,12 @@ public class GameplayTest : MonoBehaviour
 
             p.movementLeft--;
             rollText.text = "" + p.movementLeft;
-
             p.transform.DOMove(wantedNode.transform.position, .25f)
                 .SetEase(Ease.OutQuint);
 
             wantedNode = null;
+            audioSource.PlayOneShot(moveSFX, 1.2f);
+
             if (p.movementLeft <= 0)
             {
                 p.traveledNodes.Clear(); // Forget all the nodes traveled to

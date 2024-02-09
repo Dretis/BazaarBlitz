@@ -38,7 +38,15 @@ public class CombatManager : MonoBehaviour
     private bool isFightingAI = false;
     private int playersLastAttack = 0;
 
+    //SOUND SHIT
+    public AudioClip smackSFX;
+    public AudioClip clankSFX;
+    public AudioClip explosionSFX;
+    public AudioClip shootSFX;
+    AudioSource audioSource;
+
     public int combatSceneIndex;
+
 
     public CombatUIManager combatUIManager;
     public SceneGameManager sceneManager;
@@ -89,6 +97,12 @@ public class CombatManager : MonoBehaviour
         itemsQueuedDefend = new List<ItemStats>();
 
         combatUIManager = GetComponent<CombatUIManager>();
+    }
+
+
+    public void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
     }
 
     private void OnEnable()
