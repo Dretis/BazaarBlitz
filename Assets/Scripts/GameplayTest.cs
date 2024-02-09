@@ -8,7 +8,7 @@ using TMPro;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
 
-public class GameplayTest : MonoBehaviourW
+public class GameplayTest : MonoBehaviour
 {
     // Tile Data and Shit IGNORE THIS SECTION FOR NOW
     [SerializeField]
@@ -54,7 +54,7 @@ public class GameplayTest : MonoBehaviourW
     //public PlayerInput playerInput;
     //public PlayerControls input;
 
-    private bool encounterStarted = false;
+    public bool encounterStarted = false;
 
     //SOUND SHIT
     public AudioClip moveSFX;
