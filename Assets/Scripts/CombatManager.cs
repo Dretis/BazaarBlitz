@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 
 public class CombatManager : MonoBehaviour
 {
@@ -38,15 +38,19 @@ public class CombatManager : MonoBehaviour
     private bool isFightingAI = false;
     private int playersLastAttack = 0;
 
+    public int combatSceneIndex;
+
     public CombatUIManager combatUIManager;
+    public SceneGameManager sceneManager;
 
     private void Awake()
     {
+        /*
         if (Instance)
         {
             Destroy(this);
-        }
-        SceneGameManager sceneManager = GameObject.FindWithTag("SceneManager").GetComponent<SceneGameManager>();
+        }*/
+        sceneManager = GameObject.FindWithTag("SceneManager").GetComponent<SceneGameManager>();
         if (sceneManager) {
             foreach(var player in sceneManager.players)
             {
@@ -61,19 +65,32 @@ public class CombatManager : MonoBehaviour
             }
         }
 
+        // Keep a track of combat managers.
+        if (!sceneManager.combatManagers.Contains(this))
+        {
+            sceneManager.combatManagers.Add(this);
+        }
+
+        // Get the scene index of the combat scene and set it to the active scene.
+        combatSceneIndex = SceneManager.sceneCount-1;
+       // SceneManager.SetActiveScene(SceneManager.GetSceneAt(combatSceneIndex));
+
+        // Indicate which combat scene each player is in.
+        player1.combatSceneIndex = combatSceneIndex;
+        player2.combatSceneIndex = combatSceneIndex;
+
         Instance = this;
         initializeCombat();
-
-        foreach (GameObject a in sceneManager.overworldSceneGameObjects)
-        {
-            if (a != sceneManager.gameObject)
-                a.SetActive(false);
-        }
             
         itemsQueuedAttack = new List<int>();
         itemsQueuedDefend = new List<int>();
 
         combatUIManager = GetComponent<CombatUIManager>();
+    }
+
+    private void OnEnable()
+    {
+        Instance = this;
     }
 
     public void initializeCombat() 
@@ -182,29 +199,41 @@ public class CombatManager : MonoBehaviour
       } else if (retaliator.health <= 0) {
         endCombat(true);
       }
+      else
+      {
+            Debug.Log("I'm in scene" + combatSceneIndex);
+            // Pause combat scene and re-enable overworld scene
+            sceneManager.DisableScene(combatSceneIndex);
+            sceneManager.EnableScene(0);
 
-
-
-
+            sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
+            Debug.Log("I have left scene" + combatSceneIndex);
+        }
     }
 
     public void endCombat(bool aggressorWon) {
-
-      SceneGameManager sceneManager = GameObject.FindWithTag("SceneManager").GetComponent<SceneGameManager>();
         //combatActive = false;
       if (aggressorWon) {
         Debug.Log("Attacker Wins!");
       } else {
         Debug.Log("Defender Wins!");
       }
-        foreach (GameObject a in sceneManager.overworldSceneGameObjects)
-            a.SetActive(true);
+
+
+        // Players exit combat.
+        player1.combatSceneIndex = -1;
+        player2.combatSceneIndex = -1;
+
         sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
-        sceneManager.UnloadCombatScene();
-      // wrap up the scene and transition back to board in the final game.
+        sceneManager.UnloadCombatScene(SceneManager.GetSceneAt(combatSceneIndex), combatSceneIndex);
+
+        // Re-enable scene
+        sceneManager.EnableScene(0);
+        // wrap up the scene and transition back to board in the final game.
     }
 
     private void playActions(int attackerAction, int defenderAction) {
+        Debug.Log("I'm fighting in scene" + combatSceneIndex);
         // run through the actions taken by both parties, dealing damage accordingly
 
         if (player1 == attacker)
@@ -248,7 +277,7 @@ public class CombatManager : MonoBehaviour
             roll = Random.Range(0, 6);
             damage += attacker.strDie[roll];
           }
-          Debug.Log("MeleeAttack");
+          //Debug.Log("MeleeAttack");
           break;
         case Action.WeaponTypes.Gun:
           damage += attacker.dexDie[roll];
@@ -256,7 +285,7 @@ public class CombatManager : MonoBehaviour
             roll = Random.Range(0, 6);
             damage += attacker.dexDie[roll];
           }
-          Debug.Log("GunAttack");
+          //Debug.Log("GunAttack");
           break;
         case Action.WeaponTypes.Magic:
           damage += attacker.intDie[roll];
@@ -264,7 +293,7 @@ public class CombatManager : MonoBehaviour
             roll = Random.Range(0, 6);
             damage += attacker.intDie[roll];
           }
-          Debug.Log("MagicAttack");
+          //Debug.Log("MagicAttack");
           break;
         case Action.WeaponTypes.Special:
           damage += attacker.strDie[roll];
@@ -276,14 +305,14 @@ public class CombatManager : MonoBehaviour
             roll = Random.Range(0, 6);
             damage += attacker.intDie[roll];
           }
-          Debug.Log("HammerAttack");
+          //Debug.Log("HammerAttack");
           break;
         default:
           damage += 0;
           break;
       }
       damage += (attackerBuffDamage + attack.bonusDamage);
-      Debug.Log("Attacker Roll: " + damage);
+      //Debug.Log("Attacker Roll: " + damage);
 
       roll = Random.Range(0, 6);
       switch (defend.type)
@@ -294,7 +323,7 @@ public class CombatManager : MonoBehaviour
             roll = Random.Range(0, 6);
             damage -= attacker.strDie[roll] * defendMultiplier;
           }
-          Debug.Log("MeleeDefense");
+          //Debug.Log("MeleeDefense");
           break;
         case Action.WeaponTypes.Gun:
           damage -= defender.dexDie[roll] * defendMultiplier;
@@ -302,7 +331,7 @@ public class CombatManager : MonoBehaviour
             roll = Random.Range(0, 6);
             damage -= attacker.dexDie[roll] * defendMultiplier;
           }
-          Debug.Log("GunDefense");
+          //Debug.Log("GunDefense");
           break;
         case Action.WeaponTypes.Magic:
           damage -= defender.intDie[roll] * defendMultiplier;
@@ -310,7 +339,7 @@ public class CombatManager : MonoBehaviour
             roll = Random.Range(0, 6);
             damage -= attacker.intDie[roll] * defendMultiplier;
           }
-          Debug.Log("MagicDefense");
+          //Debug.Log("MagicDefense");
           break;
         case Action.WeaponTypes.Special:
           if (attack.type == Action.WeaponTypes.Special) {
@@ -319,7 +348,7 @@ public class CombatManager : MonoBehaviour
           } else {
             damage -= 1;
           }
-          Debug.Log("HammerDefense");
+          //Debug.Log("HammerDefense");
           break;
         default:
           damage -= 0;
