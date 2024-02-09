@@ -250,7 +250,7 @@ public class CombatManager : MonoBehaviour
         {
             Debug.Log("Defender Wins!");
         }
-
+        audioSource.PlayOneShot(explosionSFX, 2f);
 
         // Players exit combat.
         player1.combatSceneIndex = -1;
@@ -322,6 +322,7 @@ public class CombatManager : MonoBehaviour
                     roll = Random.Range(0, 6);
                     damage += attacker.strDie[roll];
                 }
+                audioSource.PlayOneShot(smackSFX, 1f);
                 //Debug.Log("MeleeAttack");
                 break;
             case Action.WeaponTypes.Gun:
@@ -331,6 +332,7 @@ public class CombatManager : MonoBehaviour
                     roll = Random.Range(0, 6);
                     damage += attacker.dexDie[roll];
                 }
+                audioSource.PlayOneShot(shootSFX, 1f);
                 //Debug.Log("GunAttack");
                 break;
             case Action.WeaponTypes.Magic:
@@ -340,6 +342,7 @@ public class CombatManager : MonoBehaviour
                     roll = Random.Range(0, 6);
                     damage += attacker.intDie[roll];
                 }
+                audioSource.PlayOneShot(clankSFX, 1f);
                 //Debug.Log("MagicAttack");
                 break;
             case Action.WeaponTypes.Special:
@@ -353,6 +356,7 @@ public class CombatManager : MonoBehaviour
                     roll = Random.Range(0, 6);
                     damage += attacker.intDie[roll];
                 }
+                audioSource.PlayOneShot(explosionSFX, 1f);
                 //Debug.Log("HammerAttack");
                 break;
             default:
