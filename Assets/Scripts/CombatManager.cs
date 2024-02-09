@@ -43,6 +43,8 @@ public class CombatManager : MonoBehaviour
     public CombatUIManager combatUIManager;
     public SceneGameManager sceneManager;
 
+    private int phaseCount = 0;
+
     private void Awake()
     {
         /*
@@ -200,6 +202,7 @@ public class CombatManager : MonoBehaviour
 
         playActions(attackerAction, defenderAction);
 
+        phaseCount++;
 
         if (aggressor.health <= 0)
         {
@@ -209,8 +212,9 @@ public class CombatManager : MonoBehaviour
         {
             endCombat(true);
         }
-        else
+        else if (phaseCount == 2)
         {
+            phaseCount = 0;
             Debug.Log("I'm in scene" + combatSceneIndex);
             // Pause combat scene and re-enable overworld scene
             sceneManager.DisableScene(combatSceneIndex);
