@@ -24,6 +24,21 @@ public class CombatUIManager : MonoBehaviour
     public Animator player1Animator;
     public Animator player2Animator;
 
+    private FightingPosition defenderPosition;
+    public TextMeshProUGUI floatingDamageNumber;
+
+    public IEnumerator DamageDisplay(int damage)
+    {
+        yield return new WaitForSeconds(1.0f);
+
+        floatingDamageNumber.text = "" + damage;
+
+        yield return new WaitForSeconds(0.5f);
+
+        floatingDamageNumber.text = "";
+
+        yield return null;
+    }
     public void UpdateActionText(PlayerStats ps, Action.PhaseTypes phase)
     {
         List<TextMeshProUGUI> stateTexts = null;
@@ -43,6 +58,15 @@ public class CombatUIManager : MonoBehaviour
             actionTexts = player2ActionTexts;
         }
 
+        if (defenderPosition == FightingPosition.Left)
+        {
+            floatingDamageNumber.rectTransform.anchoredPosition = new Vector3(-450, 0, 0);
+        }
+        else // Right Side
+        {
+            floatingDamageNumber.rectTransform.anchoredPosition = new Vector3(450, 0, 0);
+        }
+
         stateTexts[0].text = ps.playerName;
         stateTexts[1].text = "HP: " + ps.health;
 
@@ -53,6 +77,7 @@ public class CombatUIManager : MonoBehaviour
         }
         else
         {
+            defenderPosition = ps.fightingPosition; // Keep track of defender's pos (to deal the dmg in that spot)
             actions = ps.defendActions;
             stateTexts[2].text = "<color=#65BCFF>[Defending]</color>";
         }
@@ -165,7 +190,7 @@ public class CombatUIManager : MonoBehaviour
 
         animator.SetInteger("ActionState", actionID);
     }
-
+    /*
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.R))
@@ -173,4 +198,5 @@ public class CombatUIManager : MonoBehaviour
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
     }
+    */
 }
