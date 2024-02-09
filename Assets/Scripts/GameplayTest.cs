@@ -27,6 +27,7 @@ public class GameplayTest : MonoBehaviour
         PickDirection,
         MoveAround,
         EncounterTime,
+        RockPaperScissors,
         CombatTime,
         ConfirmContinue,
         EndTurn
@@ -110,6 +111,10 @@ public class GameplayTest : MonoBehaviour
             // Battle-Event Phase
             case GamePhase.EncounterTime:
                 EncounterTime(currentPlayer, currentPlayer.occupiedNode);
+                break;
+
+            case GamePhase.RockPaperScissors:
+                RockPaperScissors(currentPlayer);
                 break;
 
             // Confirmation Phase
@@ -307,79 +312,96 @@ public class GameplayTest : MonoBehaviour
             }
             else if (m.CompareTag("Encounter")) // Regular Encounter
             {
-                encounterScreen.SetActive(true);
-                p1fight.text = "";
-                p2fight.text = "";
-                resultInfo.text = "<size=45>[ENCOUNTER]</size>\nRock, Paper, Scissors!!! \n<size=30> Rock = 1 or J | Paper = 2 or K | Scissors = 3 or L </size>";
-
-                var playerPick = 0;
-                /// monsterPick = Random.Range(1, 10);
-
-
-
-
-
-                if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.J))
-                { // Rock
-                    playerPick = 1;
-                    p1fight.text = "ROCK";
-                }
-                if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.K))
-                {// Paper
-                    playerPick = 2;
-                    p1fight.text = "PAPER";
-                }
-                if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.L))
-                {// Scissors
-                    playerPick = 3;
-                    p1fight.text = "SCISSORS";
-                }
-                if (playerPick != 0)
+                // Monster Encounter
+                if (Input.GetKeyDown(KeyCode.Return))
                 {
-                    var monsterPick = Random.Range(1, 4); // Rock = 1, Paper = 2, Scissors = 3
-
-                    switch (monsterPick)
-                    {
-                        case 1:
-                            p2fight.text = "ROCK";
-                            break;
-                        case 2:
-                            p2fight.text = "PAPER";
-                            break;
-                        case 3:
-                            p2fight.text = "SCISSORS";
-                            break;
-
-                    }
-                    if (playerPick == monsterPick) // Tie
-                    {
-                        resultInfo.text = "TIE.";
-                    }
-                    else if ((playerPick == 1 && monsterPick == 2) ||
-                             (playerPick == 2 && monsterPick == 3) ||
-                             (playerPick == 3 && monsterPick == 1))
-                    {
-                        resultInfo.text = "YOU LOSE...";
-                        p.heldPoints -= 1;
-                    }
-                    else
-                    {
-                        resultInfo.text = "YOU WIN!!!";
-                        p.heldPoints += 2;
-                    }
-
-
-                    //
-                    encounterOver = true;
-                    phase = GamePhase.ConfirmContinue;
+                    phase = GamePhase.RockPaperScissors;
                 }
-            }
+                // Build a Store
+                else if (Input.GetKeyDown(KeyCode.RightShift))
+                {
+                    Debug.Log("I am a store");
+                    GameObject tile = m.gameObject;
+                    tile.tag = "Store";
+                    tile.AddComponent<StoreManager>();
+
+                    phase = GamePhase.EndTurn;
+                }
+            }    
         }      
     }
 
-    void CombatTime()
+    void RockPaperScissors(EntityPiece p)
     {
+        encounterScreen.SetActive(true);
+        p1fight.text = "";
+        p2fight.text = "";
+        resultInfo.text = "<size=45>[ENCOUNTER]</size>\nRock, Paper, Scissors!!! \n<size=30> Rock = 1 or J | Paper = 2 or K | Scissors = 3 or L </size>";
 
+        var playerPick = 0;
+        /// monsterPick = Random.Range(1, 10);
+
+
+
+
+
+        if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.J))
+        { // Rock
+            playerPick = 1;
+            p1fight.text = "ROCK";
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.K))
+        {// Paper
+            playerPick = 2;
+            p1fight.text = "PAPER";
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.L))
+        {// Scissors
+            playerPick = 3;
+            p1fight.text = "SCISSORS";
+        }
+
+
+
+        if (playerPick != 0)
+        {
+            var monsterPick = Random.Range(1, 4); // Rock = 1, Paper = 2, Scissors = 3
+
+            switch (monsterPick)
+            {
+                case 1:
+                    p2fight.text = "ROCK";
+                    break;
+                case 2:
+                    p2fight.text = "PAPER";
+                    break;
+                case 3:
+                    p2fight.text = "SCISSORS";
+                    break;
+
+            }
+            if (playerPick == monsterPick) // Tie
+            {
+                resultInfo.text = "TIE.";
+            }
+            else if ((playerPick == 1 && monsterPick == 2) ||
+                     (playerPick == 2 && monsterPick == 3) ||
+                     (playerPick == 3 && monsterPick == 1))
+            {
+                resultInfo.text = "YOU LOSE...";
+                p.heldPoints -= 1;
+            }
+            else
+            {
+                resultInfo.text = "YOU WIN!!!";
+                p.heldPoints += 2;
+            }
+
+
+            //
+            encounterOver = true;
+            phase = GamePhase.ConfirmContinue;
+        }
     }
 
     void ConfirmContinue(EntityPiece p)
