@@ -60,7 +60,30 @@ public class CombatUIManager : MonoBehaviour
         var count = 0;
         foreach (Action a in actions)
         {
-            actionTexts[count].text = a.actionName;
+            var typeIconIndex = 0; // the tag to use based off the TMPro sprite asset
+            Color32 actionColor = Color.white;
+            // Change text color and icon based off action type
+            switch (a.type)
+            {
+                case Action.WeaponTypes.Melee:
+                    typeIconIndex = 0;
+                    actionColor = new Color32(242, 108, 124, 255);
+                    break;
+                case Action.WeaponTypes.Gun:
+                    typeIconIndex = 1;
+                    actionColor = new Color32(109, 159, 242, 255);
+                    break;
+                case Action.WeaponTypes.Magic:
+                    typeIconIndex = 2;
+                    actionColor = new Color32(225, 142, 255, 255);
+                    break;
+                default: // Temporary Special
+                    actionColor = Color.yellow;
+                    break;
+            }
+
+            actionTexts[count].color = actionColor;
+            actionTexts[count].text = "<sprite=" + typeIconIndex + ">" + a.actionName;
             count++;
         }
     }
