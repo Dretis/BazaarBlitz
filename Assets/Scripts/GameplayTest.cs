@@ -229,7 +229,7 @@ public class GameplayTest : MonoBehaviour
             }
             else if (m.CompareTag("Encounter") && otherPlayer != null && otherPlayer != currentPlayer) // Player Fight
             {
-                Debug.Log(otherPlayer.nickname);
+                //Debug.Log(otherPlayer.nickname);
                 /*
                 ///
                 encounterScreen.SetActive(true);
@@ -272,8 +272,8 @@ public class GameplayTest : MonoBehaviour
                 {
                     phase = GamePhase.CombatTime;
 
-                    Debug.Log("Your Player: " + currentPlayer.nickname);
-                    Debug.Log("Other Player: " + otherPlayer.nickname);
+                    //Debug.Log("Your Player: " + currentPlayer.nickname);
+                    //Debug.Log("Other Player: " + otherPlayer.nickname);
                     encounterStarted = true;
 
                     // Set IDs of players entering combat.
@@ -384,8 +384,8 @@ public class GameplayTest : MonoBehaviour
 
     void EndOfTurn(EntityPiece p)
     {
-        Debug.Log("initial node player: " + currentPlayerInitialNode.playerOccupied);
-        Debug.Log("initial node player: " + currentPlayer);
+        //Debug.Log("initial node player: " + currentPlayerInitialNode.playerOccupied);
+        //Debug.Log("initial node player: " + currentPlayer);
 
         if (currentPlayerInitialNode.playerOccupied == currentPlayer)
         {

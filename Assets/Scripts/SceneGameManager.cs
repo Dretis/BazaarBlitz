@@ -11,6 +11,8 @@ public class SceneGameManager : MonoBehaviour
     public int player1ID;
     public int player2ID;
 
+    public List<CombatManager> combatManagers = new List<CombatManager>();
+
     private GameplayTest overworldScene;
 
     void Awake()
@@ -22,15 +24,28 @@ public class SceneGameManager : MonoBehaviour
 
     public void LoadCombatScene()
     {
+        // Disable overworld.
         DisableScene(0);
         SceneManager.LoadScene("CombatTest", LoadSceneMode.Additive);
-        SetActiveSceneAfterWait();
+        
+        //SetActiveSceneAfterWait();
     }
 
     public void UnloadCombatScene(int sceneIndex)
     {
+        // Remove combat manager of finished combat scene.
+        combatManagers.Remove(combatManagers[sceneIndex-1]);
         SceneManager.UnloadSceneAsync(sceneIndex);
-        SceneManager.SetActiveScene(SceneManager.GetSceneAt(0));
+
+        // Update all remaining combat managers scene indices.
+        foreach(var combatManager in combatManagers)
+        {
+            combatManager.combatSceneIndex = combatManagers.IndexOf(combatManager)+1;
+            combatManager.player1.combatSceneIndex = combatManager.combatSceneIndex;
+            combatManager.player2.combatSceneIndex = combatManager.combatSceneIndex;
+        }
+
+        //SceneManager.SetActiveScene(SceneManager.GetSceneAt(0));
         overworldScene.encounterStarted = false;
     }
 
@@ -45,7 +60,7 @@ public class SceneGameManager : MonoBehaviour
             obj.SetActive(true);
         }
         Debug.Log(scene.name + " " + sceneIndex + " enabled!");
-        SceneManager.SetActiveScene(SceneManager.GetSceneAt(sceneIndex));
+       // SceneManager.SetActiveScene(SceneManager.GetSceneAt(sceneIndex));
     }
 
     public void DisableScene(int sceneIndex)
@@ -69,7 +84,21 @@ public class SceneGameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(1.0f);
 
-        SceneManager.SetActiveScene(SceneManager.GetSceneAt(SceneManager.sceneCount-1));
+        //SceneManager.SetActiveScene(SceneManager.GetSceneAt(SceneManager.sceneCount-1));
         Debug.Log(SceneManager.GetActiveScene().name);
+    }
+
+    IEnumerator WaitOneSecondToEnable(Scene scene, int sceneIndex)
+    {
+        yield return new WaitForSeconds(1.0f);
+
+        print("Hi");
+    }
+
+    IEnumerator WaitOneSecondToDisable(Scene scene, int sceneIndex)
+    {
+        yield return new WaitForSeconds(1.0f);
+
+        print("Hi");
     }
 }
