@@ -38,6 +38,13 @@ public class CombatManager : MonoBehaviour
     private bool isFightingAI = false;
     private int playersLastAttack = 0;
 
+    //SOUND SHIT
+    public AudioClip smackSFX;
+    public AudioClip clankSFX;
+    public AudioClip explosionSFX;
+    public AudioClip shootSFX;
+    AudioSource audioSource;
+
     public CombatUIManager combatUIManager;
 
     private void Awake()
@@ -74,6 +81,11 @@ public class CombatManager : MonoBehaviour
         itemsQueuedDefend = new List<int>();
 
         combatUIManager = GetComponent<CombatUIManager>();
+    }
+
+    public void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
     }
 
     public void initializeCombat() 
@@ -248,6 +260,7 @@ public class CombatManager : MonoBehaviour
             roll = Random.Range(0, 6);
             damage += attacker.strDie[roll];
           }
+          audioSource.PlayOneShot(smackSFX, 1.0F);
           Debug.Log("MeleeAttack");
           break;
         case Action.WeaponTypes.Gun:
@@ -257,6 +270,7 @@ public class CombatManager : MonoBehaviour
             damage += attacker.dexDie[roll];
           }
           Debug.Log("GunAttack");
+          audioSource.PlayOneShot(shootSFX, 1.0F);
           break;
         case Action.WeaponTypes.Magic:
           damage += attacker.intDie[roll];
@@ -265,6 +279,7 @@ public class CombatManager : MonoBehaviour
             damage += attacker.intDie[roll];
           }
           Debug.Log("MagicAttack");
+          audioSource.PlayOneShot(clankSFX, 1.0F);
           break;
         case Action.WeaponTypes.Special:
           damage += attacker.strDie[roll];
@@ -277,6 +292,7 @@ public class CombatManager : MonoBehaviour
             damage += attacker.intDie[roll];
           }
           Debug.Log("HammerAttack");
+          audioSource.PlayOneShot(explosionSFX, 1.0F);
           break;
         default:
           damage += 0;
