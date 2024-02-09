@@ -9,16 +9,19 @@ public class ItemStats : ScriptableObject
     public enum PhaseTypes { Attack, Defend, Both }
     public enum WeaponTypes { Melee, Gun, Magic, Special}
 
-    public string actionName;
+    public string itemName;
 
     [Tooltip("What phase is the item usable in")]
     public PhaseTypes phase;
 
     public int diesToRoll;
-    public int bonusDamage;
+    public int bonusDamageMin;
+    public int bonusDamageMax;
+    public int playerDamageMin; // can be negative!
+    public int playerDamageMax;
+    public bool blocksWithBonusDamage
 
-    [Tooltip("What weapon type is the action")]
-    public WeaponTypes type;
+    public string specialID; // Will be checked in a switch statement for specific stuff.
 
     public string flavorText;
 }
