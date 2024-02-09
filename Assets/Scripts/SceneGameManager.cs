@@ -31,11 +31,12 @@ public class SceneGameManager : MonoBehaviour
         //SetActiveSceneAfterWait();
     }
 
-    public void UnloadCombatScene(int sceneIndex)
+    public void UnloadCombatScene(Scene scene, int sceneIndex)
     {
+        Debug.Log("unload scene" + sceneIndex);
         // Remove combat manager of finished combat scene.
         combatManagers.Remove(combatManagers[sceneIndex-1]);
-        SceneManager.UnloadSceneAsync(sceneIndex);
+        SceneManager.UnloadSceneAsync(scene);
 
         // Update all remaining combat managers scene indices.
         foreach(var combatManager in combatManagers)

@@ -219,16 +219,17 @@ public class CombatManager : MonoBehaviour
         Debug.Log("Defender Wins!");
       }
 
-        // Re-enable scene
-        sceneManager.EnableScene(0);
 
         // Players exit combat.
         player1.combatSceneIndex = -1;
         player2.combatSceneIndex = -1;
 
         sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
-        sceneManager.UnloadCombatScene(combatSceneIndex);
-      // wrap up the scene and transition back to board in the final game.
+        sceneManager.UnloadCombatScene(SceneManager.GetSceneAt(combatSceneIndex), combatSceneIndex);
+
+        // Re-enable scene
+        sceneManager.EnableScene(0);
+        // wrap up the scene and transition back to board in the final game.
     }
 
     private void playActions(int attackerAction, int defenderAction) {
