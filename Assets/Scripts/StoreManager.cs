@@ -6,11 +6,17 @@ using UnityEngine;
 public class StoreManager : MonoBehaviour
 {
     private EntityPiece playerOwner;
-    private Dictionary<ItemStats, int> storeInventory = new Dictionary<ItemStats, int>();
+    public ItemStats item1;
+    public ItemStats item2;
+    public Dictionary<ItemStats, int> storeInventory = new Dictionary<ItemStats, int>();
 
     private void Awake()
     {
         playerOwner = GetComponent<MapNode>().playerOccupied;
+        item1 = GameplayTest.instance.item1;
+        item2 = GameplayTest.instance.item2;
+        storeInventory.Add(item1, 1);
+        storeInventory.Add(item2, 1);
     }
 
     public void BuyItem(EntityPiece buyer, ItemStats item, int quantity)

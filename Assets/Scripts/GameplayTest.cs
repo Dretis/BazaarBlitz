@@ -10,6 +10,7 @@ using UnityEngine.SceneManagement;
 
 public class GameplayTest : MonoBehaviour
 {
+    public static GameplayTest instance;
     // Tile Data and Shit IGNORE THIS SECTION FOR NOW
     [SerializeField]
     private List<EntityPiece> playerUnits = new List<EntityPiece>();
@@ -38,6 +39,8 @@ public class GameplayTest : MonoBehaviour
     public int diceRoll;
     private int yoinkRoll;
 
+    public ItemStats item1;
+    public ItemStats item2;
     public TextMeshProUGUI rollText;
     public TextMeshProUGUI turnText;
     public TextMeshProUGUI gameInfo;
@@ -47,6 +50,9 @@ public class GameplayTest : MonoBehaviour
     public TextMeshProUGUI p2fight;
     public TextMeshProUGUI resultInfo;
     public bool encounterOver = false;
+
+    public GameObject storeScreen;
+    public TextMeshProUGUI storeListings;
 
     public MapNode wantedNode;
     private SceneGameManager sceneManager;
@@ -65,6 +71,7 @@ public class GameplayTest : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        instance = this;
         audioSource = GetComponent<AudioSource>();
         sceneManager = GameObject.FindGameObjectWithTag("SceneManager").GetComponent<SceneGameManager>();
         playerUnits.AddRange(FindObjectsOfType<EntityPiece>());
@@ -323,9 +330,15 @@ public class GameplayTest : MonoBehaviour
                     Debug.Log("I am a store");
                     GameObject tile = m.gameObject;
                     tile.tag = "Store";
-                    tile.AddComponent<StoreManager>();
-
-                    phase = GamePhase.EndTurn;
+                    StoreManager store = tile.AddComponent<StoreManager>();
+                    foreach(var listing in store.storeInventory)
+                    {
+                        storeListings.text += listing.Key.itemName + " x" + listing.Value + "\n"; 
+                    }
+                    storeScreen.SetActive(true);
+                    
+                    phase = GamePhase.ConfirmContinue;
+                    encounterOver = true;
                 }
             }    
         }      
@@ -411,6 +424,7 @@ public class GameplayTest : MonoBehaviour
             phase = GamePhase.EndTurn;
             encounterOver = false;
             encounterScreen.SetActive(false);
+            storeScreen.SetActive(false);
             UpdatePoints();
         }
     }
