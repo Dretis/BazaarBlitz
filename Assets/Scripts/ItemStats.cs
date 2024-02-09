@@ -19,7 +19,7 @@ public class ItemStats : ScriptableObject
     public int bonusDamageMax;
     public int playerDamageMin; // can be negative!
     public int playerDamageMax;
-    public bool blocksWithBonusDamage
+    public bool blocksWithBonusDamage;
 
     public string specialID; // Will be checked in a switch statement for specific stuff.
 
