@@ -218,11 +218,11 @@ public class CombatManager : MonoBehaviour
 
         phaseCount++;
 
-        if (aggressor.health <= 0)
+        if (aggressor.curHealth <= 0)
         {
             endCombat(false);
         }
-        else if (retaliator.health <= 0)
+        else if (retaliator.curHealth <= 0)
         {
             endCombat(true);
         }
@@ -399,7 +399,7 @@ public class CombatManager : MonoBehaviour
             case Action.WeaponTypes.Special:
                 if (attack.type == Action.WeaponTypes.Special)
                 {
-                    attacker.health -= damage;
+                    attacker.curHealth -= damage;
                     damage = 0;
                 }
                 else
@@ -417,7 +417,7 @@ public class CombatManager : MonoBehaviour
             damage = 0;
         }
 
-        defender.health -= damage;
+        defender.curHealth -= damage;
 
         attackerBonusRoll = 0;
         defenderBonusRoll = 0;
@@ -449,7 +449,7 @@ public class CombatManager : MonoBehaviour
             }
 
             //Min-Max heal, ex 0-0
-            attacker.health -= Random.Range(item.playerDamageMin, item.playerDamageMax+1);
+            attacker.curHealth -= Random.Range(item.playerDamageMin, item.playerDamageMax+1);
             // subtract opponent hp for armor piercing
             attackerBuffDamage = Random.Range(item.bonusDamageMin, item.bonusDamageMax+1);
             attackerBonusRoll = item.diesToRoll;
@@ -482,9 +482,9 @@ public class CombatManager : MonoBehaviour
           }
 
           //Min-Max heal, ex 0-0
-          defender.health -= Random.Range(item.playerDamageMin, item.playerDamageMax+1);
+          defender.curHealth -= Random.Range(item.playerDamageMin, item.playerDamageMax+1);
           // subtract opponent hp for armor piercing
-          attacker.health -= Random.Range(item.bonusDamageMin, item.bonusDamageMax+1); // Defender attack items just deal damage
+          attacker.curHealth -= Random.Range(item.bonusDamageMin, item.bonusDamageMax+1); // Defender attack items just deal damage
           attackerBonusRoll = item.diesToRoll;
 
           // //For special effects
