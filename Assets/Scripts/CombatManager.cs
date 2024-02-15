@@ -47,6 +47,8 @@ public class CombatManager : MonoBehaviour
 
     public int combatSceneIndex;
 
+    private IEnumerator animationCoroutine;
+    private IEnumerator waitCoroutineInstance;
 
     public CombatUIManager combatUIManager;
     public SceneGameManager sceneManager;
@@ -251,6 +253,8 @@ public class CombatManager : MonoBehaviour
             Debug.Log("Defender Wins!");
         }
         audioSource.PlayOneShot(explosionSFX, 2f);
+        waitCoroutineInstance = waitCoroutine(5f);
+        StartCoroutine(waitCoroutineInstance);
 
         // Players exit combat.
         player1.combatSceneIndex = -1;
@@ -264,20 +268,33 @@ public class CombatManager : MonoBehaviour
         // wrap up the scene and transition back to board in the final game.
     }
 
+    private IEnumerator animationAndWait(int attackerAction, CombatUIManager.FightingPosition aggressorPosition, int defenderAction, CombatUIManager.FightingPosition defenderPosition)
+    {
+        combatUIManager.UpdateActionAnimation(attackerAction, aggressorPosition);
+        combatUIManager.UpdateActionAnimation(defenderAction + 4, defenderPosition);
+        yield return new WaitForSeconds(2.5f);
+    }
+
+    private IEnumerator waitCoroutine(float time)
+    {
+        yield return new WaitForSeconds(time);
+    }
+
     private void playActions(int attackerAction, int defenderAction)
     {
         Debug.Log("I'm fighting in scene" + combatSceneIndex);
         // run through the actions taken by both parties, dealing damage accordingly
-
+        
         if (player1 == attacker)
         {
-            combatUIManager.UpdateActionAnimation(attackerAction, player1.fightingPosition);
-            combatUIManager.UpdateActionAnimation(defenderAction + 4, player2.fightingPosition);
+            animationCoroutine = animationAndWait(attackerAction, player1.fightingPosition, defenderAction + 4, player2.fightingPosition);
+            StartCoroutine(animationCoroutine);
+            
         }
         else
         {
-            combatUIManager.UpdateActionAnimation(attackerAction, player2.fightingPosition);
-            combatUIManager.UpdateActionAnimation(defenderAction + 4, player1.fightingPosition);
+            animationCoroutine = animationAndWait(attackerAction, player2.fightingPosition, defenderAction + 4, player1.fightingPosition);
+            StartCoroutine(animationCoroutine);
         }
 
 

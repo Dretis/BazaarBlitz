@@ -44,7 +44,7 @@ public class CombatUIManager : MonoBehaviour
         }
 
         stateTexts[0].text = ps.playerName;
-        stateTexts[1].text = "HP: " + ps.health;
+        stateTexts[1].text = "HP: " + ps.curHealth;
 
         if(phase == Action.PhaseTypes.Attack)
         {
@@ -108,7 +108,7 @@ public class CombatUIManager : MonoBehaviour
         }
 
         stateTexts[0].text = ps.playerName;
-        stateTexts[1].text = "HP: " + ps.health;
+        stateTexts[1].text = "HP: " + ps.curHealth;
 
         if (phase == Action.PhaseTypes.Attack)
         {
