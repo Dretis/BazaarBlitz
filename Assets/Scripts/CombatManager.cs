@@ -48,7 +48,7 @@ public class CombatManager : MonoBehaviour
     public int combatSceneIndex;
 
     private IEnumerator animationCoroutine;
-    private IEnumerator waitCoroutineInstance;
+    private IEnumerator turnControllerCoroutine;
 
     public CombatUIManager combatUIManager;
     public SceneGameManager sceneManager;
@@ -164,6 +164,12 @@ public class CombatManager : MonoBehaviour
 
     public void passTurn()
     {
+        //prevent players from continuing to fight after they've done their turns
+        if (phaseCount >= 2)
+        {
+            return;
+        }
+        
         isAggressorTurn = toggleBool(isAggressorTurn);
 
         if ((!isAggressorTurn && aggressorAttacking) && isFightingAI)
@@ -220,24 +226,22 @@ public class CombatManager : MonoBehaviour
 
         phaseCount++;
 
+        //death check
         if (aggressor.curHealth <= 0)
         {
-            endCombat(false);
+            turnControllerCoroutine = waitAndDeath(false);
+            StartCoroutine(turnControllerCoroutine);
         }
         else if (retaliator.curHealth <= 0)
         {
-            endCombat(true);
+            turnControllerCoroutine = waitAndDeath(true);
+            StartCoroutine(turnControllerCoroutine);
         }
         else if (phaseCount == 2)
         {
-            phaseCount = 0;
-            Debug.Log("I'm in scene" + combatSceneIndex);
-            // Pause combat scene and re-enable overworld scene
-            sceneManager.DisableScene(combatSceneIndex);
-            sceneManager.EnableScene(0);
-
-            sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
-            Debug.Log("I have left scene" + combatSceneIndex);
+            turnControllerCoroutine = waitAndLoadScene();
+            StartCoroutine(turnControllerCoroutine);
+            
         }
     }
 
@@ -252,9 +256,6 @@ public class CombatManager : MonoBehaviour
         {
             Debug.Log("Defender Wins!");
         }
-        audioSource.PlayOneShot(explosionSFX, 2f);
-        waitCoroutineInstance = waitCoroutine(5f);
-        StartCoroutine(waitCoroutineInstance);
 
         // Players exit combat.
         player1.combatSceneIndex = -1;
@@ -268,16 +269,31 @@ public class CombatManager : MonoBehaviour
         // wrap up the scene and transition back to board in the final game.
     }
 
+    private IEnumerator waitAndLoadScene()
+    {
+        yield return new WaitForSeconds(2.0f);
+        phaseCount = 0;
+        Debug.Log("I'm in scene" + combatSceneIndex);
+        // Pause combat scene and re-enable overworld scene
+        sceneManager.DisableScene(combatSceneIndex);
+        sceneManager.EnableScene(0);
+
+        sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
+        Debug.Log("I have left scene" + combatSceneIndex);
+    }
+
+    private IEnumerator waitAndDeath(bool aggressorWon)
+    {
+        audioSource.PlayOneShot(explosionSFX, 2f);
+        yield return new WaitForSeconds(2.0f);
+        endCombat(aggressorWon);
+    }
+
     private IEnumerator animationAndWait(int attackerAction, CombatUIManager.FightingPosition aggressorPosition, int defenderAction, CombatUIManager.FightingPosition defenderPosition)
     {
         combatUIManager.UpdateActionAnimation(attackerAction, aggressorPosition);
         combatUIManager.UpdateActionAnimation(defenderAction + 4, defenderPosition);
         yield return new WaitForSeconds(2.5f);
-    }
-
-    private IEnumerator waitCoroutine(float time)
-    {
-        yield return new WaitForSeconds(time);
     }
 
     private void playActions(int attackerAction, int defenderAction)
