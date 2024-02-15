@@ -110,7 +110,6 @@ public class CombatManager : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         aggressorPiece = aggressor.gameObject.GetComponent<EntityPiece>();
         retaliatorPiece = retaliator.gameObject.GetComponent<EntityPiece>();
-        mapInputManager = GameObject.FindWithTag("InputManager").GetComponent<GameplayTest>();
     }
 
     private void OnEnable()
@@ -661,3 +660,5 @@ public class CombatManager : MonoBehaviour
         }
     }
 }
+
+
