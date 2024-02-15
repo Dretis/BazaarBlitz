@@ -48,6 +48,7 @@ public class GameplayTest : MonoBehaviour
     public bool encounterOver = false;
 
     public MapNode wantedNode;
+    public MapNode spawnNode;
     private SceneGameManager sceneManager;
     ///private Scene currentCombat;
 
@@ -209,6 +210,14 @@ public class GameplayTest : MonoBehaviour
                 phase = GamePhase.PickDirection; // Go back to picking direction
         }
         
+    }
+
+    public void Respawn(EntityPiece p)
+    {
+        p.occupiedNode = spawnNode;
+        p.transform.DOMove(spawnNode.transform.position, .25f)
+            .SetEase(Ease.OutQuint);
+        audioSource.PlayOneShot(moveSFX, 1.2f);
     }
 
     void EncounterTime(EntityPiece p, MapNode m)

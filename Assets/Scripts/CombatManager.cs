@@ -25,6 +25,8 @@ public class CombatManager : MonoBehaviour
     private PlayerStats defender;
     private PlayerStats curTarget;
     private PlayerStats curEnemy;
+    public EntityPiece aggressorPiece;
+    public EntityPiece retaliatorPiece;
 
     private List<ItemStats> itemsQueuedAttack;
     private List<ItemStats> itemsQueuedDefend;
@@ -52,6 +54,7 @@ public class CombatManager : MonoBehaviour
 
     public CombatUIManager combatUIManager;
     public SceneGameManager sceneManager;
+    public GameplayTest mapInputManager;
 
     private int phaseCount = 0;
 
@@ -105,6 +108,9 @@ public class CombatManager : MonoBehaviour
     public void Start()
     {
         audioSource = GetComponent<AudioSource>();
+        aggressorPiece = aggressor.gameObject.GetComponent<EntityPiece>();
+        retaliatorPiece = retaliator.gameObject.GetComponent<EntityPiece>();
+        mapInputManager = GameObject.FindWithTag("InputManager").GetComponent<GameplayTest>();
     }
 
     private void OnEnable()
@@ -169,7 +175,7 @@ public class CombatManager : MonoBehaviour
         {
             return;
         }
-        
+
         isAggressorTurn = toggleBool(isAggressorTurn);
 
         if ((!isAggressorTurn && aggressorAttacking) && isFightingAI)
@@ -250,11 +256,18 @@ public class CombatManager : MonoBehaviour
         //combatActive = false;
         if (aggressorWon)
         {
-            Debug.Log("Attacker Wins!");
+            Debug.Log("Aggressor Wins!");
+            //take half of the retaliator stuff and give it to the aggressor
+            retaliator.curHealth = retaliator.maxHealth;
+            mapInputManager.Respawn(retaliatorPiece);
+            
         }
         else
         {
-            Debug.Log("Defender Wins!");
+            Debug.Log("Retaliator Wins!");
+            //take half of the aggressor stuff and give it to the retaliator
+            aggressor.curHealth = aggressor.maxHealth;
+            mapInputManager.Respawn(aggressorPiece);
         }
 
         // Players exit combat.
