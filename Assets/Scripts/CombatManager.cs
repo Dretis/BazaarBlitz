@@ -257,16 +257,17 @@ public class CombatManager : MonoBehaviour
         {
             Debug.Log("Aggressor Wins!");
             //take half of the retaliator stuff and give it to the aggressor
-            retaliator.curHealth = retaliator.maxHealth;
-            mapInputManager.Respawn(retaliatorPiece);
+            RespawnCommand cmd = new RespawnCommand(retaliatorPiece);
+            BetweenSceneManager.Instance.AddCommand(cmd);
             
         }
         else
         {
             Debug.Log("Retaliator Wins!");
             //take half of the aggressor stuff and give it to the retaliator
-            aggressor.curHealth = aggressor.maxHealth;
-            mapInputManager.Respawn(aggressorPiece);
+            RespawnCommand cmd = new RespawnCommand(aggressorPiece);
+            BetweenSceneManager.Instance.AddCommand(cmd);
+            
         }
 
         // Players exit combat.
@@ -660,5 +661,3 @@ public class CombatManager : MonoBehaviour
         }
     }
 }
-
-
