@@ -5,50 +5,46 @@ using UnityEngine;
 
 public class StoreManager : MonoBehaviour
 {
+    public List<ItemStats> storeInventory;
+
     private EntityPiece playerOwner;
-    public ItemStats item1;
-    public ItemStats item2;
-    public Dictionary<ItemStats, int> storeInventory = new Dictionary<ItemStats, int>();
+    private int storeCapacity = 4;
 
     private void Awake()
     {
         playerOwner = GetComponent<MapNode>().playerOccupied;
-        item1 = GameplayTest.instance.item1;
-        item2 = GameplayTest.instance.item2;
 
-        // Debug
-        storeInventory.Add(item1, 1);
-        storeInventory.Add(item2, 1);
+        storeInventory = Enumerable.Repeat<ItemStats>(null, storeCapacity).ToList();
     }
 
-    public void BuyItem(EntityPiece buyer, ItemStats item, int quantity)
+    public void BuyItem(EntityPiece buyer, ItemStats item, int index)
     {
-        buyer.combatStats.inventory.AddRange(Enumerable.Repeat(item, quantity));
-        removeFromInventory(item, quantity);
+        // Check if buyer has enough money to buy items
+        // Subject to change - inventory system
+        buyer.combatStats.inventory.Add(item);
+        // subtract value of item from buyer buyer.heldPoints
+        // add value of item to playerOwner
+
+        // Remove from store inventory
+        storeInventory[index] = null;
     }
 
-    public void SellItem(EntityPiece seller, ItemStats item, int quantity)
+    public void SellItem(EntityPiece seller, ItemStats item)
     {
-        for (int i = 0; i < quantity; i++) 
-            seller.combatStats.inventory.Remove(item);
-        addToInventory(item, quantity);
-    }
+        // Check if store has enough money to buy items
+        int indexToAdd = storeInventory.FindIndex(x => x == null);
 
-    private void addToInventory(ItemStats item, int quantity)
-    {
-        if (storeInventory.ContainsKey(item))
+        if (indexToAdd != -1) 
         {
-            storeInventory[item] += quantity;
+            // Remove item from seller's inventory and add it to store's inventory.
+            seller.combatStats.inventory.Remove(item);
+            storeInventory[indexToAdd] = item;
+            // subtract value of item from playerOwner
+            // add value of item to seller
         }
         else
         {
-            storeInventory.Add(item, quantity);
-        }
-        
-    }
-
-    private void removeFromInventory(ItemStats item, int quantity)
-    {
-        storeInventory[item] -= quantity; 
+            Debug.Log("Inventory is full.");
+        }      
     }
 }

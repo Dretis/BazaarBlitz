@@ -39,8 +39,6 @@ public class GameplayTest : MonoBehaviour
     public int diceRoll;
     private int yoinkRoll;
 
-    public ItemStats item1;
-    public ItemStats item2;
     public TextMeshProUGUI rollText;
     public TextMeshProUGUI turnText;
     public TextMeshProUGUI gameInfo;
@@ -333,7 +331,7 @@ public class GameplayTest : MonoBehaviour
                     StoreManager store = tile.AddComponent<StoreManager>();
                     foreach(var listing in store.storeInventory)
                     {
-                        storeListings.text += listing.Key.itemName + " x" + listing.Value + "\n"; 
+                        if (listing != null) storeListings.text += listing.itemName + "\n"; 
                     }
                     storeScreen.SetActive(true);
                     
