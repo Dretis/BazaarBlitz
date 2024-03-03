@@ -791,7 +791,7 @@ MonoBehaviour:
   - 5
   - 6
   health: 15
-  inventory: 01000000020000000300000004000000
+  inventory: []
   isEnemy: 0
   favoredAttack: 0
   attackActions:
@@ -861,6 +861,7 @@ MonoBehaviour:
   clankSFX: {fileID: 8300000, guid: 7332912025e28204db328991cab83e6e, type: 3}
   explosionSFX: {fileID: 8300000, guid: fd978366f596652498b8e9dc04ce3c94, type: 3}
   shootSFX: {fileID: 8300000, guid: 4e15311842829014796a86f5a3d713c5, type: 3}
+  combatSceneIndex: 0
   combatUIManager: {fileID: 373411699}
   sceneManager: {fileID: 0}
 --- !u!114 &373411699
@@ -1256,6 +1257,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 153c8a8c155007c47942019780c78404, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  itemsAtButton:
+  - {fileID: 11400000, guid: c88d8aed1040f9b448f37a2983dd1fdd, type: 2}
+  - {fileID: 11400000, guid: 923ee1f783dd41345a759535103ee9a7, type: 2}
+  - {fileID: 11400000, guid: 8503e05f3a6bdcf408fae19a2cab1d52, type: 2}
+  - {fileID: 11400000, guid: 4fd59672f461ffa4bb6c75f0339fc93d, type: 2}
 --- !u!1001 &500350131
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1625,7 +1631,7 @@ MonoBehaviour:
   - 5
   - 6
   health: 15
-  inventory: 01000000020000000300000004000000
+  inventory: []
   isEnemy: 0
   favoredAttack: 0
   attackActions:
