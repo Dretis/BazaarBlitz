@@ -268,7 +268,11 @@ public class GameplayTest : MonoBehaviour
             oldPoints = p.heldPoints;
             oldStamps = new List<Stamp>(p.stamps);
 
-            p.heldPoints += (int) (50*Mathf.Pow(2, p.stamps.Count));
+            if (p.stamps.Count != 0)
+            {
+                p.heldPoints += (int)(50 * Mathf.Pow(2, p.stamps.Count-1));
+            }
+            
             p.stamps.Clear();
         }
         else if (stampToBeCollected != null)
