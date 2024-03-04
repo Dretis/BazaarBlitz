@@ -27,6 +27,7 @@ public class GameplayTest : MonoBehaviour
         RollDice,
         PickDirection,
         MoveAround,
+        PassBy,
         EncounterTime,
         RockPaperScissors,
         CombatTime,
@@ -65,6 +66,10 @@ public class GameplayTest : MonoBehaviour
     public AudioClip moveSFX;
     public AudioClip reverseSFX;
     public AudioSource audioSource;
+
+    private List<Stamp> oldStamps = new List<Stamp>();
+    private int oldPoints = 0;
+    private bool oldIsCollected = true;
 
     // Start is called before the first frame update
     void Start()
@@ -111,6 +116,10 @@ public class GameplayTest : MonoBehaviour
             // Move-to Node Phase
             case GamePhase.MoveAround:
                 MoveAround(currentPlayer);
+                break;
+
+            case GamePhase.PassBy:
+                PassBy(currentPlayer, currentPlayer.occupiedNode);
                 break;
 
             // Battle-Event Phase
@@ -182,6 +191,36 @@ public class GameplayTest : MonoBehaviour
 
         if (wantedNode == lastNode) // The direction you picked was the node you just came from (Redo)
         {
+            Stamp stampCollected = p.occupiedNode.gameObject.GetComponent<Stamp>();
+
+            // Undo moves (not sure if this actually undoes multiple stamp collections)
+            if (p.occupiedNode.CompareTag("Castle"))
+            {
+                p.stamps = new List<Stamp>(oldStamps);
+                p.heldPoints = oldPoints;
+
+                foreach (Stamp stamp in p.stamps)
+                {
+                    stamp.spawnNode.GetComponent<SpriteRenderer>().color = Color.white;
+                    stamp.isCollected = true;
+                }
+
+                oldStamps.Clear();
+                oldPoints = 0;
+            }
+            else if (stampCollected != null)
+            {
+                // Stamp was not collected before
+                if (!oldIsCollected)
+                {
+                    stampCollected.isCollected = false;
+                    stampCollected.spawnNode.GetComponent<SpriteRenderer>().color = stampCollected.stampColor;
+                    p.stamps.Remove(stampCollected);
+
+                    oldIsCollected = true;
+                }
+            }
+
             p.traveledNodes.Remove(lastNode);
             p.occupiedNode = lastNode;
 
@@ -193,6 +232,7 @@ public class GameplayTest : MonoBehaviour
 
             wantedNode = null;
             audioSource.PlayOneShot(reverseSFX, 1.2f);
+
             phase = GamePhase.PickDirection; // Go back to picking direction
         }
         else if(wantedNode != null) // Go to that new node and occupy it
@@ -208,17 +248,51 @@ public class GameplayTest : MonoBehaviour
             wantedNode = null;
             audioSource.PlayOneShot(moveSFX, 1.2f);
 
-            if (p.movementLeft <= 0)
-            {
-                p.traveledNodes.Clear(); // Forget all the nodes traveled to
-                p.traveledNodes.Add(p.occupiedNode); //i need this i guess
-
-                phase = GamePhase.EncounterTime; // next phase
-            }
-            else
-                phase = GamePhase.PickDirection; // Go back to picking direction
+            phase = GamePhase.PassBy;
         }
         
+    }
+
+    void PassBy(EntityPiece p, MapNode m)
+    {
+        Stamp stampToBeCollected = m.gameObject.GetComponent<Stamp>();
+        // Cash in Stamps
+        if (m.CompareTag("Castle"))
+        {
+            foreach(Stamp stamp in p.stamps)
+            {
+                stamp.spawnNode.GetComponent<SpriteRenderer>().color = stamp.stampColor;
+                stamp.isCollected = false;
+            }
+
+            oldPoints = p.heldPoints;
+            oldStamps = new List<Stamp>(p.stamps);
+
+            p.heldPoints += (int) (50*Mathf.Pow(2, p.stamps.Count));
+            p.stamps.Clear();
+        }
+        else if (stampToBeCollected != null)
+        {
+            if (!stampToBeCollected.isCollected)
+            {
+                oldIsCollected = stampToBeCollected.isCollected;
+
+                stampToBeCollected.spawnNode.GetComponent<SpriteRenderer>().color = Color.white;
+                stampToBeCollected.isCollected = true;
+                p.stamps.Add(stampToBeCollected);
+
+            }
+        }
+
+        if (p.movementLeft <= 0)
+        {
+            p.traveledNodes.Clear(); // Forget all the nodes traveled to
+            p.traveledNodes.Add(p.occupiedNode); //i need this i guess
+
+            phase = GamePhase.EncounterTime; // next phase
+        }
+        else
+            phase = GamePhase.PickDirection; // Go back to picking direction
     }
 
     void EncounterTime(EntityPiece p, MapNode m)
@@ -436,6 +510,11 @@ public class GameplayTest : MonoBehaviour
         {
             currentPlayerInitialNode.playerOccupied = null;
         }
+
+        // Reset temp values.
+        oldStamps.Clear();
+        oldPoints = 0;
+        oldIsCollected = true;
 
         // Change to the next player in the list
         nextPlayers.Remove(currentPlayer); // remove current player from the turn order
