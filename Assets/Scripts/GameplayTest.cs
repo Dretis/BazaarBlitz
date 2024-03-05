@@ -69,7 +69,6 @@ public class GameplayTest : MonoBehaviour
 
     private List<Stamp> oldStamps = new List<Stamp>();
     private int oldPoints = 0;
-    private bool oldIsCollected = true;
 
     // Start is called before the first frame update
     void Start()
@@ -199,25 +198,15 @@ public class GameplayTest : MonoBehaviour
                 p.stamps = new List<Stamp>(oldStamps);
                 p.heldPoints = oldPoints;
 
-                foreach (Stamp stamp in p.stamps)
-                {
-                    stamp.spawnNode.GetComponent<SpriteRenderer>().color = Color.white;
-                    stamp.isCollected = true;
-                }
-
                 oldStamps.Clear();
                 oldPoints = 0;
             }
             else if (stampCollected != null)
             {
                 // Stamp was not collected before
-                if (!oldIsCollected)
+                if (p.stamps.Exists(stamp => stamp == stampCollected))
                 {
-                    stampCollected.isCollected = false;
-                    stampCollected.spawnNode.GetComponent<SpriteRenderer>().color = stampCollected.stampColor;
                     p.stamps.Remove(stampCollected);
-
-                    oldIsCollected = true;
                 }
             }
 
@@ -259,12 +248,6 @@ public class GameplayTest : MonoBehaviour
         // Cash in Stamps
         if (m.CompareTag("Castle"))
         {
-            foreach(Stamp stamp in p.stamps)
-            {
-                stamp.spawnNode.GetComponent<SpriteRenderer>().color = stamp.stampColor;
-                stamp.isCollected = false;
-            }
-
             oldPoints = p.heldPoints;
             oldStamps = new List<Stamp>(p.stamps);
 
@@ -277,14 +260,9 @@ public class GameplayTest : MonoBehaviour
         }
         else if (stampToBeCollected != null)
         {
-            if (!stampToBeCollected.isCollected)
+            if (!p.stamps.Exists(stamp => stamp == stampToBeCollected))
             {
-                oldIsCollected = stampToBeCollected.isCollected;
-
-                stampToBeCollected.spawnNode.GetComponent<SpriteRenderer>().color = Color.white;
-                stampToBeCollected.isCollected = true;
                 p.stamps.Add(stampToBeCollected);
-
             }
         }
 
@@ -518,7 +496,6 @@ public class GameplayTest : MonoBehaviour
         // Reset temp values.
         oldStamps.Clear();
         oldPoints = 0;
-        oldIsCollected = true;
 
         // Change to the next player in the list
         nextPlayers.Remove(currentPlayer); // remove current player from the turn order
