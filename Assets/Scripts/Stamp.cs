@@ -6,7 +6,6 @@ public class Stamp : MonoBehaviour
 {
     public GameObject spawnNode;
     public Color stampColor;
-    public bool isCollected = false;
 
     void Awake()
     { 
