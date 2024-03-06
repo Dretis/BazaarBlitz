@@ -17,6 +17,7 @@ public class EntityPiece : MonoBehaviour
     public int movementLeft;
     public int finalPoints = 1;
     public int heldPoints = 0;
+    public List<Stamp> stamps = new List<Stamp>();
     [SerializeField]
     public PlayerStats combatStats;
 

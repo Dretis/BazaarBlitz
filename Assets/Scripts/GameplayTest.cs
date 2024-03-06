@@ -27,6 +27,7 @@ public class GameplayTest : MonoBehaviour
         RollDice,
         PickDirection,
         MoveAround,
+        PassBy,
         EncounterTime,
         RockPaperScissors,
         CombatTime,
@@ -65,6 +66,9 @@ public class GameplayTest : MonoBehaviour
     public AudioClip moveSFX;
     public AudioClip reverseSFX;
     public AudioSource audioSource;
+
+    private List<Stamp> oldStamps = new List<Stamp>();
+    private int oldPoints = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -111,6 +115,10 @@ public class GameplayTest : MonoBehaviour
             // Move-to Node Phase
             case GamePhase.MoveAround:
                 MoveAround(currentPlayer);
+                break;
+
+            case GamePhase.PassBy:
+                PassBy(currentPlayer, currentPlayer.occupiedNode);
                 break;
 
             // Battle-Event Phase
@@ -182,6 +190,26 @@ public class GameplayTest : MonoBehaviour
 
         if (wantedNode == lastNode) // The direction you picked was the node you just came from (Redo)
         {
+            Stamp stampCollected = p.occupiedNode.gameObject.GetComponent<Stamp>();
+
+            // Undo moves (not sure if this actually undoes multiple stamp collections)
+            if (p.occupiedNode.CompareTag("Castle"))
+            {
+                p.stamps = new List<Stamp>(oldStamps);
+                p.heldPoints = oldPoints;
+
+                oldStamps.Clear();
+                oldPoints = 0;
+            }
+            else if (stampCollected != null)
+            {
+                // Stamp was not collected before
+                if (p.stamps.Exists(stamp => stamp == stampCollected))
+                {
+                    p.stamps.Remove(stampCollected);
+                }
+            }
+
             p.traveledNodes.Remove(lastNode);
             p.occupiedNode = lastNode;
 
@@ -193,6 +221,7 @@ public class GameplayTest : MonoBehaviour
 
             wantedNode = null;
             audioSource.PlayOneShot(reverseSFX, 1.2f);
+
             phase = GamePhase.PickDirection; // Go back to picking direction
         }
         else if(wantedNode != null) // Go to that new node and occupy it
@@ -208,17 +237,44 @@ public class GameplayTest : MonoBehaviour
             wantedNode = null;
             audioSource.PlayOneShot(moveSFX, 1.2f);
 
-            if (p.movementLeft <= 0)
-            {
-                p.traveledNodes.Clear(); // Forget all the nodes traveled to
-                p.traveledNodes.Add(p.occupiedNode); //i need this i guess
-
-                phase = GamePhase.EncounterTime; // next phase
-            }
-            else
-                phase = GamePhase.PickDirection; // Go back to picking direction
+            phase = GamePhase.PassBy;
         }
         
+    }
+
+    void PassBy(EntityPiece p, MapNode m)
+    {
+        // Cash in Stamps
+        if (m.CompareTag("Castle"))
+        {
+            oldPoints = p.heldPoints;
+            oldStamps = new List<Stamp>(p.stamps);
+
+            if (p.stamps.Count != 0)
+            {
+                p.heldPoints += (int)(50 * Mathf.Pow(2, p.stamps.Count-1));
+            }
+            
+            p.stamps.Clear();
+        }
+        else if (m.CompareTag("Stamp"))
+        {
+            Stamp stampToBeCollected = m.gameObject.GetComponent<Stamp>();
+            if (!p.stamps.Exists(stamp => stamp == stampToBeCollected))
+            {
+                p.stamps.Add(stampToBeCollected);
+            }
+        }
+
+        if (p.movementLeft <= 0)
+        {
+            p.traveledNodes.Clear(); // Forget all the nodes traveled to
+            p.traveledNodes.Add(p.occupiedNode); //i need this i guess
+
+            phase = GamePhase.EncounterTime; // next phase
+        }
+        else
+            phase = GamePhase.PickDirection; // Go back to picking direction
     }
 
     void EncounterTime(EntityPiece p, MapNode m)
@@ -245,6 +301,11 @@ public class GameplayTest : MonoBehaviour
                     p.finalPoints += p.heldPoints;
                 p.heldPoints = 0;
 
+                encounterOver = true;
+                phase = GamePhase.ConfirmContinue;
+            }
+            else if (m.CompareTag("Stamp"))
+            {
                 encounterOver = true;
                 phase = GamePhase.ConfirmContinue;
             }
@@ -436,6 +497,10 @@ public class GameplayTest : MonoBehaviour
         {
             currentPlayerInitialNode.playerOccupied = null;
         }
+
+        // Reset temp values.
+        oldStamps.Clear();
+        oldPoints = 0;
 
         // Change to the next player in the list
         nextPlayers.Remove(currentPlayer); // remove current player from the turn order
