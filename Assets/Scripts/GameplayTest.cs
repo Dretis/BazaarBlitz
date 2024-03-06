@@ -244,7 +244,6 @@ public class GameplayTest : MonoBehaviour
 
     void PassBy(EntityPiece p, MapNode m)
     {
-        Stamp stampToBeCollected = m.gameObject.GetComponent<Stamp>();
         // Cash in Stamps
         if (m.CompareTag("Castle"))
         {
@@ -258,8 +257,9 @@ public class GameplayTest : MonoBehaviour
             
             p.stamps.Clear();
         }
-        else if (stampToBeCollected != null)
+        else if (m.CompareTag("Stamp"))
         {
+            Stamp stampToBeCollected = m.gameObject.GetComponent<Stamp>();
             if (!p.stamps.Exists(stamp => stamp == stampToBeCollected))
             {
                 p.stamps.Add(stampToBeCollected);
@@ -301,6 +301,11 @@ public class GameplayTest : MonoBehaviour
                     p.finalPoints += p.heldPoints;
                 p.heldPoints = 0;
 
+                encounterOver = true;
+                phase = GamePhase.ConfirmContinue;
+            }
+            else if (m.CompareTag("Stamp"))
+            {
                 encounterOver = true;
                 phase = GamePhase.ConfirmContinue;
             }
