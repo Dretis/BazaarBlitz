@@ -1,0 +1,107 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6681334390854208582
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 180584003984485761}
+  - component: {fileID: 5305012726795850418}
+  - component: {fileID: 848631243195636835}
+  m_Layer: 0
+  m_Name: Fridge
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &180584003984485761
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6681334390854208582}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5305012726795850418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6681334390854208582}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aced3dd383528c245acc609f064b0501, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerName: Fridge
+  playerID: -4
+  combatSceneIndex: -1
+  strDie:
+  - 1
+  - 1
+  - 2
+  - 2
+  - 2
+  - 3
+  dexDie:
+  - 1
+  - 1
+  - 2
+  - 2
+  - 3
+  - 4
+  intDie:
+  - 2
+  - 3
+  - 4
+  - 4
+  - 5
+  - 6
+  health: 8
+  maxHealth: 8
+  inventory:
+  - {fileID: 11400000, guid: 4fd59672f461ffa4bb6c75f0339fc93d, type: 2}
+  - {fileID: 11400000, guid: 4fd59672f461ffa4bb6c75f0339fc93d, type: 2}
+  - {fileID: 11400000, guid: 4fd59672f461ffa4bb6c75f0339fc93d, type: 2}
+  - {fileID: 11400000, guid: 4fd59672f461ffa4bb6c75f0339fc93d, type: 2}
+  - {fileID: 11400000, guid: 4fd59672f461ffa4bb6c75f0339fc93d, type: 2}
+  - {fileID: 11400000, guid: 923ee1f783dd41345a759535103ee9a7, type: 2}
+  isEnemy: 1
+  favoredAttack: 1
+  attackActions:
+  - {fileID: 11400000, guid: 4226c660c7644224e8fb9b338308165b, type: 2}
+  - {fileID: 11400000, guid: 6ca9e4123ea095d4fb087a3cc7c9a44d, type: 2}
+  - {fileID: 11400000, guid: 092cf3b3af66061478bc3530f1af01f9, type: 2}
+  - {fileID: 11400000, guid: 32a37866383854b4d80b76bd6c92a71b, type: 2}
+  defendActions:
+  - {fileID: 11400000, guid: 5153769221d5a6c4abc3e93c5052db99, type: 2}
+  - {fileID: 11400000, guid: 704ee6dbca2f62140ad5caf58846a975, type: 2}
+  - {fileID: 11400000, guid: 188957564c85adc4a8e2ce5c7b8466f5, type: 2}
+  - {fileID: 11400000, guid: 5b8f525effb08414abb503dfc27d55f6, type: 2}
+  fightingPosition: 1
+--- !u!114 &848631243195636835
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6681334390854208582}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 302a351d594d3c345ae6265c16e204d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  id: -4
+  combatStats: {fileID: 5305012726795850418}
