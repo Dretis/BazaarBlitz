@@ -23,5 +23,11 @@ public class ItemStats : ScriptableObject
 
     public string specialID; // Will be checked in a switch statement for specific stuff.
 
+    [Header("Shop and Visual Information")]
+    public Sprite itemSprite;
+    [TextArea (2, 10)]
+    public string effectDescription;
+    [TextArea(2, 10)]
     public string flavorText;
+    public int basePrice;
 }

@@ -14,7 +14,7 @@ public class UIManager : Subject
 
     [Header("Listen on Event Channels")]
     public VoidEventChannelSO m_LandOnStorefront;
-    public VoidEventChannelSO m_HoveringItem;
+    public ItemEventChannelSO m_HoveringItem;
 
     // Subscribe to event(s)
     private void OnEnable()
@@ -41,10 +41,16 @@ public class UIManager : Subject
         storefrontCanvas.enabled = !storefrontCanvas.enabled;
     }
 
-    private void HighlightItem()
+    private void HighlightItem(ItemStats item)
     {
+        storeChatBubble.text = "<color=lightblue>" + item.itemName + "</color>  ";
+        storeChatBubble.text += "<color=yellow>@" + item.basePrice + "</color>\n";
+        storeChatBubble.text += "<size=36>" + item.effectDescription +"\n\n";
+        storeChatBubble.text += "<color=grey>" + item.flavorText + "</color></size>";
+        /*
         storeChatBubble.SetText("<color=lightblue>Big Gear </color> <color=yellow>@ 2200</color> \n"
             + "<size=36> Increases  <sprite=1> damage by 4 on your next  <sprite=1> attack.\n"
             + "<color=grey>Something, adawdadw something something something something... something!!?!</color></size>");
+        */
     }
 }
