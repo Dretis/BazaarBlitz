@@ -19,14 +19,14 @@ public class UIManager : Subject
     // Subscribe to event(s)
     private void OnEnable()
     {
-        m_LandOnStorefront.OnEventRaised += ShowStorefront;
+        m_LandOnStorefront.OnEventRaised += EnterStorefront;
         m_HoveringItem.OnEventRaised += HighlightItem;
     }
 
     // Unsubscribe to event(s) to avoid errors
     private void OnDisable()
     {
-        m_LandOnStorefront.OnEventRaised -= ShowStorefront;
+        m_LandOnStorefront.OnEventRaised -= EnterStorefront;
         m_HoveringItem.OnEventRaised -= HighlightItem;
     }
 
@@ -36,9 +36,21 @@ public class UIManager : Subject
         
     }
 
-    private void ShowStorefront()
+    private void EnterStorefront()
     {
-        storefrontCanvas.enabled = !storefrontCanvas.enabled;
+        storefrontCanvas.gameObject.SetActive(true);
+        storefrontCanvas.enabled = true;
+        // storefrontCanvas.enabled = !storefrontCanvas.enabled;
+
+
+    }
+
+    private void ExitStorefront()
+    {
+        storefrontCanvas.enabled = false;
+        storefrontCanvas.gameObject.SetActive(false);
+
+
     }
 
     private void HighlightItem(ItemStats item)
