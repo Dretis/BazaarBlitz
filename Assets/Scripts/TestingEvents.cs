@@ -12,6 +12,7 @@ public class TestingEvents : MonoBehaviour
 
     [SerializeField] private ItemEventChannelSO itemBoughtChannel;
     [SerializeField] private IntEventChannelSO removeItemBroadcastChannel;
+    [SerializeField] private IntEventChannelSO buyingItemBroadcastChannel;
 
     // Start is called before the first frame update
     void Start()
@@ -67,6 +68,17 @@ public class TestingEvents : MonoBehaviour
 
         // Tell listeners that this item is bought
         itemBoughtChannel.RaiseEvent(item);
+    }
+    public void RaiseBuyItemAt(int i)
+    {
+        // Upon buying from store, it should:
+        //  Remove item sprite visually in the store
+        //  Make the item null in the list position
+        //  Add that item into the player's inventory
+        //  Deduct currency based on item's price
+
+        // Tell listeners that the item at this i position is being bought 
+        buyingItemBroadcastChannel.RaiseEvent(i);
     }
 
     public void RaiseRemoveItem(int i)

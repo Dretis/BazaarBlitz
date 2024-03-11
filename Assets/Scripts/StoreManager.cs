@@ -8,7 +8,7 @@ public class StoreManager : MonoBehaviour
     public List<ItemStats> storeInventory;
 
     private EntityPiece playerOwner;
-    private int storeCapacity = 4;
+    private int storeCapacity = 3;
 
     private void Awake()
     {
