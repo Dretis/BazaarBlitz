@@ -15,6 +15,8 @@ public class UIPromptManager : MonoBehaviour
     public IntEventChannelSO m_RollForMovement;
     public PlayerEventChannelSO m_NextPlayerTurn;
     public PlayerEventChannelSO m_EncounterDecisions;
+    public NodeEventChannelSO m_LandOnStorefront;
+    public ItemEventChannelSO m_ItemSold;
 
     private void Start()
     {
@@ -26,6 +28,9 @@ public class UIPromptManager : MonoBehaviour
         m_RollForMovement.OnEventRaised += RolledDice;
         m_NextPlayerTurn.OnEventRaised += DisplayRollPrompt;
         m_EncounterDecisions.OnEventRaised += DisplayEncounterChoices;
+        m_LandOnStorefront.OnEventRaised += DisplayStorefrontPrompt;
+        m_ItemSold.OnEventRaised += DisplayLeavePrompt;
+
     }
 
     private void OnDisable()
@@ -33,6 +38,9 @@ public class UIPromptManager : MonoBehaviour
         m_RollForMovement.OnEventRaised -= RolledDice;
         m_NextPlayerTurn.OnEventRaised -= DisplayRollPrompt;
         m_EncounterDecisions.OnEventRaised -= DisplayEncounterChoices;
+        m_LandOnStorefront.OnEventRaised -= DisplayStorefrontPrompt;
+        m_ItemSold.OnEventRaised -= DisplayLeavePrompt;
+
     }
 
     private void RolledDice(int diceRoll)
@@ -81,5 +89,17 @@ public class UIPromptManager : MonoBehaviour
     private void ClearInputText()
     {
         inputPrompt.text = "";
+    }
+
+    private void DisplayStorefrontPrompt(MapNode mapNode)
+    {
+        inputPrompt.text = "<color=white>Hover over</color> items to see details.\n";
+        inputPrompt.text += "<color=white>Left click</color> to buy an item.\n";
+        inputPrompt.text += "You <color=red>must</color> buy one item to leave.";
+    }
+
+    private void DisplayLeavePrompt(ItemStats item)
+    {
+        inputPrompt.text = "<color=white>[SPACE]</color> to leave the store.\n";
     }
 }

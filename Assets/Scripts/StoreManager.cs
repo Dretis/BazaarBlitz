@@ -6,19 +6,15 @@ using UnityEngine;
 public class StoreManager : MonoBehaviour
 {
     public List<ItemStats> storeInventory;
-    public ItemStats[] tempInventory;
 
-    private EntityPiece playerOwner;
+    public EntityPiece playerOwner;
     private int storeCapacity = 3;
 
     private void Awake()
     {
         playerOwner = GetComponent<MapNode>().playerOccupied;
 
-        // Shit code here do not do this please replace this later
-        tempInventory = Resources.LoadAll<ItemStats>("ScriptableObjects/Items/");
-
-        storeInventory = new List<ItemStats>(tempInventory);
+        storeInventory = new List<ItemStats>();
 
         // storeInventory = Enumerable.Repeat<ItemStats>(null, storeCapacity).ToList();
     }

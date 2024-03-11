@@ -437,7 +437,7 @@ public class GameplayTest : MonoBehaviour
                     tile.GetComponent<SpriteRenderer>().color = currentPlayer.playerColor;
 
                     StoreManager store = tile.AddComponent<StoreManager>();
-
+                    store.playerOwner = currentPlayer;
                     // randomly pick 3 items to put into the base store stock
                     for (int i = 0; i < 3; i++)
                     {
