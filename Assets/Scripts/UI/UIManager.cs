@@ -11,6 +11,7 @@ public class UIManager : MonoBehaviour
     [Header("UI Elements")]
     [SerializeField] private Canvas storefrontCanvas;
     [SerializeField] private TextMeshProUGUI storeChatBubble;
+    [SerializeField] private Image storekeeperImage;
 
     // May move this to another script
     [Header("Store Stock")]
@@ -22,12 +23,14 @@ public class UIManager : MonoBehaviour
     public ItemEventChannelSO m_itemSold;
 
     [Header("Listen on Event Channels")]
-    public VoidEventChannelSO m_LandOnStorefront;
+    public NodeEventChannelSO m_LandOnStorefront;
     public VoidEventChannelSO m_ExitStorefront;
     public ItemEventChannelSO m_HoveringItem;
     public ItemListEventChannelSO m_StockItems;
     public IntEventChannelSO m_RemoveItem; // change it to RemoveItem, may need this to be an IntEventChannel
 
+    // this probably needs to be in a seperate script too
+    private StoreManager currentStore;
 
     // Subscribe to event(s)
     private void OnEnable()
@@ -37,6 +40,9 @@ public class UIManager : MonoBehaviour
         m_HoveringItem.OnEventRaised += HighlightItem;
         m_StockItems.OnEventRaised += StockItems;
         m_RemoveItem.OnEventRaised += RemoveItemStockAt;
+
+        // Can you even listen to your own event?
+        m_itemSold.OnEventRaised += FinishShopping;
     }
 
     // Unsubscribe to event(s) to avoid errors
@@ -47,6 +53,8 @@ public class UIManager : MonoBehaviour
         m_HoveringItem.OnEventRaised -= HighlightItem;
         m_StockItems.OnEventRaised -= StockItems;
         m_RemoveItem.OnEventRaised -= RemoveItemStockAt;
+
+        m_itemSold.OnEventRaised -= FinishShopping;
     }
 
     // Set dependencies here and in Inspector (if needed)
@@ -55,13 +63,19 @@ public class UIManager : MonoBehaviour
         
     }
 
-    private void EnterStorefront()
+    private void EnterStorefront(MapNode mapNode)
     {
         storefrontCanvas.gameObject.SetActive(true);
         storefrontCanvas.enabled = true;
         // storefrontCanvas.enabled = !storefrontCanvas.enabled;
+        currentStore = mapNode.GetComponent<StoreManager>();
+        
+        for (int i = 0; i < itemInventory.Count; i++)
+        {
+            itemInventory[i] = currentStore.storeInventory[i];
+        }
 
-
+        StockItems(itemInventory);
     }
 
     private void ExitStorefront()
@@ -71,14 +85,21 @@ public class UIManager : MonoBehaviour
 
 
     }
-    private void HighlightItem(int i)
+
+    private void FinishShopping(ItemStats item)
+    {
+        if(item != null)
+            storeChatBubble.text = "Enjoy your brand new " + item.itemName + "! \nThank you for your patronage, and we hope to see you very soon!";
+    }
+
+    public void HighlightItem(int i)
     {
         // Changes the chat bubble to show the information of the selected item in the store
         if (itemInventory[i] == null)
         {
             // There is no item in that spot
             storeChatBubble.text = "<color=red>SOLD OUT</color>  ";
-            storeChatBubble.text += "<color=yellow>@ NULL</color>\n";
+            storeChatBubble.text += "<color=yellow>@ ----</color>\n";
             storeChatBubble.text += "<size=36>No more stock left.\n\n";
             storeChatBubble.text += "<color=grey>\"Come back another time when we refill it!\"</color></size>";
         }
@@ -98,7 +119,7 @@ public class UIManager : MonoBehaviour
         {
             // There is no item in that spot
             storeChatBubble.text = "<color=red>SOLD OUT</color>  ";
-            storeChatBubble.text += "<color=yellow>@ NULL</color>\n";
+            storeChatBubble.text += "<color=yellow>@ ----</color>\n";
             storeChatBubble.text += "<size=36>No more stock left.\n\n";
             storeChatBubble.text += "<color=grey>\"Come back another time when we refill it!\"</color></size>";
         }
@@ -119,7 +140,7 @@ public class UIManager : MonoBehaviour
         itemImage.sprite = null;
         itemImage.color = new Color(itemImage.color.r, itemImage.color.g, itemImage.color.b, 0);
 
-        Debug.Log("Removed " + itemImage + " sprite from the store.");
+        Debug.Log("Removed the " + itemImage + " sprite from the store.");
 
         // May need to move the rest of the following code to another script
 
@@ -128,6 +149,7 @@ public class UIManager : MonoBehaviour
         m_itemSold.RaiseEvent(itemInventory[i]);
 
         itemInventory[i] = null;
+        currentStore.storeInventory[i] = null;
     }
 
     private void StockItems(List<ItemStats> items)
@@ -135,8 +157,12 @@ public class UIManager : MonoBehaviour
         // Updates all the items in the store based off what the store manager contains
         for (int i = 0; i < items.Count; i++)
         {
-            itemInventoryImages[i].sprite = items[i].itemSprite;
-
+            var itemImage = itemInventoryImages[i];
+            if(itemInventory[i] != null)
+            {
+                itemImage.sprite = items[i].itemSprite;
+                itemImage.color = new Color(itemImage.color.r, itemImage.color.g, itemImage.color.b, 255);
+            }
             // temp code, prob remove this later
             itemInventory[i] = items[i];
         }

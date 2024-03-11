@@ -15,6 +15,7 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private List<TextMeshProUGUI> playerNames;
     [SerializeField] private List<TextMeshProUGUI> playerPlacements;
     [SerializeField] private List<TextMeshProUGUI> playerScores;
+    [SerializeField] private List<TextMeshProUGUI> playerHPs;
     [SerializeField] private List<Image> playerImages;
 
     [Header("Listen On Event Channels")]
@@ -34,12 +35,7 @@ public class ScoreManager : MonoBehaviour
     {
         for (int i = 0; i < players.Count; i++)
         {
-            playerNames[i].text = "" + players[i].nickname;
-            playerScores[i].text = "@ " + players[i].heldPoints;
-            playerImages[i].color = players[i].playerColor - new Color32(0, 0, 0, 125);
-
-            // Placeholder for now
-            playerPlacements[i].text = "";
+            UpdateScoreForPlayer(i);
         }
     }
 
@@ -48,7 +44,13 @@ public class ScoreManager : MonoBehaviour
         // Update specific player score on the scoreboard based on their ID.
 
         // playerNames[id].text = "" + players[id].nickname;
-        playerScores[id].text = "@ " + players[id].heldPoints;
+        playerNames[id].text = "" + players[id].nickname;
+        playerScores[id].text = "<color=yellow>@</color> " + players[id].heldPoints;
+        playerHPs[id].text = "HP " + players[id].combatStats.health;
+        playerImages[id].color = players[id].playerColor - new Color32(0, 0, 0, 125);
+
+        // Placeholder for now
+        playerPlacements[id].text = "";
     }
 
 }

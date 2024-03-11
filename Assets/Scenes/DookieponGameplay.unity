@@ -365,14 +365,14 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 761271142}
-          m_TargetAssemblyTypeName: TestingEvents, Assembly-CSharp
-          m_MethodName: RaiseChannelItem
-          m_Mode: 2
+        - m_Target: {fileID: 761271141}
+          m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+          m_MethodName: HighlightItem
+          m_Mode: 3
           m_Arguments:
-            m_ObjectArgument: {fileID: 11400000, guid: 1178c93ae11a11e40b1c45d2c62fc845, type: 2}
-            m_ObjectArgumentAssemblyTypeName: ItemStats, Assembly-CSharp
-            m_IntArgument: 0
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 1
             m_FloatArgument: 0
             m_StringArgument: 
             m_BoolArgument: 0
@@ -381,18 +381,6 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 761271142}
-          m_TargetAssemblyTypeName: TestingEvents, Assembly-CSharp
-          m_MethodName: RaiseBuyItem
-          m_Mode: 2
-          m_Arguments:
-            m_ObjectArgument: {fileID: 11400000, guid: 1178c93ae11a11e40b1c45d2c62fc845, type: 2}
-            m_ObjectArgumentAssemblyTypeName: ItemStats, Assembly-CSharp
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
         - m_Target: {fileID: 761271142}
           m_TargetAssemblyTypeName: TestingEvents, Assembly-CSharp
           m_MethodName: RaiseRemoveItem
@@ -600,7 +588,7 @@ GameObject:
   - component: {fileID: 85987368}
   - component: {fileID: 85987367}
   m_Layer: 5
-  m_Name: Store Cut-in
+  m_Name: Store Cut-in (PLACEHOLDER)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -620,7 +608,6 @@ RectTransform:
   m_Children:
   - {fileID: 646577239}
   - {fileID: 802782259}
-  - {fileID: 1564375433}
   m_Father: {fileID: 366433268}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1155,7 +1142,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: dbd74fcaee1a0ec42b52d10afa5a5824, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 7b50e6841c814644e9888601356e14e0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -1930,6 +1917,7 @@ RectTransform:
   - {fileID: 882918292}
   - {fileID: 140310054}
   - {fileID: 85987366}
+  - {fileID: 1564375433}
   - {fileID: 613214489}
   - {fileID: 877763598}
   - {fileID: 2015473008}
@@ -2037,13 +2025,13 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 761271142}
-          m_TargetAssemblyTypeName: TestingEvents, Assembly-CSharp
-          m_MethodName: RaiseChannelItem
-          m_Mode: 2
+        - m_Target: {fileID: 761271141}
+          m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+          m_MethodName: HighlightItem
+          m_Mode: 3
           m_Arguments:
-            m_ObjectArgument: {fileID: 11400000, guid: 4fd59672f461ffa4bb6c75f0339fc93d, type: 2}
-            m_ObjectArgumentAssemblyTypeName: ItemStats, Assembly-CSharp
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
             m_StringArgument: 
@@ -2053,18 +2041,6 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 761271142}
-          m_TargetAssemblyTypeName: TestingEvents, Assembly-CSharp
-          m_MethodName: RaiseBuyItem
-          m_Mode: 2
-          m_Arguments:
-            m_ObjectArgument: {fileID: 11400000, guid: 4fd59672f461ffa4bb6c75f0339fc93d, type: 2}
-            m_ObjectArgumentAssemblyTypeName: ItemStats, Assembly-CSharp
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
         - m_Target: {fileID: 761271142}
           m_TargetAssemblyTypeName: TestingEvents, Assembly-CSharp
           m_MethodName: RaiseRemoveItem
@@ -2239,7 +2215,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: dbd74fcaee1a0ec42b52d10afa5a5824, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 7b50e6841c814644e9888601356e14e0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -2315,6 +2291,11 @@ MonoBehaviour:
   - {fileID: 1028636289}
   - {fileID: 30591241}
   - {fileID: 1374979100}
+  playerHPs:
+  - {fileID: 736409578}
+  - {fileID: 989168751}
+  - {fileID: 1157789164}
+  - {fileID: 1333587963}
   playerImages:
   - {fileID: 180393255}
   - {fileID: 709659163}
@@ -2373,7 +2354,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2720,7 +2701,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 366433268}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -2857,11 +2838,11 @@ RectTransform:
   m_Father: {fileID: 85987366}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -865, y: 198}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: -53.47998, y: -18.75}
   m_SizeDelta: {x: 1000, y: 50}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0, y: 1}
 --- !u!114 &646577240
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2882,10 +2863,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Inventory
+  m_text: 'Store purchased! It''s stocked up with:'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f14f4be18184b9d40943768620494e2d, type: 2}
+  m_sharedMaterial: {fileID: 2674762156599226005, guid: f14f4be18184b9d40943768620494e2d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2917,7 +2898,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 512
+  m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -2986,6 +2967,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c55da4c6d718614981e03050dbd4362, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &736409578 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8877734692795444587, guid: d00eadb919b1346408ba00dc66a6c507, type: 3}
+  m_PrefabInstance: {fileID: 1593922195}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &761271137
 GameObject:
   m_ObjectHideFlags: 0
@@ -3034,6 +3026,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   storefrontCanvas: {fileID: 1564375436}
   storeChatBubble: {fileID: 502979369}
+  storekeeperImage: {fileID: 1178112125}
   itemInventoryImages:
   - {fileID: 390244918}
   - {fileID: 39715892}
@@ -3043,8 +3036,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1178c93ae11a11e40b1c45d2c62fc845, type: 2}
   - {fileID: 11400000, guid: 8503e05f3a6bdcf408fae19a2cab1d52, type: 2}
   broadcastEvent: {fileID: 0}
-  m_itemSold: {fileID: 0}
-  m_LandOnStorefront: {fileID: 11400000, guid: 94c553ac437ede64f9993a6fa32e5a1c, type: 2}
+  m_itemSold: {fileID: 11400000, guid: ace0aa03bf09d91469d5914ce815154e, type: 2}
+  m_LandOnStorefront: {fileID: 11400000, guid: f648c693d8451764f96f063b6b3da44b, type: 2}
   m_ExitStorefront: {fileID: 11400000, guid: 410e906b10aa4ae49ab7395fffa23d79, type: 2}
   m_HoveringItem: {fileID: 11400000, guid: a0556718fd4b2eb4089673c41068ff8e, type: 2}
   m_StockItems: {fileID: 11400000, guid: 0ed629e8fd521944e9e9eac1cb160243, type: 2}
@@ -3207,8 +3200,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f14f4be18184b9d40943768620494e2d, type: 2}
+  m_sharedMaterial: {fileID: 2674762156599226005, guid: f14f4be18184b9d40943768620494e2d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3235,7 +3228,7 @@ MonoBehaviour:
   m_fontSize: 36
   m_fontSizeBase: 36
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
@@ -3244,7 +3237,7 @@ MonoBehaviour:
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
-  m_lineSpacing: 0
+  m_lineSpacing: 23.66
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
@@ -3451,9 +3444,9 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 89e2ba3e9ab737d43b8d4e1593185bf8, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 1c5cc9bcce4182246a2ae169bc1d9cb2, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.5
+  m_Volume: 0.215
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -4765,7 +4758,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: dbd74fcaee1a0ec42b52d10afa5a5824, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 7b50e6841c814644e9888601356e14e0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -4789,7 +4782,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnNode: {fileID: 0}
-  stampColor: {r: 1, g: 0.8903059, b: 0, a: 1}
+  stampColor: {r: 0.8980393, g: 0.5254902, b: 0.24313727, a: 1}
 --- !u!1 &870528637
 GameObject:
   m_ObjectHideFlags: 0
@@ -6538,7 +6531,7 @@ RectTransform:
   - {fileID: 99861}
   - {fileID: 2005032793}
   m_Father: {fileID: 366433268}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -6837,14 +6830,14 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 761271142}
-          m_TargetAssemblyTypeName: TestingEvents, Assembly-CSharp
-          m_MethodName: RaiseChannelItem
-          m_Mode: 2
+        - m_Target: {fileID: 761271141}
+          m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+          m_MethodName: HighlightItem
+          m_Mode: 3
           m_Arguments:
-            m_ObjectArgument: {fileID: 11400000, guid: 8503e05f3a6bdcf408fae19a2cab1d52, type: 2}
-            m_ObjectArgumentAssemblyTypeName: ItemStats, Assembly-CSharp
-            m_IntArgument: 0
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 2
             m_FloatArgument: 0
             m_StringArgument: 
             m_BoolArgument: 0
@@ -6855,7 +6848,7 @@ MonoBehaviour:
         m_Calls:
         - m_Target: {fileID: 761271142}
           m_TargetAssemblyTypeName: TestingEvents, Assembly-CSharp
-          m_MethodName: RaiseBuyItemAt
+          m_MethodName: RaiseRemoveItem
           m_Mode: 3
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -6928,6 +6921,17 @@ MonoBehaviour:
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1886399580354237274, guid: d00eadb919b1346408ba00dc66a6c507, type: 3}
   m_PrefabInstance: {fileID: 1946012965}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &989168751 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8877734692795444587, guid: d00eadb919b1346408ba00dc66a6c507, type: 3}
+  m_PrefabInstance: {fileID: 813626253}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
@@ -7107,7 +7111,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -7356,6 +7360,16 @@ MonoBehaviour:
   m_UpdatePlayerScore: {fileID: 11400000, guid: 898b14cc070b11c40ae0fa991dc512ac, type: 2}
   m_NextPlayerTurn: {fileID: 11400000, guid: 45e13c3cd9283b74989c51218c39f6c2, type: 2}
   m_EncounterDecision: {fileID: 11400000, guid: 8718b783fa7492048bcffd162050642b, type: 2}
+  m_LandOnStorefront: {fileID: 11400000, guid: f648c693d8451764f96f063b6b3da44b, type: 2}
+  m_ExitStorefront: {fileID: 11400000, guid: 410e906b10aa4ae49ab7395fffa23d79, type: 2}
+  m_ItemBought: {fileID: 11400000, guid: ace0aa03bf09d91469d5914ce815154e, type: 2}
+  tempItems:
+  - {fileID: 11400000, guid: 4fd59672f461ffa4bb6c75f0339fc93d, type: 2}
+  - {fileID: 11400000, guid: 8503e05f3a6bdcf408fae19a2cab1d52, type: 2}
+  - {fileID: 11400000, guid: 1178c93ae11a11e40b1c45d2c62fc845, type: 2}
+  - {fileID: 11400000, guid: c88d8aed1040f9b448f37a2983dd1fdd, type: 2}
+  - {fileID: 11400000, guid: 923ee1f783dd41345a759535103ee9a7, type: 2}
+  - {fileID: 11400000, guid: 8089e0e474c4f144f8164f37535a2cc3, type: 2}
 --- !u!114 &1124466747
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7879,6 +7893,17 @@ MonoBehaviour:
   - {fileID: 390244916}
   - {fileID: 39715890}
   - {fileID: 904451120}
+--- !u!114 &1157789164 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8877734692795444587, guid: d00eadb919b1346408ba00dc66a6c507, type: 3}
+  m_PrefabInstance: {fileID: 1946012965}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1177935936
 GameObject:
   m_ObjectHideFlags: 0
@@ -9431,9 +9456,9 @@ MonoBehaviour:
   movementTotal: 0
   movementLeft: 0
   finalPoints: 1
-  heldPoints: 0
+  heldPoints: 500
   stamps: []
-  combatStats: {fileID: 0}
+  combatStats: {fileID: 1273892901}
 --- !u!114 &1273892901
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9534,6 +9559,17 @@ MonoBehaviour:
   player1ID: 0
   player2ID: 0
   combatManagers: []
+--- !u!114 &1333587963 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8877734692795444587, guid: d00eadb919b1346408ba00dc66a6c507, type: 3}
+  m_PrefabInstance: {fileID: 1886399578503343246}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &1349564019 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1886399579848694525, guid: d00eadb919b1346408ba00dc66a6c507, type: 3}
@@ -11441,9 +11477,9 @@ MonoBehaviour:
   movementTotal: 0
   movementLeft: 0
   finalPoints: 1
-  heldPoints: 0
+  heldPoints: 500
   stamps: []
-  combatStats: {fileID: 0}
+  combatStats: {fileID: 1419713628}
 --- !u!114 &1419713628
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11690,7 +11726,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: dbd74fcaee1a0ec42b52d10afa5a5824, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 7b50e6841c814644e9888601356e14e0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -12932,13 +12968,13 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1798668933}
-  m_Father: {fileID: 85987366}
-  m_RootOrder: 2
+  m_Father: {fileID: 366433268}
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -180, y: 580}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1564375434
 MonoBehaviour:
@@ -13291,7 +13327,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.8962264, g: 0.7218526, b: 0.58902925, a: 0}
+  m_BackGroundColor: {r: 0.5764706, g: 0.6901961, b: 0.6156863, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -13362,7 +13398,7 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0
@@ -13703,7 +13739,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -13778,9 +13814,9 @@ MonoBehaviour:
   movementTotal: 0
   movementLeft: 0
   finalPoints: 1
-  heldPoints: 10
+  heldPoints: 500
   stamps: []
-  combatStats: {fileID: 0}
+  combatStats: {fileID: 1751578438}
 --- !u!114 &1751578438
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13860,9 +13896,9 @@ MonoBehaviour:
   movementTotal: 0
   movementLeft: 0
   finalPoints: 1
-  heldPoints: 0
+  heldPoints: 500
   stamps: []
-  combatStats: {fileID: 0}
+  combatStats: {fileID: 1784744905}
 --- !u!4 &1784744903 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4581765840797956285, guid: 593d54cc189a0544a8760b3a73027f89, type: 3}
@@ -15098,7 +15134,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -15314,7 +15350,7 @@ RectTransform:
   - {fileID: 1946012966}
   - {fileID: 1349564019}
   m_Father: {fileID: 366433268}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}

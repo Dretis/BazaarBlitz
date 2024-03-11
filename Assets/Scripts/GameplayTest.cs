@@ -77,6 +77,25 @@ public class GameplayTest : MonoBehaviour
     public PlayerEventChannelSO m_NextPlayerTurn;
     public PlayerEventChannelSO m_EncounterDecision;
 
+    // Store-based Event Channels
+    public NodeEventChannelSO m_LandOnStorefront;
+    public VoidEventChannelSO m_ExitStorefront;
+    [Header("Listen on Event Channels")]
+    public ItemEventChannelSO m_ItemBought; //Listening to this one
+
+    // Placeholder code, basis items for storefront
+    public List<ItemStats> tempItems;
+
+    private void OnEnable()
+    {
+        m_ItemBought.OnEventRaised += _PlaceholderChangeAndContinue;
+    }
+
+    private void OnDisable()
+    {
+        m_ItemBought.OnEventRaised -= _PlaceholderChangeAndContinue;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -268,6 +287,7 @@ public class GameplayTest : MonoBehaviour
             if (p.stamps.Count != 0)
             {
                 p.heldPoints += (int)(50 * Mathf.Pow(2, p.stamps.Count-1));
+                m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
             }
             
             p.stamps.Clear();
@@ -305,7 +325,13 @@ public class GameplayTest : MonoBehaviour
         else
         {
             var otherPlayer = p.occupiedNode.playerOccupied;
-            if (m.CompareTag("Castle")) //Stash your points
+            if(m.CompareTag("Store")) // Forced to buy item(s)
+            {
+                Debug.Log("Landed on store");
+                m_LandOnStorefront.RaiseEvent(m);
+                phase = GamePhase.ConfirmContinue;
+            }
+            else if (m.CompareTag("Castle")) //Stash your points
             {
                 encounterScreen.SetActive(true);
                 p1fight.text = "";
@@ -403,11 +429,25 @@ public class GameplayTest : MonoBehaviour
                 // Build a Store
                 else if (Input.GetKeyDown(KeyCode.RightShift))
                 {
+                    // Raise an eventchannel for BuildAStore to replace the code in here, replace ALOT OF THE CODE EHRE PLEASE
                     Debug.Log("I am a store");
                     GameObject tile = m.gameObject;
                     tile.tag = "Store";
+
+                    tile.GetComponent<SpriteRenderer>().color = currentPlayer.playerColor;
+
                     StoreManager store = tile.AddComponent<StoreManager>();
-                    foreach(var listing in store.storeInventory)
+
+                    // randomly pick 3 items to put into the base store stock
+                    for (int i = 0; i < 3; i++)
+                    {
+                        var randomNum = Random.Range(0, tempItems.Count);
+                        store.storeInventory.Add(tempItems[randomNum]);
+                    }
+
+                    storeListings.text = "";
+
+                    foreach (var listing in store.storeInventory)
                     {
                         if (listing != null) storeListings.text += listing.itemName + "\n"; 
                     }
@@ -478,12 +518,12 @@ public class GameplayTest : MonoBehaviour
                      (playerPick == 3 && monsterPick == 1))
             {
                 resultInfo.text = "YOU LOSE...";
-                p.heldPoints -= 1;
+                p.heldPoints -= 20;
             }
             else
             {
                 resultInfo.text = "YOU WIN!!!";
-                p.heldPoints += 2;
+                p.heldPoints += 40;
             }
 
             m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
@@ -502,6 +542,8 @@ public class GameplayTest : MonoBehaviour
             encounterScreen.SetActive(false);
             storeScreen.SetActive(false);
             UpdatePoints();
+            m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
+            m_ExitStorefront.RaiseEvent();
         }
     }
 
@@ -557,5 +599,15 @@ public class GameplayTest : MonoBehaviour
         {
             gameInfo.text += "\n" + player.nickname + ": " + player.heldPoints + " | " + player.finalPoints;
         }
+    }
+
+    private void _PlaceholderChangeAndContinue(ItemStats item)
+    {
+        // When an item is bought, allow confirmation via SPACE bar to continue the game
+        encounterOver = true;
+        if(item != null)
+            currentPlayer.heldPoints -= item.basePrice;
+
+        m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
     }
 }
