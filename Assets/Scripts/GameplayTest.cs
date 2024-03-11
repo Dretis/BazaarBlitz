@@ -52,6 +52,7 @@ public class GameplayTest : MonoBehaviour
 
     public GameObject storeScreen;
     public TextMeshProUGUI storeListings;
+    public TextMeshProUGUI storeListingsLabel;
 
     public MapNode wantedNode;
     private SceneGameManager sceneManager;
@@ -327,9 +328,41 @@ public class GameplayTest : MonoBehaviour
             var otherPlayer = p.occupiedNode.playerOccupied;
             if(m.CompareTag("Store")) // Forced to buy item(s)
             {
-                Debug.Log("Landed on store");
-                m_LandOnStorefront.RaiseEvent(m);
-                phase = GamePhase.ConfirmContinue;
+                // Update portions of this code later
+                GameObject tile = m.gameObject;
+                StoreManager store = tile.GetComponent<StoreManager>();
+                if(store.playerOwner != currentPlayer)
+                {
+                    // Forced to buy item(s) from another player's store
+                    Debug.Log("Landed on " + store.playerOwner + " store");
+                    m_LandOnStorefront.RaiseEvent(m);
+                    phase = GamePhase.ConfirmContinue;
+                }
+                else
+                {
+                    // Placeholder restock your store on landing
+
+                    for (int i = 0; i < 3; i++)
+                    {
+                        var randomNum = Random.Range(0, tempItems.Count);
+                        if(store.storeInventory[i] == null)
+                        {
+                            store.storeInventory[i] = (tempItems[randomNum]);
+                        }
+                    }
+
+                    // Placeholder restock
+                    storeListings.text = "";
+                    storeListingsLabel.text = "You restock your empty listings. This store now contains: ";
+                    foreach (var listing in store.storeInventory)
+                    {
+                        if (listing != null) storeListings.text += listing.itemName + "\n";
+                    }
+                    storeScreen.SetActive(true);
+
+                    encounterOver = true;
+                    phase = GamePhase.ConfirmContinue;
+                }
             }
             else if (m.CompareTag("Castle")) //Stash your points
             {
@@ -347,6 +380,13 @@ public class GameplayTest : MonoBehaviour
             }
             else if (m.CompareTag("Stamp"))
             {
+                // Placeholder visual for clarity
+                encounterScreen.SetActive(true);
+                p1fight.text = "";
+                p2fight.text = "";
+                resultInfo.text = "<size=45>[SAFE SPACE]</size>\nLanded on a stamp space.\nNothing happens.";
+                resultInfo.text += "\n<size=24>[SPACE] to continue</size>";
+
                 encounterOver = true;
                 phase = GamePhase.ConfirmContinue;
             }
@@ -446,6 +486,7 @@ public class GameplayTest : MonoBehaviour
                     }
 
                     storeListings.text = "";
+                    storeListingsLabel.text = "Store purchased! It's stocked up with:";
 
                     foreach (var listing in store.storeInventory)
                     {
@@ -465,7 +506,7 @@ public class GameplayTest : MonoBehaviour
         encounterScreen.SetActive(true);
         p1fight.text = "";
         p2fight.text = "";
-        resultInfo.text = "<size=45>[ENCOUNTER]</size>\nRock, Paper, Scissors!!! \n<size=30> Rock = 1 or J | Paper = 2 or K | Scissors = 3 or L </size>";
+        resultInfo.text = "<size=45>[PLACEHOLDER ENCOUNTER]</size>\nRock, Paper, Scissors!!! \n<size=30> Rock = 1 or J | Paper = 2 or K | Scissors = 3 or L </size>";
 
         var playerPick = 0;
         /// monsterPick = Random.Range(1, 10);
@@ -512,18 +553,23 @@ public class GameplayTest : MonoBehaviour
             if (playerPick == monsterPick) // Tie
             {
                 resultInfo.text = "TIE.";
+                resultInfo.text += "\n<size=24>[SPACE] to continue</size>";
             }
             else if ((playerPick == 1 && monsterPick == 2) ||
                      (playerPick == 2 && monsterPick == 3) ||
                      (playerPick == 3 && monsterPick == 1))
             {
                 resultInfo.text = "YOU LOSE...";
+                resultInfo.text += "\n<size=24>You lost 20 points.</size>";
+                resultInfo.text += "\n<size=24>[SPACE] to continue</size>";
                 p.heldPoints -= 20;
             }
             else
             {
                 resultInfo.text = "YOU WIN!!!";
-                p.heldPoints += 40;
+                resultInfo.text += "\n<size=24>You gain 55 points.</size>";
+                resultInfo.text += "\n<size=24>[SPACE] to continue</size>";
+                p.heldPoints += 55;
             }
 
             m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);

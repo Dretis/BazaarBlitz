@@ -106,10 +106,10 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            storeChatBubble.text = "<color=lightblue>" + itemInventory[i].itemName + "</color>  ";
-            storeChatBubble.text += "<color=yellow>@" + itemInventory[i].basePrice + "</color>\n";
-            storeChatBubble.text += "<size=36>" + itemInventory[i].effectDescription + "\n\n";
-            storeChatBubble.text += "<color=grey>" + itemInventory[i].flavorText + "</color></size>";
+            storeChatBubble.text = "<color=lightblue><size=54>" + itemInventory[i].itemName + "</color>  ";
+            storeChatBubble.text += "<color=yellow>@" + itemInventory[i].basePrice + "</color></size>\n";
+            storeChatBubble.text += "<size=36>" + itemInventory[i].effectDescription + "</size>\n\n";
+            storeChatBubble.text += "<color=grey>" + itemInventory[i].flavorText + "</color>";
         }
     }
 
@@ -163,6 +163,11 @@ public class UIManager : MonoBehaviour
             {
                 itemImage.sprite = items[i].itemSprite;
                 itemImage.color = new Color(itemImage.color.r, itemImage.color.g, itemImage.color.b, 255);
+            }
+            else
+            {
+                // make the sprite not visible to the player
+                itemImage.color = new Color(itemImage.color.r, itemImage.color.g, itemImage.color.b, 0);
             }
             // temp code, prob remove this later
             itemInventory[i] = items[i];
