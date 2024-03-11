@@ -7,6 +7,7 @@ using UnityEngine.Events;
 
 public class UIManager : MonoBehaviour
 {
+    // CHANGE THIS SCRIPTS NAME, THIS ONE IS ONLY HANDLING STOREFRONT UI
     [Header("UI Elements")]
     [SerializeField] private Canvas storefrontCanvas;
     [SerializeField] private TextMeshProUGUI storeChatBubble;

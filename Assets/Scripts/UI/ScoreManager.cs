@@ -17,6 +17,19 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private List<TextMeshProUGUI> playerScores;
     [SerializeField] private List<Image> playerImages;
 
+    [Header("Listen On Event Channels")]
+    public IntEventChannelSO m_ChangeInScore;
+
+    private void OnEnable()
+    {
+        m_ChangeInScore.OnEventRaised += UpdateScoreForPlayer;
+    }
+
+    private void OnDisable()
+    {
+        m_ChangeInScore.OnEventRaised -= UpdateScoreForPlayer;
+    }
+
     void Start()
     {
         for (int i = 0; i < players.Count; i++)
@@ -30,9 +43,12 @@ public class ScoreManager : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    private void UpdateScoreForPlayer(int id)
     {
-        
+        // Update specific player score on the scoreboard based on their ID.
+
+        // playerNames[id].text = "" + players[id].nickname;
+        playerScores[id].text = "@ " + players[id].heldPoints;
     }
+
 }

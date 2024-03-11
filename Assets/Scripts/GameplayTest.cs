@@ -70,6 +70,13 @@ public class GameplayTest : MonoBehaviour
     private List<Stamp> oldStamps = new List<Stamp>();
     private int oldPoints = 0;
 
+    // Event Channels
+    [Header("Broadcast on Event Channels")]
+    public IntEventChannelSO m_RollForMovement;
+    public IntEventChannelSO m_UpdatePlayerScore;
+    public PlayerEventChannelSO m_NextPlayerTurn;
+    public PlayerEventChannelSO m_EncounterDecision;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -149,10 +156,18 @@ public class GameplayTest : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 diceRoll = Random.Range(1, 7); // Roll from 1 to 6
+
+                // We just rolled for movement, tell listeners about it
+                m_RollForMovement.RaiseEvent(diceRoll);
+
+                // Put these in their own listener script
                 rollText.text = "" + diceRoll;
                 p.movementTotal = p.movementLeft = diceRoll;
 
                 audioSource.PlayOneShot(moveSFX, 2f);
+
+                // End of listener code
+
                 phase = GamePhase.PickDirection;
             }
         }
@@ -378,6 +393,8 @@ public class GameplayTest : MonoBehaviour
             }
             else if (m.CompareTag("Encounter")) // Regular Encounter
             {
+                m_EncounterDecision.RaiseEvent(currentPlayer.combatStats);
+
                 // Monster Encounter
                 if (Input.GetKeyDown(KeyCode.Return))
                 {
@@ -469,7 +486,7 @@ public class GameplayTest : MonoBehaviour
                 p.heldPoints += 2;
             }
 
-
+            m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
             //
             encounterOver = true;
             phase = GamePhase.ConfirmContinue;
@@ -509,6 +526,9 @@ public class GameplayTest : MonoBehaviour
         if (nextPlayers.Count != 0)
         {
             currentPlayer = nextPlayers[nextPlayers.Count - 1];
+
+            m_NextPlayerTurn.RaiseEvent(currentPlayer.combatStats);
+
             turnText.text = currentPlayer.nickname + "'s Turn!";
             turnText.color = currentPlayer.playerColor;
 
