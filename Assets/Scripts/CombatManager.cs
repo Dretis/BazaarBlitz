@@ -265,7 +265,7 @@ public class CombatManager : MonoBehaviour
             int loot = Random.Range(0, 6);
 
             if (player2.isEnemy) {
-              player2.health = player2.maxHealth;
+              //player2.health = player2.maxHealth;
               attacker.inventory.Add(player2.inventory[loot]); // Enemy inventories are loot tables
 
             }
