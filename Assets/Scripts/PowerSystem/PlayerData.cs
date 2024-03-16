@@ -6,6 +6,7 @@ public class PlayerData : MonoBehaviour
 {
     // cringe
     public float health;
+    public float maxHealth;
 
     public DieConfig strDie => entityStats.dieConfigs[(int)EntityBaseStats.DieTypes.Strength];
     public DieConfig intDie => entityStats.dieConfigs[(int)EntityBaseStats.DieTypes.Dex];
@@ -17,7 +18,7 @@ public class PlayerData : MonoBehaviour
 
     public int playerID; // 1-4 for final game, 1-2 (where 1 is attacker for this).
     public int combatSceneIndex = -1; // -1 indicates player is not in battle
-    
+
     public bool isEnemy;
     public int favoredAttack;
 
