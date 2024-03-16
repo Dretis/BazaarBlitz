@@ -24,6 +24,7 @@ public class GameplayTest : MonoBehaviour
 
     public enum GamePhase
     {
+        ItemSelection,
         RollDice,
         PickDirection,
         MoveAround,
@@ -129,6 +130,11 @@ public class GameplayTest : MonoBehaviour
     {
         switch (phase)
         {
+            // Pick actions
+            case GamePhase.ItemSelection:
+                SelectItem(currentPlayer);
+                break;
+
             // Roll Phase 
             case GamePhase.RollDice:
                 RollDice(currentPlayer);
@@ -167,6 +173,19 @@ public class GameplayTest : MonoBehaviour
                 EndOfTurn(currentPlayer);
                 break;
         }
+    }
+
+    private void SelectItem(EntityPiece p)
+    {
+        // all items active for debug
+        foreach(var item in p.combatStats.inventory)
+        {
+            p.combatStats.AddItemToActiveEffects(1, item);
+        }
+
+        p.combatStats.UpdateStatModifiers();
+
+        phase = GamePhase.RollDice;
     }
 
     void RollDice(EntityPiece p)
@@ -621,7 +640,7 @@ public class GameplayTest : MonoBehaviour
             turnText.color = currentPlayer.playerColor;
 
             currentPlayerInitialNode = currentPlayer.occupiedNode;
-            phase = GamePhase.RollDice;
+            phase = GamePhase.ItemSelection;
         }
         else
         {
@@ -634,7 +653,7 @@ public class GameplayTest : MonoBehaviour
             turnText.color = currentPlayer.playerColor;
 
             currentPlayerInitialNode = currentPlayer.occupiedNode;
-            phase = GamePhase.RollDice;
+            phase = GamePhase.ItemSelection;
         }
     }
 

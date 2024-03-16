@@ -19,12 +19,12 @@ public class EntityPiece : MonoBehaviour
     public int heldPoints = 0;
     public List<Stamp> stamps = new List<Stamp>();
     [SerializeField]
-    public PlayerStats combatStats;
+    public PlayerData combatStats;
 
     // Start is called before the first frame update
     void Start()
     {
-        combatStats = this.GetComponent<PlayerStats>();
+        combatStats = this.GetComponent<PlayerData>();
         playerSprite.color = playerColor;
         transform.position = occupiedNode.transform.position;
         occupiedNodeCopy = occupiedNode;

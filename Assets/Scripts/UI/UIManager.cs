@@ -74,7 +74,7 @@ public class UIManager : MonoBehaviour
         {
             itemInventory[i] = currentStore.storeInventory[i];
         }
-        storeChatBubble.text = "Greetings, customer! Welcome to " + currentStore.playerOwner.nickname + "'s wonderful store! \nPlease purchase something.";
+        storeChatBubble.text = "\"Greetings, customer! Welcome to " + currentStore.playerOwner.nickname + "'s wonderful store! \nPlease purchase something.\"";
         storekeeperImage.color = currentStore.playerOwner.playerColor;
         StockItems(itemInventory);
     }
@@ -90,7 +90,7 @@ public class UIManager : MonoBehaviour
     private void FinishShopping(ItemStats item)
     {
         if(item != null)
-            storeChatBubble.text = "Enjoy your brand new " + item.itemName + "! \nThank you for your patronage, and we hope to see you very soon!";
+            storeChatBubble.text = "\"Enjoy your brand new " + item.itemName + "! \nThank you for your patronage, and we hope to see you very soon!\"";
     }
 
     public void HighlightItem(int i)
@@ -174,7 +174,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    private void ChangeInCurrency(PlayerStats ps)
+    private void ChangeInCurrency(PlayerData ps)
     {
         // Update the text visually according to player's remaining currency and the item's price
         // PROBABLY PUT THIS IN A DIFFERENT LISTENER SCRIPT (like a Scorekeeper Listener script for UI)

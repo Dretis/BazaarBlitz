@@ -4,7 +4,7 @@ using UnityEngine;
 using TMPro;
 
 [CreateAssetMenu]
-public class ItemStats : ScriptableObject
+public class ItemStats : ScriptableObject, IStatModifierChanger
 {
     public enum PhaseTypes { Attack, Defend, Both }
     public enum WeaponTypes { Melee, Gun, Magic, Special}
@@ -30,4 +30,16 @@ public class ItemStats : ScriptableObject
     [TextArea(2, 10)]
     public string flavorText;
     public int basePrice;
+
+    public List<StatModifierChangerSO> modifiers;
+
+    public EntityStatsModifiers ApplyStatModChanges(EntityStatsModifiers currentStats)
+    {
+        foreach(var modifier in modifiers)
+        {
+            currentStats = modifier.ApplyStatModChanges(currentStats);
+        }
+
+        return currentStats;
+    }
 }

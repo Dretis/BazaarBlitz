@@ -12,19 +12,19 @@ public class CombatManager : MonoBehaviour
     public bool retaliatorAttacking = false;
     public bool combatActive = false;
 
-    [SerializeField] public PlayerStats player1;
-    [SerializeField] public PlayerStats player2;
+    [SerializeField] public PlayerData player1;
+    [SerializeField] public PlayerData player2;
     //[SerializeField] private PlayerStats player3;
     //[SerializeField] private PlayerStats player4;
 
     // Aggressor / Retaliator = original starter and victim of the combat
     // Attacker / Defender = current one attacking / defending
-    private PlayerStats aggressor;
-    private PlayerStats retaliator;
-    private PlayerStats attacker;
-    private PlayerStats defender;
-    private PlayerStats curTarget;
-    private PlayerStats curEnemy;
+    private PlayerData aggressor;
+    private PlayerData retaliator;
+    private PlayerData attacker;
+    private PlayerData defender;
+    private PlayerData curTarget;
+    private PlayerData curEnemy;
 
     private List<ItemStats> itemsQueuedAttack;
     private List<ItemStats> itemsQueuedDefend;
@@ -202,6 +202,7 @@ public class CombatManager : MonoBehaviour
 
     public void playTurn()
     {
+
         foreach (ItemStats item in itemsQueuedDefend)
         {
             activateItem(item, true);
@@ -312,40 +313,43 @@ public class CombatManager : MonoBehaviour
             defendMultiplier = 0.5f;
         }
 
-        int roll = Random.Range(0, 6);
+        int rawRoll = Random.Range(0, 6);
+        int roll = 0;
         switch (attack.type)
         {
             case Action.WeaponTypes.Melee:
-                damage += attacker.strDie[roll];
-                for (int i = 0; i < attackerBonusRoll + attack.diesToRoll; i++)
+
+                for (int i = 0; i < attackerBonusRoll + attack.diesToRoll + 1; i++)
                 {
-                    roll = Random.Range(0, 6);
-                    damage += attacker.strDie[roll];
+                    roll = (int)attacker.strDie[rawRoll];
+                    damage += (int)attacker.currentStatsModifier.ApplyDieModifier(EntityBaseStats.DieTypes.Strength, roll);
                 }
+
                 audioSource.PlayOneShot(smackSFX, 1f);
                 //Debug.Log("MeleeAttack");
                 break;
             case Action.WeaponTypes.Gun:
-                damage += attacker.dexDie[roll];
-                for (int i = 0; i < attackerBonusRoll + attack.diesToRoll; i++)
+
+                for (int i = 0; i < attackerBonusRoll + attack.diesToRoll + 1; i++)
                 {
-                    roll = Random.Range(0, 6);
-                    damage += attacker.dexDie[roll];
+                    roll = (int)attacker.dexDie[rawRoll];
+                    damage += (int)attacker.currentStatsModifier.ApplyDieModifier(EntityBaseStats.DieTypes.Dex, roll);
                 }
                 audioSource.PlayOneShot(shootSFX, 1f);
                 //Debug.Log("GunAttack");
                 break;
             case Action.WeaponTypes.Magic:
-                damage += attacker.intDie[roll];
-                for (int i = 0; i < attackerBonusRoll + attack.diesToRoll; i++)
+
+                for (int i = 0; i < attackerBonusRoll + attack.diesToRoll + 1; i++)
                 {
-                    roll = Random.Range(0, 6);
-                    damage += attacker.intDie[roll];
+                    roll = (int)attacker.intDie[rawRoll];
+                    damage += (int)attacker.currentStatsModifier.ApplyDieModifier(EntityBaseStats.DieTypes.Int, roll);
                 }
                 audioSource.PlayOneShot(clankSFX, 1f);
                 //Debug.Log("MagicAttack");
                 break;
             case Action.WeaponTypes.Special:
+                roll = rawRoll;
                 damage += attacker.strDie[roll];
                 roll = Random.Range(0, 6);
                 damage += attacker.dexDie[roll];
@@ -364,7 +368,7 @@ public class CombatManager : MonoBehaviour
                 break;
         }
         damage += (attackerBuffDamage + attack.bonusDamage);
-        //Debug.Log("Attacker Roll: " + damage);
+        Debug.Log($"Attacker role: Raw {roll}, modified {damage}");
 
         roll = Random.Range(0, 6);
         switch (defend.type)
