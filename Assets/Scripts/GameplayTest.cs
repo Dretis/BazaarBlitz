@@ -24,6 +24,7 @@ public class GameplayTest : MonoBehaviour
 
     public enum GamePhase
     {
+        ItemSelection,
         RollDice,
         PickDirection,
         MoveAround,
@@ -52,6 +53,7 @@ public class GameplayTest : MonoBehaviour
 
     public GameObject storeScreen;
     public TextMeshProUGUI storeListings;
+    public TextMeshProUGUI storeListingsLabel;
 
     public MapNode wantedNode;
     private SceneGameManager sceneManager;
@@ -69,6 +71,32 @@ public class GameplayTest : MonoBehaviour
 
     private List<Stamp> oldStamps = new List<Stamp>();
     private int oldPoints = 0;
+
+    // Event Channels
+    [Header("Broadcast on Event Channels")]
+    public IntEventChannelSO m_RollForMovement;
+    public IntEventChannelSO m_UpdatePlayerScore;
+    public PlayerEventChannelSO m_NextPlayerTurn;
+    public PlayerEventChannelSO m_EncounterDecision;
+
+    // Store-based Event Channels
+    public NodeEventChannelSO m_LandOnStorefront;
+    public VoidEventChannelSO m_ExitStorefront;
+    [Header("Listen on Event Channels")]
+    public ItemEventChannelSO m_ItemBought; //Listening to this one
+
+    // Placeholder code, basis items for storefront
+    public List<ItemStats> tempItems;
+
+    private void OnEnable()
+    {
+        m_ItemBought.OnEventRaised += _PlaceholderChangeAndContinue;
+    }
+
+    private void OnDisable()
+    {
+        m_ItemBought.OnEventRaised -= _PlaceholderChangeAndContinue;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -102,6 +130,11 @@ public class GameplayTest : MonoBehaviour
     {
         switch (phase)
         {
+            // Pick actions
+            case GamePhase.ItemSelection:
+                SelectItem(currentPlayer);
+                break;
+
             // Roll Phase 
             case GamePhase.RollDice:
                 RollDice(currentPlayer);
@@ -142,6 +175,19 @@ public class GameplayTest : MonoBehaviour
         }
     }
 
+    private void SelectItem(EntityPiece p)
+    {
+        // all items active for debug
+        foreach(var item in p.combatStats.inventory)
+        {
+            p.combatStats.AddItemToActiveEffects(1, item);
+        }
+
+        p.combatStats.UpdateStatModifiers();
+
+        phase = GamePhase.RollDice;
+    }
+
     void RollDice(EntityPiece p)
     {
         if(p.combatStats.combatSceneIndex == -1)
@@ -149,10 +195,18 @@ public class GameplayTest : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 diceRoll = Random.Range(1, 7); // Roll from 1 to 6
+
+                // We just rolled for movement, tell listeners about it
+                m_RollForMovement.RaiseEvent(diceRoll);
+
+                // Put these in their own listener script
                 rollText.text = "" + diceRoll;
                 p.movementTotal = p.movementLeft = diceRoll;
 
                 audioSource.PlayOneShot(moveSFX, 2f);
+
+                // End of listener code
+
                 phase = GamePhase.PickDirection;
             }
         }
@@ -253,6 +307,7 @@ public class GameplayTest : MonoBehaviour
             if (p.stamps.Count != 0)
             {
                 p.heldPoints += (int)(50 * Mathf.Pow(2, p.stamps.Count-1));
+                m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
             }
             
             p.stamps.Clear();
@@ -290,7 +345,45 @@ public class GameplayTest : MonoBehaviour
         else
         {
             var otherPlayer = p.occupiedNode.playerOccupied;
-            if (m.CompareTag("Castle")) //Stash your points
+            if(m.CompareTag("Store")) // Forced to buy item(s)
+            {
+                // Update portions of this code later
+                GameObject tile = m.gameObject;
+                StoreManager store = tile.GetComponent<StoreManager>();
+                if(store.playerOwner != currentPlayer)
+                {
+                    // Forced to buy item(s) from another player's store
+                    Debug.Log("Landed on " + store.playerOwner + " store");
+                    m_LandOnStorefront.RaiseEvent(m);
+                    phase = GamePhase.ConfirmContinue;
+                }
+                else
+                {
+                    // Placeholder restock your store on landing
+
+                    for (int i = 0; i < 3; i++)
+                    {
+                        var randomNum = Random.Range(0, tempItems.Count);
+                        if(store.storeInventory[i] == null)
+                        {
+                            store.storeInventory[i] = (tempItems[randomNum]);
+                        }
+                    }
+
+                    // Placeholder restock
+                    storeListings.text = "";
+                    storeListingsLabel.text = "You restock your empty listings. This store now contains: ";
+                    foreach (var listing in store.storeInventory)
+                    {
+                        if (listing != null) storeListings.text += listing.itemName + "\n";
+                    }
+                    storeScreen.SetActive(true);
+
+                    encounterOver = true;
+                    phase = GamePhase.ConfirmContinue;
+                }
+            }
+            else if (m.CompareTag("Castle")) //Stash your points
             {
                 encounterScreen.SetActive(true);
                 p1fight.text = "";
@@ -306,6 +399,13 @@ public class GameplayTest : MonoBehaviour
             }
             else if (m.CompareTag("Stamp"))
             {
+                // Placeholder visual for clarity
+                encounterScreen.SetActive(true);
+                p1fight.text = "";
+                p2fight.text = "";
+                resultInfo.text = "<size=45>[SAFE SPACE]</size>\nLanded on a stamp space.\nNothing happens.";
+                resultInfo.text += "\n<size=24>[SPACE] to continue</size>";
+
                 encounterOver = true;
                 phase = GamePhase.ConfirmContinue;
             }
@@ -378,6 +478,8 @@ public class GameplayTest : MonoBehaviour
             }
             else if (m.CompareTag("Encounter")) // Regular Encounter
             {
+                m_EncounterDecision.RaiseEvent(currentPlayer.combatStats);
+
                 // Monster Encounter
                 if (Input.GetKeyDown(KeyCode.Return))
                 {
@@ -386,11 +488,26 @@ public class GameplayTest : MonoBehaviour
                 // Build a Store
                 else if (Input.GetKeyDown(KeyCode.RightShift))
                 {
+                    // Raise an eventchannel for BuildAStore to replace the code in here, replace ALOT OF THE CODE EHRE PLEASE
                     Debug.Log("I am a store");
                     GameObject tile = m.gameObject;
                     tile.tag = "Store";
+
+                    tile.GetComponent<SpriteRenderer>().color = currentPlayer.playerColor;
+
                     StoreManager store = tile.AddComponent<StoreManager>();
-                    foreach(var listing in store.storeInventory)
+                    store.playerOwner = currentPlayer;
+                    // randomly pick 3 items to put into the base store stock
+                    for (int i = 0; i < 3; i++)
+                    {
+                        var randomNum = Random.Range(0, tempItems.Count);
+                        store.storeInventory.Add(tempItems[randomNum]);
+                    }
+
+                    storeListings.text = "";
+                    storeListingsLabel.text = "Store purchased! It's stocked up with:";
+
+                    foreach (var listing in store.storeInventory)
                     {
                         if (listing != null) storeListings.text += listing.itemName + "\n"; 
                     }
@@ -408,7 +525,7 @@ public class GameplayTest : MonoBehaviour
         encounterScreen.SetActive(true);
         p1fight.text = "";
         p2fight.text = "";
-        resultInfo.text = "<size=45>[ENCOUNTER]</size>\nRock, Paper, Scissors!!! \n<size=30> Rock = 1 or J | Paper = 2 or K | Scissors = 3 or L </size>";
+        resultInfo.text = "<size=45>[PLACEHOLDER ENCOUNTER]</size>\nRock, Paper, Scissors!!! \n<size=30> Rock = 1 or J | Paper = 2 or K | Scissors = 3 or L </size>";
 
         var playerPick = 0;
         /// monsterPick = Random.Range(1, 10);
@@ -455,21 +572,26 @@ public class GameplayTest : MonoBehaviour
             if (playerPick == monsterPick) // Tie
             {
                 resultInfo.text = "TIE.";
+                resultInfo.text += "\n<size=24>[SPACE] to continue</size>";
             }
             else if ((playerPick == 1 && monsterPick == 2) ||
                      (playerPick == 2 && monsterPick == 3) ||
                      (playerPick == 3 && monsterPick == 1))
             {
                 resultInfo.text = "YOU LOSE...";
-                p.heldPoints -= 1;
+                resultInfo.text += "\n<size=24>You lost 20 points.</size>";
+                resultInfo.text += "\n<size=24>[SPACE] to continue</size>";
+                p.heldPoints -= 20;
             }
             else
             {
                 resultInfo.text = "YOU WIN!!!";
-                p.heldPoints += 2;
+                resultInfo.text += "\n<size=24>You gain 55 points.</size>";
+                resultInfo.text += "\n<size=24>[SPACE] to continue</size>";
+                p.heldPoints += 55;
             }
 
-
+            m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
             //
             encounterOver = true;
             phase = GamePhase.ConfirmContinue;
@@ -485,6 +607,8 @@ public class GameplayTest : MonoBehaviour
             encounterScreen.SetActive(false);
             storeScreen.SetActive(false);
             UpdatePoints();
+            m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
+            m_ExitStorefront.RaiseEvent();
         }
     }
 
@@ -509,11 +633,14 @@ public class GameplayTest : MonoBehaviour
         if (nextPlayers.Count != 0)
         {
             currentPlayer = nextPlayers[nextPlayers.Count - 1];
+
+            m_NextPlayerTurn.RaiseEvent(currentPlayer.combatStats);
+
             turnText.text = currentPlayer.nickname + "'s Turn!";
             turnText.color = currentPlayer.playerColor;
 
             currentPlayerInitialNode = currentPlayer.occupiedNode;
-            phase = GamePhase.RollDice;
+            phase = GamePhase.ItemSelection;
         }
         else
         {
@@ -526,7 +653,7 @@ public class GameplayTest : MonoBehaviour
             turnText.color = currentPlayer.playerColor;
 
             currentPlayerInitialNode = currentPlayer.occupiedNode;
-            phase = GamePhase.RollDice;
+            phase = GamePhase.ItemSelection;
         }
     }
 
@@ -537,5 +664,15 @@ public class GameplayTest : MonoBehaviour
         {
             gameInfo.text += "\n" + player.nickname + ": " + player.heldPoints + " | " + player.finalPoints;
         }
+    }
+
+    private void _PlaceholderChangeAndContinue(ItemStats item)
+    {
+        // When an item is bought, allow confirmation via SPACE bar to continue the game
+        encounterOver = true;
+        if(item != null)
+            currentPlayer.heldPoints -= item.basePrice;
+
+        m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
     }
 }

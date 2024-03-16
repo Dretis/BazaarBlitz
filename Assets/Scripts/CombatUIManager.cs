@@ -24,7 +24,7 @@ public class CombatUIManager : MonoBehaviour
     public Animator player1Animator;
     public Animator player2Animator;
 
-    public void UpdateActionText(PlayerStats ps, Action.PhaseTypes phase)
+    public void UpdateActionText(PlayerData ps, Action.PhaseTypes phase)
     {
         List<TextMeshProUGUI> stateTexts = null;
         List<TextMeshProUGUI> actionTexts = null;
@@ -88,7 +88,7 @@ public class CombatUIManager : MonoBehaviour
         }
     }
 
-    public void UpdateActionText(PlayerStats ps, Action.PhaseTypes phase, FightingPosition fp)
+    public void UpdateActionText(PlayerData ps, Action.PhaseTypes phase, FightingPosition fp)
     {
         List<TextMeshProUGUI> stateTexts = null;
         List<TextMeshProUGUI> actionTexts = null;
@@ -129,7 +129,7 @@ public class CombatUIManager : MonoBehaviour
         }
     }
 
-    public void UpdateAction2Text(PlayerStats ps, Action.PhaseTypes phase)
+    public void UpdateAction2Text(PlayerData ps, Action.PhaseTypes phase)
     {
         player2StateTexts[0].text = ps.playerName;
 

@@ -7,14 +7,16 @@ public class StoreManager : MonoBehaviour
 {
     public List<ItemStats> storeInventory;
 
-    private EntityPiece playerOwner;
-    private int storeCapacity = 4;
+    public EntityPiece playerOwner;
+    private int storeCapacity = 3;
 
     private void Awake()
     {
         playerOwner = GetComponent<MapNode>().playerOccupied;
 
-        storeInventory = Enumerable.Repeat<ItemStats>(null, storeCapacity).ToList();
+        storeInventory = new List<ItemStats>();
+
+        // storeInventory = Enumerable.Repeat<ItemStats>(null, storeCapacity).ToList();
     }
 
     public void BuyItem(EntityPiece buyer, ItemStats item, int index)
