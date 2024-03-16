@@ -522,6 +522,41 @@ public class GameplayTest : MonoBehaviour
 
     void RockPaperScissors(EntityPiece p)
     {
+
+        //Debug.Log("Your Player: " + currentPlayer.nickname);
+        //Debug.Log("Other Player: " + otherPlayer.nickname);
+        encounterStarted = true;
+
+        // Set IDs of players entering combat.
+        sceneManager.player1ID = p.id;
+
+
+        bool lookingForTarget = true;
+        while (lookingForTarget) {
+            var monsterType = Random.Range(-6, 0); // int from -6 to -1
+
+            sceneManager.player2ID = monsterType;
+
+            foreach (var enemy in sceneManager.enemies)
+            {
+                if (sceneManager.player2ID == enemy.id)
+                {
+                    if (enemy.combatStats.combatSceneIndex == -1) {
+                        lookingForTarget = false;
+                        break;
+                    }
+                }
+
+            }
+            // Now we have an enemy that isnt in a fight vs another player.
+        }
+
+
+        sceneManager.LoadCombatScene();
+
+
+        /*
+
         encounterScreen.SetActive(true);
         p1fight.text = "";
         p2fight.text = "";
@@ -596,6 +631,8 @@ public class GameplayTest : MonoBehaviour
             encounterOver = true;
             phase = GamePhase.ConfirmContinue;
         }
+
+        */
     }
 
     void ConfirmContinue(EntityPiece p)

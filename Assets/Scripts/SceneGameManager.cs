@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 public class SceneGameManager : MonoBehaviour
 {
     public List<EntityPiece> players = new List<EntityPiece>();
+    public List<MonsterStats> enemies = new List<MonsterStats>();
 
     public int player1ID;
     public int player2ID;
@@ -19,6 +20,7 @@ public class SceneGameManager : MonoBehaviour
     {
         DontDestroyOnLoad(this.gameObject);
         players.AddRange(FindObjectsOfType<EntityPiece>());
+        enemies.AddRange(FindObjectsOfType<MonsterStats>());
         overworldScene = GameObject.Find("Input Manager").GetComponent<GameplayTest>();
     }
 

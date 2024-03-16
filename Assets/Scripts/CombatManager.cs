@@ -63,6 +63,8 @@ public class CombatManager : MonoBehaviour
         sceneManager = GameObject.FindWithTag("SceneManager").GetComponent<SceneGameManager>();
         if (sceneManager)
         {
+
+          Debug.Log("Finding player");
             foreach (var player in sceneManager.players)
             {
                 if (sceneManager.player1ID == player.id)
@@ -73,6 +75,19 @@ public class CombatManager : MonoBehaviour
                 {
                     player2 = player.combatStats;
                 }
+            }
+            if (sceneManager.player2ID < 0) { // We're fighting a monster
+              foreach (var enemy in sceneManager.enemies)
+              {
+                  if (sceneManager.player2ID == enemy.id)
+                  {
+                      player2 = enemy.combatStats;
+                  }
+                  Debug.Log("monster");
+
+              }
+
+              Debug.Log("done");
             }
         }
 
@@ -125,14 +140,14 @@ public class CombatManager : MonoBehaviour
         {
             aggressor = player1;
             retaliator = player2;
-            isFightingAI = true;
+            //isFightingAI = true;
             curEnemy = player2;
         }
         else if (player1.isEnemy)
         {
             aggressor = player2;
             retaliator = player1;
-            isFightingAI = true;
+            //isFightingAI = true;
             curEnemy = player1;
         }
         else
@@ -246,6 +261,14 @@ public class CombatManager : MonoBehaviour
         if (aggressorWon)
         {
             Debug.Log("Attacker Wins!");
+
+            int loot = Random.Range(0, 6);
+
+            if (player2.isEnemy) {
+              player2.health = player2.maxHealth;
+              attacker.inventory.Add(player2.inventory[loot]); // Enemy inventories are loot tables
+
+            }
         }
         else
         {
@@ -256,6 +279,8 @@ public class CombatManager : MonoBehaviour
         // Players exit combat.
         player1.combatSceneIndex = -1;
         player2.combatSceneIndex = -1;
+
+
 
         sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
         sceneManager.UnloadCombatScene(SceneManager.GetSceneAt(combatSceneIndex), combatSceneIndex);
