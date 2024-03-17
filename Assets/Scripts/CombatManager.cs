@@ -55,11 +55,7 @@ public class CombatManager : MonoBehaviour
 
     private void Awake()
     {
-        /*
-        if (Instance)
-        {
-            Destroy(this);
-        }*/
+
         sceneManager = GameObject.FindWithTag("SceneManager").GetComponent<SceneGameManager>();
         if (sceneManager)
         {
