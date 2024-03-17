@@ -174,7 +174,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    private void ChangeInCurrency(PlayerData ps)
+    private void ChangeInCurrency(EntityPiece ps)
     {
         // Update the text visually according to player's remaining currency and the item's price
         // PROBABLY PUT THIS IN A DIFFERENT LISTENER SCRIPT (like a Scorekeeper Listener script for UI)

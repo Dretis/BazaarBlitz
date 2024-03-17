@@ -7,7 +7,7 @@ using TMPro;
 
 public class ScoreManager : MonoBehaviour
 {
-    [SerializeField] private PlayerData currentPlayer;
+    [SerializeField] private EntityPiece currentPlayer;
     [SerializeField] private List<EntityPiece> players;
 
     [Header("UI Elements")]
