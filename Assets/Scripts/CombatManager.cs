@@ -12,8 +12,8 @@ public class CombatManager : MonoBehaviour
     public bool retaliatorAttacking = false;
     public bool combatActive = false;
 
-    [SerializeField] public PlayerData player1;
-    [SerializeField] public PlayerData player2;
+    [SerializeField] public EntityPiece player1;
+    [SerializeField] public EntityPiece player2;
     //[SerializeField] private PlayerStats player3;
     //[SerializeField] private PlayerStats player4;
 
@@ -64,11 +64,11 @@ public class CombatManager : MonoBehaviour
             {
                 if (sceneManager.player1ID == player.id)
                 {
-                    player1 = player.combatStats;
+                    player1 = player;
                 }
                 else if (sceneManager.player2ID == player.id)
                 {
-                    player2 = player.combatStats;
+                    player2 = player;
                 }
             }
             if (sceneManager.player2ID < 0) { // We're fighting a monster
@@ -76,7 +76,7 @@ public class CombatManager : MonoBehaviour
               {
                   if (sceneManager.player2ID == enemy.id)
                   {
-                      player2 = enemy.combatStats;
+                      player2 = enemy;
                   }
                   Debug.Log("monster");
 
@@ -267,7 +267,8 @@ public class CombatManager : MonoBehaviour
             }
             else
             {
-                /* Add player2's points to player1's points */
+                /* TODO: Add player2's points to player1's points */
+                
             }
         }
         else
@@ -276,7 +277,7 @@ public class CombatManager : MonoBehaviour
 
             player1.health = player1.maxHealth;
 
-            /* Add player1's points to player2's points */
+            /* TODO: Add player1's points to player2's points */
         }
         audioSource.PlayOneShot(explosionSFX, 2f);
 
