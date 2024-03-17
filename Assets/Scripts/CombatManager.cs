@@ -257,17 +257,26 @@ public class CombatManager : MonoBehaviour
         {
             Debug.Log("Attacker Wins!");
 
-            int loot = Random.Range(0, 6);
+            // Reset health of defender.
+            player2.health = player2.maxHealth;
 
-            if (player2.isEnemy) {
-              player2.health = player2.maxHealth;
-              attacker.inventory.Add(player2.inventory[loot]); // Enemy inventories are loot tables
-
+            if (player2.isEnemy) 
+            {
+                int loot = Random.Range(0, 6);
+                attacker.inventory.Add(player2.inventory[loot]); // Enemy inventories are loot tables
+            }
+            else
+            {
+                /* Add player2's points to player1's points */
             }
         }
         else
         {
             Debug.Log("Defender Wins!");
+
+            player1.health = player1.maxHealth;
+
+            /* Add player1's points to player2's points */
         }
         audioSource.PlayOneShot(explosionSFX, 2f);
 

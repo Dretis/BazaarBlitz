@@ -6,6 +6,8 @@ using UnityEngine.SceneManagement;
 
 public class SceneGameManager : MonoBehaviour
 {
+    public MapNode spawnPoint;
+
     public List<EntityPiece> players = new List<EntityPiece>();
     public List<MonsterStats> enemies = new List<MonsterStats>();
 
