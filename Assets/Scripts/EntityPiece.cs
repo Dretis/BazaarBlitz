@@ -95,10 +95,14 @@ public class EntityPiece : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        playerSprite.color = playerColor;
-        transform.position = occupiedNode.transform.position;
-        occupiedNodeCopy = occupiedNode;
-        traveledNodes.Add(occupiedNode);
+        if (playerSprite != null)
+            playerSprite.color = playerColor;
+        if (occupiedNode != null)
+        {
+            transform.position = occupiedNode.transform.position;
+            occupiedNodeCopy = occupiedNode;
+            traveledNodes.Add(occupiedNode);
+        }
     }
 
     // Update is called once per frame
