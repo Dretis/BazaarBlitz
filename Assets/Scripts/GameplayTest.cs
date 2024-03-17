@@ -104,7 +104,7 @@ public class GameplayTest : MonoBehaviour
         instance = this;
         audioSource = GetComponent<AudioSource>();
         sceneManager = GameObject.FindGameObjectWithTag("SceneManager").GetComponent<SceneGameManager>();
-        playerUnits.AddRange(FindObjectsOfType<EntityPiece>());
+        //playerUnits.AddRange(FindObjectsOfType<EntityPiece>());
         //nextPlayers = playerUnits;
         encounterScreen.SetActive(false);
 
@@ -112,7 +112,7 @@ public class GameplayTest : MonoBehaviour
         foreach (var player in playerUnits)
         {
             nextPlayers.Add(player);
-            gameInfo.text += "\n" + player.nickname + ": " + player.heldPoints + " | " + player.finalPoints;
+            gameInfo.text += "\n" + player.entityName + ": " + player.heldPoints + " | " + player.finalPoints;
 
             // Allow starting nodes to detect the player on them.
             var initialNode = player.occupiedNode;
@@ -121,7 +121,7 @@ public class GameplayTest : MonoBehaviour
 
         currentPlayer = nextPlayers[playerUnits.Count - 1];
         currentPlayerInitialNode = currentPlayer.occupiedNode;
-        turnText.text = currentPlayer.nickname + "'s Turn!";
+        turnText.text = currentPlayer.entityName + "'s Turn!";
         turnText.color = currentPlayer.playerColor;
     }
 
@@ -178,19 +178,19 @@ public class GameplayTest : MonoBehaviour
     private void SelectItem(EntityPiece p)
     {
         // all items active for debug
-        foreach(var item in p.combatStats.inventory)
+        foreach(var item in p.inventory)
         {
-            p.combatStats.AddItemToActiveEffects(1, item);
+            p.AddItemToActiveEffects(1, item);
         }
 
-        p.combatStats.UpdateStatModifiers();
+        p.UpdateStatModifiers();
 
         phase = GamePhase.RollDice;
     }
 
     void RollDice(EntityPiece p)
     {
-        if(p.combatStats.combatSceneIndex == -1)
+        if(p.combatSceneIndex == -1)
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
@@ -335,11 +335,11 @@ public class GameplayTest : MonoBehaviour
     void EncounterTime(EntityPiece p, MapNode m)
     {
         // Player has started combat
-        if (p.combatStats.combatSceneIndex != -1)
+        if (p.combatSceneIndex != -1)
         {
             phase = GamePhase.CombatTime;
             sceneManager.DisableScene(0);
-            sceneManager.EnableScene(p.combatStats.combatSceneIndex);
+            sceneManager.EnableScene(p.combatSceneIndex);
         }
         // Player has not started combat
         else
@@ -450,7 +450,7 @@ public class GameplayTest : MonoBehaviour
                 // If current player is not in combat scene and other player is not in combat scene, begin combat.
                 // If current player is in combat scene, skip roll dice and load back here
 
-                if (otherPlayer.combatStats.combatSceneIndex == -1)
+                if (otherPlayer.combatSceneIndex == -1)
                 {
                     phase = GamePhase.CombatTime;
 
@@ -478,7 +478,7 @@ public class GameplayTest : MonoBehaviour
             }
             else if (m.CompareTag("Encounter")) // Regular Encounter
             {
-                m_EncounterDecision.RaiseEvent(currentPlayer.combatStats);
+                m_EncounterDecision.RaiseEvent(currentPlayer);
 
                 // Monster Encounter
                 if (Input.GetKeyDown(KeyCode.Return))
@@ -537,18 +537,9 @@ public class GameplayTest : MonoBehaviour
 
             sceneManager.player2ID = monsterType;
 
-            foreach (var enemy in sceneManager.enemies)
-            {
-                if (sceneManager.player2ID == enemy.id)
-                {
-                    if (enemy.combatStats.combatSceneIndex == -1) {
-                        lookingForTarget = false;
-                        break;
-                    }
-                }
-
-            }
-            // Now we have an enemy that isnt in a fight vs another player.
+            var enemy = sceneManager.entities.Find(entity => sceneManager.player2ID == entity.id);
+            if (enemy.combatSceneIndex == -1)
+                lookingForTarget = false;
         }
 
 
@@ -671,9 +662,9 @@ public class GameplayTest : MonoBehaviour
         {
             currentPlayer = nextPlayers[nextPlayers.Count - 1];
 
-            m_NextPlayerTurn.RaiseEvent(currentPlayer.combatStats);
+            m_NextPlayerTurn.RaiseEvent(currentPlayer);
 
-            turnText.text = currentPlayer.nickname + "'s Turn!";
+            turnText.text = currentPlayer.entityName + "'s Turn!";
             turnText.color = currentPlayer.playerColor;
 
             currentPlayerInitialNode = currentPlayer.occupiedNode;
@@ -686,7 +677,7 @@ public class GameplayTest : MonoBehaviour
 
             currentPlayer = nextPlayers[nextPlayers.Count - 1]; //Player at end of the ist goes again
             currentPlayer = nextPlayers[nextPlayers.Count - 1];
-            turnText.text = currentPlayer.nickname + "'s Turn!";
+            turnText.text = currentPlayer.entityName + "'s Turn!";
             turnText.color = currentPlayer.playerColor;
 
             currentPlayerInitialNode = currentPlayer.occupiedNode;
@@ -699,7 +690,7 @@ public class GameplayTest : MonoBehaviour
         gameInfo.text = "[Scoreboard]";
         foreach (var player in playerUnits)
         {
-            gameInfo.text += "\n" + player.nickname + ": " + player.heldPoints + " | " + player.finalPoints;
+            gameInfo.text += "\n" + player.entityName + ": " + player.heldPoints + " | " + player.finalPoints;
         }
     }
 

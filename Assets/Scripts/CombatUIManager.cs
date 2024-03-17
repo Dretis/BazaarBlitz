@@ -24,7 +24,7 @@ public class CombatUIManager : MonoBehaviour
     public Animator player1Animator;
     public Animator player2Animator;
 
-    public void UpdateActionText(PlayerData ps, Action.PhaseTypes phase)
+    public void UpdateActionText(EntityPiece ps, Action.PhaseTypes phase)
     {
         List<TextMeshProUGUI> stateTexts = null;
         List<TextMeshProUGUI> actionTexts = null;
@@ -43,7 +43,7 @@ public class CombatUIManager : MonoBehaviour
             actionTexts = player2ActionTexts;
         }
 
-        stateTexts[0].text = ps.playerName;
+        stateTexts[0].text = ps.entityName;
         stateTexts[1].text = "HP: " + ps.health;
 
         if(phase == Action.PhaseTypes.Attack)
@@ -88,7 +88,7 @@ public class CombatUIManager : MonoBehaviour
         }
     }
 
-    public void UpdateActionText(PlayerData ps, Action.PhaseTypes phase, FightingPosition fp)
+    public void UpdateActionText(EntityPiece ps, Action.PhaseTypes phase, FightingPosition fp)
     {
         List<TextMeshProUGUI> stateTexts = null;
         List<TextMeshProUGUI> actionTexts = null;
@@ -107,7 +107,7 @@ public class CombatUIManager : MonoBehaviour
             actionTexts = player2ActionTexts;
         }
 
-        stateTexts[0].text = ps.playerName;
+        stateTexts[0].text = ps.entityName;
         stateTexts[1].text = "HP: " + ps.health;
 
         if (phase == Action.PhaseTypes.Attack)

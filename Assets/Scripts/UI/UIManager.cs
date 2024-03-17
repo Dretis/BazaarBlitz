@@ -74,7 +74,7 @@ public class UIManager : MonoBehaviour
         {
             itemInventory[i] = currentStore.storeInventory[i];
         }
-        storeChatBubble.text = "\"Greetings, customer! Welcome to " + currentStore.playerOwner.nickname + "'s wonderful store! \nPlease purchase something.\"";
+        storeChatBubble.text = "\"Greetings, customer! Welcome to " + currentStore.playerOwner.entityName + "'s wonderful store! \nPlease purchase something.\"";
         storekeeperImage.color = currentStore.playerOwner.playerColor;
         StockItems(itemInventory);
     }

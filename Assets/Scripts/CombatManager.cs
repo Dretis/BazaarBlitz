@@ -19,12 +19,12 @@ public class CombatManager : MonoBehaviour
 
     // Aggressor / Retaliator = original starter and victim of the combat
     // Attacker / Defender = current one attacking / defending
-    private PlayerData aggressor;
-    private PlayerData retaliator;
-    private PlayerData attacker;
-    private PlayerData defender;
-    private PlayerData curTarget;
-    private PlayerData curEnemy;
+    private EntityPiece aggressor;
+    private EntityPiece retaliator;
+    private EntityPiece attacker;
+    private EntityPiece defender;
+    private EntityPiece curTarget;
+    private EntityPiece curEnemy;
 
     private List<ItemStats> itemsQueuedAttack;
     private List<ItemStats> itemsQueuedDefend;
@@ -59,31 +59,10 @@ public class CombatManager : MonoBehaviour
         if (sceneManager)
         {
 
-          Debug.Log("Finding player");
-            foreach (var player in sceneManager.players)
-            {
-                if (sceneManager.player1ID == player.id)
-                {
-                    player1 = player;
-                }
-                else if (sceneManager.player2ID == player.id)
-                {
-                    player2 = player;
-                }
-            }
-            if (sceneManager.player2ID < 0) { // We're fighting a monster
-              foreach (var enemy in sceneManager.enemies)
-              {
-                  if (sceneManager.player2ID == enemy.id)
-                  {
-                      player2 = enemy;
-                  }
-                  Debug.Log("monster");
+            Debug.Log("Finding player");
 
-              }
-
-              Debug.Log("done");
-            }
+            player1 = sceneManager.entities.Find(entity => sceneManager.player1ID == entity.id);
+            player2 = sceneManager.entities.Find(entity => sceneManager.player2ID == entity.id);
         }
 
         // Keep a track of combat managers.

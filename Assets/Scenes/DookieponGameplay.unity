@@ -3093,6 +3093,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2371614220843122139, guid: 685229d93cfb0494e9ccdf56e948eebe, type: 3}
+      propertyPath: id
+      value: -4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3111805988258587634, guid: 685229d93cfb0494e9ccdf56e948eebe, type: 3}
+      propertyPath: id
+      value: -5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3624892604110265551, guid: 685229d93cfb0494e9ccdf56e948eebe, type: 3}
+      propertyPath: id
+      value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3624892604177127912, guid: 685229d93cfb0494e9ccdf56e948eebe, type: 3}
+      propertyPath: id
+      value: -3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3769311605810723856, guid: 685229d93cfb0494e9ccdf56e948eebe, type: 3}
+      propertyPath: id
+      value: -1
+      objectReference: {fileID: 0}
     - target: {fileID: 5741931491139118725, guid: 685229d93cfb0494e9ccdf56e948eebe, type: 3}
       propertyPath: m_RootOrder
       value: 15
@@ -3141,7 +3161,9 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enemies
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1006186376883604119, guid: 685229d93cfb0494e9ccdf56e948eebe, type: 3}
+    - {fileID: 5741931489790166070, guid: 685229d93cfb0494e9ccdf56e948eebe, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 685229d93cfb0494e9ccdf56e948eebe, type: 3}
 --- !u!1 &646577238
 GameObject:
@@ -3393,7 +3415,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   testItem: {fileID: 11400000, guid: 923ee1f783dd41345a759535103ee9a7, type: 2}
-  voidBroadcastChannel1: {fileID: 11400000, guid: 94c553ac437ede64f9993a6fa32e5a1c, type: 2}
+  voidBroadcastChannel1: {fileID: 0}
   voidBroadcastChannel2: {fileID: 11400000, guid: 410e906b10aa4ae49ab7395fffa23d79, type: 2}
   itemBroadcastChannel1: {fileID: 11400000, guid: a0556718fd4b2eb4089673c41068ff8e, type: 2}
   itemBoughtChannel: {fileID: 11400000, guid: ace0aa03bf09d91469d5914ce815154e, type: 2}
@@ -7678,7 +7700,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36007d1b949752042992df388102aaba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerUnits: []
+  playerUnits:
+  - {fileID: 1751578436}
+  - {fileID: 1273892899}
+  - {fileID: 1784744901}
+  - {fileID: 1419713626}
   nextPlayers: []
   currentPlayer: {fileID: 0}
   currentPlayerInitialNode: {fileID: 0}
@@ -9870,7 +9896,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1808e3f336b706a4ab70ba156bb2c2cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nickname: Jonathan
+  entityName: Jonathan
   id: 1
   playerColor: {r: 0.44612548, g: 0.5140367, b: 0.9716981, a: 1}
   playerSprite: {fileID: 990241279}
@@ -9882,23 +9908,8 @@ MonoBehaviour:
   finalPoints: 1
   heldPoints: 500
   stamps: []
-  combatStats: {fileID: 1273892901}
---- !u!114 &1273892901
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1273892897}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aced3dd383528c245acc609f064b0501, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
   health: 75
   maxHealth: 75
-  playerName: Jonathan
-  playerID: 1
   combatSceneIndex: -1
   isEnemy: 0
   favoredAttack: 0
@@ -9939,11 +9950,11 @@ MonoBehaviour:
   currentStatsModifier:
     dieModifiers:
     - finalResultFlatModifier: 0
-      finalResultMultModifier: 0
+      finalResultMultModifier: 1
     - finalResultFlatModifier: 0
-      finalResultMultModifier: 0
+      finalResultMultModifier: 1
     - finalResultFlatModifier: 0
-      finalResultMultModifier: 0
+      finalResultMultModifier: 1
     defenseModifier: 0
   inventory:
   - {fileID: 11400000, guid: c88d8aed1040f9b448f37a2983dd1fdd, type: 2}
@@ -9992,8 +10003,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnPoint: {fileID: 1032940736}
-  players: []
-  enemies: []
+  entities: []
   player1ID: 0
   player2ID: 0
   combatManagers: []
@@ -11905,7 +11915,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1808e3f336b706a4ab70ba156bb2c2cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nickname: Jasper
+  entityName: Jasper
   id: 3
   playerColor: {r: 0.46873137, g: 0.9433962, b: 0.69225085, a: 1}
   playerSprite: {fileID: 453942726}
@@ -11917,23 +11927,8 @@ MonoBehaviour:
   finalPoints: 1
   heldPoints: 500
   stamps: []
-  combatStats: {fileID: 1419713628}
---- !u!114 &1419713628
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1419713624}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aced3dd383528c245acc609f064b0501, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
   health: 75
   maxHealth: 75
-  playerName: Jasper
-  playerID: 3
   combatSceneIndex: -1
   isEnemy: 0
   favoredAttack: 0
@@ -11974,11 +11969,11 @@ MonoBehaviour:
   currentStatsModifier:
     dieModifiers:
     - finalResultFlatModifier: 0
-      finalResultMultModifier: 0
+      finalResultMultModifier: 1
     - finalResultFlatModifier: 0
-      finalResultMultModifier: 0
+      finalResultMultModifier: 1
     - finalResultFlatModifier: 0
-      finalResultMultModifier: 0
+      finalResultMultModifier: 1
     defenseModifier: 0
   inventory:
   - {fileID: 11400000, guid: c88d8aed1040f9b448f37a2983dd1fdd, type: 2}
@@ -14256,7 +14251,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1808e3f336b706a4ab70ba156bb2c2cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nickname: Nam
+  entityName: Nam
   id: 0
   playerColor: {r: 1, g: 0.46855342, b: 0.46855342, a: 1}
   playerSprite: {fileID: 1707007756}
@@ -14268,23 +14263,8 @@ MonoBehaviour:
   finalPoints: 1
   heldPoints: 500
   stamps: []
-  combatStats: {fileID: 1751578438}
---- !u!114 &1751578438
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1751578433}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aced3dd383528c245acc609f064b0501, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
   health: 75
   maxHealth: 75
-  playerName: Nam
-  playerID: 0
   combatSceneIndex: -1
   isEnemy: 0
   favoredAttack: 0
@@ -14325,11 +14305,11 @@ MonoBehaviour:
   currentStatsModifier:
     dieModifiers:
     - finalResultFlatModifier: 0
-      finalResultMultModifier: 0
+      finalResultMultModifier: 1
     - finalResultFlatModifier: 0
-      finalResultMultModifier: 0
+      finalResultMultModifier: 1
     - finalResultFlatModifier: 0
-      finalResultMultModifier: 0
+      finalResultMultModifier: 1
     defenseModifier: 0
   inventory:
   - {fileID: 11400000, guid: c88d8aed1040f9b448f37a2983dd1fdd, type: 2}
@@ -14350,7 +14330,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1808e3f336b706a4ab70ba156bb2c2cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nickname: Russell
+  entityName: Russell
   id: 2
   playerColor: {r: 0.9528302, g: 0.83844817, b: 0.50038564, a: 1}
   playerSprite: {fileID: 1981033896}
@@ -14362,7 +14342,56 @@ MonoBehaviour:
   finalPoints: 1
   heldPoints: 500
   stamps: []
-  combatStats: {fileID: 1784744905}
+  health: 75
+  maxHealth: 75
+  combatSceneIndex: -1
+  isEnemy: 0
+  favoredAttack: 0
+  entityStats:
+    dieConfigs:
+    - dieFaces:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+    - dieFaces:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+    - dieFaces:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+  attackActions:
+  - {fileID: 11400000, guid: 4226c660c7644224e8fb9b338308165b, type: 2}
+  - {fileID: 11400000, guid: 6ca9e4123ea095d4fb087a3cc7c9a44d, type: 2}
+  - {fileID: 11400000, guid: 092cf3b3af66061478bc3530f1af01f9, type: 2}
+  - {fileID: 11400000, guid: 32a37866383854b4d80b76bd6c92a71b, type: 2}
+  defendActions:
+  - {fileID: 11400000, guid: 5153769221d5a6c4abc3e93c5052db99, type: 2}
+  - {fileID: 11400000, guid: 704ee6dbca2f62140ad5caf58846a975, type: 2}
+  - {fileID: 11400000, guid: 188957564c85adc4a8e2ce5c7b8466f5, type: 2}
+  - {fileID: 11400000, guid: 5b8f525effb08414abb503dfc27d55f6, type: 2}
+  fightingPosition: 0
+  currentStatsModifier:
+    dieModifiers:
+    - finalResultFlatModifier: 0
+      finalResultMultModifier: 1
+    - finalResultFlatModifier: 0
+      finalResultMultModifier: 1
+    - finalResultFlatModifier: 0
+      finalResultMultModifier: 1
+    defenseModifier: 0
+  inventory:
+  - {fileID: 11400000, guid: c88d8aed1040f9b448f37a2983dd1fdd, type: 2}
 --- !u!4 &1784744903 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4581765840797956285, guid: 593d54cc189a0544a8760b3a73027f89, type: 3}
