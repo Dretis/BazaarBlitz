@@ -676,7 +676,9 @@ public class GameplayTest : MonoBehaviour
                 nextPlayers.Add(players); // Refill the list with all the players again
 
             currentPlayer = nextPlayers[nextPlayers.Count - 1]; //Player at end of the ist goes again
-            currentPlayer = nextPlayers[nextPlayers.Count - 1];
+
+            m_NextPlayerTurn.RaiseEvent(currentPlayer);
+
             turnText.text = currentPlayer.entityName + "'s Turn!";
             turnText.color = currentPlayer.playerColor;
 
