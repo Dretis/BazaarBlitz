@@ -9,8 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6833292416934179405}
-  - component: {fileID: 1570098178797096318}
-  - component: {fileID: 3129387747853566910}
+  - component: {fileID: 9070606831204597818}
   m_Layer: 0
   m_Name: Potato Bag
   m_TagString: Untagged
@@ -33,7 +32,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1570098178797096318
+--- !u!114 &9070606831204597818
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -42,16 +41,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 66979176998032266}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aced3dd383528c245acc609f064b0501, type: 3}
+  m_Script: {fileID: 11500000, guid: 1808e3f336b706a4ab70ba156bb2c2cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  entityName: Potato Bag
+  id: 0
+  playerColor: {r: 0, g: 0, b: 0, a: 0}
+  playerSprite: {fileID: 0}
+  occupiedNode: {fileID: 0}
+  occupiedNodeCopy: {fileID: 0}
+  traveledNodes: []
+  movementTotal: 0
+  movementLeft: 0
+  finalPoints: 1
+  heldPoints: 0
+  stamps: []
   health: 25
   maxHealth: 25
-  playerName: Potato Bag
-  playerID: -1
   combatSceneIndex: -1
   isEnemy: 1
-  favoredAttack: 1
+  favoredAttack: 3
   entityStats:
     dieConfigs:
     - dieFaces:
@@ -102,17 +111,3 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 923ee1f783dd41345a759535103ee9a7, type: 2}
   - {fileID: 11400000, guid: 923ee1f783dd41345a759535103ee9a7, type: 2}
   - {fileID: 11400000, guid: 8503e05f3a6bdcf408fae19a2cab1d52, type: 2}
---- !u!114 &3129387747853566910
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 66979176998032266}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 302a351d594d3c345ae6265c16e204d7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  id: -1
-  combatStats: {fileID: 1570098178797096318}

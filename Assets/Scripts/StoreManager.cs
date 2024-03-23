@@ -23,7 +23,7 @@ public class StoreManager : MonoBehaviour
     {
         // Check if buyer has enough money to buy items
         // Subject to change - inventory system
-        buyer.combatStats.inventory.Add(item);
+        buyer.inventory.Add(item);
         // subtract value of item from buyer buyer.heldPoints
         // add value of item to playerOwner
 
@@ -39,7 +39,7 @@ public class StoreManager : MonoBehaviour
         if (indexToAdd != -1) 
         {
             // Remove item from seller's inventory and add it to store's inventory.
-            seller.combatStats.inventory.Remove(item);
+            seller.inventory.Remove(item);
             storeInventory[indexToAdd] = item;
             // subtract value of item from playerOwner
             // add value of item to seller

@@ -731,7 +731,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 358000112}
-  - component: {fileID: 358000113}
   m_Layer: 0
   m_Name: Player1
   m_TagString: Untagged
@@ -754,57 +753,6 @@ Transform:
   m_Father: {fileID: 244962530}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &358000113
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 358000111}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aced3dd383528c245acc609f064b0501, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerName: pp1
-  playerID: 1
-  combatSceneIndex: -1
-  strDie:
-  - 1
-  - 2
-  - 3
-  - 4
-  - 5
-  - 6
-  dexDie:
-  - 1
-  - 2
-  - 3
-  - 4
-  - 5
-  - 6
-  intDie:
-  - 1
-  - 2
-  - 3
-  - 4
-  - 5
-  - 6
-  health: 15
-  inventory: []
-  isEnemy: 0
-  favoredAttack: 0
-  attackActions:
-  - {fileID: 11400000, guid: 4226c660c7644224e8fb9b338308165b, type: 2}
-  - {fileID: 11400000, guid: 6ca9e4123ea095d4fb087a3cc7c9a44d, type: 2}
-  - {fileID: 11400000, guid: 092cf3b3af66061478bc3530f1af01f9, type: 2}
-  - {fileID: 11400000, guid: 32a37866383854b4d80b76bd6c92a71b, type: 2}
-  defendActions:
-  - {fileID: 11400000, guid: 5153769221d5a6c4abc3e93c5052db99, type: 2}
-  - {fileID: 11400000, guid: 704ee6dbca2f62140ad5caf58846a975, type: 2}
-  - {fileID: 11400000, guid: 188957564c85adc4a8e2ce5c7b8466f5, type: 2}
-  - {fileID: 11400000, guid: 5b8f525effb08414abb503dfc27d55f6, type: 2}
-  fightingPosition: 0
 --- !u!1 &373411696
 GameObject:
   m_ObjectHideFlags: 0
@@ -855,8 +803,8 @@ MonoBehaviour:
   aggressorAttacking: 0
   retaliatorAttacking: 0
   combatActive: 0
-  player1: {fileID: 358000113}
-  player2: {fileID: 564295369}
+  player1: {fileID: 0}
+  player2: {fileID: 0}
   smackSFX: {fileID: 8300000, guid: c8e9a2f1d06062c4f81b10d5c437a921, type: 3}
   clankSFX: {fileID: 8300000, guid: 7332912025e28204db328991cab83e6e, type: 3}
   explosionSFX: {fileID: 8300000, guid: fd978366f596652498b8e9dc04ce3c94, type: 3}
@@ -1571,7 +1519,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 564295368}
-  - component: {fileID: 564295369}
   m_Layer: 0
   m_Name: Player2
   m_TagString: Untagged
@@ -1594,57 +1541,6 @@ Transform:
   m_Father: {fileID: 244962530}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &564295369
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 564295367}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aced3dd383528c245acc609f064b0501, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerName: boyo2
-  playerID: 2
-  combatSceneIndex: -1
-  strDie:
-  - 1
-  - 2
-  - 3
-  - 4
-  - 5
-  - 6
-  dexDie:
-  - 1
-  - 2
-  - 3
-  - 4
-  - 5
-  - 6
-  intDie:
-  - 1
-  - 2
-  - 3
-  - 4
-  - 5
-  - 6
-  health: 15
-  inventory: []
-  isEnemy: 0
-  favoredAttack: 0
-  attackActions:
-  - {fileID: 11400000, guid: 4226c660c7644224e8fb9b338308165b, type: 2}
-  - {fileID: 11400000, guid: 6ca9e4123ea095d4fb087a3cc7c9a44d, type: 2}
-  - {fileID: 11400000, guid: 092cf3b3af66061478bc3530f1af01f9, type: 2}
-  - {fileID: 11400000, guid: 32a37866383854b4d80b76bd6c92a71b, type: 2}
-  defendActions:
-  - {fileID: 11400000, guid: 5153769221d5a6c4abc3e93c5052db99, type: 2}
-  - {fileID: 11400000, guid: 704ee6dbca2f62140ad5caf58846a975, type: 2}
-  - {fileID: 11400000, guid: 188957564c85adc4a8e2ce5c7b8466f5, type: 2}
-  - {fileID: 11400000, guid: 5b8f525effb08414abb503dfc27d55f6, type: 2}
-  fightingPosition: 1
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0

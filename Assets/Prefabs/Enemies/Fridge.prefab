@@ -9,8 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 180584003984485761}
-  - component: {fileID: 5305012726795850418}
-  - component: {fileID: 848631243195636835}
+  - component: {fileID: 7241835804546387156}
   m_Layer: 0
   m_Name: Fridge
   m_TagString: Untagged
@@ -33,7 +32,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5305012726795850418
+--- !u!114 &7241835804546387156
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -42,13 +41,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 6681334390854208582}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aced3dd383528c245acc609f064b0501, type: 3}
+  m_Script: {fileID: 11500000, guid: 1808e3f336b706a4ab70ba156bb2c2cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  entityName: Fridge
+  id: 0
+  playerColor: {r: 0, g: 0, b: 0, a: 0}
+  playerSprite: {fileID: 0}
+  occupiedNode: {fileID: 0}
+  occupiedNodeCopy: {fileID: 0}
+  traveledNodes: []
+  movementTotal: 0
+  movementLeft: 0
+  finalPoints: 1
+  heldPoints: 0
+  stamps: []
   health: 40
   maxHealth: 40
-  playerName: Fridge
-  playerID: -4
   combatSceneIndex: -1
   isEnemy: 1
   favoredAttack: 3
@@ -102,17 +111,3 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4fd59672f461ffa4bb6c75f0339fc93d, type: 2}
   - {fileID: 11400000, guid: 4fd59672f461ffa4bb6c75f0339fc93d, type: 2}
   - {fileID: 11400000, guid: 923ee1f783dd41345a759535103ee9a7, type: 2}
---- !u!114 &848631243195636835
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6681334390854208582}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 302a351d594d3c345ae6265c16e204d7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  id: -4
-  combatStats: {fileID: 5305012726795850418}

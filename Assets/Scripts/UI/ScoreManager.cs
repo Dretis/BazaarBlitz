@@ -7,7 +7,7 @@ using TMPro;
 
 public class ScoreManager : MonoBehaviour
 {
-    [SerializeField] private PlayerData currentPlayer;
+    [SerializeField] private EntityPiece currentPlayer;
     [SerializeField] private List<EntityPiece> players;
 
     [Header("UI Elements")]
@@ -44,9 +44,9 @@ public class ScoreManager : MonoBehaviour
         // Update specific player score on the scoreboard based on their ID.
 
         // playerNames[id].text = "" + players[id].nickname;
-        playerNames[id].text = "" + players[id].nickname;
+        playerNames[id].text = "" + players[id].entityName;
         playerScores[id].text = "<color=yellow>@</color> " + players[id].heldPoints;
-        playerHPs[id].text = "HP " + players[id].combatStats.health;
+        playerHPs[id].text = "HP " + players[id].health;
         playerImages[id].color = players[id].playerColor - new Color32(0, 0, 0, 125);
 
         // Placeholder for now

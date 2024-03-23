@@ -8,8 +8,7 @@ public class SceneGameManager : MonoBehaviour
 {
     public MapNode spawnPoint;
 
-    public List<EntityPiece> players = new List<EntityPiece>();
-    public List<MonsterStats> enemies = new List<MonsterStats>();
+    public List<EntityPiece> entities = new List<EntityPiece>();
 
     public int player1ID;
     public int player2ID;
@@ -21,8 +20,7 @@ public class SceneGameManager : MonoBehaviour
     void Awake()
     {
         DontDestroyOnLoad(this.gameObject);
-        players.AddRange(FindObjectsOfType<EntityPiece>());
-        enemies.AddRange(FindObjectsOfType<MonsterStats>());
+        entities.AddRange(FindObjectsOfType<EntityPiece>());
         overworldScene = GameObject.Find("Input Manager").GetComponent<GameplayTest>();
     }
 

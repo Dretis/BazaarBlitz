@@ -73,14 +73,14 @@ public class UIPromptManager : MonoBehaviour
         movementRoll.text = "" + diceRoll;
     }
 
-    private void DisplayRollPrompt(PlayerData ps)
+    private void DisplayRollPrompt(EntityPiece ps)
     {
         // This will get swapped out with a menu selection
         inputPrompt.text = "<color=white>[SPACE]</color> to roll!";
         movementRoll.text = "-";
     }
 
-    private void DisplayEncounterChoices(PlayerData ps)
+    private void DisplayEncounterChoices(EntityPiece ps)
     {
         inputPrompt.text = "<color=white>[ENTER]</color> to encounter an enemy.";
         inputPrompt.text += "\n<color=white>[R-SHIFT]</color> to build a store.";
