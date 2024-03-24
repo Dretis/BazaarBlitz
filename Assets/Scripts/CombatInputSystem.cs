@@ -14,7 +14,7 @@ public class CombatInputSystem : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-      bool currentPlayer = CombatManager.Instance.isAggressorTurn;
+      bool currentPlayer = CombatManager.Instance.isInitiatorTurn;
       if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)) {
           CombatManager.Instance.chooseAction(3, currentPlayer);
           CombatManager.Instance.passTurn();
@@ -33,7 +33,7 @@ public class CombatInputSystem : MonoBehaviour
       }
 
 
-      if (Input.GetKeyDown(KeyCode.Alpha1)) {
+      /*if (Input.GetKeyDown(KeyCode.Alpha1)) {
           CombatManager.Instance.addItem(itemsAtButton[0], currentPlayer);
       }
       if (Input.GetKeyDown(KeyCode.Alpha2)) {
@@ -59,7 +59,7 @@ public class CombatInputSystem : MonoBehaviour
       }
       if (Input.GetKeyDown(KeyCode.Alpha9)) {
           CombatManager.Instance.addItem(itemsAtButton[8], currentPlayer);
-      }
+      }*/
       // 1 potato
       // 2 mutated potato
       // 3 cloth

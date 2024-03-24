@@ -10,6 +10,7 @@ public class ItemStats : ScriptableObject, IStatModifierChanger
     public enum WeaponTypes { Melee, Gun, Magic, Special}
 
     public string itemName;
+    public int duration = 1;
 
     [Tooltip("What phase is the item usable in")]
     public PhaseTypes phase;

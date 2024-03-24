@@ -7,8 +7,8 @@ public class CombatManager : MonoBehaviour
 {
     public static CombatManager Instance;
 
-    public bool isAggressorTurn = false;
-    public bool aggressorAttacking = false;
+    public bool isInitiatorTurn = false;
+    public bool initiatorAttacking = false;
     public bool retaliatorAttacking = false;
     public bool combatActive = false;
 
@@ -17,14 +17,12 @@ public class CombatManager : MonoBehaviour
     //[SerializeField] private PlayerStats player3;
     //[SerializeField] private PlayerStats player4;
 
-    // Aggressor / Retaliator = original starter and victim of the combat
+    // initiator / Retaliator = original starter and victim of the combat
     // Attacker / Defender = current one attacking / defending
-    private EntityPiece aggressor;
+    private EntityPiece initiator;
     private EntityPiece retaliator;
     private EntityPiece attacker;
     private EntityPiece defender;
-    private EntityPiece curTarget;
-    private EntityPiece curEnemy;
 
     private List<ItemStats> itemsQueuedAttack;
     private List<ItemStats> itemsQueuedDefend;
@@ -46,6 +44,11 @@ public class CombatManager : MonoBehaviour
     AudioSource audioSource;
 
     public int combatSceneIndex;
+
+    private float endCombatSceneTimer = 0.0f;
+    private bool endingCombat = false;
+    private bool pausingCombat = false;
+    private bool initiatorWon;
 
 
     public CombatUIManager combatUIManager;
@@ -88,6 +91,21 @@ public class CombatManager : MonoBehaviour
         combatUIManager = GetComponent<CombatUIManager>();
     }
 
+    void Update() {
+      if (endingCombat) {
+        endCombatSceneTimer -= Time.deltaTime;
+        if (endCombatSceneTimer <= 0.0f) {
+          endCombat();
+        }
+      }
+      else if (pausingCombat) {
+        endCombatSceneTimer -= Time.deltaTime;
+        if (endCombatSceneTimer <= 0.0f) {
+          pauseCombat();
+        }
+      }
+    }
+
 
     public void Start()
     {
@@ -105,24 +123,21 @@ public class CombatManager : MonoBehaviour
         player2.fightingPosition = CombatUIManager.FightingPosition.Right;
 
         combatActive = true;
-        isAggressorTurn = true;
-        aggressorAttacking = true;
+        isInitiatorTurn = true;
+        initiatorAttacking = true;
         retaliatorAttacking = false;
         playersLastAttack = 0;
 
         if (player2.isEnemy)
         {
-            aggressor = player1;
+            initiator = player1;
             retaliator = player2;
             //isFightingAI = true;
-            curEnemy = player2;
         }
         else if (player1.isEnemy)
         {
-            aggressor = player2;
-            retaliator = player1;
-            //isFightingAI = true;
-            curEnemy = player1;
+            // Shouldnt happen
+            Debug.Log("Somhow player 1 is an enemy!");
         }
         else
         {
@@ -130,17 +145,17 @@ public class CombatManager : MonoBehaviour
 
             if (whosFirst == 0)
             {
-                aggressor = player1;
+                initiator = player1;
                 retaliator = player2;
             }
             else
             {
-                aggressor = player2;
+                initiator = player2;
                 retaliator = player1;
             }
         }
 
-        attacker = aggressor; // These are the current atk/defenders, changes every turn unlike above
+        attacker = initiator; // These are the current atk/defenders, changes every turn unlike above
         defender = retaliator;
 
         combatUIManager.UpdateActionText(attacker, Action.PhaseTypes.Attack);
@@ -151,38 +166,38 @@ public class CombatManager : MonoBehaviour
 
     public void passTurn()
     {
-        isAggressorTurn = toggleBool(isAggressorTurn);
+        isInitiatorTurn = toggleBool(isInitiatorTurn);
 
-        if ((!isAggressorTurn && aggressorAttacking) && isFightingAI)
+        if ((!isInitiatorTurn && initiatorAttacking) && isFightingAI)
         {
             defenderAction = decideAttackAI();
-            isAggressorTurn = toggleBool(isAggressorTurn); // Now well just finish the turn.
+            isInitiatorTurn = toggleBool(isInitiatorTurn); // Now well just finish the turn.
         }
 
-        if (isAggressorTurn)
+        if (isInitiatorTurn)
         {
             // Both players acted. Play the turn, then toggle attacker and defender
             playTurn();
 
-            aggressorAttacking = toggleBool(aggressorAttacking);
+            initiatorAttacking = toggleBool(initiatorAttacking);
             retaliatorAttacking = toggleBool(retaliatorAttacking);
 
-            if (aggressorAttacking)
+            if (initiatorAttacking)
             {
-                attacker = aggressor;
+                attacker = initiator;
                 defender = retaliator;
             }
             else
             {
                 attacker = retaliator;
-                defender = aggressor;
+                defender = initiator;
             }
 
             combatUIManager.UpdateActionText(attacker, Action.PhaseTypes.Attack);
             combatUIManager.UpdateActionText(defender, Action.PhaseTypes.Defend);
         }
 
-        if ((!isAggressorTurn && !aggressorAttacking) && isFightingAI)
+        if ((!isInitiatorTurn && !initiatorAttacking) && isFightingAI)
         {
             attackerAction = decideAttackAI();
             passTurn();
@@ -208,38 +223,54 @@ public class CombatManager : MonoBehaviour
 
         phaseCount++;
 
-        if (aggressor.health <= 0)
+        if (initiator.health <= 0)
         {
-            endCombat(false);
+            initiatorWon = false;
+            endCombat();
         }
         else if (retaliator.health <= 0)
         {
-            endCombat(true);
+            initiatorWon = true;
+            endCombat();
         }
         else if (phaseCount == 2)
         {
-            phaseCount = 0;
-            Debug.Log("I'm in scene" + combatSceneIndex);
-            // Pause combat scene and re-enable overworld scene
-            sceneManager.DisableScene(combatSceneIndex);
-            sceneManager.EnableScene(0);
-
-            sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
-            Debug.Log("I have left scene" + combatSceneIndex);
+            pauseCombat();
         }
     }
 
-    public void endCombat(bool aggressorWon)
+    public void pauseCombat() {
+      if (pausingCombat == false) {
+        pausingCombat = true;
+        endCombatSceneTimer = 1.0f;
+        return;
+      }
+      phaseCount = 0;
+      Debug.Log("I'm in scene" + combatSceneIndex);
+      // Pause combat scene and re-enable overworld scene
+      sceneManager.DisableScene(combatSceneIndex);
+      sceneManager.EnableScene(0);
+
+      sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
+      Debug.Log("I have left scene" + combatSceneIndex);
+    }
+
+    public void endCombat()
     {
+        if (endingCombat == false) {
+          endCombatSceneTimer = 1.0f;
+          endingCombat = true;
+          return; // We'll come back later from updatewith endingCombat = true
+        }
         //combatActive = false;
-        if (aggressorWon)
+        if (initiatorWon)
         {
             Debug.Log("Attacker Wins!");
 
             // Reset health of defender.
             player2.health = player2.maxHealth;
 
-            if (player2.isEnemy) 
+            if (player2.isEnemy)
             {
                 int loot = Random.Range(0, 6);
                 attacker.inventory.Add(player2.inventory[loot]); // Enemy inventories are loot tables
@@ -247,7 +278,7 @@ public class CombatManager : MonoBehaviour
             else
             {
                 /* TODO: Add player2's points to player1's points */
-                
+
             }
         }
         else
@@ -296,30 +327,30 @@ public class CombatManager : MonoBehaviour
         Action attack = attacker.attackActions[attackerAction - 1];
         Action defend = defender.defendActions[defenderAction - 1];
 
-        float defendMultiplier = 0.5f;
+        float defendMultiplier = 0.5f; // Attacker deals this much damage after defend
         if (attack.type == defend.type)
         {
             defendMultiplier = 1f;
         }
         else if (attack.type == Action.WeaponTypes.Melee && defend.type == Action.WeaponTypes.Magic)
         {
-            defendMultiplier = 0.25f;
+            defendMultiplier = 0.5f;
         }
         else if (attack.type == Action.WeaponTypes.Gun && defend.type == Action.WeaponTypes.Melee)
         {
-            defendMultiplier = 0.25f;
+            defendMultiplier = 0.5f;
         }
         else if (attack.type == Action.WeaponTypes.Magic && defend.type == Action.WeaponTypes.Gun)
         {
-            defendMultiplier = 0.25f;
+            defendMultiplier = 0.5f;
         }
         else if (attack.type == Action.WeaponTypes.Special)
         {
-            defendMultiplier = 1f; // Slight nerf to hammer, average 2x die damage vs 2.5
+            defendMultiplier = 0f; // nerf hammer out of existence so people focus on the triangle
         }
         else
         {
-            defendMultiplier = 0.5f;
+            defendMultiplier = 2f; // wrong defend type used
         }
 
         int rawRoll = Random.Range(0, 6);
@@ -332,6 +363,8 @@ public class CombatManager : MonoBehaviour
                 {
                     roll = (int)attacker.strDie[rawRoll];
                     damage += (int)attacker.currentStatsModifier.ApplyDieModifier(EntityBaseStats.DieTypes.Strength, roll);
+                    attackerBonusRoll = (int)attacker.currentStatsModifier.rollModifier;
+                    //attackerBonusRoll += (int)attacker.currentStatsModifier.ApplyDieModifier(EntityBaseStats.DieTypes.Strength, roll);
                 }
 
                 audioSource.PlayOneShot(smackSFX, 1f);
@@ -343,6 +376,7 @@ public class CombatManager : MonoBehaviour
                 {
                     roll = (int)attacker.dexDie[rawRoll];
                     damage += (int)attacker.currentStatsModifier.ApplyDieModifier(EntityBaseStats.DieTypes.Dex, roll);
+                    attackerBonusRoll = (int)attacker.currentStatsModifier.rollModifier;
                 }
                 audioSource.PlayOneShot(shootSFX, 1f);
                 //Debug.Log("GunAttack");
@@ -353,6 +387,7 @@ public class CombatManager : MonoBehaviour
                 {
                     roll = (int)attacker.intDie[rawRoll];
                     damage += (int)attacker.currentStatsModifier.ApplyDieModifier(EntityBaseStats.DieTypes.Int, roll);
+                    attackerBonusRoll = (int)attacker.currentStatsModifier.rollModifier;
                 }
                 audioSource.PlayOneShot(clankSFX, 1f);
                 //Debug.Log("MagicAttack");
@@ -371,42 +406,31 @@ public class CombatManager : MonoBehaviour
                 }
                 audioSource.PlayOneShot(explosionSFX, 1f);
                 //Debug.Log("HammerAttack");
+                damage = 0;
                 break;
             default:
                 damage += 0;
                 break;
         }
         damage += (attackerBuffDamage + attack.bonusDamage);
+        damage = damage * 5;
         Debug.Log($"Attacker role: Raw {roll}, modified {damage}");
 
         roll = Random.Range(0, 6);
+        Debug.Log("Final Base damage before defense: " + damage);
+
+        float defenseScore = 0;
         switch (defend.type)
         {
             case Action.WeaponTypes.Melee:
-                damage -= defender.strDie[roll] * defendMultiplier;
-                for (int i = 0; i < defenderBonusRoll; i++)
-                {
-                    roll = Random.Range(0, 6);
-                    damage -= attacker.strDie[roll] * defendMultiplier;
-                }
-                //Debug.Log("MeleeDefense");
+                defenseScore = defender.strDie[roll];
                 break;
             case Action.WeaponTypes.Gun:
-                damage -= defender.dexDie[roll] * defendMultiplier;
-                for (int i = 0; i < defenderBonusRoll; i++)
-                {
-                    roll = Random.Range(0, 6);
-                    damage -= attacker.dexDie[roll] * defendMultiplier;
-                }
+                defenseScore = defender.dexDie[roll];
                 //Debug.Log("GunDefense");
                 break;
             case Action.WeaponTypes.Magic:
-                damage -= defender.intDie[roll] * defendMultiplier;
-                for (int i = 0; i < defenderBonusRoll; i++)
-                {
-                    roll = Random.Range(0, 6);
-                    damage -= attacker.intDie[roll] * defendMultiplier;
-                }
+                defenseScore = defender.intDie[roll];
                 //Debug.Log("MagicDefense");
                 break;
             case Action.WeaponTypes.Special:
@@ -417,26 +441,36 @@ public class CombatManager : MonoBehaviour
                 }
                 else
                 {
-                    damage -= 1;
+                    damage -= 0;
                 }
+                defenseScore = 0;
                 //Debug.Log("HammerDefense");
                 break;
             default:
                 damage -= 0;
                 break;
         }
+
+        defenseScore += 0.1f * defender.currentStatsModifier.defenseModifier;
+
+        damage = ( damage * (1 - (0.1f * defenseScore)) * defendMultiplier );
+
         if (damage < 0)
         {
             damage = 0;
         }
 
+        Debug.Log("Final Damage: " + damage);
+
         defender.health -= damage;
+
+        attacker.health += damage * attacker.currentStatsModifier.lifestealMult;
 
         attackerBonusRoll = 0;
         defenderBonusRoll = 0;
         attackerBuffDamage = 0;
 
-        if (aggressorAttacking && isFightingAI)
+        if (initiatorAttacking && isFightingAI)
         {
             playersLastAttack = attackerAction;
         }
@@ -461,11 +495,6 @@ public class CombatManager : MonoBehaviour
               attacker.inventory.Remove(item);
             }
 
-            //Min-Max heal, ex 0-0
-            attacker.health -= Random.Range(item.playerDamageMin, item.playerDamageMax+1);
-            // subtract opponent hp for armor piercing
-            attackerBuffDamage = Random.Range(item.bonusDamageMin, item.bonusDamageMax+1);
-            attackerBonusRoll = item.diesToRoll;
 
             Debug.Log("Used " + item.itemName);
 
@@ -553,7 +582,7 @@ public class CombatManager : MonoBehaviour
         int roll = Random.Range(0, 8);
         if (roll < 4)
         {
-            return curEnemy.favoredAttack;
+            return player2.favoredAttack;
         }
         else if (roll < 5)
         {
