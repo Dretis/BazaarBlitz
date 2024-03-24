@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Light Bulb
   m_EditorClassIdentifier: 
   itemName: Light Bulb
+  duration: 3
   phase: 2
   diesToRoll: 0
   bonusDamageMin: 2
@@ -26,3 +27,5 @@ MonoBehaviour:
   flavorText: '"The perfect thingamabob to light your day! Just, uh, don''t look
     directly at it for too long."'
   basePrice: 270
+  modifiers:
+  - {fileID: 11400000, guid: 5d86a49178b05ba42a8ccb7a996b80e9, type: 2}

@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Potato
   m_EditorClassIdentifier: 
   itemName: Potato
+  duration: 1
   phase: 2
   diesToRoll: 0
   bonusDamageMin: 0
@@ -26,3 +27,5 @@ MonoBehaviour:
   flavorText: '"Also known as the earth apple and a trusty companion when things
     get tough!"'
   basePrice: 50
+  modifiers:
+  - {fileID: 11400000, guid: c263fa809cd2c854b8ddf741baee7c27, type: 2}
