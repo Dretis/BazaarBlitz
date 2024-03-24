@@ -140,8 +140,11 @@ public class UIManager : MonoBehaviour
 
     private void RemoveItemStockAt(int i)
     {
+        Debug.Log(currentPlayer);
         if (currentPlayer.heldPoints >= itemInventory[i].basePrice)
         {
+            Debug.Log(currentPlayer.heldPoints);
+            Debug.Log(itemInventory[i].basePrice);
             // Visually remove the item from the list of items in the store
             var itemImage = itemInventoryImages[i];
 
