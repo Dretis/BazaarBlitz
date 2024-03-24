@@ -10,9 +10,12 @@ public class UIPromptManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI inputPrompt;
     [SerializeField] private TextMeshProUGUI rolledNumber;
     [SerializeField] private TextMeshProUGUI movementRoll;
+    [SerializeField] private GameObject menuPrompt;
 
     [Header("Listen on Event Channels")]
     public IntEventChannelSO m_RollForMovement;
+    public PlayerEventChannelSO m_DiceRollPrep;
+    public PlayerEventChannelSO m_DiceRollUndo;
     public PlayerEventChannelSO m_NextPlayerTurn;
     public PlayerEventChannelSO m_EncounterDecisions;
     public NodeEventChannelSO m_LandOnStorefront;
@@ -25,8 +28,11 @@ public class UIPromptManager : MonoBehaviour
     }
     private void OnEnable()
     {
+        
         m_RollForMovement.OnEventRaised += RolledDice;
-        m_NextPlayerTurn.OnEventRaised += DisplayRollPrompt;
+        m_DiceRollPrep.OnEventRaised += DisplayRollPrompt;
+        m_DiceRollUndo.OnEventRaised += DisplayInitialMenu;
+        m_NextPlayerTurn.OnEventRaised += DisplayInitialMenu;
         m_EncounterDecisions.OnEventRaised += DisplayEncounterChoices;
         m_LandOnStorefront.OnEventRaised += DisplayStorefrontPrompt;
         m_ItemSold.OnEventRaised += DisplayLeavePrompt;
@@ -36,7 +42,9 @@ public class UIPromptManager : MonoBehaviour
     private void OnDisable()
     {
         m_RollForMovement.OnEventRaised -= RolledDice;
-        m_NextPlayerTurn.OnEventRaised -= DisplayRollPrompt;
+        m_DiceRollPrep.OnEventRaised -= DisplayRollPrompt;
+        m_DiceRollUndo.OnEventRaised -= DisplayInitialMenu;
+        m_NextPlayerTurn.OnEventRaised -= DisplayInitialMenu;
         m_EncounterDecisions.OnEventRaised -= DisplayEncounterChoices;
         m_LandOnStorefront.OnEventRaised -= DisplayStorefrontPrompt;
         m_ItemSold.OnEventRaised -= DisplayLeavePrompt;
@@ -78,6 +86,16 @@ public class UIPromptManager : MonoBehaviour
         // This will get swapped out with a menu selection
         inputPrompt.text = "<color=white>[SPACE]</color> to roll!";
         movementRoll.text = "-";
+
+        menuPrompt.SetActive(false);
+    }
+
+    private void DisplayInitialMenu(EntityPiece ps)
+    {
+        inputPrompt.text = "";
+        movementRoll.text = "-";
+
+        menuPrompt.SetActive(true);
     }
 
     private void DisplayEncounterChoices(EntityPiece ps)
