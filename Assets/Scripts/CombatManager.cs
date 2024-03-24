@@ -246,8 +246,9 @@ public class CombatManager : MonoBehaviour
             }
             else
             {
-                /* TODO: Add player2's points to player1's points */
-                
+                // Add defender's points to attacker's points 
+                attacker.heldPoints += defender.heldPoints;
+                defender.heldPoints = 0;
             }
         }
         else
@@ -256,7 +257,9 @@ public class CombatManager : MonoBehaviour
 
             player1.health = player1.maxHealth;
 
-            /* TODO: Add player1's points to player2's points */
+            // Add attacker's points to defender's points 
+            defender.heldPoints += attacker.heldPoints;
+            attacker.heldPoints = 0;
         }
         audioSource.PlayOneShot(explosionSFX, 2f);
 
