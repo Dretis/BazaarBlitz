@@ -179,6 +179,8 @@ public class CombatManager : MonoBehaviour
             // Both players acted. Play the turn, then toggle attacker and defender
             playTurn();
 
+
+
             initiatorAttacking = toggleBool(initiatorAttacking);
             retaliatorAttacking = toggleBool(retaliatorAttacking);
 
@@ -206,6 +208,9 @@ public class CombatManager : MonoBehaviour
 
     public void playTurn()
     {
+        if (pausingCombat || endingCombat) {
+          return; // Prevent people from trying to get an extra hit in before combat stops.
+        }
 
         foreach (ItemStats item in itemsQueuedDefend)
         {
@@ -245,6 +250,9 @@ public class CombatManager : MonoBehaviour
         endCombatSceneTimer = 1.0f;
         return;
       }
+
+      endCombatSceneTimer = 1.0f;
+      pausingCombat = false;
       phaseCount = 0;
       Debug.Log("I'm in scene" + combatSceneIndex);
       // Pause combat scene and re-enable overworld scene
