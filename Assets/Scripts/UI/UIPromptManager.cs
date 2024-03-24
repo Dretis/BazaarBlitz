@@ -78,13 +78,14 @@ public class UIPromptManager : MonoBehaviour
         rolledNumber.enabled = false;
 
         yield return null;
-        movementRoll.text = "" + diceRoll;
+        //movementRoll.text = "" + diceRoll;
     }
 
     private void DisplayRollPrompt(EntityPiece ps)
     {
         // This will get swapped out with a menu selection
         inputPrompt.text = "<color=white>[SPACE]</color> to roll!";
+        inputPrompt.text += "\n<color=white>[LSHIFT]</color> to go back.";
         movementRoll.text = "-";
 
         menuPrompt.SetActive(false);
