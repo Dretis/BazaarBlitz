@@ -261,6 +261,7 @@ public class CombatManager : MonoBehaviour
             defender.heldPoints += attacker.heldPoints;
             attacker.heldPoints = 0;
         }
+
         audioSource.PlayOneShot(explosionSFX, 2f);
 
         // Players exit combat.
@@ -274,6 +275,11 @@ public class CombatManager : MonoBehaviour
 
         // Re-enable scene
         sceneManager.EnableScene(0);
+
+        // Update player scores.
+        sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(attacker.id);
+        if (!defender.isEnemy)
+            sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(defender.id);
         // wrap up the scene and transition back to board in the final game.
     }
 
