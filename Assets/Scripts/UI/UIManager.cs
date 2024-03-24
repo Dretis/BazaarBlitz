@@ -21,6 +21,7 @@ public class UIManager : MonoBehaviour
     [Header("Broadcast on Event Channels")]
     public VoidEventChannelSO broadcastEvent;
     public ItemEventChannelSO m_itemSold;
+    public IntEventChannelSO m_UpdatePlayerScore;
 
     [Header("Listen on Event Channels")]
     public NodeEventChannelSO m_LandOnStorefront;
@@ -28,9 +29,10 @@ public class UIManager : MonoBehaviour
     public ItemEventChannelSO m_HoveringItem;
     public ItemListEventChannelSO m_StockItems;
     public IntEventChannelSO m_RemoveItem; // change it to RemoveItem, may need this to be an IntEventChannel
-
+    
     // this probably needs to be in a seperate script too
     private StoreManager currentStore;
+    private EntityPiece currentPlayer;
 
     // Subscribe to event(s)
     private void OnEnable()
@@ -69,6 +71,7 @@ public class UIManager : MonoBehaviour
         storefrontCanvas.enabled = true;
         // storefrontCanvas.enabled = !storefrontCanvas.enabled;
         currentStore = mapNode.GetComponent<StoreManager>();
+        currentPlayer = mapNode.playerOccupied;
         
         for (int i = 0; i < itemInventory.Count; i++)
         {
@@ -89,8 +92,10 @@ public class UIManager : MonoBehaviour
 
     private void FinishShopping(ItemStats item)
     {
-        if(item != null)
+        if (item != null)
             storeChatBubble.text = "\"Enjoy your brand new " + item.itemName + "! \nThank you for your patronage, and we hope to see you very soon!\"";
+        else
+            storeChatBubble.text = "\"I'm sorry but you cannot afford this item.\"";
     }
 
     public void HighlightItem(int i)
@@ -135,22 +140,37 @@ public class UIManager : MonoBehaviour
 
     private void RemoveItemStockAt(int i)
     {
-        // Visually remove the item from the list of items in the store
-        var itemImage = itemInventoryImages[i];
+        if (currentPlayer.heldPoints >= itemInventory[i].basePrice)
+        {
+            // Visually remove the item from the list of items in the store
+            var itemImage = itemInventoryImages[i];
 
-        itemImage.sprite = null;
-        itemImage.color = new Color(itemImage.color.r, itemImage.color.g, itemImage.color.b, 0);
+            itemImage.sprite = null;
+            itemImage.color = new Color(itemImage.color.r, itemImage.color.g, itemImage.color.b, 0);
 
-        Debug.Log("Removed the " + itemImage + " sprite from the store.");
+            Debug.Log("Removed the " + itemImage + " sprite from the store.");
 
-        // May need to move the rest of the following code to another script
+            // May need to move the rest of the following code to another script
 
-        // Signal that this item was sold.
-        // Likely for the PlayerManager to subtract currency based of item's price.
-        m_itemSold.RaiseEvent(itemInventory[i]);
+            // Signal that this item was sold.
+            // Likely for the PlayerManager to subtract currency based of item's price.
 
-        itemInventory[i] = null;
-        currentStore.storeInventory[i] = null;
+            m_itemSold.RaiseEvent(itemInventory[i]);
+
+            currentStore.playerOwner.heldPoints += itemInventory[i].basePrice;
+
+            // Update store owner's score.
+            m_UpdatePlayerScore.RaiseEvent(currentStore.playerOwner.id);
+
+            itemInventory[i] = null;
+            currentStore.storeInventory[i] = null;
+        }
+        else
+        {
+            Debug.Log("Not enough money to buy " + itemInventory[i] + " from the store.");
+            m_itemSold.RaiseEvent(null);
+        }
+        
     }
 
     private void StockItems(List<ItemStats> items)
