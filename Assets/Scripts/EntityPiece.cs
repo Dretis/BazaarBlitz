@@ -38,7 +38,7 @@ public class EntityPiece : MonoBehaviour
     public List<Action> defendActions;
     public CombatUIManager.FightingPosition fightingPosition; // Just for the combat, will change
 
-    class ActiveEffect
+    public class ActiveEffect
     {
         public IStatModifierChanger statMod;
         public int turnsRemaining;
@@ -108,6 +108,6 @@ public class EntityPiece : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }

@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Ice Dice
   m_EditorClassIdentifier: 
   itemName: Ice Dice
+  duration: 1
   phase: 2
   diesToRoll: 1
   bonusDamageMin: 0
@@ -25,3 +26,5 @@ MonoBehaviour:
   effectDescription: All of your dice rolls will be doubled until your next turn.
   flavorText: "\"Fun to chew, but not to eat! \nSo please do so in moderation.\""
   basePrice: 2220
+  modifiers:
+  - {fileID: 11400000, guid: 6e619a3556f4c9a4089ad9921a00ce56, type: 2}

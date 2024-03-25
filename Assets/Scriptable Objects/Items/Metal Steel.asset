@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Metal Steel
   m_EditorClassIdentifier: 
   itemName: Metal Steel
+  duration: 3
   phase: 0
   diesToRoll: 0
   bonusDamageMin: 2
@@ -25,3 +26,5 @@ MonoBehaviour:
   effectDescription: Increases   <sprite=1> action damage by 2.
   flavorText: '"Jet fuel can''t melt steel beams, but you can peddle to the metal."'
   basePrice: 340
+  modifiers:
+  - {fileID: 11400000, guid: f8155fce005761a4091bc671cd429562, type: 2}

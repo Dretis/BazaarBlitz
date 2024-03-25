@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class EntityStatsModifiers 
+public class EntityStatsModifiers
 {
     public EntityStatsModifiers()
     {
-        for(int i = 0;i < dieModifiers.Length;i++)
+        for(int i = 0; i < dieModifiers.Length;i++)
         {
             dieModifiers[i] = new();
         }
@@ -16,17 +16,24 @@ public class EntityStatsModifiers
     // List of all stats
     public DieModifier[] dieModifiers = new DieModifier[(int)EntityBaseStats.DieTypes.Count];
 
-    public float defenseModifier;
+
+
+    public float defenseModifier = 0;
+    public float lifestealMult = 0;
+
+    public int rollModifier;
 
     public float ApplyDieModifier(EntityBaseStats.DieTypes dieType, float baseRollValue)
     {
-        Debug.Log(baseRollValue);
+
+
+        Debug.Log("Original Roll" + baseRollValue);
 
         var dieMod = dieModifiers[(int)dieType];
         baseRollValue *= dieMod.finalResultMultModifier;
         baseRollValue += dieMod.finalResultFlatModifier;
 
-        Debug.Log(baseRollValue);
+        Debug.Log("New Roll after item effect:" + baseRollValue);
 
         return baseRollValue;
     }

@@ -10,18 +10,7 @@ public class ItemStats : ScriptableObject, IStatModifierChanger
     public enum WeaponTypes { Melee, Gun, Magic, Special}
 
     public string itemName;
-
-    [Tooltip("What phase is the item usable in")]
-    public PhaseTypes phase;
-
-    public int diesToRoll;
-    public int bonusDamageMin;
-    public int bonusDamageMax;
-    public int playerDamageMin; // can be negative!
-    public int playerDamageMax;
-    public bool blocksWithBonusDamage;
-
-    public string specialID; // Will be checked in a switch statement for specific stuff.
+    public int duration = 1;
 
     [Header("Shop and Visual Information")]
     public Sprite itemSprite;

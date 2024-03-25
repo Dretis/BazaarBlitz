@@ -163,7 +163,7 @@ public class GameplayTest : MonoBehaviour
                 RollDice(currentPlayer);
                 break;
 
-            // Pick Direction to Go Phase 
+            // Pick Direction to Go Phase
             case GamePhase.PickDirection:
                 PickDirection(currentPlayer);
                 break;
@@ -203,7 +203,8 @@ public class GameplayTest : MonoBehaviour
         // all items active for debug
         foreach(var item in p.inventory)
         {
-            p.AddItemToActiveEffects(1, item);
+            p.AddItemToActiveEffects(item.duration, item);
+            p.inventory.Remove(item);
         }
 
         p.UpdateStatModifiers();
@@ -316,7 +317,7 @@ public class GameplayTest : MonoBehaviour
         if (wantedNode != null)
         {
             phase = GamePhase.MoveAround;
-        }  
+        }
     }
 
     void MoveAround(EntityPiece p)
@@ -375,7 +376,7 @@ public class GameplayTest : MonoBehaviour
 
             phase = GamePhase.PassBy;
         }
-        
+
     }
 
     void PassBy(EntityPiece p, MapNode m)
@@ -391,7 +392,7 @@ public class GameplayTest : MonoBehaviour
                 p.heldPoints += (int)(50 * Mathf.Pow(2, p.stamps.Count-1));
                 m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
             }
-            
+
             p.stamps.Clear();
         }
         else if (m.CompareTag("Stamp"))
@@ -593,15 +594,15 @@ public class GameplayTest : MonoBehaviour
 
                     foreach (var listing in store.storeInventory)
                     {
-                        if (listing != null) storeListings.text += listing.itemName + "\n"; 
+                        if (listing != null) storeListings.text += listing.itemName + "\n";
                     }
                     storeScreen.SetActive(true);
-                    
+
                     phase = GamePhase.ConfirmContinue;
                     encounterOver = true;
                 }
-            }    
-        }      
+            }
+        }
     }
 
     void RockPaperScissors(EntityPiece p)
