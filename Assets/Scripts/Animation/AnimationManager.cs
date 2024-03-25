@@ -33,6 +33,8 @@ public class AnimationManager : MonoBehaviour
 
     private void SetCurrentPlayerAnimator(EntityPiece entity)
     {
+        if (currentAnimator != null)
+            ResetToIdleAnim(null);
         currentAnimator = entity.GetComponentInChildren<Animator>();
     }
 
@@ -56,14 +58,26 @@ public class AnimationManager : MonoBehaviour
         Debug.Log($"Current Animation State Length:{state.length}");
 
         // Send in the duration of the dice throw animation to eventually reset to idle animation
-        StartCoroutine(ResetToIdleAnimAfter(state.length)); // placeholder, change later
+        StartCoroutine(ToBoingAnimAfter(state.length)); // placeholder, change later
     }
 
-    private IEnumerator ResetToIdleAnimAfter(float duration)
+    private IEnumerator ToBoingAnimAfter(float duration)
     {
         yield return new WaitForSeconds(duration);
 
-        ResetToIdleAnim(null);
+        ResetToAnim(null, "ToBoing");
+    }
+
+    private void ResetToAnim(EntityPiece entity, string trigger)
+    {
+        // currentAnimator = entity.GetComponentInChildren<Animator>();
+
+        if (currentAnimator != null)
+        {
+            currentAnimator.SetTrigger(trigger);
+            currentAnimator.SetBool("Dice Rolling", false);
+            currentAnimator.SetBool("Dice Thrown", false);
+        }
     }
 
     private void ResetToIdleAnim(EntityPiece entity)

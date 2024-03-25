@@ -21,6 +21,10 @@ public class UIPromptManager : MonoBehaviour
     public NodeEventChannelSO m_LandOnStorefront;
     public ItemEventChannelSO m_ItemSold;
 
+    public PlayerEventChannelSO m_OpenInventory;
+    public VoidEventChannelSO m_ExitInventory;
+    public IntEventChannelSO m_ItemUsed;
+
     private void Start()
     {
         rolledNumber.text = "";
@@ -37,6 +41,9 @@ public class UIPromptManager : MonoBehaviour
         m_LandOnStorefront.OnEventRaised += DisplayStorefrontPrompt;
         m_ItemSold.OnEventRaised += DisplayLeavePrompt;
 
+        m_OpenInventory.OnEventRaised += HideInitialMenu;
+        m_ExitInventory.OnEventRaised += DisplayInitialMenu;
+        m_ItemUsed.OnEventRaised += HideInventoryPrompt;
     }
 
     private void OnDisable()
@@ -49,6 +56,10 @@ public class UIPromptManager : MonoBehaviour
         m_LandOnStorefront.OnEventRaised -= DisplayStorefrontPrompt;
         m_ItemSold.OnEventRaised -= DisplayLeavePrompt;
 
+
+        m_OpenInventory.OnEventRaised -= HideInitialMenu;
+        m_ExitInventory.OnEventRaised += DisplayInitialMenu;
+        m_ItemUsed.OnEventRaised -= HideInventoryPrompt;
     }
 
     private void RolledDice(int diceRoll)
@@ -88,7 +99,7 @@ public class UIPromptManager : MonoBehaviour
         inputPrompt.text += "\n<color=white>[LSHIFT]</color> to go back.";
         movementRoll.text = "-";
 
-        menuPrompt.SetActive(false);
+        HideInitialMenu();
     }
 
     private void DisplayInitialMenu(EntityPiece ps)
@@ -97,6 +108,24 @@ public class UIPromptManager : MonoBehaviour
         movementRoll.text = "-";
 
         menuPrompt.SetActive(true);
+    }
+
+    private void DisplayInitialMenu()
+    {
+        inputPrompt.text = "";
+        movementRoll.text = "-";
+
+        menuPrompt.SetActive(true);
+    }
+
+    private void HideInitialMenu(EntityPiece ps)
+    {
+        menuPrompt.SetActive(false);
+    }
+
+    private void HideInitialMenu()
+    {
+        menuPrompt.SetActive(false);
     }
 
     private void DisplayEncounterChoices(EntityPiece ps)
@@ -120,5 +149,13 @@ public class UIPromptManager : MonoBehaviour
     private void DisplayLeavePrompt(ItemStats item)
     {
         inputPrompt.text = "<color=white>[SPACE]</color> to leave the store.\n";
+    }
+
+    private void HideInventoryPrompt(int index)
+    {
+        // Hide inventory prompt from initial menu selection visually
+        // this will typically be done after an item in a player inventory is used.
+        // Currently does nothing until we add a way to prevent player from opening inv
+        // multiple times.
     }
 }
