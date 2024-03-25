@@ -268,7 +268,7 @@ public class CombatManager : MonoBehaviour
             if (retaliator.isEnemy) 
             {
                 int loot = Random.Range(0, 6);
-                aggressor.inventory.Add(retaliator.inventory[loot]); // Enemy inventories are loot tables
+                initiator.inventory.Add(retaliator.inventory[loot]); // Enemy inventories are loot tables
             }
             else
             {
@@ -281,7 +281,7 @@ public class CombatManager : MonoBehaviour
                 retaliator.traveledNodes.Add(retaliator.occupiedNode);
 
                 // Add defender's points to attacker's points 
-                aggressor.heldPoints += retaliator.heldPoints;
+                initiator.heldPoints += retaliator.heldPoints;
                 retaliator.heldPoints = 0;
             }
         }
@@ -290,17 +290,17 @@ public class CombatManager : MonoBehaviour
             Debug.Log("Defender Wins!");
 
             // Respawn attacker at pawn shop with max health.
-            aggressor.health = aggressor.maxHealth;
+            initiator.health = initiator.maxHealth;
 
-            aggressor.occupiedNode = sceneManager.spawnPoint;
-            aggressor.transform.position = aggressor.occupiedNode.transform.position;
-            aggressor.occupiedNodeCopy = aggressor.occupiedNode;
-            aggressor.traveledNodes.Clear();
-            aggressor.traveledNodes.Add(aggressor.occupiedNode);
+            initiator.occupiedNode = sceneManager.spawnPoint;
+            initiator.transform.position = initiator.occupiedNode.transform.position;
+            initiator.occupiedNodeCopy = initiator.occupiedNode;
+            initiator.traveledNodes.Clear();
+            initiator.traveledNodes.Add(initiator.occupiedNode);
 
             // Add attacker's points to defender's points 
-            retaliator.heldPoints += aggressor.heldPoints;
-            aggressor.heldPoints = 0;
+            retaliator.heldPoints += initiator.heldPoints;
+            initiator.heldPoints = 0;
         }
 
         audioSource.PlayOneShot(explosionSFX, 2f);
@@ -318,7 +318,7 @@ public class CombatManager : MonoBehaviour
         sceneManager.EnableScene(0);
 
         // Update player scores.
-        sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(aggressor.id);
+        sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(initiator.id);
         if (!retaliator.isEnemy)
             sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(retaliator.id);
         // wrap up the scene and transition back to board in the final game.
