@@ -62,7 +62,7 @@ public class UIPromptManager : MonoBehaviour
 
 
         m_OpenInventory.OnEventRaised -= HideInitialMenu;
-        m_ExitInventory.OnEventRaised += DisplayInitialMenu;
+        m_ExitInventory.OnEventRaised -= DisplayInitialMenu;
         m_ItemUsed.OnEventRaised -= StrikethroughInventoryPrompt;
     }
 
