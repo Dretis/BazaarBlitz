@@ -12,18 +12,6 @@ public class ItemStats : ScriptableObject, IStatModifierChanger
     public string itemName;
     public int duration = 1;
 
-    [Tooltip("What phase is the item usable in")]
-    public PhaseTypes phase;
-
-    public int diesToRoll;
-    public int bonusDamageMin;
-    public int bonusDamageMax;
-    public int playerDamageMin; // can be negative!
-    public int playerDamageMax;
-    public bool blocksWithBonusDamage;
-
-    public string specialID; // Will be checked in a switch statement for specific stuff.
-
     [Header("Shop and Visual Information")]
     public Sprite itemSprite;
     [TextArea (2, 10)]

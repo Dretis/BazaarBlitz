@@ -12,20 +12,19 @@ public class CombatManager : MonoBehaviour
     public bool retaliatorAttacking = false;
     public bool combatActive = false;
 
+    // Mostly used to load player data, the script refers primarily to attacker/defender
     [SerializeField] public EntityPiece player1;
-    [SerializeField] public EntityPiece player2;
+    [SerializeField] public EntityPiece player2; // If its a wild encounter, this is the enemy.
     //[SerializeField] private PlayerStats player3;
     //[SerializeField] private PlayerStats player4;
 
-    // initiator / Retaliator = original starter and victim of the combat
+    // initiator / Retaliator = initiator was first to attack after card draw. Retalior second.
     // Attacker / Defender = current one attacking / defending
     private EntityPiece initiator;
     private EntityPiece retaliator;
     private EntityPiece attacker;
     private EntityPiece defender;
 
-    private List<ItemStats> itemsQueuedAttack;
-    private List<ItemStats> itemsQueuedDefend;
     private int attackerAction;
     private int defenderAction;
 
@@ -64,6 +63,7 @@ public class CombatManager : MonoBehaviour
 
             Debug.Log("Finding player");
 
+            // IDs are set in scene manager as the encounter starts, letting us know who to load.
             player1 = sceneManager.entities.Find(entity => sceneManager.player1ID == entity.id);
             player2 = sceneManager.entities.Find(entity => sceneManager.player2ID == entity.id);
         }
@@ -85,19 +85,19 @@ public class CombatManager : MonoBehaviour
         Instance = this;
         initializeCombat();
 
-        itemsQueuedAttack = new List<ItemStats>();
-        itemsQueuedDefend = new List<ItemStats>();
 
         combatUIManager = GetComponent<CombatUIManager>();
     }
 
     void Update() {
+      // When either guy dies, endingCombat state is entered so that the animations are playe out.
       if (endingCombat) {
         endCombatSceneTimer -= Time.deltaTime;
         if (endCombatSceneTimer <= 0.0f) {
           endCombat();
         }
       }
+      // Same in pausing combat.
       else if (pausingCombat) {
         endCombatSceneTimer -= Time.deltaTime;
         if (endCombatSceneTimer <= 0.0f) {
@@ -132,14 +132,9 @@ public class CombatManager : MonoBehaviour
         {
             initiator = player1;
             retaliator = player2;
-            //isFightingAI = true;
+            isFightingAI = true;
         }
-        else if (player1.isEnemy)
-        {
-            // Shouldnt happen
-            Debug.Log("Somhow player 1 is an enemy!");
-        }
-        else
+        else // If player 2 and 1 are both players, card draw who goes first
         {
             int whosFirst = Random.Range(0, 2); // Add button prompt later
 
@@ -206,23 +201,14 @@ public class CombatManager : MonoBehaviour
         }
     }
 
+    // Handles the meta stuff ofr playactions, notably checking for victory conditions
     public void playTurn()
     {
         if (pausingCombat || endingCombat) {
           return; // Prevent people from trying to get an extra hit in before combat stops.
         }
 
-        foreach (ItemStats item in itemsQueuedDefend)
-        {
-            activateItem(item, true);
-        }
-        itemsQueuedDefend.Clear();
 
-        foreach (ItemStats item in itemsQueuedAttack)
-        {
-            activateItem(item, false); // Can defenders use items?
-        }
-        itemsQueuedAttack.Clear();
 
         playActions(attackerAction, defenderAction);
 
@@ -245,7 +231,7 @@ public class CombatManager : MonoBehaviour
     }
 
     public void pauseCombat() {
-      if (pausingCombat == false) {
+      if (pausingCombat == false) { // Return in 1 second.
         pausingCombat = true;
         endCombatSceneTimer = 1.0f;
         return;
@@ -486,90 +472,7 @@ public class CombatManager : MonoBehaviour
 
     }
 
-    // Here attacker means the current guy attacking, not original attacker
-    private void activateItem(ItemStats item, bool isFromAttacker)
-    {
 
-        if (isFromAttacker)
-        { // If attacker uses items
-
-            if ( !(item.phase == ItemStats.PhaseTypes.Both || item.phase == ItemStats.PhaseTypes.Attack) ) {
-              Debug.Log(item.itemName + " can't be used in this attack phase!");
-              return;
-            } else if ( !(attacker.inventory.Contains(item)) ) {
-              Debug.Log("You don't have that!");
-              return;
-            } else {
-              attacker.inventory.Remove(item);
-            }
-
-
-            Debug.Log("Used " + item.itemName);
-
-            // //For special effects
-            // switch (item.specialID)
-            // {
-            // case "SomeSuperCoolProperty":
-            //   Debug.Log("Used an item!");
-            //   attackerBuffDamage = 9999;
-            //   break;
-            // default:
-            //   Debug.Log("Used something?");
-            //   break;
-            // }
-        }
-
-        else
-        { // If defender uses items (seperated because they might act differently)
-          if ( !(item.phase == ItemStats.PhaseTypes.Both || item.phase == ItemStats.PhaseTypes.Defend) ) {
-            Debug.Log(item.itemName + " can't be used in this defend phase!");
-            return;
-          } else if ( !(defender.inventory.Contains(item)) ) {
-            Debug.Log("You don't have that!");
-            return;
-          } else {
-            defender.inventory.Remove(item);
-          }
-
-          //Min-Max heal, ex 0-0
-          defender.health -= Random.Range(item.playerDamageMin, item.playerDamageMax+1);
-          // subtract opponent hp for armor piercing
-          attacker.health -= Random.Range(item.bonusDamageMin, item.bonusDamageMax+1); // Defender attack items just deal damage
-          attackerBonusRoll = item.diesToRoll;
-
-          // //For special effects
-          // switch (item.specialID)
-          // {
-          // case "SomeSuperCoolProperty":
-          //   Debug.Log("Used an item!");
-          //   attackerBuffDamage = -9999;
-          //   break;
-          // default:
-          //   Debug.Log("Used a blank item?");
-          //   break;
-          // }
-        }
-
-    }
-
-    public void addItem(ItemStats item, bool isAttacker)
-    { // Call whenever someone chooses to use one
-      if (isAttacker) {
-        if (itemsQueuedAttack.Count < 1) {
-          itemsQueuedAttack.Add(item);
-        } else {
-          itemsQueuedAttack.Clear();
-          itemsQueuedAttack.Add(item);
-        }
-      } else {
-        if (itemsQueuedDefend.Count < 1) {
-          itemsQueuedDefend.Add(item);
-        } else {
-          itemsQueuedDefend.Clear();
-          itemsQueuedDefend.Add(item);
-        }
-      }
-    }
 
     public void chooseAction(int ActionID, bool isAttacker)
     {
