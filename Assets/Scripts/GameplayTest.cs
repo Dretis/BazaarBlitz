@@ -429,6 +429,8 @@ public class GameplayTest : MonoBehaviour
             var otherPlayer = p.occupiedNode.playerOccupied;
             if(m.CompareTag("Store")) // Forced to buy item(s)
             {
+                // Have the node be occupied by the current player.
+                m.playerOccupied = p;
                 // Update portions of this code later
                 GameObject tile = m.gameObject;
                 StoreManager store = tile.GetComponent<StoreManager>();
