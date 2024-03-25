@@ -15,7 +15,8 @@ public class SceneGameManager : MonoBehaviour
 
     public List<CombatManager> combatManagers = new List<CombatManager>();
 
-    private GameplayTest overworldScene;
+    // TODO: Change back to private.
+    public GameplayTest overworldScene;
 
     void Awake()
     {

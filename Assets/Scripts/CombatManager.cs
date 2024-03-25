@@ -261,28 +261,48 @@ public class CombatManager : MonoBehaviour
         {
             Debug.Log("Attacker Wins!");
 
-            // Reset health of defender.
-            player2.health = player2.maxHealth;
+            // Respawn defender at pawn shop with max health.
+            retaliator.health = retaliator.maxHealth;
 
-            if (player2.isEnemy)
+            // Enemies can only ever be retaliators. They cannot be the party to engage combat.
+            if (retaliator.isEnemy) 
             {
                 int loot = Random.Range(0, 6);
-                attacker.inventory.Add(player2.inventory[loot]); // Enemy inventories are loot tables
+                aggressor.inventory.Add(retaliator.inventory[loot]); // Enemy inventories are loot tables
             }
             else
             {
-                /* TODO: Add player2's points to player1's points */
 
+                // Reset position of retaliator to spawn point.
+                retaliator.occupiedNode = sceneManager.spawnPoint;
+                retaliator.transform.position = retaliator.occupiedNode.transform.position;
+                retaliator.occupiedNodeCopy = retaliator.occupiedNode;
+                retaliator.traveledNodes.Clear();
+                retaliator.traveledNodes.Add(retaliator.occupiedNode);
+
+                // Add defender's points to attacker's points 
+                aggressor.heldPoints += retaliator.heldPoints;
+                retaliator.heldPoints = 0;
             }
         }
         else
         {
             Debug.Log("Defender Wins!");
 
-            player1.health = player1.maxHealth;
+            // Respawn attacker at pawn shop with max health.
+            aggressor.health = aggressor.maxHealth;
 
-            /* TODO: Add player1's points to player2's points */
+            aggressor.occupiedNode = sceneManager.spawnPoint;
+            aggressor.transform.position = aggressor.occupiedNode.transform.position;
+            aggressor.occupiedNodeCopy = aggressor.occupiedNode;
+            aggressor.traveledNodes.Clear();
+            aggressor.traveledNodes.Add(aggressor.occupiedNode);
+
+            // Add attacker's points to defender's points 
+            retaliator.heldPoints += aggressor.heldPoints;
+            aggressor.heldPoints = 0;
         }
+
         audioSource.PlayOneShot(explosionSFX, 2f);
 
         // Players exit combat.
@@ -296,6 +316,11 @@ public class CombatManager : MonoBehaviour
 
         // Re-enable scene
         sceneManager.EnableScene(0);
+
+        // Update player scores.
+        sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(aggressor.id);
+        if (!retaliator.isEnemy)
+            sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(retaliator.id);
         // wrap up the scene and transition back to board in the final game.
     }
 

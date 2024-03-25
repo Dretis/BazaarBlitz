@@ -24,7 +24,9 @@ public class GameplayTest : MonoBehaviour
 
     public enum GamePhase
     {
+        InitialTurnMenu,
         ItemSelection,
+        Inventory,
         RollDice,
         PickDirection,
         MoveAround,
@@ -63,6 +65,7 @@ public class GameplayTest : MonoBehaviour
     //public PlayerControls input;
 
     public bool encounterStarted = false;
+    private bool playerUsedItem = false; // please change these down the line
 
     //SOUND SHIT
     public AudioClip moveSFX;
@@ -74,16 +77,22 @@ public class GameplayTest : MonoBehaviour
 
     // Event Channels
     [Header("Broadcast on Event Channels")]
+    public PlayerEventChannelSO m_DiceRollUndo;
+    public PlayerEventChannelSO m_DiceRollPrep;
     public IntEventChannelSO m_RollForMovement;
     public IntEventChannelSO m_UpdatePlayerScore;
     public PlayerEventChannelSO m_NextPlayerTurn;
     public PlayerEventChannelSO m_EncounterDecision;
+
+    public PlayerEventChannelSO m_OpenInventory; // JASPER OR RUSSELL PLEASE USE THIS EVENT TO ACCESS THE INVENTORY
+    public VoidEventChannelSO m_ExitInventory; 
 
     // Store-based Event Channels
     public NodeEventChannelSO m_LandOnStorefront;
     public VoidEventChannelSO m_ExitStorefront;
     [Header("Listen on Event Channels")]
     public ItemEventChannelSO m_ItemBought; //Listening to this one
+    public IntEventChannelSO m_ItemUsed; //Listening to this one
 
     // Placeholder code, basis items for storefront
     public List<ItemStats> tempItems;
@@ -91,11 +100,13 @@ public class GameplayTest : MonoBehaviour
     private void OnEnable()
     {
         m_ItemBought.OnEventRaised += _PlaceholderChangeAndContinue;
+        m_ItemUsed.OnEventRaised += RemoveItemInPlayerInventory;
     }
 
     private void OnDisable()
     {
         m_ItemBought.OnEventRaised -= _PlaceholderChangeAndContinue;
+        m_ItemUsed.OnEventRaised -= RemoveItemInPlayerInventory;
     }
 
     // Start is called before the first frame update
@@ -121,6 +132,9 @@ public class GameplayTest : MonoBehaviour
 
         currentPlayer = nextPlayers[playerUnits.Count - 1];
         currentPlayerInitialNode = currentPlayer.occupiedNode;
+
+        m_NextPlayerTurn.RaiseEvent(currentPlayer);
+
         turnText.text = currentPlayer.entityName + "'s Turn!";
         turnText.color = currentPlayer.playerColor;
     }
@@ -130,12 +144,21 @@ public class GameplayTest : MonoBehaviour
     {
         switch (phase)
         {
-            // Pick actions
+            // Checks item effects on player
             case GamePhase.ItemSelection:
                 SelectItem(currentPlayer);
                 break;
 
-            // Roll Phase
+            // Pick choices
+            case GamePhase.InitialTurnMenu:
+                InitialTurnMenu(currentPlayer);
+                break;
+
+            case GamePhase.Inventory:
+                OpenInventory(currentPlayer);
+                break;
+
+            // Roll Phase 
             case GamePhase.RollDice:
                 RollDice(currentPlayer);
                 break;
@@ -186,14 +209,64 @@ public class GameplayTest : MonoBehaviour
 
         p.UpdateStatModifiers();
 
-        phase = GamePhase.RollDice;
+        phase = GamePhase.InitialTurnMenu;
+    }
+
+    private void InitialTurnMenu(EntityPiece p)
+    {
+        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.A))
+        {
+            // This should let you look around the map freely.
+        }
+        if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
+        {
+
+            // We chose to begin rolling for movement, tell listeners about it
+            m_DiceRollPrep.RaiseEvent(p);
+
+            // Put these in their own listener script
+
+            audioSource.PlayOneShot(moveSFX, 2f);
+
+            // End of listener code
+
+            phase = GamePhase.RollDice;
+        }
+        if (playerUsedItem == false && (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S)))
+        {
+            // Item Inventory
+            // We chose to open inventory, tell listeners about it
+
+            m_OpenInventory.RaiseEvent(p);
+
+            // Put these in their own listener script
+
+            audioSource.PlayOneShot(moveSFX, 2f);
+
+            // End of listener code
+
+            phase = GamePhase.Inventory;
+        }
+    }
+
+    private void OpenInventory(EntityPiece p)
+    {
+        if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.Mouse1))
+        {
+            // Undo rolling, back to menu
+            m_ExitInventory.RaiseEvent();
+
+            audioSource.PlayOneShot(moveSFX, 2f);
+
+            phase = GamePhase.InitialTurnMenu;
+        }
     }
 
     void RollDice(EntityPiece p)
     {
         if(p.combatSceneIndex == -1)
         {
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Mouse0))
             {
                 diceRoll = Random.Range(1, 7); // Roll from 1 to 6
 
@@ -209,6 +282,15 @@ public class GameplayTest : MonoBehaviour
                 // End of listener code
 
                 phase = GamePhase.PickDirection;
+            }
+            if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.Mouse1))
+            {
+                // Undo rolling, back to menu
+                m_DiceRollUndo.RaiseEvent(p);
+
+                audioSource.PlayOneShot(reverseSFX, 2f);
+
+                phase = GamePhase.InitialTurnMenu;
             }
         }
         else
@@ -348,6 +430,8 @@ public class GameplayTest : MonoBehaviour
             var otherPlayer = p.occupiedNode.playerOccupied;
             if(m.CompareTag("Store")) // Forced to buy item(s)
             {
+                // Have the node be occupied by the current player.
+                m.playerOccupied = p;
                 // Update portions of this code later
                 GameObject tile = m.gameObject;
                 StoreManager store = tile.GetComponent<StoreManager>();
@@ -659,6 +743,8 @@ public class GameplayTest : MonoBehaviour
         nextPlayers.Remove(currentPlayer); // remove current player from the turn order
         p.occupiedNode.playerOccupied = p; // update to have that player on that node now
 
+        playerUsedItem = false; // let next player access inventory
+
         if (nextPlayers.Count != 0)
         {
             currentPlayer = nextPlayers[nextPlayers.Count - 1];
@@ -677,7 +763,9 @@ public class GameplayTest : MonoBehaviour
                 nextPlayers.Add(players); // Refill the list with all the players again
 
             currentPlayer = nextPlayers[nextPlayers.Count - 1]; //Player at end of the ist goes again
-            currentPlayer = nextPlayers[nextPlayers.Count - 1];
+
+            m_NextPlayerTurn.RaiseEvent(currentPlayer);
+
             turnText.text = currentPlayer.entityName + "'s Turn!";
             turnText.color = currentPlayer.playerColor;
 
@@ -703,5 +791,11 @@ public class GameplayTest : MonoBehaviour
             currentPlayer.heldPoints -= item.basePrice;
 
         m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
+    }
+
+    private void RemoveItemInPlayerInventory(int index)
+    {
+        currentPlayer.inventory.RemoveAt(index);
+        playerUsedItem = true;
     }
 }
