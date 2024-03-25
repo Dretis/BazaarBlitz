@@ -19,7 +19,6 @@ public class UIManager : MonoBehaviour
     [SerializeField] private List<ItemStats> itemInventory;
 
     [Header("Broadcast on Event Channels")]
-    public VoidEventChannelSO broadcastEvent;
     public ItemEventChannelSO m_itemSold;
 
     [Header("Listen on Event Channels")]
