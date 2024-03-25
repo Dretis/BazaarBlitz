@@ -66,8 +66,12 @@ public class UIInventoryManager : MonoBehaviour
         // Tell listeners that the item at this index in player's inventory is being used
         m_ItemUsed.RaiseEvent(index);
 
-        // Re-used code, change later
         itemNames[index].text = "";
-        itemNames[index].GetComponentInParent<Button>().interactable = false;
+
+        for (int i = 0; i < itemNames.Count; i++)
+        {
+            // Make the rest of the inventory interactable, prevents multiple item uses in one turn
+            itemNames[i].GetComponentInParent<Button>().interactable = false;
+        }
     }
 }

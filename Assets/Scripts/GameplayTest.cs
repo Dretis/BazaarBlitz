@@ -65,6 +65,7 @@ public class GameplayTest : MonoBehaviour
     //public PlayerControls input;
 
     public bool encounterStarted = false;
+    private bool playerUsedItem = false; // please change these down the line
 
     //SOUND SHIT
     public AudioClip moveSFX;
@@ -91,6 +92,7 @@ public class GameplayTest : MonoBehaviour
     public VoidEventChannelSO m_ExitStorefront;
     [Header("Listen on Event Channels")]
     public ItemEventChannelSO m_ItemBought; //Listening to this one
+    public IntEventChannelSO m_ItemUsed; //Listening to this one
 
     // Placeholder code, basis items for storefront
     public List<ItemStats> tempItems;
@@ -98,11 +100,13 @@ public class GameplayTest : MonoBehaviour
     private void OnEnable()
     {
         m_ItemBought.OnEventRaised += _PlaceholderChangeAndContinue;
+        m_ItemUsed.OnEventRaised += RemoveItemInPlayerInventory;
     }
 
     private void OnDisable()
     {
         m_ItemBought.OnEventRaised -= _PlaceholderChangeAndContinue;
+        m_ItemUsed.OnEventRaised -= RemoveItemInPlayerInventory;
     }
 
     // Start is called before the first frame update
@@ -227,7 +231,7 @@ public class GameplayTest : MonoBehaviour
 
             phase = GamePhase.RollDice;
         }
-        if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
+        if (playerUsedItem == false && (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S)))
         {
             // Item Inventory
             // We chose to open inventory, tell listeners about it
@@ -736,6 +740,8 @@ public class GameplayTest : MonoBehaviour
         nextPlayers.Remove(currentPlayer); // remove current player from the turn order
         p.occupiedNode.playerOccupied = p; // update to have that player on that node now
 
+        playerUsedItem = false; // let next player access inventory
+
         if (nextPlayers.Count != 0)
         {
             currentPlayer = nextPlayers[nextPlayers.Count - 1];
@@ -782,5 +788,11 @@ public class GameplayTest : MonoBehaviour
             currentPlayer.heldPoints -= item.basePrice;
 
         m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
+    }
+
+    private void RemoveItemInPlayerInventory(int index)
+    {
+        currentPlayer.inventory.RemoveAt(index);
+        playerUsedItem = true;
     }
 }

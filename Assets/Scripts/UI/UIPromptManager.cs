@@ -10,7 +10,9 @@ public class UIPromptManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI inputPrompt;
     [SerializeField] private TextMeshProUGUI rolledNumber;
     [SerializeField] private TextMeshProUGUI movementRoll;
+
     [SerializeField] private GameObject menuPrompt;
+    [SerializeField] private TextMeshProUGUI inventoryPromptText;
 
     [Header("Listen on Event Channels")]
     public IntEventChannelSO m_RollForMovement;
@@ -37,13 +39,14 @@ public class UIPromptManager : MonoBehaviour
         m_DiceRollPrep.OnEventRaised += DisplayRollPrompt;
         m_DiceRollUndo.OnEventRaised += DisplayInitialMenu;
         m_NextPlayerTurn.OnEventRaised += DisplayInitialMenu;
+        m_NextPlayerTurn.OnEventRaised += NormalizeInventoryPrompt; //temp
         m_EncounterDecisions.OnEventRaised += DisplayEncounterChoices;
         m_LandOnStorefront.OnEventRaised += DisplayStorefrontPrompt;
         m_ItemSold.OnEventRaised += DisplayLeavePrompt;
 
         m_OpenInventory.OnEventRaised += HideInitialMenu;
         m_ExitInventory.OnEventRaised += DisplayInitialMenu;
-        m_ItemUsed.OnEventRaised += HideInventoryPrompt;
+        m_ItemUsed.OnEventRaised += StrikethroughInventoryPrompt;
     }
 
     private void OnDisable()
@@ -52,6 +55,7 @@ public class UIPromptManager : MonoBehaviour
         m_DiceRollPrep.OnEventRaised -= DisplayRollPrompt;
         m_DiceRollUndo.OnEventRaised -= DisplayInitialMenu;
         m_NextPlayerTurn.OnEventRaised -= DisplayInitialMenu;
+        m_NextPlayerTurn.OnEventRaised -= NormalizeInventoryPrompt; //temp
         m_EncounterDecisions.OnEventRaised -= DisplayEncounterChoices;
         m_LandOnStorefront.OnEventRaised -= DisplayStorefrontPrompt;
         m_ItemSold.OnEventRaised -= DisplayLeavePrompt;
@@ -59,7 +63,7 @@ public class UIPromptManager : MonoBehaviour
 
         m_OpenInventory.OnEventRaised -= HideInitialMenu;
         m_ExitInventory.OnEventRaised += DisplayInitialMenu;
-        m_ItemUsed.OnEventRaised -= HideInventoryPrompt;
+        m_ItemUsed.OnEventRaised -= StrikethroughInventoryPrompt;
     }
 
     private void RolledDice(int diceRoll)
@@ -151,11 +155,13 @@ public class UIPromptManager : MonoBehaviour
         inputPrompt.text = "<color=white>[SPACE]</color> to leave the store.\n";
     }
 
-    private void HideInventoryPrompt(int index)
+    private void NormalizeInventoryPrompt(EntityPiece ps)
     {
-        // Hide inventory prompt from initial menu selection visually
-        // this will typically be done after an item in a player inventory is used.
-        // Currently does nothing until we add a way to prevent player from opening inv
-        // multiple times.
+        inventoryPromptText.text = "<color=white>[S]</color> Item";
+    }
+
+    private void StrikethroughInventoryPrompt(int index)
+    {
+        inventoryPromptText.text = "<s><color=grey>[S] Item</color></s>";
     }
 }
