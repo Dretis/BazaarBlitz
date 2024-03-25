@@ -200,12 +200,14 @@ public class GameplayTest : MonoBehaviour
 
     private void SelectItem(EntityPiece p)
     {
+        /*
         // all items active for debug
         foreach(var item in p.inventory)
         {
             p.AddItemToActiveEffects(item.duration, item);
             p.inventory.Remove(item);
         }
+        */
 
         p.UpdateStatModifiers();
 
