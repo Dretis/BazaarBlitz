@@ -1,15 +1,17 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
 
 public class CombatUIManager : MonoBehaviour
 {
-    public enum FightingPosition { Left, Right }
+    public enum FightingPosition 
+    { 
+        Left, 
+        Right 
+    }
 
-    //Canvas UI Shit
+    // Canvas UI Shit
     public SpriteRenderer player1Renderer;
     public SpriteRenderer player2Renderer;
 

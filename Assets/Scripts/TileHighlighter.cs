@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -9,12 +7,12 @@ public class TileHighlighter : MonoBehaviour
     public GameObject highlighter;
     public SpriteRenderer highlighterRenderer;
 
-
     // Mouse Shit
     Vector2 mousePos => Input.mousePosition;
     public Vector2 mouseWorldPos => Camera.main.ScreenToWorldPoint(mousePos);
 
     public Vector3Int hoveredTilePos;
+    
     // Start is called before the first frame update
     void Start()
     {

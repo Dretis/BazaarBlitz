@@ -1,13 +1,22 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
 
 [CreateAssetMenu]
 public class Action : ScriptableObject
 {
-    public enum PhaseTypes { Attack, Defend, Both }
-    public enum WeaponTypes { Melee, Gun, Magic, Special}
+    public enum PhaseTypes 
+    { 
+        Attack, 
+        Defend, 
+        Both 
+    }
+
+    public enum WeaponTypes 
+    {
+        Melee, 
+        Gun, 
+        Magic, 
+        Special 
+    }
 
     public string actionName;
 
