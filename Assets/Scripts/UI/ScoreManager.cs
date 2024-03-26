@@ -18,17 +18,44 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private List<TextMeshProUGUI> playerHPs;
     [SerializeField] private List<Image> playerImages;
 
+    [Header("Stamp Elements")]
+    [SerializeField] private List<Image> greenStamps;
+    [SerializeField] private List<Image> redStamps;
+    [SerializeField] private List<Image> blueStamps;
+    [SerializeField] private List<Image> orangeStamps;
+
     [Header("Listen On Event Channels")]
     public IntEventChannelSO m_ChangeInScore;
+    public PlayerEventChannelSO m_NextPlayerTurn;
+
+    public PlayerEventChannelSO m_PassedByStamp;
+    public StampEventChannelSO m_UndoPassByStamp;
+
+    public VoidEventChannelSO m_PassByPawnShop;
+    public PlayerEventChannelSO m_UndoPassByPawnShop;
 
     private void OnEnable()
     {
         m_ChangeInScore.OnEventRaised += UpdateScoreForPlayer;
+        m_NextPlayerTurn.OnEventRaised += ChangeCurrentPlayer;
+        m_NextPlayerTurn.OnEventRaised += UpdateHeldStamps;
+        m_PassedByStamp.OnEventRaised += UpdateHeldStamps;
+        m_UndoPassByStamp.OnEventRaised += HideObtainedStamps;
+
+        m_PassByPawnShop.OnEventRaised += ClearHeldStamps;
+        m_UndoPassByPawnShop.OnEventRaised += UpdateHeldStamps;
     }
 
     private void OnDisable()
     {
         m_ChangeInScore.OnEventRaised -= UpdateScoreForPlayer;
+        m_NextPlayerTurn.OnEventRaised -= ChangeCurrentPlayer;
+        m_NextPlayerTurn.OnEventRaised -= UpdateHeldStamps;
+        m_PassedByStamp.OnEventRaised -= UpdateHeldStamps;
+        m_UndoPassByStamp.OnEventRaised -= HideObtainedStamps;
+
+        m_PassByPawnShop.OnEventRaised -= ClearHeldStamps;
+        m_UndoPassByPawnShop.OnEventRaised -= UpdateHeldStamps;
     }
 
     void Start()
@@ -36,6 +63,13 @@ public class ScoreManager : MonoBehaviour
         for (int i = 0; i < players.Count; i++)
         {
             UpdateScoreForPlayer(i);
+        }
+        for (int i = 0; i < players.Count; i++)
+        {
+            greenStamps[i].enabled = false;
+            redStamps[i].enabled = false;
+            blueStamps[i].enabled = false;
+            orangeStamps[i].enabled = false;
         }
     }
 
@@ -53,4 +87,58 @@ public class ScoreManager : MonoBehaviour
         playerPlacements[id].text = "";
     }
 
+    private void ChangeCurrentPlayer(EntityPiece ps)
+    {
+        currentPlayer = ps;
+    }
+
+    private void UpdateHeldStamps(EntityPiece ps)
+    {
+        foreach(Stamp.StampType s in ps.stamps)
+        {
+            Debug.Log(s);
+            switch (s)
+            {
+                case Stamp.StampType.Green:
+                    greenStamps[ps.id].enabled = true;
+                    break;
+                case Stamp.StampType.Red:
+                    redStamps[ps.id].enabled = true;
+                    break;
+                case Stamp.StampType.Blue:
+                    blueStamps[ps.id].enabled = true;
+                    break;
+                case Stamp.StampType.Orange:
+                    orangeStamps[ps.id].enabled = true;
+                    break;
+            }
+        }
+    }
+
+    private void HideObtainedStamps(Stamp.StampType type)
+    {
+        switch (type)
+        {
+            case Stamp.StampType.Green:
+                greenStamps[currentPlayer.id].enabled = false;
+                break;
+            case Stamp.StampType.Red:
+                redStamps[currentPlayer.id].enabled = false;
+                break;
+            case Stamp.StampType.Blue:
+                blueStamps[currentPlayer.id].enabled = false;
+                break;
+            case Stamp.StampType.Orange:
+                orangeStamps[currentPlayer.id].enabled = false;
+                break;
+        }
+    }
+
+    private void ClearHeldStamps()
+    {
+        greenStamps[currentPlayer.id].enabled = false;
+        redStamps[currentPlayer.id].enabled = false;
+        blueStamps[currentPlayer.id].enabled = false;
+        orangeStamps[currentPlayer.id].enabled = false;
+    }
 }

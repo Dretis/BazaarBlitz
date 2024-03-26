@@ -13,16 +13,11 @@ MonoBehaviour:
   m_Name: Nuggies
   m_EditorClassIdentifier: 
   itemName: Nuggies
-  phase: 2
-  diesToRoll: 0
-  bonusDamageMin: 0
-  bonusDamageMax: 0
-  playerDamageMin: -2
-  playerDamageMax: -1
-  blocksWithBonusDamage: 0
-  specialID: 
+  duration: 2
   itemSprite: {fileID: -190423490, guid: 3eb884c20bf4ccf4c998c0de17a982eb, type: 3}
-  effectDescription: Recover 4 HP on use.
+  effectDescription: Steal 10% of your opponent's health for 2 turns.
   flavorText: '"Funny lil guys that''ll make you hungry for more. What''s it made
     of? Honestly, I have no clue."'
   basePrice: 100
+  modifiers:
+  - {fileID: 11400000, guid: 7c145d77a4ff091419d7d58d29d88d47, type: 2}

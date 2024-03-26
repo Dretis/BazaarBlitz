@@ -72,7 +72,7 @@ public class GameplayTest : MonoBehaviour
     public AudioClip reverseSFX;
     public AudioSource audioSource;
 
-    private List<Stamp> oldStamps = new List<Stamp>();
+    [SerializeField] private List<Stamp.StampType> oldStamps = new List<Stamp.StampType>();
     private int oldPoints = 0;
 
     // Event Channels
@@ -81,6 +81,13 @@ public class GameplayTest : MonoBehaviour
     public PlayerEventChannelSO m_DiceRollPrep;
     public IntEventChannelSO m_RollForMovement;
     public IntEventChannelSO m_UpdatePlayerScore;
+
+    public PlayerEventChannelSO m_PassByStamp;
+    public StampEventChannelSO m_UndoPassByStamp;
+
+    public VoidEventChannelSO m_PassByPawnShop;
+    public PlayerEventChannelSO m_UndoPassByPawnShop;
+
     public PlayerEventChannelSO m_NextPlayerTurn;
     public PlayerEventChannelSO m_EncounterDecision;
 
@@ -90,6 +97,7 @@ public class GameplayTest : MonoBehaviour
     // Store-based Event Channels
     public NodeEventChannelSO m_LandOnStorefront;
     public VoidEventChannelSO m_ExitStorefront;
+
     [Header("Listen on Event Channels")]
     public ItemEventChannelSO m_ItemBought; //Listening to this one
     public IntEventChannelSO m_ItemUsed; //Listening to this one
@@ -208,6 +216,11 @@ public class GameplayTest : MonoBehaviour
             p.inventory.Remove(item);
         }
         */
+        foreach(Stamp.StampType s in oldStamps)
+        {
+            Debug.Log(s);
+        }
+
 
         p.UpdateStatModifiers();
 
@@ -258,7 +271,7 @@ public class GameplayTest : MonoBehaviour
             // Undo rolling, back to menu
             m_ExitInventory.RaiseEvent();
 
-            audioSource.PlayOneShot(moveSFX, 2f);
+            audioSource.PlayOneShot(reverseSFX, 2f);
 
             phase = GamePhase.InitialTurnMenu;
         }
@@ -271,6 +284,14 @@ public class GameplayTest : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Mouse0))
             {
                 diceRoll = Random.Range(1, 7); // Roll from 1 to 6
+
+                var rollsRemaining = currentPlayer.currentStatsModifier.rollModifier;
+                while (rollsRemaining > 0)
+                {
+                    Debug.Log($"Rolls Left{rollsRemaining}");
+                    diceRoll += Random.Range(1, 7); // roll again until there's no more
+                    rollsRemaining--;
+                }
 
                 // We just rolled for movement, tell listeners about it
                 m_RollForMovement.RaiseEvent(diceRoll);
@@ -334,18 +355,25 @@ public class GameplayTest : MonoBehaviour
             // Undo moves (not sure if this actually undoes multiple stamp collections)
             if (p.occupiedNode.CompareTag("Castle"))
             {
-                p.stamps = new List<Stamp>(oldStamps);
+                p.stamps = new List<Stamp.StampType>(oldStamps);
                 p.heldPoints = oldPoints;
 
                 oldStamps.Clear();
                 oldPoints = 0;
+
+                m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
+                m_UndoPassByPawnShop.RaiseEvent(p);
             }
             else if (stampCollected != null)
             {
                 // Stamp was not collected before
-                if (p.stamps.Exists(stamp => stamp == stampCollected))
+                if (p.stamps.Contains(stampCollected.stampType) && !oldStamps.Contains(stampCollected.stampType))
                 {
-                    p.stamps.Remove(stampCollected);
+                    Debug.Log("undo stamp");
+                    Debug.Log($"Old Stamp Contains {stampCollected.stampType} is {oldStamps.Contains(stampCollected.stampType)}");
+
+                    p.stamps.Remove(stampCollected.stampType);
+                    m_UndoPassByStamp.RaiseEvent(stampCollected.stampType); // shit code fix later
                 }
             }
 
@@ -387,22 +415,27 @@ public class GameplayTest : MonoBehaviour
         if (m.CompareTag("Castle"))
         {
             oldPoints = p.heldPoints;
-            oldStamps = new List<Stamp>(p.stamps);
+            oldStamps = new List<Stamp.StampType>(p.stamps);
 
             if (p.stamps.Count != 0)
             {
-                p.heldPoints += (int)(50 * Mathf.Pow(2, p.stamps.Count-1));
+                p.heldPoints += (int)(150 * Mathf.Pow(2, p.stamps.Count-1));
                 m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
+                m_PassByPawnShop.RaiseEvent(); // change this later
             }
 
             p.stamps.Clear();
         }
         else if (m.CompareTag("Stamp"))
         {
-            Stamp stampToBeCollected = m.gameObject.GetComponent<Stamp>();
-            if (!p.stamps.Exists(stamp => stamp == stampToBeCollected))
+            Stamp.StampType stampToBeCollected = m.gameObject.GetComponent<Stamp>().stampType;
+            if (!p.stamps.Contains(stampToBeCollected))
             {
+                Debug.Log($"Collect {stampToBeCollected} stamp passed");
+                oldStamps = new List<Stamp.StampType>(p.stamps);
                 p.stamps.Add(stampToBeCollected);
+                //m_UpdatePlayerScore.RaiseEvent(currentPlayer.id); // Change this to a different event
+                m_PassByStamp.RaiseEvent(p);
             }
         }
 
@@ -475,11 +508,14 @@ public class GameplayTest : MonoBehaviour
                 encounterScreen.SetActive(true);
                 p1fight.text = "";
                 p2fight.text = "";
+                /*
                 resultInfo.text = "<size=45>[STASHING]</size>\n" + p.heldPoints + " point(s) have been stashed. \n<size=30> You are now at " + p.finalPoints + ". </size>";
 
                 if (p.heldPoints != 0)
                     p.finalPoints += p.heldPoints;
                 p.heldPoints = 0;
+                */
+                resultInfo.text = "<size=45>[PAWN SHOP]</size>\nLanded on pawn shop. All held stamps have been converted to points.\n<size=30> [SPACE] to continue.</size>";
 
                 encounterOver = true;
                 phase = GamePhase.ConfirmContinue;
@@ -757,6 +793,7 @@ public class GameplayTest : MonoBehaviour
             turnText.color = currentPlayer.playerColor;
 
             currentPlayerInitialNode = currentPlayer.occupiedNode;
+            oldStamps = new List<Stamp.StampType>(currentPlayer.stamps); // keeping track of stamps for next player
             phase = GamePhase.ItemSelection;
         }
         else
@@ -772,6 +809,7 @@ public class GameplayTest : MonoBehaviour
             turnText.color = currentPlayer.playerColor;
 
             currentPlayerInitialNode = currentPlayer.occupiedNode;
+            oldStamps = new List<Stamp.StampType>(currentPlayer.stamps);
             phase = GamePhase.ItemSelection;
         }
     }
@@ -797,7 +835,15 @@ public class GameplayTest : MonoBehaviour
 
     private void RemoveItemInPlayerInventory(int index)
     {
+        // This should be in its own script
+        currentPlayer.AddItemToActiveEffects(currentPlayer.inventory[index].duration, currentPlayer.inventory[index]);
+        currentPlayer.UpdateStatModifiers();
         currentPlayer.inventory.RemoveAt(index);
         playerUsedItem = true;
+    }
+
+    public void PlayAudio(AudioClip clip)
+    {
+        audioSource.PlayOneShot(clip, 2f);
     }
 }
