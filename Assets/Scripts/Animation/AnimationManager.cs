@@ -1,7 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Animations;
 
 public class AnimationManager : MonoBehaviour
 {
@@ -20,7 +18,6 @@ public class AnimationManager : MonoBehaviour
         m_DiceRollPrep.OnEventRaised += DiceIsRolling;
         m_DiceThrown.OnEventRaised += DiceIsThrown;
         m_ResetToIdle.OnEventRaised += ResetToIdleAnim;
-
     }
 
     private void OnDisable()
@@ -42,7 +39,7 @@ public class AnimationManager : MonoBehaviour
     {
         // currentAnimator = entity.GetComponentInChildren<Animator>();
 
-        if(currentAnimator != null)
+        if (currentAnimator != null)
             currentAnimator.SetBool("Dice Rolling", true);
     }
 

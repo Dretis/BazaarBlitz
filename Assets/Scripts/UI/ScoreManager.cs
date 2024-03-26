@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -64,6 +63,7 @@ public class ScoreManager : MonoBehaviour
         {
             UpdateScoreForPlayer(i);
         }
+
         for (int i = 0; i < players.Count; i++)
         {
             greenStamps[i].enabled = false;
