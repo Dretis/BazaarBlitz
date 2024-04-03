@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -24,7 +23,7 @@ public class ItemSelectionHandler : MonoBehaviour, IPointerEnterHandler, IPointe
         Vector3 endScale = startScale;
 
         float elapsedTime = 0f;
-        while(elapsedTime < moveTime)
+        while (elapsedTime < moveTime)
         {
             elapsedTime += Time.deltaTime;
 

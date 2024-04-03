@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -15,13 +13,13 @@ public class CombatManager : MonoBehaviour
     // Mostly used to load player data, the script refers primarily to attacker/defender
     [SerializeField] public EntityPiece player1;
     [SerializeField] public EntityPiece player2; // If its a wild encounter, this is the enemy.
-    //[SerializeField] private PlayerStats player3;
-    //[SerializeField] private PlayerStats player4;
 
-    // initiator / Retaliator = initiator was first to attack after card draw. Retalior second.
-    // Attacker / Defender = current one attacking / defending
+    // Initiator / Retaliator = Initiator is the first to attack after dice toss. Retaliator second.
+    
     private EntityPiece initiator;
     private EntityPiece retaliator;
+
+    // Attacker / Defender = current player attacking / defending
     private EntityPiece attacker;
     private EntityPiece defender;
 
@@ -48,7 +46,6 @@ public class CombatManager : MonoBehaviour
     private bool endingCombat = false;
     private bool pausingCombat = false;
     private bool initiatorWon;
-
 
     public CombatUIManager combatUIManager;
     public SceneGameManager sceneManager;
@@ -89,21 +86,26 @@ public class CombatManager : MonoBehaviour
         combatUIManager = GetComponent<CombatUIManager>();
     }
 
-    void Update() {
-      // When either guy dies, endingCombat state is entered so that the animations are playe out.
-      if (endingCombat) {
-        endCombatSceneTimer -= Time.deltaTime;
-        if (endCombatSceneTimer <= 0.0f) {
-          endCombat();
+    void Update() 
+    {
+        // When either guy dies, endingCombat state is entered so that the animations are playe out.
+        if (endingCombat) 
+        {
+            endCombatSceneTimer -= Time.deltaTime;
+            if (endCombatSceneTimer <= 0.0f) 
+            {
+                endCombat();
+            }
         }
-      }
-      // Same in pausing combat.
-      else if (pausingCombat) {
-        endCombatSceneTimer -= Time.deltaTime;
-        if (endCombatSceneTimer <= 0.0f) {
-          pauseCombat();
+        // Same in pausing combat.
+        else if (pausingCombat) 
+        {
+            endCombatSceneTimer -= Time.deltaTime;
+            if (endCombatSceneTimer <= 0.0f) 
+            {
+                pauseCombat();
+            }
         }
-      }
     }
 
 
@@ -166,15 +168,13 @@ public class CombatManager : MonoBehaviour
         if ((!isInitiatorTurn && initiatorAttacking) && isFightingAI)
         {
             defenderAction = decideAttackAI();
-            isInitiatorTurn = toggleBool(isInitiatorTurn); // Now well just finish the turn.
+            isInitiatorTurn = toggleBool(isInitiatorTurn); // Now we'll just finish the turn.
         }
 
         if (isInitiatorTurn)
         {
             // Both players acted. Play the turn, then toggle attacker and defender
             playTurn();
-
-
 
             initiatorAttacking = toggleBool(initiatorAttacking);
             retaliatorAttacking = toggleBool(retaliatorAttacking);
@@ -204,11 +204,10 @@ public class CombatManager : MonoBehaviour
     // Handles the meta stuff ofr playactions, notably checking for victory conditions
     public void playTurn()
     {
-        if (pausingCombat || endingCombat) {
-          return; // Prevent people from trying to get an extra hit in before combat stops.
+        if (pausingCombat || endingCombat) 
+        {
+            return; // Prevent people from trying to get an extra hit in before combat stops.
         }
-
-
 
         playActions(attackerAction, defenderAction);
 
@@ -230,32 +229,38 @@ public class CombatManager : MonoBehaviour
         }
     }
 
-    public void pauseCombat() {
-      if (pausingCombat == false) { // Return in 1 second.
-        pausingCombat = true;
+    public void pauseCombat() 
+    {
+        if (pausingCombat == false) 
+        { 
+            // Return in 1 second.
+            pausingCombat = true;
+            endCombatSceneTimer = 1.0f;
+            return;
+        }
+
         endCombatSceneTimer = 1.0f;
-        return;
-      }
+        pausingCombat = false;
+        phaseCount = 0;
+        Debug.Log("I'm in scene" + combatSceneIndex);
+        // Pause combat scene and re-enable overworld scene
+        sceneManager.DisableScene(combatSceneIndex);
+        sceneManager.EnableScene(0);
 
-      endCombatSceneTimer = 1.0f;
-      pausingCombat = false;
-      phaseCount = 0;
-      Debug.Log("I'm in scene" + combatSceneIndex);
-      // Pause combat scene and re-enable overworld scene
-      sceneManager.DisableScene(combatSceneIndex);
-      sceneManager.EnableScene(0);
-
-      sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
-      Debug.Log("I have left scene" + combatSceneIndex);
+        sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
+        Debug.Log("I have left scene" + combatSceneIndex);
     }
 
     public void endCombat()
     {
-        if (endingCombat == false) {
-          endCombatSceneTimer = 1.0f;
-          endingCombat = true;
-          return; // We'll come back later from updatewith endingCombat = true
+        if (endingCombat == false) 
+        {
+            endCombatSceneTimer = 1.0f;
+            endingCombat = true;
+            return; 
+            // We'll come back later from update with endingCombat = true
         }
+
         //combatActive = false;
         if (initiatorWon)
         {
@@ -309,8 +314,6 @@ public class CombatManager : MonoBehaviour
         player1.combatSceneIndex = -1;
         player2.combatSceneIndex = -1;
 
-
-
         sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
         sceneManager.UnloadCombatScene(SceneManager.GetSceneAt(combatSceneIndex), combatSceneIndex);
 
@@ -339,7 +342,6 @@ public class CombatManager : MonoBehaviour
             combatUIManager.UpdateActionAnimation(attackerAction, player2.fightingPosition);
             combatUIManager.UpdateActionAnimation(defenderAction + 4, player1.fightingPosition);
         }
-
 
         float damage = 0;
 
@@ -374,6 +376,7 @@ public class CombatManager : MonoBehaviour
 
         int rawRoll = Random.Range(0, 6);
         int roll = 0;
+
         switch (attack.type)
         {
             case Action.WeaponTypes.Melee:
@@ -412,6 +415,7 @@ public class CombatManager : MonoBehaviour
                 //Debug.Log("MagicAttack");
                 break;
             case Action.WeaponTypes.Special:
+
                 roll = rawRoll;
                 damage += attacker.strDie[roll];
                 roll = Random.Range(0, 6);
@@ -428,9 +432,11 @@ public class CombatManager : MonoBehaviour
                 damage = 0;
                 break;
             default:
+
                 damage += 0;
                 break;
         }
+
         damage += (attackerBuffDamage + attack.bonusDamage);
         damage = damage * 5;
         Debug.Log($"Attacker role: Raw {roll}, modified {damage}");
@@ -472,7 +478,7 @@ public class CombatManager : MonoBehaviour
 
         defenseScore += 0.1f * defender.currentStatsModifier.defenseModifier;
 
-        damage = ( damage * (1 - (0.1f * defenseScore)) * defendMultiplier );
+        damage = (damage * (1 - (0.1f * defenseScore)) * defendMultiplier);
 
         if (damage < 0)
         {
@@ -493,16 +499,13 @@ public class CombatManager : MonoBehaviour
         {
             playersLastAttack = attackerAction;
         }
-
-
     }
-
-
 
     public void chooseAction(int ActionID, bool isAttacker)
     {
         combatUIManager.UpdateActionAnimation(0, player1.fightingPosition);
         combatUIManager.UpdateActionAnimation(0, player2.fightingPosition);
+        
         if (isAttacker)
         {
             attackerAction = ActionID;
@@ -516,6 +519,7 @@ public class CombatManager : MonoBehaviour
     private int decideAttackAI()
     {
         int roll = Random.Range(0, 8);
+        
         if (roll < 4)
         {
             return player2.favoredAttack;
@@ -580,9 +584,9 @@ public class CombatManager : MonoBehaviour
 
 
 
-
+    // Helper function
     private bool toggleBool(bool boolToToggle)
-    { // helper function
+    { 
         if (boolToToggle)
         {
             return false;

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "StatMods/Lifesteal")]
@@ -10,8 +8,6 @@ public class Lifesteal : StatModifierChangerSO
     public override EntityStatsModifiers ApplyStatModChanges(EntityStatsModifiers currentStats)
     {
         currentStats.lifestealMult += lifestealMult;
-
-
 
         return currentStats;
     }

@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -92,22 +91,18 @@ public class EntityPiece : MonoBehaviour
             }
         }
     }
+    
     // Start is called before the first frame update
     void Start()
     {
         if (playerSprite != null)
             playerSprite.color = playerColor;
+        
         if (occupiedNode != null)
         {
             transform.position = occupiedNode.transform.position;
             occupiedNodeCopy = occupiedNode;
             traveledNodes.Add(occupiedNode);
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 }

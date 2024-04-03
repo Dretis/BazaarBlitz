@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
@@ -7,7 +5,7 @@ public class EntityStatsModifiers
 {
     public EntityStatsModifiers()
     {
-        for(int i = 0; i < dieModifiers.Length;i++)
+        for (int i = 0; i < dieModifiers.Length; i++)
         {
             dieModifiers[i] = new();
         }
@@ -16,8 +14,6 @@ public class EntityStatsModifiers
     // List of all stats
     public DieModifier[] dieModifiers = new DieModifier[(int)EntityBaseStats.DieTypes.Count];
 
-
-
     public float defenseModifier = 0;
     public float lifestealMult = 0;
 
@@ -25,8 +21,6 @@ public class EntityStatsModifiers
 
     public float ApplyDieModifier(EntityBaseStats.DieTypes dieType, float baseRollValue)
     {
-
-
         Debug.Log("Original Roll" + baseRollValue);
 
         var dieMod = dieModifiers[(int)dieType];

@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -83,26 +81,5 @@ public class SceneGameManager : MonoBehaviour
     public void ChangeGamePhase(GameplayTest.GamePhase phase)
     {
         overworldScene.phase = phase;
-    }
-    IEnumerator SetActiveSceneAfterWait()
-    {
-        yield return new WaitForSeconds(1.0f);
-
-        //SceneManager.SetActiveScene(SceneManager.GetSceneAt(SceneManager.sceneCount-1));
-        Debug.Log(SceneManager.GetActiveScene().name);
-    }
-
-    IEnumerator WaitOneSecondToEnable(Scene scene, int sceneIndex)
-    {
-        yield return new WaitForSeconds(1.0f);
-
-        print("Hi");
-    }
-
-    IEnumerator WaitOneSecondToDisable(Scene scene, int sceneIndex)
-    {
-        yield return new WaitForSeconds(1.0f);
-
-        print("Hi");
     }
 }

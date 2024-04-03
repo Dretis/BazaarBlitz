@@ -1,7 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 
 public class UIPromptManager : MonoBehaviour
@@ -32,6 +30,7 @@ public class UIPromptManager : MonoBehaviour
         rolledNumber.text = "";
         movementRoll.text = "-";
     }
+
     private void OnEnable()
     {
         
@@ -59,7 +58,6 @@ public class UIPromptManager : MonoBehaviour
         m_EncounterDecisions.OnEventRaised -= DisplayEncounterChoices;
         m_LandOnStorefront.OnEventRaised -= DisplayStorefrontPrompt;
         m_ItemSold.OnEventRaised -= DisplayLeavePrompt;
-
 
         m_OpenInventory.OnEventRaised -= HideInitialMenu;
         m_ExitInventory.OnEventRaised -= DisplayInitialMenu;

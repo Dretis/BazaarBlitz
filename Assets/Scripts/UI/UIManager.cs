@@ -1,9 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.Events;
 
 public class UIManager : MonoBehaviour
 {
@@ -27,7 +25,7 @@ public class UIManager : MonoBehaviour
     public VoidEventChannelSO m_ExitStorefront;
     public ItemEventChannelSO m_HoveringItem;
     public ItemListEventChannelSO m_StockItems;
-    public IntEventChannelSO m_RemoveItem; // change it to RemoveItem, may need this to be an IntEventChannel
+    public IntEventChannelSO m_RemoveItem; 
     
     // this probably needs to be in a seperate script too
     private StoreManager currentStore;
@@ -76,6 +74,7 @@ public class UIManager : MonoBehaviour
         {
             itemInventory[i] = currentStore.storeInventory[i];
         }
+
         storeChatBubble.text = "\"Greetings, customer! Welcome to " + currentStore.playerOwner.entityName + "'s wonderful store! \nPlease purchase something.\"";
         storekeeperImage.color = currentStore.playerOwner.playerColor;
         StockItems(itemInventory);
@@ -120,7 +119,7 @@ public class UIManager : MonoBehaviour
     private void HighlightItem(ItemStats item)
     {
         // Changes the chat bubble to show the information of the selected item in the store
-        if(item == null)
+        if (item == null)
         {
             // There is no item in that spot
             storeChatBubble.text = "<color=red>SOLD OUT</color>  ";

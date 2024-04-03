@@ -1,12 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.Tilemaps;
-using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
-using UnityEngine.SceneManagement;
 
 public class GameplayTest : MonoBehaviour
 {
@@ -59,10 +54,6 @@ public class GameplayTest : MonoBehaviour
 
     public MapNode wantedNode;
     private SceneGameManager sceneManager;
-    ///private Scene currentCombat;
-
-    //public PlayerInput playerInput;
-    //public PlayerControls input;
 
     public bool encounterStarted = false;
     private bool playerUsedItem = false; // please change these down the line
@@ -534,42 +525,6 @@ public class GameplayTest : MonoBehaviour
             }
             else if (m.CompareTag("Encounter") && otherPlayer != null && otherPlayer != currentPlayer) // Player Fight
             {
-                //Debug.Log(otherPlayer.nickname);
-                /*
-                ///
-                encounterScreen.SetActive(true);
-                int yoinkValue = 4;
-
-                if (yoinkRoll <= 0)
-                {
-                    encounterScreen.SetActive(true);
-                    p1fight.text = "" + p.heldPoints;
-                    p2fight.text = "" + otherPlayer.heldPoints;
-
-                    resultInfo.text = "<size=45>[PLAYER ENCOUNTER]</size>\nRoll higher than " + yoinkValue + "!!! \n<size=30> [SPACE] to proceed the roll. </size>";
-
-                    if (Input.GetKeyDown(KeyCode.Space))
-                        yoinkRoll = Random.Range(1, 7); // Roll from 1 to 6
-                }
-                else
-                {
-                    if (yoinkRoll > yoinkValue)
-                    {
-                        resultInfo.text = "<size=45>[SUCCESS]</size><size=30>\nYou rolled a... </size>\n" + yoinkRoll + "! \n<size=30> Their points are now yours. </size>";
-                        p.heldPoints += otherPlayer.heldPoints;
-                        otherPlayer.heldPoints = 0;
-                    }
-                    else
-                    {
-                        resultInfo.text = "<size=45>[FAIL]</size><size=30>\nYou rolled a... </size>\n" + yoinkRoll + ". \n<size=30> Half your points dropped due to carelessness. </size>";
-                        p.heldPoints /= 2;
-                    }
-                    yoinkRoll = 0;
-                    encounterOver = true;
-                    phase++;
-                }
-                ///
-                */
                 // If current player is not in combat scene and other player is not in combat scene, begin combat.
                 // If current player is in combat scene, skip roll dice and load back here
 
@@ -595,9 +550,6 @@ public class GameplayTest : MonoBehaviour
                 // Combat scene calls function in gameplay test when someone wins, with winner
                 //   and player objects (so items stay used)
                 // That returns the winner, and points are stolen accordingly w/ phase++;encounterOver
-
-
-
             }
             else if (m.CompareTag("Encounter")) // Regular Encounter
             {
@@ -645,14 +597,12 @@ public class GameplayTest : MonoBehaviour
 
     void RockPaperScissors(EntityPiece p)
     {
-
         //Debug.Log("Your Player: " + currentPlayer.nickname);
         //Debug.Log("Other Player: " + otherPlayer.nickname);
         encounterStarted = true;
 
         // Set IDs of players entering combat.
         sceneManager.player1ID = p.id;
-
 
         bool lookingForTarget = true;
         while (lookingForTarget) {
@@ -665,9 +615,7 @@ public class GameplayTest : MonoBehaviour
                 lookingForTarget = false;
         }
 
-
         sceneManager.LoadCombatScene();
-
 
         /*
 

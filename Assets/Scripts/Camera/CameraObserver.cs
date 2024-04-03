@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 
@@ -20,7 +18,7 @@ public class CameraObserver : MonoBehaviour
 
     private void OnDisable()
     {
-        m_NextPlayerTurn.OnEventRaised += SwitchTargetFocus;
+        m_NextPlayerTurn.OnEventRaised -= SwitchTargetFocus;
     }
 
     // Start is called before the first frame update
@@ -36,14 +34,15 @@ public class CameraObserver : MonoBehaviour
 
     private void LateUpdate()
     {
-        if(Input.GetAxis("Mouse ScrollWheel") > 0)
+        if (Input.GetAxis("Mouse ScrollWheel") > 0)
         {
             vcam.m_Lens.OrthographicSize += 0.1f;
-            if(vcam.m_Lens.OrthographicSize >= maxOrthDistance)
+            if (vcam.m_Lens.OrthographicSize >= maxOrthDistance)
             {
                 vcam.m_Lens.OrthographicSize = maxOrthDistance;
             }
         }
+
         if (Input.GetAxis("Mouse ScrollWheel") < 0)
         {
             vcam.m_Lens.OrthographicSize -= 0.1f;

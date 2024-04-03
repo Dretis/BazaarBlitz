@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,14 +14,13 @@ public class EntityBaseStats
 
     public EntityBaseStats()
     {
-        for(int i = 0;i < dieConfigs.Length;i++)
+        for (int i = 0; i < dieConfigs.Length; i++)
         {
             dieConfigs[i] = new DieConfig();
         }
     }
 
     public DieConfig[] dieConfigs = new DieConfig[(int)DieTypes.Count];
-
 }
 
 [System.Serializable]
@@ -44,7 +42,7 @@ public class DieConfig
 
     public void SetFace(int faceIndex, float value)
     {
-        if(faceIndex < 0 || faceIndex > 5)
+        if (faceIndex < 0 || faceIndex > 5)
         {
             Debug.LogError("Tried to set out of bounds die face");
             return;
