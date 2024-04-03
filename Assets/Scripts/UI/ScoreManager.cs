@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-
 public class ScoreManager : MonoBehaviour
 {
     [SerializeField] private EntityPiece currentPlayer;

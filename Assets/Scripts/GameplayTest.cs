@@ -454,14 +454,14 @@ public class GameplayTest : MonoBehaviour
         else
         {
             var otherPlayer = p.occupiedNode.playerOccupied;
-            if(m.CompareTag("Store")) // Forced to buy item(s)
+            if (m.CompareTag("Store")) // Forced to buy item(s)
             {
                 // Have the node be occupied by the current player.
                 m.playerOccupied = p;
                 // Update portions of this code later
                 GameObject tile = m.gameObject;
                 StoreManager store = tile.GetComponent<StoreManager>();
-                if(store.playerOwner != currentPlayer)
+                if (store.playerOwner != currentPlayer)
                 {
                     // Forced to buy item(s) from another player's store
                     Debug.Log("Landed on " + store.playerOwner + " store");
@@ -563,33 +563,42 @@ public class GameplayTest : MonoBehaviour
                 // Build a Store
                 else if (Input.GetKeyDown(KeyCode.RightShift))
                 {
-                    // Raise an eventchannel for BuildAStore to replace the code in here, replace ALOT OF THE CODE EHRE PLEASE
-                    Debug.Log("I am a store");
-                    GameObject tile = m.gameObject;
-                    tile.tag = "Store";
-
-                    tile.GetComponent<SpriteRenderer>().color = currentPlayer.playerColor;
-
-                    StoreManager store = tile.AddComponent<StoreManager>();
-                    store.playerOwner = currentPlayer;
-                    // randomly pick 3 items to put into the base store stock
-                    for (int i = 0; i < 3; i++)
+                    if (p.heldPoints >= 200)
                     {
-                        var randomNum = Random.Range(0, tempItems.Count);
-                        store.storeInventory.Add(tempItems[randomNum]);
+                        p.heldPoints -= 200;
+                        // Raise an eventchannel for BuildAStore to replace the code in here, replace ALOT OF THE CODE EHRE PLEASE
+                        Debug.Log("I am a store");
+                        GameObject tile = m.gameObject;
+                        tile.tag = "Store";
+
+                        tile.GetComponent<SpriteRenderer>().color = currentPlayer.playerColor;
+
+                        StoreManager store = tile.AddComponent<StoreManager>();
+                        store.playerOwner = currentPlayer;
+                        // randomly pick 3 items to put into the base store stock
+                        for (int i = 0; i < 3; i++)
+                        {
+                            var randomNum = Random.Range(0, tempItems.Count);
+                            store.storeInventory.Add(tempItems[randomNum]);
+                        }
+
+                        storeListings.text = "";
+                        storeListingsLabel.text = "Store purchased! It's stocked up with:";
+
+                        foreach (var listing in store.storeInventory)
+                        {
+                            if (listing != null) storeListings.text += listing.itemName + "\n";
+                        }
+                        storeScreen.SetActive(true);
+
+                        encounterOver = true;
                     }
-
-                    storeListings.text = "";
-                    storeListingsLabel.text = "Store purchased! It's stocked up with:";
-
-                    foreach (var listing in store.storeInventory)
+                    else
                     {
-                        if (listing != null) storeListings.text += listing.itemName + "\n";
+                        Debug.Log("You got no money to build a store, dipshit!");
                     }
-                    storeScreen.SetActive(true);
 
                     phase = GamePhase.ConfirmContinue;
-                    encounterOver = true;
                 }
             }
         }
