@@ -563,9 +563,11 @@ public class GameplayTest : MonoBehaviour
                 // Build a Store
                 else if (Input.GetKeyDown(KeyCode.RightShift))
                 {
-                    if (p.heldPoints >= 200)
+                    if (p.heldPoints >= 200 && p.storeCount < 4)
                     {
+                        p.storeCount++;
                         p.heldPoints -= 200;
+
                         // Raise an eventchannel for BuildAStore to replace the code in here, replace ALOT OF THE CODE EHRE PLEASE
                         Debug.Log("I am a store");
                         GameObject tile = m.gameObject;
