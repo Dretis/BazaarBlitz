@@ -348,22 +348,22 @@ public class CombatManager : MonoBehaviour
         Action attack = attacker.attackActions[attackerAction - 1];
         Action defend = defender.defendActions[defenderAction - 1];
 
-        float defendMultiplier = 0.5f; // Attacker deals this much damage after defend
+        float defendMultiplier = 1f; // Attacker deals this much damage after defend
         if (attack.type == defend.type)
         {
-            defendMultiplier = 1f;
+            defendMultiplier = 1.5f;
         }
         else if (attack.type == Action.WeaponTypes.Melee && defend.type == Action.WeaponTypes.Magic)
         {
-            defendMultiplier = 0.5f;
+            defendMultiplier = 1f;
         }
         else if (attack.type == Action.WeaponTypes.Gun && defend.type == Action.WeaponTypes.Melee)
         {
-            defendMultiplier = 0.5f;
+            defendMultiplier = 1f;
         }
         else if (attack.type == Action.WeaponTypes.Magic && defend.type == Action.WeaponTypes.Gun)
         {
-            defendMultiplier = 0.5f;
+            defendMultiplier = 1f;
         }
         else if (attack.type == Action.WeaponTypes.Special)
         {
@@ -438,7 +438,7 @@ public class CombatManager : MonoBehaviour
         }
 
         damage += (attackerBuffDamage + attack.bonusDamage);
-        damage = damage * 5;
+        damage = damage * 10;
         Debug.Log($"Attacker role: Raw {roll}, modified {damage}");
 
         roll = Random.Range(0, 6);
