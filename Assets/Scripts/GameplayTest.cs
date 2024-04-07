@@ -691,8 +691,13 @@ public class GameplayTest : MonoBehaviour
     {
         // When an item is bought, allow confirmation via SPACE bar to continue the game
         encounterOver = true;
-        if(item != null)
+        if (item != null)
             currentPlayer.heldPoints -= item.basePrice;
+        else
+        {
+            Debug.Log("You can't buy shit! TURN SKIPPED!");
+            currentPlayer.isTurnSkipped = true;
+        }
 
         m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
     }

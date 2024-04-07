@@ -84,8 +84,6 @@ public class UIManager : MonoBehaviour
     {
         storefrontCanvas.enabled = false;
         storefrontCanvas.gameObject.SetActive(false);
-
-
     }
 
     private void FinishShopping(ItemStats item)
