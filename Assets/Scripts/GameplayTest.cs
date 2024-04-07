@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using DG.Tweening;
+using System.Linq;
 
 public class GameplayTest : MonoBehaviour
 {
@@ -129,7 +130,9 @@ public class GameplayTest : MonoBehaviour
             initialNode.playerOccupied = player;
         }
 
-        currentPlayer = nextPlayers[playerUnits.Count - 1];
+        // Get the player at the start of the list.
+        currentPlayer = nextPlayers[0];
+        //currentPlayer = nextPlayers[playerUnits.Count - 1];
         currentPlayerInitialNode = currentPlayer.occupiedNode;
 
         m_NextPlayerTurn.RaiseEvent(currentPlayer);
@@ -594,13 +597,13 @@ public class GameplayTest : MonoBehaviour
                         storeScreen.SetActive(true);
 
                         encounterOver = true;
+                        phase = GamePhase.ConfirmContinue;
                     }
                     else
                     {
                         Debug.Log("You got no money to build a store, dipshit!");
+                        phase = GamePhase.EndTurn;
                     }
-
-                    phase = GamePhase.ConfirmContinue;
                 }
             }
         }
@@ -608,8 +611,6 @@ public class GameplayTest : MonoBehaviour
 
     void RockPaperScissors(EntityPiece p)
     {
-        //Debug.Log("Your Player: " + currentPlayer.nickname);
-        //Debug.Log("Other Player: " + otherPlayer.nickname);
         encounterStarted = true;
 
         // Set IDs of players entering combat.
@@ -627,85 +628,6 @@ public class GameplayTest : MonoBehaviour
         }
 
         sceneManager.LoadCombatScene();
-
-        /*
-
-        encounterScreen.SetActive(true);
-        p1fight.text = "";
-        p2fight.text = "";
-        resultInfo.text = "<size=45>[PLACEHOLDER ENCOUNTER]</size>\nRock, Paper, Scissors!!! \n<size=30> Rock = 1 or J | Paper = 2 or K | Scissors = 3 or L </size>";
-
-        var playerPick = 0;
-        /// monsterPick = Random.Range(1, 10);
-
-
-
-
-
-        if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.J))
-        { // Rock
-            playerPick = 1;
-            p1fight.text = "ROCK";
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.K))
-        {// Paper
-            playerPick = 2;
-            p1fight.text = "PAPER";
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.L))
-        {// Scissors
-            playerPick = 3;
-            p1fight.text = "SCISSORS";
-        }
-
-
-
-        if (playerPick != 0)
-        {
-            var monsterPick = Random.Range(1, 4); // Rock = 1, Paper = 2, Scissors = 3
-
-            switch (monsterPick)
-            {
-                case 1:
-                    p2fight.text = "ROCK";
-                    break;
-                case 2:
-                    p2fight.text = "PAPER";
-                    break;
-                case 3:
-                    p2fight.text = "SCISSORS";
-                    break;
-
-            }
-            if (playerPick == monsterPick) // Tie
-            {
-                resultInfo.text = "TIE.";
-                resultInfo.text += "\n<size=24>[SPACE] to continue</size>";
-            }
-            else if ((playerPick == 1 && monsterPick == 2) ||
-                     (playerPick == 2 && monsterPick == 3) ||
-                     (playerPick == 3 && monsterPick == 1))
-            {
-                resultInfo.text = "YOU LOSE...";
-                resultInfo.text += "\n<size=24>You lost 20 points.</size>";
-                resultInfo.text += "\n<size=24>[SPACE] to continue</size>";
-                p.heldPoints -= 20;
-            }
-            else
-            {
-                resultInfo.text = "YOU WIN!!!";
-                resultInfo.text += "\n<size=24>You gain 55 points.</size>";
-                resultInfo.text += "\n<size=24>[SPACE] to continue</size>";
-                p.heldPoints += 55;
-            }
-
-            m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
-            //
-            encounterOver = true;
-            phase = GamePhase.ConfirmContinue;
-        }
-
-        */
     }
 
     void ConfirmContinue(EntityPiece p)
@@ -724,9 +646,6 @@ public class GameplayTest : MonoBehaviour
 
     void EndOfTurn(EntityPiece p)
     {
-        //Debug.Log("initial node player: " + currentPlayerInitialNode.playerOccupied);
-        //Debug.Log("initial node player: " + currentPlayer);
-
         if (currentPlayerInitialNode.playerOccupied == currentPlayer)
         {
             currentPlayerInitialNode.playerOccupied = null;
@@ -736,41 +655,27 @@ public class GameplayTest : MonoBehaviour
         oldStamps.Clear();
         oldPoints = 0;
 
-        // Change to the next player in the list
-        nextPlayers.Remove(currentPlayer); // remove current player from the turn order
         p.occupiedNode.playerOccupied = p; // update to have that player on that node now
-
         playerUsedItem = false; // let next player access inventory
 
-        if (nextPlayers.Count != 0)
+        // Change to the next player in the list (if their turn is not skipped).
+        do
         {
-            currentPlayer = nextPlayers[nextPlayers.Count - 1];
-
-            m_NextPlayerTurn.RaiseEvent(currentPlayer);
-
-            turnText.text = currentPlayer.entityName + "'s Turn!";
-            turnText.color = currentPlayer.playerColor;
-
-            currentPlayerInitialNode = currentPlayer.occupiedNode;
-            oldStamps = new List<Stamp.StampType>(currentPlayer.stamps); // keeping track of stamps for next player
-            phase = GamePhase.ItemSelection;
+            nextPlayers.Remove(currentPlayer);
+            nextPlayers.Add(currentPlayer);
+            currentPlayer.isTurnSkipped = false;
+            currentPlayer = nextPlayers[0];
         }
-        else
-        {
-            foreach(var players in playerUnits)
-                nextPlayers.Add(players); // Refill the list with all the players again
+        while (currentPlayer.isTurnSkipped);
 
-            currentPlayer = nextPlayers[nextPlayers.Count - 1]; //Player at end of the ist goes again
+        m_NextPlayerTurn.RaiseEvent(currentPlayer);
 
-            m_NextPlayerTurn.RaiseEvent(currentPlayer);
+        turnText.text = currentPlayer.entityName + "'s Turn!";
+        turnText.color = currentPlayer.playerColor;
 
-            turnText.text = currentPlayer.entityName + "'s Turn!";
-            turnText.color = currentPlayer.playerColor;
-
-            currentPlayerInitialNode = currentPlayer.occupiedNode;
-            oldStamps = new List<Stamp.StampType>(currentPlayer.stamps);
-            phase = GamePhase.ItemSelection;
-        }
+        currentPlayerInitialNode = currentPlayer.occupiedNode;
+        oldStamps = new List<Stamp.StampType>(currentPlayer.stamps); // keeping track of stamps for next player
+        phase = GamePhase.ItemSelection;
     }
 
     void UpdatePoints()
