@@ -690,6 +690,7 @@ public class GameplayTest : MonoBehaviour
     private void _PlaceholderChangeAndContinue(ItemStats item)
     {
         // When an item is bought, allow confirmation via SPACE bar to continue the game
+        // Can the player only buy 1 item? If so, prevent buying of other items through UI.
         encounterOver = true;
         if (item != null)
             currentPlayer.heldPoints -= item.basePrice;
