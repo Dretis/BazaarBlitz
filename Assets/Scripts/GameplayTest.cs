@@ -638,8 +638,12 @@ public class GameplayTest : MonoBehaviour
                 GameObject tile = m.gameObject;
                 tile.GetComponent<SpriteRenderer>().color = currentPlayer.playerColor;
                 StoreManager store = tile.GetComponent<StoreManager>();
+               
+                // Ownership changes.
+                store.playerOwner.storeCount--;
                 store.playerOwner = currentPlayer;
                 p.storeCount++;
+
                 p.heldPoints -= 600;
 
                 m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
