@@ -28,6 +28,7 @@ public class GameplayTest : MonoBehaviour
         MoveAround,
         PassBy,
         EncounterTime,
+        OverturnStore,
         RockPaperScissors,
         CombatTime,
         ConfirmContinue,
@@ -182,6 +183,10 @@ public class GameplayTest : MonoBehaviour
             // Battle-Event Phase
             case GamePhase.EncounterTime:
                 EncounterTime(currentPlayer, currentPlayer.occupiedNode);
+                break;
+
+            case GamePhase.OverturnStore:
+                OverturnStore(currentPlayer, currentPlayer.occupiedNode);
                 break;
 
             case GamePhase.RockPaperScissors:
@@ -468,8 +473,17 @@ public class GameplayTest : MonoBehaviour
                 {
                     // Forced to buy item(s) from another player's store
                     Debug.Log("Landed on " + store.playerOwner + " store");
-                    m_LandOnStorefront.RaiseEvent(m);
-                    phase = GamePhase.ConfirmContinue;
+
+                    // If there are no items left, give the player the option to overturn.
+                    if (store.storeInventory.Find(x => x != null) == null)
+                    {
+                        phase = GamePhase.OverturnStore;
+                    }
+                    else 
+                    {
+                        m_LandOnStorefront.RaiseEvent(m);
+                        phase = GamePhase.ConfirmContinue;
+                    }
                 }
                 else
                 {
@@ -605,6 +619,46 @@ public class GameplayTest : MonoBehaviour
                         phase = GamePhase.EndTurn;
                     }
                 }
+            }
+        }
+    }
+
+    void OverturnStore(EntityPiece p, MapNode m)
+    {
+        // No money to overturn or at store cap.
+        if (p.heldPoints < 600 || p.storeCount >= 4)
+        {
+            phase = GamePhase.EndTurn;
+        }
+        else
+        {
+            // Overturn.
+            if (Input.GetKeyDown(KeyCode.RightShift))
+            {
+                GameObject tile = m.gameObject;
+                tile.GetComponent<SpriteRenderer>().color = currentPlayer.playerColor;
+                StoreManager store = tile.GetComponent<StoreManager>();
+                store.playerOwner = currentPlayer;
+                p.storeCount++;
+                p.heldPoints -= 600;
+
+                m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
+
+                // Stock store
+                for (int i = 0; i < 3; i++)
+                {
+                    var randomNum = Random.Range(0, tempItems.Count);
+                    if (store.storeInventory[i] == null)
+                    {
+                        store.storeInventory[i] = (tempItems[randomNum]);
+                    }
+                }
+
+                phase = GamePhase.EndTurn;
+            }
+            else if (Input.GetKeyDown(KeyCode.Space)) // Don't overturn.
+            {
+                phase = GamePhase.EndTurn;
             }
         }
     }

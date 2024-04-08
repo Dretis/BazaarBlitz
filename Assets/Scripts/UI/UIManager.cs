@@ -192,13 +192,6 @@ public class UIManager : MonoBehaviour
             // temp code, prob remove this later
             itemInventory[i] = items[i];
         }
-
-        // This is for overturning. Not sure how to raise events to show the proper UI. Leave for Nam.
-        if (itemInventory.Find(x => x != null) == null)
-        {
-            Debug.Log("No items to buy");
-            m_itemSold.RaiseEvent(null); // Makes it so that you can press SPACE to exit the storefront.
-        }
     }
 
     private void ChangeInCurrency(EntityPiece ps)
