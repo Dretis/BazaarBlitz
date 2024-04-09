@@ -717,14 +717,19 @@ public class GameplayTest : MonoBehaviour
         playerUsedItem = false; // let next player access inventory
 
         // Change to the next player in the list (if their turn is not skipped).
-        do
+
+        nextPlayers.Remove(currentPlayer);
+        nextPlayers.Add(currentPlayer);
+        currentPlayer = nextPlayers[0];
+
+        // Check if next player has their turn skipped (and so on). If so, skip their turn.
+        while (currentPlayer.isTurnSkipped)
         {
+            currentPlayer.isTurnSkipped = false;
             nextPlayers.Remove(currentPlayer);
             nextPlayers.Add(currentPlayer);
-            currentPlayer.isTurnSkipped = false;
             currentPlayer = nextPlayers[0];
         }
-        while (currentPlayer.isTurnSkipped);
 
         m_NextPlayerTurn.RaiseEvent(currentPlayer);
 
