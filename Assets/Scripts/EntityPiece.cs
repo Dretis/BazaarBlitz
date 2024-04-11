@@ -38,6 +38,11 @@ public class EntityPiece : MonoBehaviour
     public List<Action> defendActions;
     public CombatUIManager.FightingPosition fightingPosition; // Just for the combat, will change
 
+    public float ReputationPoints = 0; // For enemies: how much rep they give on kill. For players: they're total exp
+
+    public int RenownLevel = 1; // Used to calculate the next level threshold.
+
+
     public class ActiveEffect
     {
         public IStatModifierChanger statMod;
@@ -104,6 +109,17 @@ public class EntityPiece : MonoBehaviour
             transform.position = occupiedNode.transform.position;
             occupiedNodeCopy = occupiedNode;
             traveledNodes.Add(occupiedNode);
+        }
+    }
+
+    public bool canLevelUp() {
+        float threshold = ( RenownLevel * 100 ) * ( Mathf.Pow(1.15f, RenownLevel-1) );
+        // 100, 230, 396, 608, 874... Every level costs around 30% more (should be tuned in testing).
+        if (ReputationPoints >= threshold) {
+            Debug.Log("Passed threshold of " + threshold);
+            return true; // Allows the level up screen when ready on the player's turn.
+        } else {
+            return false;
         }
     }
 }

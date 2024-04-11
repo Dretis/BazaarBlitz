@@ -274,6 +274,9 @@ public class CombatManager : MonoBehaviour
             {
                 int loot = Random.Range(0, 6);
                 initiator.inventory.Add(retaliator.inventory[loot]); // Enemy inventories are loot tables
+
+                initiator.ReputationPoints += retaliator.ReputationPoints; // a monster's rep is just its exp yield.
+                Debug.Log("Gained " + retaliator.ReputationPoints + " reputation points from monster! Now at rep: " + initiator.ReputationPoints);
             }
             else
             {
@@ -288,6 +291,15 @@ public class CombatManager : MonoBehaviour
                 // Add defender's points to attacker's points 
                 initiator.heldPoints += retaliator.heldPoints;
                 retaliator.heldPoints = 0;
+
+                float pointgain = 100 * Mathf.Pow(2, retaliator.RenownLevel - initiator.RenownLevel);
+
+                if (pointgain < 100) {
+                    pointgain = 0; // Should it just be 0?
+                }
+
+                initiator.ReputationPoints += pointgain;
+                Debug.Log("Gained " + pointgain + " reputation points! Now at rep: " + initiator.ReputationPoints);
             }
         }
         else
@@ -306,6 +318,15 @@ public class CombatManager : MonoBehaviour
             // Add attacker's points to defender's points 
             retaliator.heldPoints += initiator.heldPoints;
             initiator.heldPoints = 0;
+
+            float pointgain = 100 * Mathf.Pow(2, initiator.RenownLevel - retaliator.RenownLevel);
+
+            if (pointgain < 100) {
+                pointgain = 0;
+            }
+
+            retaliator.ReputationPoints += pointgain;
+            Debug.Log("Gained " + pointgain + " reputation points! Now at rep: " + retaliator.ReputationPoints);
         }
 
         audioSource.PlayOneShot(explosionSFX, 2f);
