@@ -25,8 +25,8 @@ public class EntityPiece : MonoBehaviour
 
     // Dice faces initialization.
     public DieConfig strDie => entityStats.dieConfigs[(int)EntityBaseStats.DieTypes.Strength];
-    public DieConfig intDie => entityStats.dieConfigs[(int)EntityBaseStats.DieTypes.Dex];
-    public DieConfig dexDie => entityStats.dieConfigs[(int)EntityBaseStats.DieTypes.Int];
+    public DieConfig dexDie => entityStats.dieConfigs[(int)EntityBaseStats.DieTypes.Dex];
+    public DieConfig intDie => entityStats.dieConfigs[(int)EntityBaseStats.DieTypes.Int];
 
     public int combatSceneIndex = -1; // -1 indicates player is not in battle
     public bool isEnemy;
