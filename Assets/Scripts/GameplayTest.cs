@@ -779,4 +779,10 @@ public class GameplayTest : MonoBehaviour
     {
         audioSource.PlayOneShot(clip, 2f);
     }
+
+    private void StockStore(EntityPiece p, MapNode m)
+    {
+        // Raise event for restocking. Show inventory.
+        phase = GamePhase.EndTurn;
+    }
 }
