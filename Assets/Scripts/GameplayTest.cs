@@ -616,7 +616,6 @@ public class GameplayTest : MonoBehaviour
                     else
                     {
                         Debug.Log("You got no money to build a store, dipshit!");
-                        phase = GamePhase.EndTurn;
                     }
                 }
             }
