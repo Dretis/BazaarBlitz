@@ -479,7 +479,7 @@ public class GameplayTest : MonoBehaviour
                     {
                         phase = GamePhase.OverturnStore;
                     }
-                    else 
+                    else
                     {
                         m_LandOnStorefront.RaiseEvent(m);
                         phase = GamePhase.ConfirmContinue;
@@ -492,7 +492,7 @@ public class GameplayTest : MonoBehaviour
                     for (int i = 0; i < 3; i++)
                     {
                         var randomNum = Random.Range(0, tempItems.Count);
-                        if(store.storeInventory[i] == null)
+                        if (store.storeInventory[i] == null)
                         {
                             store.storeInventory[i] = (tempItems[randomNum]);
                         }
@@ -570,6 +570,14 @@ public class GameplayTest : MonoBehaviour
             }
             else if (m.CompareTag("Encounter")) // Regular Encounter
             {
+                // If unable to buy a store, skip the prompt and immediately enter combat.
+                if (p.heldPoints < 200 || p.storeCount >= 4)
+                {
+                    Debug.Log("You got no money to build a store, dipshit!");
+                    phase = GamePhase.RockPaperScissors;
+                    return;
+                }
+
                 m_EncounterDecision.RaiseEvent(currentPlayer);
 
                 // Monster Encounter
@@ -580,44 +588,36 @@ public class GameplayTest : MonoBehaviour
                 // Build a Store
                 else if (Input.GetKeyDown(KeyCode.RightShift))
                 {
-                    if (p.heldPoints >= 200 && p.storeCount < 4)
+                    p.storeCount++;
+                    p.heldPoints -= 200;
+
+                    // Raise an eventchannel for BuildAStore to replace the code in here, replace ALOT OF THE CODE EHRE PLEASE
+                    Debug.Log("I am a store");
+                    GameObject tile = m.gameObject;
+                    tile.tag = "Store";
+
+                    tile.GetComponent<SpriteRenderer>().color = currentPlayer.playerColor;
+
+                    StoreManager store = tile.AddComponent<StoreManager>();
+                    store.playerOwner = currentPlayer;
+                    // randomly pick 3 items to put into the base store stock
+                    for (int i = 0; i < 3; i++)
                     {
-                        p.storeCount++;
-                        p.heldPoints -= 200;
-
-                        // Raise an eventchannel for BuildAStore to replace the code in here, replace ALOT OF THE CODE EHRE PLEASE
-                        Debug.Log("I am a store");
-                        GameObject tile = m.gameObject;
-                        tile.tag = "Store";
-
-                        tile.GetComponent<SpriteRenderer>().color = currentPlayer.playerColor;
-
-                        StoreManager store = tile.AddComponent<StoreManager>();
-                        store.playerOwner = currentPlayer;
-                        // randomly pick 3 items to put into the base store stock
-                        for (int i = 0; i < 3; i++)
-                        {
-                            var randomNum = Random.Range(0, tempItems.Count);
-                            store.storeInventory.Add(tempItems[randomNum]);
-                        }
-
-                        storeListings.text = "";
-                        storeListingsLabel.text = "Store purchased! It's stocked up with:";
-
-                        foreach (var listing in store.storeInventory)
-                        {
-                            if (listing != null) storeListings.text += listing.itemName + "\n";
-                        }
-                        storeScreen.SetActive(true);
-
-                        encounterOver = true;
-                        phase = GamePhase.ConfirmContinue;
+                        var randomNum = Random.Range(0, tempItems.Count);
+                        store.storeInventory.Add(tempItems[randomNum]);
                     }
-                    else
+
+                    storeListings.text = "";
+                    storeListingsLabel.text = "Store purchased! It's stocked up with:";
+
+                    foreach (var listing in store.storeInventory)
                     {
-                        Debug.Log("You got no money to build a store, dipshit!");
-                        phase = GamePhase.RockPaperScissors;
+                        if (listing != null) storeListings.text += listing.itemName + "\n";
                     }
+                    storeScreen.SetActive(true);
+
+                    encounterOver = true;
+                    phase = GamePhase.ConfirmContinue;
                 }
             }
         }
