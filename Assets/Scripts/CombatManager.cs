@@ -56,7 +56,7 @@ public class CombatManager : MonoBehaviour
     public PlayerEventChannelSO m_DecidedTurnOrder; // pass in the attacker
     public PlayerEventChannelSO m_SwapPhase; // void event
 
-    //public ActionSelectEventChannelSO m_ActionSelected; // Entity, check side and phase | Either the attacker or defender picked an action
+    public EntityActionPhaseEventChannelSO m_ActionSelected; // Entity, check side and phase | Either the attacker or defender picked an action
     //public ActionSelectEventChannelSO m_BothActionsSelected; // prep time to show what they picked, follow with the dice roll too
     public DamageEventChannelSO m_DiceRolled; // 2 floats
 
@@ -174,6 +174,7 @@ public class CombatManager : MonoBehaviour
         combatUIManager.UpdateActionText(defender, Action.PhaseTypes.Defend);
 
         m_DecidedTurnOrder.RaiseEvent(attacker);
+        m_ActionSelected.RaiseEvent(attacker, Action.PhaseTypes.Attack);
         //combatUIManager.UpdateAction2Text(defender, Action.PhaseTypes.Defend);
     }
 
@@ -210,6 +211,7 @@ public class CombatManager : MonoBehaviour
             combatUIManager.UpdateActionText(defender, Action.PhaseTypes.Defend);
 
             m_DecidedTurnOrder.RaiseEvent(attacker);
+            m_ActionSelected.RaiseEvent(attacker, Action.PhaseTypes.Attack);
         }
 
         if ((!isInitiatorTurn && !initiatorAttacking) && isFightingAI)
@@ -461,6 +463,8 @@ public class CombatManager : MonoBehaviour
                 damage += 0;
                 break;
         }
+        Debug.Log($"Attack roll: {attack.type} {roll}");
+        m_DiceRolled.RaiseEvent(attacker, roll);
 
         damage += (attackerBuffDamage + attack.bonusDamage);
         damage = damage * 5;
@@ -501,6 +505,8 @@ public class CombatManager : MonoBehaviour
                 break;
         }
 
+        Debug.Log($"Defend roll: {defend.type} {defenseScore}");
+        m_DiceRolled.RaiseEvent(defender, defenseScore);
         defenseScore += 0.1f * defender.currentStatsModifier.defenseModifier;
 
         damage = (damage * (1 - (0.1f * defenseScore)) * defendMultiplier);
@@ -515,6 +521,8 @@ public class CombatManager : MonoBehaviour
         defender.health -= damage;
 
         attacker.health += damage * attacker.currentStatsModifier.lifestealMult;
+
+        m_DamageTaken.RaiseEvent(defender, damage);
 
         attackerBonusRoll = 0;
         defenderBonusRoll = 0;
@@ -534,6 +542,7 @@ public class CombatManager : MonoBehaviour
         if (isAttacker)
         {
             attackerAction = ActionID;
+            m_ActionSelected.RaiseEvent(defender, Action.PhaseTypes.Defend);
         }
         else
         {

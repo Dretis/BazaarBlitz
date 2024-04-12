@@ -40,6 +40,7 @@ public class UICombatOverlayManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI rightHealthPoints;
 
     [SerializeField] private TextMeshProUGUI phaseTestPrompt; //placeholder for this build, remove later
+    [SerializeField] private TextMeshProUGUI resultTestText; //placeholder for this build, remove later
 
     [Header("UI Positions")]
     [SerializeField] private Vector2 vsInitialPosition;
@@ -59,7 +60,7 @@ public class UICombatOverlayManager : MonoBehaviour
     public PlayerEventChannelSO m_DecidedTurnOrder; // pass in the attacker
     public PlayerEventChannelSO m_SwapPhase; // void event
 
-    //public ActionSelectEventChannelSO m_ActionSelected; // Entity, check side and phase | Either the attacker or defender picked an action
+    public EntityActionPhaseEventChannelSO m_ActionSelected; // Entity, check side and phase | Either the attacker or defender picked an action
     //public ActionSelectEventChannelSO m_BothActionsSelected; // prep time to show what they picked, follow with the dice roll too
     public DamageEventChannelSO m_DiceRolled; // 2 floats
 
@@ -72,10 +73,15 @@ public class UICombatOverlayManager : MonoBehaviour
 
     private void OnEnable()
     {
+        resultTestText.text = "";
+        leftDiceRoll.GetComponent<TextMeshProUGUI>().text = "";
+        rightDiceRoll.GetComponent<TextMeshProUGUI>().text = "";
+
+
         m_DecidedTurnOrder.OnEventRaised += UpdateInputPrompts;
         m_SwapPhase.OnEventRaised += SwapPhaseTransitions;
 
-        //m_ActionSelected.OnEventRaised += UpdatePhaseTextPrompt;
+        m_ActionSelected.OnEventRaised += UpdatePhaseTextPrompt;
         m_DiceRolled.OnEventRaised += SetDiceActionRoll;
 
         //m_PlayOutCombat.OnEventRaised += HideHeaderInfo;
@@ -90,14 +96,25 @@ public class UICombatOverlayManager : MonoBehaviour
     private void OnDisable()
     {
         m_DecidedTurnOrder.OnEventRaised -= UpdateInputPrompts;
-        
+        m_SwapPhase.OnEventRaised -= SwapPhaseTransitions;
+
+        m_ActionSelected.OnEventRaised -= UpdatePhaseTextPrompt;
+        m_DiceRolled.OnEventRaised -= SetDiceActionRoll;
+
+        //m_PlayOutCombat.OnEventRaised += HideHeaderInfo;
+
+        m_DamageTaken.OnEventRaised -= ShowFloatingDamageNumber;
+
+        m_EntityDied.OnEventRaised -= VictoryResults;
+        m_Stalemate.OnEventRaised -= StalemateResults;
+
     }
 
     // Start is called before the first frame update
     void Start()
     {
         phaseTestPrompt.color = Color.white;
-        phaseTestPrompt.text = "";
+        //phaseTestPrompt.text = "";
         //vsHeaderRectTransform = vsHeader.GetComponent<RectTransform>();
         vsInitialPosition = vsHeader.anchoredPosition;
         diceInitialPosition = diceInfo.anchoredPosition;
@@ -227,10 +244,12 @@ public class UICombatOverlayManager : MonoBehaviour
     }
     public void UpdatePhaseTextPrompt(EntityPiece entity, Action.PhaseTypes phase)
     {
+        if (entity.isEnemy)
+            return;
         if(phase == Action.PhaseTypes.Attack)
-            phaseTestPrompt.text = $"{entity.entityName}, choose an attack.";
+            phaseTestPrompt.text = $"{entity.entityName}, choose an action.";
         else
-            phaseTestPrompt.text = $"{entity.entityName}, choose how to defend.";
+            phaseTestPrompt.text = $"{entity.entityName}, choose an action.";
     }
 
     public void DisplayResultsScreen()
@@ -301,8 +320,8 @@ public class UICombatOverlayManager : MonoBehaviour
 
     public void StalemateResults()
     {
-        phaseTestPrompt.color = new Color32(118, 118, 118, 255);
-        phaseTestPrompt.text = "To Be Continued...";
+        resultTestText.color = new Color32(118, 118, 118, 255);
+        resultTestText.text = "To Be Continued...";
         /*
         var resultsText = resultsScreen.GetComponentInChildren<TextMeshProUGUI>();
         resultsText.color = new Color32(118, 118, 118, 255);
@@ -314,15 +333,15 @@ public class UICombatOverlayManager : MonoBehaviour
 
     public void VictoryResults(EntityPiece loser, ItemStats item)
     {
-        phaseTestPrompt.color = new Color32(240, 250, 0, 255);
-        phaseTestPrompt.text = $"Victory!\n";
+        resultTestText.color = new Color32(240, 250, 0, 255);
+        resultTestText.text = $"Victory!\n";
         if (loser.isEnemy)
         {
-            phaseTestPrompt.text += $"Found items!{item}\n";
+            resultTestText.text += $"Found items!{item}\n";
             //resultsText.text += $"Gained {loser.reputation} rep.\n";
         }
         else
-            phaseTestPrompt.text += $"Stole loser's @!\n";
+            resultTestText.text += $"Stole loser's @!\n";
 
         /*
         var resultsText = resultsScreen.GetComponentInChildren<TextMeshProUGUI>();
@@ -355,7 +374,7 @@ public class UICombatOverlayManager : MonoBehaviour
         dmgPos.anchoredPosition = initPos;
 
         ShowInputPrompt(floatingDamage, 0.05f);
-        floatingDamage.GetComponent<TextMeshProUGUI>().text = $"{damage}";
+        floatingDamage.GetComponent<TextMeshProUGUI>().text = $"{(int)damage}";
 
         dmgPos.DOAnchorPos(goToPos, 0.25f, false).SetEase(Ease.OutBounce);
 
