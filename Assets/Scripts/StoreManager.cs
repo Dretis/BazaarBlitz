@@ -14,11 +14,16 @@ public class StoreManager : MonoBehaviour
 
         storeInventory = new List<ItemStats>();
 
+        for (int i = 0; i < storeCapacity; i++)
+        {
+            storeInventory.Add(null);
+        }
         // storeInventory = Enumerable.Repeat<ItemStats>(null, storeCapacity).ToList();
     }
 
     public void BuyItem(EntityPiece buyer, ItemStats item, int index)
     {
+        buyer.ReputationPoints += 20 + (item.basePrice / 100);
         // Check if buyer has enough money to buy items
         // Subject to change - inventory system
         buyer.inventory.Add(item);
@@ -29,18 +34,14 @@ public class StoreManager : MonoBehaviour
         storeInventory[index] = null;
     }
 
-    public void SellItem(EntityPiece seller, ItemStats item)
+    public void AddItem(ItemStats item)
     {
         // Check if store has enough money to buy items
         int indexToAdd = storeInventory.FindIndex(x => x == null);
 
         if (indexToAdd != -1) 
         {
-            // Remove item from seller's inventory and add it to store's inventory.
-            seller.inventory.Remove(item);
             storeInventory[indexToAdd] = item;
-            // subtract value of item from playerOwner
-            // add value of item to seller
         }
         else
         {

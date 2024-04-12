@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using DG.Tweening;
+using System.Linq;
 
 public class GameplayTest : MonoBehaviour
 {
@@ -27,7 +28,10 @@ public class GameplayTest : MonoBehaviour
         MoveAround,
         PassBy,
         EncounterTime,
+        StockStore,
+        OverturnStore,
         RockPaperScissors,
+        LevelUp,
         CombatTime,
         ConfirmContinue,
         EndTurn
@@ -57,6 +61,7 @@ public class GameplayTest : MonoBehaviour
 
     public bool encounterStarted = false;
     private bool playerUsedItem = false; // please change these down the line
+    public bool isStockingStore = false;
 
     //SOUND SHIT
     public AudioClip moveSFX;
@@ -65,6 +70,11 @@ public class GameplayTest : MonoBehaviour
 
     [SerializeField] private List<Stamp.StampType> oldStamps = new List<Stamp.StampType>();
     private int oldPoints = 0;
+
+    // ui stuff for levelup;
+    private int attSelected = 1;
+    private int diceSelected = 1;
+    private int pointsLeft = 0;
 
     // Event Channels
     [Header("Broadcast on Event Channels")]
@@ -129,7 +139,9 @@ public class GameplayTest : MonoBehaviour
             initialNode.playerOccupied = player;
         }
 
-        currentPlayer = nextPlayers[playerUnits.Count - 1];
+        // Get the player at the start of the list.
+        currentPlayer = nextPlayers[0];
+        //currentPlayer = nextPlayers[playerUnits.Count - 1];
         currentPlayerInitialNode = currentPlayer.occupiedNode;
 
         m_NextPlayerTurn.RaiseEvent(currentPlayer);
@@ -181,8 +193,20 @@ public class GameplayTest : MonoBehaviour
                 EncounterTime(currentPlayer, currentPlayer.occupiedNode);
                 break;
 
+            case GamePhase.StockStore:
+                StockStore(currentPlayer, currentPlayer.occupiedNode);
+                break;
+
+            case GamePhase.OverturnStore:
+                OverturnStore(currentPlayer, currentPlayer.occupiedNode);
+                break;
+
             case GamePhase.RockPaperScissors:
                 RockPaperScissors(currentPlayer);
+                break;
+
+            case GamePhase.LevelUp:
+                LevelUp(currentPlayer);
                 break;
 
             // Confirmation Phase
@@ -270,6 +294,15 @@ public class GameplayTest : MonoBehaviour
 
     void RollDice(EntityPiece p)
     {
+        // For now level up happens right before you roll dice
+        if (p.canLevelUp()) {
+            pointsLeft = 5;
+            p.maxHealth += 10;
+            p.health += 10;
+            p.RenownLevel += 1;
+            phase = GamePhase.LevelUp;
+            Debug.Log("Levelup screen!");
+        }
         if(p.combatSceneIndex == -1)
         {
             if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Mouse0))
@@ -410,6 +443,7 @@ public class GameplayTest : MonoBehaviour
 
             if (p.stamps.Count != 0)
             {
+                p.ReputationPoints += (75 * Mathf.Pow(1.5f, p.stamps.Count-1));
                 p.heldPoints += (int)(150 * Mathf.Pow(2, p.stamps.Count-1));
                 m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
                 m_PassByPawnShop.RaiseEvent(); // change this later
@@ -454,28 +488,41 @@ public class GameplayTest : MonoBehaviour
         else
         {
             var otherPlayer = p.occupiedNode.playerOccupied;
-            if(m.CompareTag("Store")) // Forced to buy item(s)
+            if (m.CompareTag("Store")) // Forced to buy item(s)
             {
                 // Have the node be occupied by the current player.
                 m.playerOccupied = p;
                 // Update portions of this code later
                 GameObject tile = m.gameObject;
                 StoreManager store = tile.GetComponent<StoreManager>();
-                if(store.playerOwner != currentPlayer)
+                if (store.playerOwner != currentPlayer)
                 {
                     // Forced to buy item(s) from another player's store
                     Debug.Log("Landed on " + store.playerOwner + " store");
-                    m_LandOnStorefront.RaiseEvent(m);
-                    phase = GamePhase.ConfirmContinue;
+
+                    // If there are no items left, give the player the option to overturn.
+                    if (store.storeInventory.Find(x => x != null) == null)
+                    {
+                        phase = GamePhase.OverturnStore;
+                    }
+                    else
+                    {
+                        m_LandOnStorefront.RaiseEvent(m);
+                        phase = GamePhase.ConfirmContinue;
+                    }
                 }
                 else
                 {
+                    isStockingStore = true;
+                    m_OpenInventory.RaiseEvent(p);
+                    phase = GamePhase.StockStore;
+                    /*
                     // Placeholder restock your store on landing
 
                     for (int i = 0; i < 3; i++)
                     {
                         var randomNum = Random.Range(0, tempItems.Count);
-                        if(store.storeInventory[i] == null)
+                        if (store.storeInventory[i] == null)
                         {
                             store.storeInventory[i] = (tempItems[randomNum]);
                         }
@@ -492,6 +539,7 @@ public class GameplayTest : MonoBehaviour
 
                     encounterOver = true;
                     phase = GamePhase.ConfirmContinue;
+                    */
                 }
             }
             else if (m.CompareTag("Castle")) //Stash your points
@@ -553,6 +601,14 @@ public class GameplayTest : MonoBehaviour
             }
             else if (m.CompareTag("Encounter")) // Regular Encounter
             {
+                // If unable to buy a store, skip the prompt and immediately enter combat.
+                if (p.heldPoints < 200 || p.storeCount >= 4)
+                {
+                    Debug.Log("You got no money to build a store, dipshit!");
+                    phase = GamePhase.RockPaperScissors;
+                    return;
+                }
+
                 m_EncounterDecision.RaiseEvent(currentPlayer);
 
                 // Monster Encounter
@@ -563,15 +619,24 @@ public class GameplayTest : MonoBehaviour
                 // Build a Store
                 else if (Input.GetKeyDown(KeyCode.RightShift))
                 {
+                    p.storeCount++;
+                    p.heldPoints -= 200;
+
+                    m_UpdatePlayerScore.RaiseEvent(p.id);
                     // Raise an eventchannel for BuildAStore to replace the code in here, replace ALOT OF THE CODE EHRE PLEASE
                     Debug.Log("I am a store");
                     GameObject tile = m.gameObject;
                     tile.tag = "Store";
 
-                    tile.GetComponent<SpriteRenderer>().color = currentPlayer.playerColor;
+                    tile.GetComponent<SpriteRenderer>().color = p.playerColor;
 
                     StoreManager store = tile.AddComponent<StoreManager>();
-                    store.playerOwner = currentPlayer;
+                    store.playerOwner = p;
+
+                    isStockingStore = true;
+
+                    m_OpenInventory.RaiseEvent(p);
+                    /*
                     // randomly pick 3 items to put into the base store stock
                     for (int i = 0; i < 3; i++)
                     {
@@ -587,18 +652,68 @@ public class GameplayTest : MonoBehaviour
                         if (listing != null) storeListings.text += listing.itemName + "\n";
                     }
                     storeScreen.SetActive(true);
-
-                    phase = GamePhase.ConfirmContinue;
                     encounterOver = true;
+                    phase = GamePhase.ConfirmContinue;
+                    */
+
+                    phase = GamePhase.StockStore;
+
                 }
+            }
+        }
+    }
+
+    void OverturnStore(EntityPiece p, MapNode m)
+    {
+        // No money to overturn or at store cap.
+        if (p.heldPoints < 600 || p.storeCount >= 4)
+        {
+            phase = GamePhase.EndTurn;
+        }
+        else
+        {
+            // Overturn.
+            if (Input.GetKeyDown(KeyCode.RightShift))
+            {
+                GameObject tile = m.gameObject;
+                tile.GetComponent<SpriteRenderer>().color = currentPlayer.playerColor;
+                StoreManager store = tile.GetComponent<StoreManager>();
+               
+                // Ownership changes.
+                store.playerOwner.storeCount--;
+                store.playerOwner = currentPlayer;
+                p.storeCount++;
+
+                p.heldPoints -= 600;
+
+                m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
+
+                isStockingStore = true;
+                m_OpenInventory.RaiseEvent(p);
+                phase = GamePhase.StockStore;
+                /*
+                // Stock store
+                for (int i = 0; i < 3; i++)
+                {
+                    var randomNum = Random.Range(0, tempItems.Count);
+                    if (store.storeInventory[i] == null)
+                    {
+                        store.storeInventory[i] = (tempItems[randomNum]);
+                    }
+                }
+
+                phase = GamePhase.EndTurn;
+                */
+            }
+            else if (Input.GetKeyDown(KeyCode.Space)) // Don't overturn.
+            {
+                phase = GamePhase.EndTurn;
             }
         }
     }
 
     void RockPaperScissors(EntityPiece p)
     {
-        //Debug.Log("Your Player: " + currentPlayer.nickname);
-        //Debug.Log("Other Player: " + otherPlayer.nickname);
         encounterStarted = true;
 
         // Set IDs of players entering combat.
@@ -616,85 +731,105 @@ public class GameplayTest : MonoBehaviour
         }
 
         sceneManager.LoadCombatScene();
+    }
 
-        /*
+    private void printIndex(int row, int col, EntityPiece p) { // Temporary function, delete later.
+        int[] costArray = { -1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 5, 999 };
+        if (row == 1) {
+            int diceValue = (int)(p.strDie.dieFaces[diceSelected-1]);
+            int diceUpgradeCost = costArray[diceValue];
+            Debug.Log("Strength dice face " + col + " selected. Current value: " + diceValue + ". Upgrade cost " + diceUpgradeCost);
+        } else if (row == 2) {
+            int diceValue = (int)(p.dexDie.dieFaces[diceSelected-1]);
+            int diceUpgradeCost = costArray[diceValue];
+            Debug.Log("Dex dice face " + col + " selected. Current value: " + diceValue + ". Upgrade cost " + diceUpgradeCost);
 
-        encounterScreen.SetActive(true);
-        p1fight.text = "";
-        p2fight.text = "";
-        resultInfo.text = "<size=45>[PLACEHOLDER ENCOUNTER]</size>\nRock, Paper, Scissors!!! \n<size=30> Rock = 1 or J | Paper = 2 or K | Scissors = 3 or L </size>";
+        } else {
+            int diceValue = (int)(p.intDie.dieFaces[diceSelected-1]);
+            int diceUpgradeCost = costArray[diceValue];
+            Debug.Log("Magic dice face " + col + " selected. Current value: " + diceValue + ". Upgrade cost " + diceUpgradeCost);
 
-        var playerPick = 0;
-        /// monsterPick = Random.Range(1, 10);
-
-
-
-
-
-        if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.J))
-        { // Rock
-            playerPick = 1;
-            p1fight.text = "ROCK";
         }
-        if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.K))
-        {// Paper
-            playerPick = 2;
-            p1fight.text = "PAPER";
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.L))
-        {// Scissors
-            playerPick = 3;
-            p1fight.text = "SCISSORS";
-        }
+    }
 
-
-
-        if (playerPick != 0)
+    private void LevelUp(EntityPiece p)
+    {
+        // current attribute selected is marked by the int attSelected. 1 is attack, 2 is gun, 3 is magic.
+        // diceSelected represents the current dice face. All of these have -1 applied in arrays.
+        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
         {
-            var monsterPick = Random.Range(1, 4); // Rock = 1, Paper = 2, Scissors = 3
+            if (attSelected > 1) {
+                attSelected -= 1;
+            }
+            printIndex(attSelected, diceSelected, p);
+        }
+        if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
+        {
+            if (attSelected < 3) {
+                attSelected += 1;
+            }
+            printIndex(attSelected, diceSelected, p);
+        }
+        if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
+        {
 
-            switch (monsterPick)
-            {
-                case 1:
-                    p2fight.text = "ROCK";
-                    break;
-                case 2:
-                    p2fight.text = "PAPER";
-                    break;
-                case 3:
-                    p2fight.text = "SCISSORS";
-                    break;
+            if (diceSelected < 6) {
+                diceSelected += 1;
+            }
+            printIndex(attSelected, diceSelected, p);
+        }
+        if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
+        {
 
+            if (diceSelected > 1) {
+                diceSelected -= 1;
             }
-            if (playerPick == monsterPick) // Tie
-            {
-                resultInfo.text = "TIE.";
-                resultInfo.text += "\n<size=24>[SPACE] to continue</size>";
-            }
-            else if ((playerPick == 1 && monsterPick == 2) ||
-                     (playerPick == 2 && monsterPick == 3) ||
-                     (playerPick == 3 && monsterPick == 1))
-            {
-                resultInfo.text = "YOU LOSE...";
-                resultInfo.text += "\n<size=24>You lost 20 points.</size>";
-                resultInfo.text += "\n<size=24>[SPACE] to continue</size>";
-                p.heldPoints -= 20;
-            }
-            else
-            {
-                resultInfo.text = "YOU WIN!!!";
-                resultInfo.text += "\n<size=24>You gain 55 points.</size>";
-                resultInfo.text += "\n<size=24>[SPACE] to continue</size>";
-                p.heldPoints += 55;
-            }
-
-            m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
-            //
-            encounterOver = true;
-            phase = GamePhase.ConfirmContinue;
+            printIndex(attSelected, diceSelected, p);
         }
 
-        */
+
+        if (pointsLeft <= 0 || Input.GetKeyDown(KeyCode.Escape)) // Esc to leave
+        {
+            Debug.Log("Out of points, level up done");
+            phase = GamePhase.RollDice;
+        }
+        if (Input.GetKeyDown(KeyCode.Return)) // E to leave till I find a good exit method that doesn't get you stuck.
+        {
+            int[] costArray = { -1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 5, 999 }; // 0-1 (0 indexing issues), 1-2, 2-3, etc. 10-11 isnt possible.
+            if (attSelected == 1) {
+                int diceUpgradeCost = costArray[ (int)(p.strDie.dieFaces[diceSelected-1]) ];
+                if (pointsLeft >= diceUpgradeCost) {
+                    p.strDie.dieFaces[diceSelected-1] += 1;
+                    pointsLeft -= diceUpgradeCost;
+                    Debug.Log ("Strength Die upgraded on face " + diceSelected + " making it " + p.strDie.dieFaces[diceSelected-1]);
+                    Debug.Log (pointsLeft + " points left after paying " + diceUpgradeCost);
+                } else {
+                    Debug.Log("Not enough points. Costs " + diceUpgradeCost + ", but you have only " + pointsLeft);
+                }
+            } else if (attSelected == 2) {
+                int diceUpgradeCost = costArray[ (int)(p.dexDie.dieFaces[diceSelected-1]) ];
+                if (pointsLeft >= diceUpgradeCost) {
+                    p.dexDie.dieFaces[diceSelected-1] += 1;
+                    pointsLeft -= diceUpgradeCost;
+                    Debug.Log ("Dex Die upgraded on face " + diceSelected + " making it " + p.dexDie.dieFaces[diceSelected-1]);
+                    Debug.Log (pointsLeft + " points left after paying " + diceUpgradeCost);
+                } else {
+                    Debug.Log("Not enough points. Costs " + diceUpgradeCost + ", but you have only " + pointsLeft);
+                }
+            } else if (attSelected == 3) {
+                int diceUpgradeCost = costArray[ (int)(p.intDie.dieFaces[diceSelected-1]) ];
+                if (pointsLeft >= diceUpgradeCost) {
+                    p.intDie.dieFaces[diceSelected-1] += 1;
+                    pointsLeft -= diceUpgradeCost;
+                    Debug.Log ("Magic Die upgraded on face " + diceSelected + " making it " + p.intDie.dieFaces[diceSelected-1]);
+                    Debug.Log (pointsLeft + " points left after paying " + diceUpgradeCost);
+                } else {
+                    Debug.Log("Not enough points. Costs " + diceUpgradeCost + ", but you have only " + pointsLeft);
+                }
+            } else {
+                Debug.Log("Uh oh, you just tried to upgrade a dice you dont have.");
+            }
+        }
     }
 
     void ConfirmContinue(EntityPiece p)
@@ -713,9 +848,6 @@ public class GameplayTest : MonoBehaviour
 
     void EndOfTurn(EntityPiece p)
     {
-        //Debug.Log("initial node player: " + currentPlayerInitialNode.playerOccupied);
-        //Debug.Log("initial node player: " + currentPlayer);
-
         if (currentPlayerInitialNode.playerOccupied == currentPlayer)
         {
             currentPlayerInitialNode.playerOccupied = null;
@@ -725,41 +857,33 @@ public class GameplayTest : MonoBehaviour
         oldStamps.Clear();
         oldPoints = 0;
 
-        // Change to the next player in the list
-        nextPlayers.Remove(currentPlayer); // remove current player from the turn order
         p.occupiedNode.playerOccupied = p; // update to have that player on that node now
-
+        isStockingStore = false; // let next player access inventory
         playerUsedItem = false; // let next player access inventory
 
-        if (nextPlayers.Count != 0)
+        // Change to the next player in the list (if their turn is not skipped).
+
+        nextPlayers.Remove(currentPlayer);
+        nextPlayers.Add(currentPlayer);
+        currentPlayer = nextPlayers[0];
+
+        // Check if next player has their turn skipped (and so on). If so, skip their turn.
+        while (currentPlayer.isTurnSkipped)
         {
-            currentPlayer = nextPlayers[nextPlayers.Count - 1];
-
-            m_NextPlayerTurn.RaiseEvent(currentPlayer);
-
-            turnText.text = currentPlayer.entityName + "'s Turn!";
-            turnText.color = currentPlayer.playerColor;
-
-            currentPlayerInitialNode = currentPlayer.occupiedNode;
-            oldStamps = new List<Stamp.StampType>(currentPlayer.stamps); // keeping track of stamps for next player
-            phase = GamePhase.ItemSelection;
+            currentPlayer.isTurnSkipped = false;
+            nextPlayers.Remove(currentPlayer);
+            nextPlayers.Add(currentPlayer);
+            currentPlayer = nextPlayers[0];
         }
-        else
-        {
-            foreach(var players in playerUnits)
-                nextPlayers.Add(players); // Refill the list with all the players again
 
-            currentPlayer = nextPlayers[nextPlayers.Count - 1]; //Player at end of the ist goes again
+        m_NextPlayerTurn.RaiseEvent(currentPlayer);
 
-            m_NextPlayerTurn.RaiseEvent(currentPlayer);
+        turnText.text = currentPlayer.entityName + "'s Turn!";
+        turnText.color = currentPlayer.playerColor;
 
-            turnText.text = currentPlayer.entityName + "'s Turn!";
-            turnText.color = currentPlayer.playerColor;
-
-            currentPlayerInitialNode = currentPlayer.occupiedNode;
-            oldStamps = new List<Stamp.StampType>(currentPlayer.stamps);
-            phase = GamePhase.ItemSelection;
-        }
+        currentPlayerInitialNode = currentPlayer.occupiedNode;
+        oldStamps = new List<Stamp.StampType>(currentPlayer.stamps); // keeping track of stamps for next player
+        phase = GamePhase.ItemSelection;
     }
 
     void UpdatePoints()
@@ -774,9 +898,15 @@ public class GameplayTest : MonoBehaviour
     private void _PlaceholderChangeAndContinue(ItemStats item)
     {
         // When an item is bought, allow confirmation via SPACE bar to continue the game
+        // Can the player only buy 1 item? If so, prevent buying of other items through UI.
         encounterOver = true;
-        if(item != null)
+        if (item != null)
             currentPlayer.heldPoints -= item.basePrice;
+        else
+        {
+            Debug.Log("You can't buy shit! TURN SKIPPED!");
+            currentPlayer.isTurnSkipped = true;
+        }
 
         m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
     }
@@ -784,14 +914,41 @@ public class GameplayTest : MonoBehaviour
     private void RemoveItemInPlayerInventory(int index)
     {
         // This should be in its own script
-        currentPlayer.AddItemToActiveEffects(currentPlayer.inventory[index].duration, currentPlayer.inventory[index]);
-        currentPlayer.UpdateStatModifiers();
-        currentPlayer.inventory.RemoveAt(index);
-        playerUsedItem = true;
+        if (isStockingStore)
+        {
+            var store = currentPlayer.occupiedNode.GetComponent<StoreManager>();
+            //Debug.Log(index);
+            store.AddItem(currentPlayer.inventory[index]);
+            currentPlayer.inventory.RemoveAt(index);
+            m_OpenInventory.RaiseEvent(currentPlayer);
+        } 
+        else
+        {
+            currentPlayer.AddItemToActiveEffects(currentPlayer.inventory[index].duration, currentPlayer.inventory[index]);
+            currentPlayer.UpdateStatModifiers();
+            currentPlayer.inventory.RemoveAt(index);
+            playerUsedItem = true;
+        }        
     }
 
     public void PlayAudio(AudioClip clip)
     {
         audioSource.PlayOneShot(clip, 2f);
+    }
+
+    private void StockStore(EntityPiece p, MapNode m)
+    {
+        GameObject tile = m.gameObject;
+        StoreManager store = tile.GetComponent<StoreManager>();
+        if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.Mouse1)
+                || !store.storeInventory.Exists(x => x == null))
+        {
+            // Exit store restocking.
+            m_ExitInventory.RaiseEvent();
+
+            audioSource.PlayOneShot(reverseSFX, 2f);
+
+            phase = GamePhase.EndTurn;
+        }
     }
 }

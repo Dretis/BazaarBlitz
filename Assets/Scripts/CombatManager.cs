@@ -298,8 +298,8 @@ public class CombatManager : MonoBehaviour
                 initiator.inventory.Add(retaliator.inventory[loot]); // Enemy inventories are loot tables
                 loot = Random.Range(0, 6);
                 initiator.inventory.Add(retaliator.inventory[loot]); // Enemy inventories are loot tables
-
-                //m_EntityDied.RaiseEvent(retaliator, retaliator.inventory[loot]);
+                initiator.ReputationPoints += retaliator.ReputationPoints; // a monster's rep is just its exp yield.
+                Debug.Log("Gained " + retaliator.ReputationPoints + " reputation points from monster! Now at rep: " + initiator.ReputationPoints);
             }
             else
             {
@@ -314,6 +314,15 @@ public class CombatManager : MonoBehaviour
                 // Add defender's points to attacker's points 
                 initiator.heldPoints += retaliator.heldPoints;
                 retaliator.heldPoints = 0;
+
+                float pointgain = 100 * Mathf.Pow(2, retaliator.RenownLevel - initiator.RenownLevel);
+
+                if (pointgain < 100) {
+                    pointgain = 0; // Should it just be 0?
+                }
+
+                initiator.ReputationPoints += pointgain;
+                Debug.Log("Gained " + pointgain + " reputation points! Now at rep: " + initiator.ReputationPoints);
             }
         }
         else
@@ -332,6 +341,15 @@ public class CombatManager : MonoBehaviour
             // Add attacker's points to defender's points 
             retaliator.heldPoints += initiator.heldPoints;
             initiator.heldPoints = 0;
+
+            float pointgain = 100 * Mathf.Pow(2, initiator.RenownLevel - retaliator.RenownLevel);
+
+            if (pointgain < 100) {
+                pointgain = 0;
+            }
+
+            retaliator.ReputationPoints += pointgain;
+            Debug.Log("Gained " + pointgain + " reputation points! Now at rep: " + retaliator.ReputationPoints);
         }
 
         audioSource.PlayOneShot(explosionSFX, 2f);
@@ -375,22 +393,22 @@ public class CombatManager : MonoBehaviour
         Action attack = attacker.attackActions[attackerAction-1];
         Action defend = defender.defendActions[defenderAction-1];
 
-        float defendMultiplier = 0.5f; // Attacker deals this much damage after defend
+        float defendMultiplier = 1f; // Attacker deals this much damage after defend
         if (attack.type == defend.type)
         {
-            defendMultiplier = 1f;
+            defendMultiplier = 1.5f;
         }
         else if (attack.type == Action.WeaponTypes.Melee && defend.type == Action.WeaponTypes.Magic)
         {
-            defendMultiplier = 0.5f;
+            defendMultiplier = 1f;
         }
         else if (attack.type == Action.WeaponTypes.Gun && defend.type == Action.WeaponTypes.Melee)
         {
-            defendMultiplier = 0.5f;
+            defendMultiplier = 1f;
         }
         else if (attack.type == Action.WeaponTypes.Magic && defend.type == Action.WeaponTypes.Gun)
         {
-            defendMultiplier = 0.5f;
+            defendMultiplier = 1f;
         }
         else if (attack.type == Action.WeaponTypes.Special)
         {
@@ -467,7 +485,7 @@ public class CombatManager : MonoBehaviour
         m_DiceRolled.RaiseEvent(attacker, roll);
 
         damage += (attackerBuffDamage + attack.bonusDamage);
-        damage = damage * 5;
+        damage = damage * 10;
         Debug.Log($"Attacker role: Raw {roll}, modified {damage}");
 
         roll = Random.Range(0, 6);

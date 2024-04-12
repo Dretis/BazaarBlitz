@@ -84,8 +84,6 @@ public class UIManager : MonoBehaviour
     {
         storefrontCanvas.enabled = false;
         storefrontCanvas.gameObject.SetActive(false);
-
-
     }
 
     private void FinishShopping(ItemStats item)
@@ -154,7 +152,7 @@ public class UIManager : MonoBehaviour
             // May need to move the rest of the following code to another script
 
             // Signal that this item was sold.
-            // Likely for the PlayerManager to subtract currency based of item's price.
+            // Likely for the PlayerManager to subtract currency based off item's price.
 
             m_itemSold.RaiseEvent(itemInventory[i]);
 
