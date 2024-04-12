@@ -52,6 +52,21 @@ public class CombatManager : MonoBehaviour
 
     private int phaseCount = 0;
 
+    [Header("Broadcast on Event Channels")]
+    public PlayerEventChannelSO m_DecidedTurnOrder; // pass in the attacker
+    public PlayerEventChannelSO m_SwapPhase; // void event
+
+    //public ActionSelectEventChannelSO m_ActionSelected; // Entity, check side and phase | Either the attacker or defender picked an action
+    //public ActionSelectEventChannelSO m_BothActionsSelected; // prep time to show what they picked, follow with the dice roll too
+    public DamageEventChannelSO m_DiceRolled; // 2 floats
+
+    public PlayerEventChannelSO m_PlayOutCombat; // play attack anim and defend anim
+
+    public DamageEventChannelSO m_DamageTaken; //upon attack anim finishing, show floating dmg ontop of defender, play hurt anim
+
+    public EntityItemEventChannelSO m_EntityDied; // someone's HP dropped to 0, Victory, show rewards
+    public VoidEventChannelSO m_Stalemate; // Combat is suspended, no one died this stime
+
     private void Awake()
     {
         sceneManager = GameObject.FindWithTag("SceneManager").GetComponent<SceneGameManager>();
@@ -158,6 +173,7 @@ public class CombatManager : MonoBehaviour
         combatUIManager.UpdateActionText(attacker, Action.PhaseTypes.Attack);
         combatUIManager.UpdateActionText(defender, Action.PhaseTypes.Defend);
 
+        m_DecidedTurnOrder.RaiseEvent(attacker);
         //combatUIManager.UpdateAction2Text(defender, Action.PhaseTypes.Defend);
     }
 
@@ -192,6 +208,8 @@ public class CombatManager : MonoBehaviour
 
             combatUIManager.UpdateActionText(attacker, Action.PhaseTypes.Attack);
             combatUIManager.UpdateActionText(defender, Action.PhaseTypes.Defend);
+
+            m_DecidedTurnOrder.RaiseEvent(attacker);
         }
 
         if ((!isInitiatorTurn && !initiatorAttacking) && isFightingAI)
@@ -231,6 +249,7 @@ public class CombatManager : MonoBehaviour
 
     public void pauseCombat() 
     {
+        m_Stalemate.RaiseEvent();
         if (pausingCombat == false) 
         { 
             // Return in 1 second.
@@ -253,6 +272,7 @@ public class CombatManager : MonoBehaviour
 
     public void endCombat()
     {
+        m_EntityDied.RaiseEvent(retaliator, null);
         if (endingCombat == false) 
         {
             endCombatSceneTimer = 1.0f;
@@ -274,6 +294,10 @@ public class CombatManager : MonoBehaviour
             {
                 int loot = Random.Range(0, 6);
                 initiator.inventory.Add(retaliator.inventory[loot]); // Enemy inventories are loot tables
+                loot = Random.Range(0, 6);
+                initiator.inventory.Add(retaliator.inventory[loot]); // Enemy inventories are loot tables
+
+                //m_EntityDied.RaiseEvent(retaliator, retaliator.inventory[loot]);
             }
             else
             {
@@ -346,8 +370,8 @@ public class CombatManager : MonoBehaviour
 
         float damage = 0;
 
-        Action attack = attacker.attackActions[attackerAction - 1];
-        Action defend = defender.defendActions[defenderAction - 1];
+        Action attack = attacker.attackActions[attackerAction-1];
+        Action defend = defender.defendActions[defenderAction-1];
 
         float defendMultiplier = 0.5f; // Attacker deals this much damage after defend
         if (attack.type == defend.type)
@@ -504,8 +528,8 @@ public class CombatManager : MonoBehaviour
 
     public void chooseAction(int ActionID, bool isAttacker)
     {
-        combatUIManager.UpdateActionAnimation(0, player1.fightingPosition);
-        combatUIManager.UpdateActionAnimation(0, player2.fightingPosition);
+        //combatUIManager.UpdateActionAnimation(0, player1.fightingPosition);
+        //combatUIManager.UpdateActionAnimation(0, player2.fightingPosition);
         
         if (isAttacker)
         {
@@ -539,7 +563,7 @@ public class CombatManager : MonoBehaviour
         }
         else
         {
-            return 4;
+            return 3;
         }
     }
 
@@ -562,7 +586,7 @@ public class CombatManager : MonoBehaviour
             }
             else
             {
-                return 4;
+                return 3;
             }
         }
         else if (roll < 5)
@@ -579,7 +603,7 @@ public class CombatManager : MonoBehaviour
         }
         else
         {
-            return 4;
+            return 3;
         }
     }
 

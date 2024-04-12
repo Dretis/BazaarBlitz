@@ -10,7 +10,7 @@ public class CombatInputSystem : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
         {
-            CombatManager.Instance.chooseAction(1, currentPlayer);
+            CombatManager.Instance.chooseAction(3, currentPlayer);
             CombatManager.Instance.passTurn();
         }
         if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) 
@@ -20,7 +20,7 @@ public class CombatInputSystem : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
         {
-            CombatManager.Instance.chooseAction(3, currentPlayer);
+            CombatManager.Instance.chooseAction(4, currentPlayer);
             CombatManager.Instance.passTurn();
         }
     }
