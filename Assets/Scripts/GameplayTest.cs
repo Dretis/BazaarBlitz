@@ -798,7 +798,7 @@ public class GameplayTest : MonoBehaviour
         if (isStockingStore)
         {
             var store = currentPlayer.occupiedNode.GetComponent<StoreManager>();
-            Debug.Log(index);
+            //Debug.Log(index);
             store.AddItem(currentPlayer.inventory[index]);
             currentPlayer.inventory.RemoveAt(index);
             m_OpenInventory.RaiseEvent(currentPlayer);
