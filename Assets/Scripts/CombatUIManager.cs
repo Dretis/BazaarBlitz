@@ -52,7 +52,8 @@ public class CombatUIManager : MonoBehaviour
         }
 
         stateTexts[0].text = ps.entityName;
-        stateTexts[1].text = $"HP: {ps.health}/{ps.maxHealth}";
+        stateTexts[1].text = $"HP: {Mathf.Max(ps.health,0)}/{ps.maxHealth}";
+        
 
         if(phase == Action.PhaseTypes.Attack)
         {

@@ -15,6 +15,7 @@ public class SoundManager : MonoBehaviour
     public IntEventChannelSO m_RollForMovement;
     public IntEventChannelSO m_UpdatePlayerScore;
     public IntEventChannelSO m_ItemUsed;
+    public IntEventChannelSO m_ItemBought;
     public PlayerEventChannelSO m_UsedMeleeAttack;
     public PlayerEventChannelSO m_UsedMagicAttack;
     public PlayerEventChannelSO m_UsedGunAttack;
@@ -39,12 +40,12 @@ public class SoundManager : MonoBehaviour
         //World Events
         m_PassByStamp.OnEventRaised += PlayStampSound;
         
-        // m_DiceRollPrep += PlayDiceRollSound;
-        // m_RollForMovement += PlayDiceHitSound;
-        // m_ItemUsed += PlayUseItemSound;
-        // m_UpdatePlayerScore += PlayCurrencyChangeSound;
-        // m_ItemBought += PlayItemBoughtSound;
-        // m_ShowCombatBanner += PlayEnterBattleSound;
+        m_DiceRollPrep.OnEventRaised += PlayDiceRollSound;
+        m_RollForMovement.OnEventRaised += PlayDiceHitSound;
+        m_ItemUsed.OnEventRaised += PlayUseItemSound;
+        m_UpdatePlayerScore.OnEventRaised += PlayCurrencyChangeSound;
+        m_ItemBought.OnEventRaised += PlayItemBoughtSound;
+        //m_ShowCombatBanner.OnEventRaised += PlayEnterBattleSound;
 
 
         // //Combat Events
@@ -64,11 +65,11 @@ public class SoundManager : MonoBehaviour
     {
         //World Events
         m_PassByStamp.OnEventRaised -= PlayStampSound;
-        // m_DiceRollPrep -= PlayDiceRollSound;
-        // m_RollForMovement -= PlayDiceHitSound;
-        // m_ItemUsed -= PlayUseItemSound;
-        // m_UpdatePlayerScore -= PlayCurrencyChangeSound;
-        // m_ShowCombatBanner -= PlayEnterBattleSound;
+        m_DiceRollPrep.OnEventRaised -= PlayDiceRollSound;
+        m_RollForMovement.OnEventRaised -= PlayDiceHitSound;
+        m_ItemUsed.OnEventRaised -= PlayUseItemSound;
+        m_UpdatePlayerScore.OnEventRaised -= PlayCurrencyChangeSound;
+        //m_ShowCombatBanner.OnEventRaised -= PlayEnterBattleSound;
 
 
         // //Combat Events
