@@ -60,7 +60,7 @@ public class GameplayTest : MonoBehaviour
 
     public bool encounterStarted = false;
     private bool playerUsedItem = false; // please change these down the line
-    private bool isStockingStore = false;
+    public bool isStockingStore = false;
 
     //SOUND SHIT
     public AudioClip moveSFX;
@@ -788,17 +788,18 @@ public class GameplayTest : MonoBehaviour
         if (isStockingStore)
         {
             var store = currentPlayer.occupiedNode.GetComponent<StoreManager>();
+            Debug.Log(index);
             store.AddItem(currentPlayer.inventory[index]);
+            currentPlayer.inventory.RemoveAt(index);
+            m_OpenInventory.RaiseEvent(currentPlayer);
         } 
         else
         {
             currentPlayer.AddItemToActiveEffects(currentPlayer.inventory[index].duration, currentPlayer.inventory[index]);
             currentPlayer.UpdateStatModifiers();
+            currentPlayer.inventory.RemoveAt(index);
             playerUsedItem = true;
-        }
-        
-        currentPlayer.inventory.RemoveAt(index);
-        
+        }        
     }
 
     public void PlayAudio(AudioClip clip)
