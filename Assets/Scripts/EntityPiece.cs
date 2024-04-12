@@ -18,6 +18,7 @@ public class EntityPiece : MonoBehaviour
     public int heldPoints = 0;
     public int storeCount = 0;
     public List<Stamp.StampType> stamps = new List<Stamp.StampType>();
+    public bool isTurnSkipped = false;
 
     [Header("Combat Stats")]
     public float health = 75;
