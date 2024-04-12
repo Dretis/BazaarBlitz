@@ -493,6 +493,10 @@ public class GameplayTest : MonoBehaviour
                 }
                 else
                 {
+                    isStockingStore = true;
+                    m_OpenInventory.RaiseEvent(p);
+                    phase = GamePhase.StockStore;
+                    /*
                     // Placeholder restock your store on landing
 
                     for (int i = 0; i < 3; i++)
@@ -515,6 +519,7 @@ public class GameplayTest : MonoBehaviour
 
                     encounterOver = true;
                     phase = GamePhase.ConfirmContinue;
+                    */
                 }
             }
             else if (m.CompareTag("Castle")) //Stash your points
@@ -663,6 +668,10 @@ public class GameplayTest : MonoBehaviour
 
                 m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
 
+                isStockingStore = true;
+                m_OpenInventory.RaiseEvent(p);
+                phase = GamePhase.StockStore;
+                /*
                 // Stock store
                 for (int i = 0; i < 3; i++)
                 {
@@ -674,6 +683,7 @@ public class GameplayTest : MonoBehaviour
                 }
 
                 phase = GamePhase.EndTurn;
+                */
             }
             else if (Input.GetKeyDown(KeyCode.Space)) // Don't overturn.
             {
