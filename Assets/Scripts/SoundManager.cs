@@ -11,12 +11,155 @@ public class SoundManager : MonoBehaviour
 
     [Header("Listen on Event Channels")]
     public PlayerEventChannelSO m_PassByStamp;
+    public PlayerEventChannelSO m_DiceRollPrep;
+    public IntEventChannelSO m_RollForMovement;
+    public IntEventChannelSO m_UpdatePlayerScore;
+    public IntEventChannelSO m_ItemUsed;
+    public PlayerEventChannelSO m_UsedMeleeAttack;
+    public PlayerEventChannelSO m_UsedMagicAttack;
+    public PlayerEventChannelSO m_UsedGunAttack;
+    public PlayerEventChannelSO m_ReceivedNotEffectiveAttack;
+    public PlayerEventChannelSO m_EffectiveAttack;
+    public PlayerEventChannelSO m_SuperEffectiveAttack;
+    public PlayerEventChannelSO m_EntityDied;
+    public PlayerEventChannelSO m_ActionSelected;
+    public PlayerEventChannelSO m_ShowCombatBanner;
+
+
 
 
     private void Start()
     {
         audioSource = GetComponent<AudioSource>();
     }
+
+    
+    private void OnEnable()
+    {
+        //World Events
+        m_PassByStamp.OnEventRaised += PlayStampSound;
+        
+        // m_DiceRollPrep += PlayDiceRollSound;
+        // m_RollForMovement += PlayDiceHitSound;
+        // m_ItemUsed += PlayUseItemSound;
+        // m_UpdatePlayerScore += PlayCurrencyChangeSound;
+        // m_ItemBought += PlayItemBoughtSound;
+        // m_ShowCombatBanner += PlayEnterBattleSound;
+
+
+        // //Combat Events
+        // m_ActionSelected += PlaySelectCombatActionSound;
+        // m_UsedMeleeAttack += PlayMeleeAttackSound;
+        // m_UsedMagicAttack += PlayMagicAttackSound;
+        // m_UsedGunAttack += PlayGunAttackSound;
+        // m_ReceivedNotEffectiveAttack += PlayNotEffectiveHitSound;
+        // m_ReceivedEffectiveAttack += PlayEffectiveHitSound;
+        // m_ReceivedSuperEffectiveAttack += PlaySuperEffectiveHitSound;
+        // m_EntityDied += PlayDeathSound;
+
+
+    }
+
+    private void OnDisable()
+    {
+        //World Events
+        m_PassByStamp.OnEventRaised -= PlayStampSound;
+        // m_DiceRollPrep -= PlayDiceRollSound;
+        // m_RollForMovement -= PlayDiceHitSound;
+        // m_ItemUsed -= PlayUseItemSound;
+        // m_UpdatePlayerScore -= PlayCurrencyChangeSound;
+        // m_ShowCombatBanner -= PlayEnterBattleSound;
+
+
+        // //Combat Events
+        // m_ActionSelected -= PlaySelectCombatActionSound;
+        // m_UsedMeleeAttack -= PlayMeleeAttackSound;
+        // m_UsedMagicAttack -= PlayMagicAttackSound;
+        // m_UsedGunAttack -= PlayGunAttackSound;
+        // m_ReceivedNotEffectiveAttack -= PlayNotEffectiveHitSound;
+        // m_ReceivedEffectiveAttack -= PlayEffectiveHitSound;
+        // m_ReceivedSuperEffectiveAttack -= PlaySuperEffectiveHitSound;
+        // m_EntityDied -= PlayDeathSound;
+    }
+
+    private void PlayStampSound(EntityPiece entity)
+    {
+        audioSource.PlayOneShot(soundList[0], 2f);
+    }
+
+    private void PlayDiceRollSound(EntityPiece entity)
+    {
+        audioSource.PlayOneShot(soundList[1], 1.2f);
+    }
+
+    private void PlayDiceHitSound(int diceValue)
+    {
+        audioSource.PlayOneShot(soundList[2], 2f);
+    }
+
+    private void PlayCurrencyChangeSound(int scoreDifference)
+    {
+        if (scoreDifference > 0)
+            audioSource.PlayOneShot(soundList[3], 3f);
+        else
+            audioSource.PlayOneShot(soundList[4], 3f);
+    }
+
+    private void PlayItemBoughtSound(int itemValue)
+    {
+        audioSource.PlayOneShot(soundList[4], 3f);
+    }
+
+    private void PlayUseItemSound(int item)
+    {
+        audioSource.PlayOneShot(soundList[5], 1.5f);
+    }
+
+    private void PlayMeleeAttackSound(EntityPiece entity)
+    {
+        audioSource.PlayOneShot(soundList[6], 2f);
+    }
+
+    private void PlayMagicAttackSound(EntityPiece entity)
+    {
+        audioSource.PlayOneShot(soundList[7], 1.2f);
+    }
+
+    private void PlayGunAttackSound(EntityPiece entity)
+    {
+        audioSource.PlayOneShot(soundList[8], 2f);
+    }
+
+    private void PlayNotEffectiveHitSound(EntityPiece entity)
+    {
+        audioSource.PlayOneShot(soundList[9], 3f);
+    }
+
+    private void PlayEffectiveHitSound(EntityPiece entity)
+    {
+        audioSource.PlayOneShot(soundList[10], 1.2f);
+    }
+
+    private void PlaySuperEffectiveHitSound(EntityPiece entity)
+    {
+        audioSource.PlayOneShot(soundList[11], 1.5f);
+    }
+
+    private void PlayDeathSound(EntityPiece entity)
+    {
+        audioSource.PlayOneShot(soundList[12], 2f);
+    }
+
+    private void PlaySelectCombatActionSound(EntityPiece entity)
+    {
+        audioSource.PlayOneShot(soundList[13], 2f);
+    }
+
+    private void PlayEnterBattleSound(EntityPiece entity)
+    {
+        audioSource.PlayOneShot(soundList[14], 1.2f);
+    }
+
 
     // private void Update()
     // {
@@ -82,128 +225,6 @@ public class SoundManager : MonoBehaviour
     //     }
     // }
 
-    private void OnEnable()
-    {
-        //World Events
-        m_PassByStamp.OnEventRaised += PlayStampSound;
-        
-        // m_DiceRollPrep += PlayDiceRollSound;
-        // m_RollForMovement += PlayDiceHitSound;
-        // m_ItemUsed += PlayUseItemSound;
-        // m_UpdatePlayerScore += PlayCurrencyChangeSound;
-        // m_ShowCombatBanner += PlayEnterBattleSound;
-
-
-        // //Combat Events
-        // m_ActionSelected += PlaySelectCombatActionSound;
-        // m_UsedMeleeAttack += PlayMeleeAttackSound;
-        // m_UsedMagicAttack += PlayMagicAttackSound;
-        // m_UsedGunAttack += PlayGunAttackSound;
-        // m_ReceivedNotEffectiveAttack += PlayNotEffectiveHitSound;
-        // m_ReceivedEffectiveAttack += PlayEffectiveHitSound;
-        // m_ReceivedSuperEffectiveAttack += PlaySuperEffectiveHitSound;
-        // m_EntityDied += PlayDeathSound;
-
-
-    }
-
-    private void OnDisable()
-    {
-        //World Events
-        m_PassByStamp.OnEventRaised -= PlayStampSound;
-        // m_DiceRollPrep -= PlayDiceRollSound;
-        // m_RollForMovement -= PlayDiceHitSound;
-        // m_ItemUsed -= PlayUseItemSound;
-        // m_UpdatePlayerScore -= PlayCurrencyChangeSound;
-        // m_ShowCombatBanner -= PlayEnterBattleSound;
-
-
-        // //Combat Events
-        // m_ActionSelected -= PlaySelectCombatActionSound;
-        // m_UsedMeleeAttack -= PlayMeleeAttackSound;
-        // m_UsedMagicAttack -= PlayMagicAttackSound;
-        // m_UsedGunAttack -= PlayGunAttackSound;
-        // m_ReceivedNotEffectiveAttack -= PlayNotEffectiveHitSound;
-        // m_ReceivedEffectiveAttack -= PlayEffectiveHitSound;
-        // m_ReceivedSuperEffectiveAttack -= PlaySuperEffectiveHitSound;
-        // m_EntityDied -= PlayDeathSound;
-    }
-
-    private void PlayStampSound(EntityPiece entity)
-    {
-        audioSource.PlayOneShot(soundList[0], 2f);
-    }
-
-    private void PlayDiceRollSound(EntityPiece entity)
-    {
-        audioSource.PlayOneShot(soundList[1], 1.2f);
-    }
-
-        private void PlayDiceHitSound(int diceValue)
-    {
-        audioSource.PlayOneShot(soundList[2], 2f);
-    }
-
-        private void PlayCurrencyChangeSound(int scoreDifference)
-    {
-        if (scoreDifference > 0)
-            audioSource.PlayOneShot(soundList[3], 3f);
-        else
-            audioSource.PlayOneShot(soundList[4], 3f);
-    }
-
-        private void PlayUseItemSound(int item)
-    {
-        audioSource.PlayOneShot(soundList[5], 1.5f);
-    }
-
-        private void PlayMeleeAttackSound(EntityPiece entity)
-    {
-        audioSource.PlayOneShot(soundList[6], 2f);
-    }
-
-        private void PlayMagicAttackSound(EntityPiece entity)
-    {
-        audioSource.PlayOneShot(soundList[7], 1.2f);
-    }
-
-        private void PlayGunAttackSound(EntityPiece entity)
-    {
-        audioSource.PlayOneShot(soundList[8], 2f);
-    }
-
-        private void PlayNotEffectiveHitSound(EntityPiece entity)
-    {
-        audioSource.PlayOneShot(soundList[9], 3f);
-    }
-
-        private void PlayEffectiveHitSound(EntityPiece entity)
-    {
-        audioSource.PlayOneShot(soundList[10], 1.2f);
-    }
-
-        private void PlaySuperEffectiveHitSound(EntityPiece entity)
-    {
-        audioSource.PlayOneShot(soundList[11], 1.5f);
-    }
-
-        private void PlayDeathSound(EntityPiece entity)
-    {
-        audioSource.PlayOneShot(soundList[12], 2f);
-    }
-
-        private void PlaySelectCombatActionSound(EntityPiece entity)
-    {
-        audioSource.PlayOneShot(soundList[13], 2f);
-    }
-
-        private void PlayEnterBattleSound(EntityPiece entity)
-    {
-        audioSource.PlayOneShot(soundList[14], 1.2f);
-    }
-
-
-    
 
 
     
