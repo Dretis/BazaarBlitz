@@ -23,6 +23,7 @@ public class StoreManager : MonoBehaviour
 
     public void BuyItem(EntityPiece buyer, ItemStats item, int index)
     {
+        buyer.ReputationPoints += 20 + (item.basePrice / 100);
         // Check if buyer has enough money to buy items
         // Subject to change - inventory system
         buyer.inventory.Add(item);

@@ -55,7 +55,8 @@ MonoBehaviour:
   movementLeft: 0
   finalPoints: 1
   heldPoints: 0
-  stamps: []
+  storeCount: 0
+  stamps: 
   health: 55
   maxHealth: 55
   combatSceneIndex: -1
@@ -95,6 +96,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 188957564c85adc4a8e2ce5c7b8466f5, type: 2}
   - {fileID: 11400000, guid: 5b8f525effb08414abb503dfc27d55f6, type: 2}
   fightingPosition: 1
+  ReputationPoints: 100
+  RenownLevel: 1
   currentStatsModifier:
     dieModifiers:
     - finalResultFlatModifier: 0

@@ -27,7 +27,7 @@ public class EntityBaseStats
 public class DieConfig
 {
     [SerializeField]
-    private float[] dieFaces = new float[6];
+    public float[] dieFaces = new float[6];
 
     public float this[int faceIndex]
     {
