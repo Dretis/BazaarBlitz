@@ -26,6 +26,12 @@ public class CombatUIManager : MonoBehaviour
     public Animator player1Animator;
     public Animator player2Animator;
 
+    private void Start()
+    {
+        player1Renderer.color = CombatManager.Instance.player1.playerColor;
+        player2Renderer.color = CombatManager.Instance.player2.playerColor;
+    }
+
     public void UpdateActionText(EntityPiece ps, Action.PhaseTypes phase)
     {
         List<TextMeshProUGUI> stateTexts = null;
@@ -46,7 +52,7 @@ public class CombatUIManager : MonoBehaviour
         }
 
         stateTexts[0].text = ps.entityName;
-        stateTexts[1].text = "HP: " + ps.health;
+        stateTexts[1].text = $"HP: {ps.health}/{ps.maxHealth}";
 
         if(phase == Action.PhaseTypes.Attack)
         {
@@ -86,69 +92,6 @@ public class CombatUIManager : MonoBehaviour
 
             actionTexts[count].color = actionColor;
             actionTexts[count].text = "<sprite=" + typeIconIndex + ">" + a.actionName;
-            count++;
-        }
-    }
-
-    public void UpdateActionText(EntityPiece ps, Action.PhaseTypes phase, FightingPosition fp)
-    {
-        List<TextMeshProUGUI> stateTexts = null;
-        List<TextMeshProUGUI> actionTexts = null;
-        List<Action> actions = null;
-
-        if (fp == FightingPosition.Left)
-        {
-            // Change the text on the left side
-            stateTexts = player1StateTexts;
-            actionTexts = player1ActionTexts;
-        }
-        else
-        {
-            // Change the text on the right side
-            stateTexts = player2StateTexts;
-            actionTexts = player2ActionTexts;
-        }
-
-        stateTexts[0].text = ps.entityName;
-        stateTexts[1].text = "HP: " + ps.health;
-
-        if (phase == Action.PhaseTypes.Attack)
-        {
-            actions = ps.attackActions;
-            stateTexts[2].text = "[Attacking]";
-        }
-        else
-        {
-            actions = ps.defendActions;
-            stateTexts[2].text = "[Defending]";
-        }
-
-        var count = 0;
-        foreach (Action a in actions)
-        {
-            actionTexts[count].text = a.actionName;
-            count++;
-        }
-    }
-
-    public void UpdateAction2Text(EntityPiece ps, Action.PhaseTypes phase)
-    {
-        player2StateTexts[0].text = ps.entityName;
-
-        var actions = ps.attackActions;
-        player2StateTexts[2].text = "[Attacking]";
-
-        var count = 0;
-
-        if (phase == Action.PhaseTypes.Defend)
-        {
-            actions = ps.defendActions;
-            player2StateTexts[2].text = "[Defending]";
-        }
-
-        foreach (Action a in actions)
-        {
-            player2ActionTexts[count].text = a.actionName;
             count++;
         }
     }
