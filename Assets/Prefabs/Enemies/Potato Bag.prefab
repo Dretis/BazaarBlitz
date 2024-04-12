@@ -55,7 +55,7 @@ MonoBehaviour:
   movementLeft: 0
   finalPoints: 1
   heldPoints: 0
-  stamps: []
+  stamps: 
   health: 25
   maxHealth: 25
   combatSceneIndex: -1
@@ -85,14 +85,12 @@ MonoBehaviour:
       - 2
       - 3
   attackActions:
-  - {fileID: 11400000, guid: 4226c660c7644224e8fb9b338308165b, type: 2}
-  - {fileID: 11400000, guid: 6ca9e4123ea095d4fb087a3cc7c9a44d, type: 2}
   - {fileID: 11400000, guid: 092cf3b3af66061478bc3530f1af01f9, type: 2}
+  - {fileID: 11400000, guid: 6ca9e4123ea095d4fb087a3cc7c9a44d, type: 2}
   - {fileID: 11400000, guid: 32a37866383854b4d80b76bd6c92a71b, type: 2}
   defendActions:
-  - {fileID: 11400000, guid: 5153769221d5a6c4abc3e93c5052db99, type: 2}
-  - {fileID: 11400000, guid: 704ee6dbca2f62140ad5caf58846a975, type: 2}
   - {fileID: 11400000, guid: 188957564c85adc4a8e2ce5c7b8466f5, type: 2}
+  - {fileID: 11400000, guid: 704ee6dbca2f62140ad5caf58846a975, type: 2}
   - {fileID: 11400000, guid: 5b8f525effb08414abb503dfc27d55f6, type: 2}
   fightingPosition: 1
   currentStatsModifier:
@@ -104,6 +102,8 @@ MonoBehaviour:
     - finalResultFlatModifier: 0
       finalResultMultModifier: 1
     defenseModifier: 0
+    lifestealMult: 0
+    rollModifier: 0
   inventory:
   - {fileID: 11400000, guid: c88d8aed1040f9b448f37a2983dd1fdd, type: 2}
   - {fileID: 11400000, guid: c88d8aed1040f9b448f37a2983dd1fdd, type: 2}

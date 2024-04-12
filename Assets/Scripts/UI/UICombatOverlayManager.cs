@@ -9,6 +9,8 @@ public class UICombatOverlayManager : MonoBehaviour
 {
     [Header("UI Elements")]
     [SerializeField] private RectTransform vsHeader;
+    [SerializeField] private CanvasGroup resultsScreen;
+    [SerializeField] private CanvasGroup floatingDamage;
 
     [Header("Dice Information")]
     [SerializeField] private RectTransform diceInfo;
@@ -33,16 +35,33 @@ public class UICombatOverlayManager : MonoBehaviour
     [SerializeField] private Vector2 vsInitialPosition;
     [SerializeField] private Vector2 vsHidePosition;
 
+    [SerializeField] private Vector2 floatingDmgLeftInitPosition;
+    [SerializeField] private Vector2 floatingDmgLeftPosition;
+
+    [SerializeField] private Vector2 floatingDmgRightInitPosition;
+    [SerializeField] private Vector2 floatingDmgRightPosition;
+
     [SerializeField] private Vector2 diceInitialPosition;
     [SerializeField] private Vector2 diceHidePosition;
     // private RectTransform vsHeaderRectTransform;
 
-    [Header("Test variables")]
-    public EntityPiece entity1;
-    public EntityPiece entity2;
+    [Header("Listen on Event Channels")]
+    public PlayerEventChannelSO m_SwapPhase;
+
+    public PlayerEventChannelSO m_DiceRolled;
+
+    public PlayerEventChannelSO m_ActionSelected; // Either the attacker or defender picked an action
+    public PlayerEventChannelSO m_BothActionsSelected; // prep time to show what they picked, follow with the dice roll too
+
+    public PlayerEventChannelSO m_PlayOutCombat; // play attack anim and defend anim
+
+    public PlayerEventChannelSO m_DamageTaken; //upon attack anim finishing, show floating dmg ontop of defender, play hurt anim
+
+    public PlayerEventChannelSO m_EntityDied; // someone's HP dropped to 0, Victory, show rewards
+    public PlayerEventChannelSO m_Stalemate; // Combat is suspended, no one died this stime
 
     // Start is called before the first frame update
-    void Awake()
+    void Start()
     {
         //vsHeaderRectTransform = vsHeader.GetComponent<RectTransform>();
         vsInitialPosition = vsHeader.anchoredPosition;
@@ -93,8 +112,29 @@ public class UICombatOverlayManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha5))
         {
             // fill left side's dice stats
-            UpdateDiceStats(entity1, leftDiceStat);
-            UpdateDiceStats(entity2, rightDiceStat);
+            //UpdateDiceStats(entity1, leftDiceStat);
+            //UpdateDiceStats(entity2, rightDiceStat);
+            StalemateResults();
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha6))
+        {
+            UpdateInputPrompts(CombatManager.Instance.player1);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha7))
+        {
+            UpdateInputPrompts(CombatManager.Instance.player2);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha8))
+        {
+            VictoryResults(CombatManager.Instance.player1, CombatManager.Instance.player2, null);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha9))
+        {
+            ShowFloatingDamageNumber(CombatManager.Instance.player2, 34);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha0))
+        {
+            ShowFloatingDamageNumber(CombatManager.Instance.player1, 34);
         }
     }
 
@@ -126,6 +166,11 @@ public class UICombatOverlayManager : MonoBehaviour
     public void HideInputPrompt(CanvasGroup inputPrompt, float duration)
     {
         DOTween.To(() => inputPrompt.alpha, x => inputPrompt.alpha = x, 0, duration);
+    }
+
+    public void DisplayResultsScreen()
+    {
+        DOTween.To(() => resultsScreen.alpha, x => resultsScreen.alpha = x, 1, 0.25f).SetEase(Ease.InFlash);
     }
 
     public void UpdateDiceStats(EntityPiece entity, GameObject diceStats)
@@ -164,5 +209,81 @@ public class UICombatOverlayManager : MonoBehaviour
             diceNumbers[i].text = $"{entity.intDie[faceIndex]}";
             faceIndex++;
         }
+    }
+
+    public void UpdateInputPrompts(EntityPiece entity)
+    {
+        if (entity.fightingPosition == CombatUIManager.FightingPosition.Left)
+        {
+            // Left attacking | right defending
+            ShowInputPrompt(rightDefendPrompt, 0.25f);
+            ShowInputPrompt(leftAttackPrompt, 0.25f);
+
+            HideInputPrompt(leftDefendPrompt, 0.25f);
+            HideInputPrompt(rightAttackPrompt, 0.25f);
+        }
+        else
+        {
+            // Left defend | right attack
+            ShowInputPrompt(leftDefendPrompt, 0.25f);
+            ShowInputPrompt(rightAttackPrompt, 0.25f);
+
+            HideInputPrompt(rightDefendPrompt, 0.25f);
+            HideInputPrompt(leftAttackPrompt, 0.25f);
+        }
+    }
+
+    public void StalemateResults()
+    {
+        var resultsText = resultsScreen.GetComponentInChildren<TextMeshProUGUI>();
+        resultsText.color = new Color32(118, 118, 118, 255);
+        resultsText.text = "To Be Continued...";
+
+        DisplayResultsScreen();
+    }
+
+    public void VictoryResults(EntityPiece winner, EntityPiece loser, ItemStats item)
+    {
+        var resultsText = resultsScreen.GetComponentInChildren<TextMeshProUGUI>();
+        resultsText.color = new Color32(240, 250, 0, 255);
+        resultsText.text = $"Victory for {winner.entityName}!\n";
+        resultsText.text += $"Found: {item}\n";
+        //resultsText.text += $"+{loser.reputation} rep\n";
+
+        DisplayResultsScreen();
+    }
+
+    public void ShowFloatingDamageNumber(EntityPiece defender, float damage)
+    {
+        Vector2 initPos;
+        Vector2 goToPos;
+        RectTransform dmgPos = floatingDamage.GetComponent<RectTransform>();
+
+        if (defender.fightingPosition == CombatUIManager.FightingPosition.Right)
+        {
+            initPos = floatingDmgRightInitPosition;
+            goToPos = floatingDmgRightPosition;
+        }
+        else
+        {
+            // Defender is on the left
+            initPos = floatingDmgLeftInitPosition;
+            goToPos = floatingDmgLeftPosition;
+        }
+        dmgPos.anchoredPosition = initPos;
+
+        ShowInputPrompt(floatingDamage, 0.05f);
+        floatingDamage.GetComponent<TextMeshProUGUI>().text = $"{damage}";
+
+        dmgPos.DOAnchorPos(goToPos, 0.25f, false).SetEase(Ease.OutBounce);
+
+        StartCoroutine(HideFloatingDamageNumber(floatingDamage));
+    }
+
+    public IEnumerator HideFloatingDamageNumber(CanvasGroup floatingDamage)
+    {
+        yield return new WaitForSeconds(.75f);
+        HideInputPrompt(floatingDamage, 0.15f);
+        yield return null;
     }
 }

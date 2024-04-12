@@ -331,7 +331,7 @@ public class CombatManager : MonoBehaviour
     {
         Debug.Log("I'm fighting in scene" + combatSceneIndex);
         // run through the actions taken by both parties, dealing damage accordingly
-
+        /*
         if (player1 == attacker)
         {
             combatUIManager.UpdateActionAnimation(attackerAction, player1.fightingPosition);
@@ -342,6 +342,7 @@ public class CombatManager : MonoBehaviour
             combatUIManager.UpdateActionAnimation(attackerAction, player2.fightingPosition);
             combatUIManager.UpdateActionAnimation(defenderAction + 4, player1.fightingPosition);
         }
+        */
 
         float damage = 0;
 
