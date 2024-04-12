@@ -28,6 +28,7 @@ public class GameplayTest : MonoBehaviour
         MoveAround,
         PassBy,
         EncounterTime,
+        StockStore,
         OverturnStore,
         RockPaperScissors,
         CombatTime,
@@ -59,6 +60,7 @@ public class GameplayTest : MonoBehaviour
 
     public bool encounterStarted = false;
     private bool playerUsedItem = false; // please change these down the line
+    private bool isStockingStore = false;
 
     //SOUND SHIT
     public AudioClip moveSFX;
@@ -183,6 +185,10 @@ public class GameplayTest : MonoBehaviour
             // Battle-Event Phase
             case GamePhase.EncounterTime:
                 EncounterTime(currentPlayer, currentPlayer.occupiedNode);
+                break;
+
+            case GamePhase.StockStore:
+                StockStore(currentPlayer, currentPlayer.occupiedNode);
                 break;
 
             case GamePhase.OverturnStore:
@@ -591,15 +597,21 @@ public class GameplayTest : MonoBehaviour
                     p.storeCount++;
                     p.heldPoints -= 200;
 
+                    m_UpdatePlayerScore.RaiseEvent(p.id);
                     // Raise an eventchannel for BuildAStore to replace the code in here, replace ALOT OF THE CODE EHRE PLEASE
                     Debug.Log("I am a store");
                     GameObject tile = m.gameObject;
                     tile.tag = "Store";
 
-                    tile.GetComponent<SpriteRenderer>().color = currentPlayer.playerColor;
+                    tile.GetComponent<SpriteRenderer>().color = p.playerColor;
 
                     StoreManager store = tile.AddComponent<StoreManager>();
-                    store.playerOwner = currentPlayer;
+                    store.playerOwner = p;
+
+                    isStockingStore = true;
+
+                    m_OpenInventory.RaiseEvent(p);
+                    /*
                     // randomly pick 3 items to put into the base store stock
                     for (int i = 0; i < 3; i++)
                     {
@@ -615,9 +627,12 @@ public class GameplayTest : MonoBehaviour
                         if (listing != null) storeListings.text += listing.itemName + "\n";
                     }
                     storeScreen.SetActive(true);
-
                     encounterOver = true;
                     phase = GamePhase.ConfirmContinue;
+                    */
+
+                    phase = GamePhase.StockStore;
+
                 }
             }
         }
@@ -714,6 +729,7 @@ public class GameplayTest : MonoBehaviour
         oldPoints = 0;
 
         p.occupiedNode.playerOccupied = p; // update to have that player on that node now
+        isStockingStore = false; // let next player access inventory
         playerUsedItem = false; // let next player access inventory
 
         // Change to the next player in the list (if their turn is not skipped).
@@ -769,10 +785,20 @@ public class GameplayTest : MonoBehaviour
     private void RemoveItemInPlayerInventory(int index)
     {
         // This should be in its own script
-        currentPlayer.AddItemToActiveEffects(currentPlayer.inventory[index].duration, currentPlayer.inventory[index]);
-        currentPlayer.UpdateStatModifiers();
+        if (isStockingStore)
+        {
+            var store = currentPlayer.occupiedNode.GetComponent<StoreManager>();
+            store.AddItem(currentPlayer.inventory[index]);
+        } 
+        else
+        {
+            currentPlayer.AddItemToActiveEffects(currentPlayer.inventory[index].duration, currentPlayer.inventory[index]);
+            currentPlayer.UpdateStatModifiers();
+            playerUsedItem = true;
+        }
+        
         currentPlayer.inventory.RemoveAt(index);
-        playerUsedItem = true;
+        
     }
 
     public void PlayAudio(AudioClip clip)
@@ -782,7 +808,17 @@ public class GameplayTest : MonoBehaviour
 
     private void StockStore(EntityPiece p, MapNode m)
     {
-        // Raise event for restocking. Show inventory.
-        phase = GamePhase.EndTurn;
+        GameObject tile = m.gameObject;
+        StoreManager store = tile.GetComponent<StoreManager>();
+        if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.Mouse1)
+                || !store.storeInventory.Exists(x => x == null))
+        {
+            // Exit store restocking.
+            m_ExitInventory.RaiseEvent();
+
+            audioSource.PlayOneShot(reverseSFX, 2f);
+
+            phase = GamePhase.EndTurn;
+        }
     }
 }
