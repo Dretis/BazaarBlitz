@@ -23,6 +23,7 @@ public class UIPromptManager : MonoBehaviour
 
     public PlayerEventChannelSO m_OpenInventory;
     public VoidEventChannelSO m_ExitInventory;
+    public PlayerEventChannelSO m_OverturnOpportunity;
     public IntEventChannelSO m_ItemUsed;
 
     private void Start()
@@ -45,6 +46,9 @@ public class UIPromptManager : MonoBehaviour
 
         m_OpenInventory.OnEventRaised += HideInitialMenu;
         m_ExitInventory.OnEventRaised += DisplayInitialMenu;
+
+        m_OverturnOpportunity.OnEventRaised += DisplayOverturnChoices;
+
         m_ItemUsed.OnEventRaised += StrikethroughInventoryPrompt;
     }
 
@@ -61,6 +65,9 @@ public class UIPromptManager : MonoBehaviour
 
         m_OpenInventory.OnEventRaised -= HideInitialMenu;
         m_ExitInventory.OnEventRaised -= DisplayInitialMenu;
+
+        m_OverturnOpportunity.OnEventRaised -= DisplayOverturnChoices;
+
         m_ItemUsed.OnEventRaised -= StrikethroughInventoryPrompt;
     }
 
@@ -132,8 +139,9 @@ public class UIPromptManager : MonoBehaviour
 
     private void DisplayEncounterChoices(EntityPiece ps)
     {
-        inputPrompt.text = "<color=white>[ENTER]</color> to encounter an enemy.";
-        inputPrompt.text += "\n<color=white>[R-SHIFT]</color> to build a store.";
+        inputPrompt.text = "<color=white>[SPACE/ENTER]</color> to encounter an enemy.";
+        inputPrompt.text += "\n<color=white>[SHIFT]</color> to build a store. <color=white>Costs</color> <color=yellow>@</color>200";
+        inputPrompt.text += $"\nYou can build {4 - ps.storeCount} more stores.";
     }
 
     private void ClearInputText()
@@ -161,5 +169,12 @@ public class UIPromptManager : MonoBehaviour
     private void StrikethroughInventoryPrompt(int index)
     {
         inventoryPromptText.text = "<s><color=grey>[S] Item</color></s>";
+    }
+
+    private void DisplayOverturnChoices(EntityPiece storeOwner)
+    {
+        inputPrompt.text = $"There's no items in {storeOwner.entityName}'s store...  Overturn ownership?";
+        inputPrompt.text += "\n<color=white>[SPACE]</color> No, leave it alone.";
+        inputPrompt.text += "\n<color=white>[SHIFT]</color> Yes, take it over! <color=white>Costs</color> <color=yellow>@</color>600";
     }
 }

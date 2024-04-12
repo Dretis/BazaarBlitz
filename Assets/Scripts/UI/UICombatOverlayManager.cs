@@ -338,7 +338,7 @@ public class UICombatOverlayManager : MonoBehaviour
         if (loser.isEnemy)
         {
             resultTestText.text += $"Found items!{item}\n";
-            //resultsText.text += $"Gained {loser.reputation} rep.\n";
+            resultTestText.text += $"Gained {loser.ReputationPoints} rep.\n";
         }
         else
             resultTestText.text += $"Stole loser's @!\n";

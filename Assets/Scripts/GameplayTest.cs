@@ -75,6 +75,16 @@ public class GameplayTest : MonoBehaviour
     private int attSelected = 1;
     private int diceSelected = 1;
     private int pointsLeft = 0;
+    //ui to remove for levelup - Nam
+    public Canvas levelUpScreen;
+    public TextMeshProUGUI remainingSP;
+    public TextMeshProUGUI upgradeTooltip;
+    public GameObject diceStats;
+    public List<TextMeshProUGUI> playerDiceNumbers = new List<TextMeshProUGUI>();
+    public TextMeshProUGUI storestockTooltip;
+
+    public Canvas howToPlayScreen;
+
 
     // Event Channels
     [Header("Broadcast on Event Channels")]
@@ -93,7 +103,9 @@ public class GameplayTest : MonoBehaviour
     public PlayerEventChannelSO m_EncounterDecision;
 
     public PlayerEventChannelSO m_OpenInventory; // JASPER OR RUSSELL PLEASE USE THIS EVENT TO ACCESS THE INVENTORY
-    public VoidEventChannelSO m_ExitInventory; 
+    public VoidEventChannelSO m_ExitInventory;
+
+    public PlayerEventChannelSO m_OverturnOpportunity;
 
     // Store-based Event Channels
     public NodeEventChannelSO m_LandOnStorefront;
@@ -244,7 +256,7 @@ public class GameplayTest : MonoBehaviour
 
     private void InitialTurnMenu(EntityPiece p)
     {
-        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.A))
+        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
         {
             // This should let you look around the map freely.
         }
@@ -277,6 +289,14 @@ public class GameplayTest : MonoBehaviour
 
             phase = GamePhase.Inventory;
         }
+        if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
+        {
+            howToPlayScreen.enabled = true;
+        }
+        if (Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.A))
+        {
+            howToPlayScreen.enabled = false;
+        }
     }
 
     private void OpenInventory(EntityPiece p)
@@ -300,6 +320,10 @@ public class GameplayTest : MonoBehaviour
             p.maxHealth += 10;
             p.health += 10;
             p.RenownLevel += 1;
+            UpdatePlayerDiceStats(p, diceStats);
+            levelUpScreen.enabled = true;
+            remainingSP.text = $"{pointsLeft} SP left.";
+            upgradeTooltip.text = "Use [WASD] or [Arrows] to select dice faces.";
             phase = GamePhase.LevelUp;
             Debug.Log("Levelup screen!");
         }
@@ -450,6 +474,12 @@ public class GameplayTest : MonoBehaviour
             }
 
             p.stamps.Clear();
+            if(p.heldPoints >= 4000)
+            {
+                Debug.Log(p +" wins!");
+                encounterScreen.SetActive(true);
+                resultInfo.text = $"{p.entityName} WINS!!!";
+            }
         }
         else if (m.CompareTag("Stamp"))
         {
@@ -503,6 +533,7 @@ public class GameplayTest : MonoBehaviour
                     // If there are no items left, give the player the option to overturn.
                     if (store.storeInventory.Find(x => x != null) == null)
                     {
+                        m_OverturnOpportunity.RaiseEvent(store.playerOwner);
                         phase = GamePhase.OverturnStore;
                     }
                     else
@@ -515,6 +546,7 @@ public class GameplayTest : MonoBehaviour
                 {
                     isStockingStore = true;
                     m_OpenInventory.RaiseEvent(p);
+                    storestockTooltip.enabled = true;
                     phase = GamePhase.StockStore;
                     /*
                     // Placeholder restock your store on landing
@@ -565,7 +597,7 @@ public class GameplayTest : MonoBehaviour
                 encounterScreen.SetActive(true);
                 p1fight.text = "";
                 p2fight.text = "";
-                resultInfo.text = "<size=45>[SAFE SPACE]</size>\nLanded on a stamp space.\nNothing happens.";
+                resultInfo.text = "<size=45>[SAFE SPACE]</size>\nLanded on a stamp space.\nYou are safe from combat on this space.";
                 resultInfo.text += "\n<size=24>[SPACE] to continue</size>";
 
                 encounterOver = true;
@@ -612,12 +644,12 @@ public class GameplayTest : MonoBehaviour
                 m_EncounterDecision.RaiseEvent(currentPlayer);
 
                 // Monster Encounter
-                if (Input.GetKeyDown(KeyCode.Return))
+                if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
                 {
                     phase = GamePhase.RockPaperScissors;
                 }
                 // Build a Store
-                else if (Input.GetKeyDown(KeyCode.RightShift))
+                else if (Input.GetKeyDown(KeyCode.RightShift) || Input.GetKeyDown(KeyCode.LeftShift))
                 {
                     p.storeCount++;
                     p.heldPoints -= 200;
@@ -655,7 +687,7 @@ public class GameplayTest : MonoBehaviour
                     encounterOver = true;
                     phase = GamePhase.ConfirmContinue;
                     */
-
+                    storestockTooltip.enabled = true;
                     phase = GamePhase.StockStore;
 
                 }
@@ -673,7 +705,7 @@ public class GameplayTest : MonoBehaviour
         else
         {
             // Overturn.
-            if (Input.GetKeyDown(KeyCode.RightShift))
+            if (Input.GetKeyDown(KeyCode.RightShift) || Input.GetKeyDown(KeyCode.LeftShift))
             {
                 GameObject tile = m.gameObject;
                 tile.GetComponent<SpriteRenderer>().color = currentPlayer.playerColor;
@@ -690,6 +722,7 @@ public class GameplayTest : MonoBehaviour
 
                 isStockingStore = true;
                 m_OpenInventory.RaiseEvent(p);
+                storestockTooltip.enabled = true;
                 phase = GamePhase.StockStore;
                 /*
                 // Stock store
@@ -739,15 +772,18 @@ public class GameplayTest : MonoBehaviour
             int diceValue = (int)(p.strDie.dieFaces[diceSelected-1]);
             int diceUpgradeCost = costArray[diceValue];
             Debug.Log("Strength dice face " + col + " selected. Current value: " + diceValue + ". Upgrade cost " + diceUpgradeCost);
+            upgradeTooltip.text = $"<sprite=0> <color=red>[{diceValue}]</color> costs {diceUpgradeCost} SP to upgrade.";
         } else if (row == 2) {
             int diceValue = (int)(p.dexDie.dieFaces[diceSelected-1]);
             int diceUpgradeCost = costArray[diceValue];
             Debug.Log("Dex dice face " + col + " selected. Current value: " + diceValue + ". Upgrade cost " + diceUpgradeCost);
+            upgradeTooltip.text = $"<sprite=1> <color=blue>[{diceValue}]</color> costs {diceUpgradeCost} SP to upgrade.";
 
         } else {
             int diceValue = (int)(p.intDie.dieFaces[diceSelected-1]);
             int diceUpgradeCost = costArray[diceValue];
             Debug.Log("Magic dice face " + col + " selected. Current value: " + diceValue + ". Upgrade cost " + diceUpgradeCost);
+            upgradeTooltip.text = $"<sprite=2> <color=purple>[{diceValue}]</color> costs {diceUpgradeCost} SP to upgrade.";
 
         }
     }
@@ -791,9 +827,10 @@ public class GameplayTest : MonoBehaviour
         if (pointsLeft <= 0 || Input.GetKeyDown(KeyCode.Escape)) // Esc to leave
         {
             Debug.Log("Out of points, level up done");
+            levelUpScreen.enabled = false;
             phase = GamePhase.RollDice;
         }
-        if (Input.GetKeyDown(KeyCode.Return)) // E to leave till I find a good exit method that doesn't get you stuck.
+        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space)) // E to leave till I find a good exit method that doesn't get you stuck.
         {
             int[] costArray = { -1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 5, 999 }; // 0-1 (0 indexing issues), 1-2, 2-3, etc. 10-11 isnt possible.
             if (attSelected == 1) {
@@ -803,7 +840,10 @@ public class GameplayTest : MonoBehaviour
                     pointsLeft -= diceUpgradeCost;
                     Debug.Log ("Strength Die upgraded on face " + diceSelected + " making it " + p.strDie.dieFaces[diceSelected-1]);
                     Debug.Log (pointsLeft + " points left after paying " + diceUpgradeCost);
+                    remainingSP.text = $"{pointsLeft} SP left.";
+                    UpdatePlayerDiceStats(p, diceStats);
                 } else {
+                    upgradeTooltip.text = "Not enough points. Costs " + diceUpgradeCost + " SP but you have only " + pointsLeft;
                     Debug.Log("Not enough points. Costs " + diceUpgradeCost + ", but you have only " + pointsLeft);
                 }
             } else if (attSelected == 2) {
@@ -813,7 +853,10 @@ public class GameplayTest : MonoBehaviour
                     pointsLeft -= diceUpgradeCost;
                     Debug.Log ("Dex Die upgraded on face " + diceSelected + " making it " + p.dexDie.dieFaces[diceSelected-1]);
                     Debug.Log (pointsLeft + " points left after paying " + diceUpgradeCost);
+                    remainingSP.text = $"{pointsLeft} SP left.";
+                    UpdatePlayerDiceStats(p, diceStats);
                 } else {
+                    upgradeTooltip.text = "Not enough points. Costs " + diceUpgradeCost + " SP but you have only " + pointsLeft;
                     Debug.Log("Not enough points. Costs " + diceUpgradeCost + ", but you have only " + pointsLeft);
                 }
             } else if (attSelected == 3) {
@@ -823,7 +866,10 @@ public class GameplayTest : MonoBehaviour
                     pointsLeft -= diceUpgradeCost;
                     Debug.Log ("Magic Die upgraded on face " + diceSelected + " making it " + p.intDie.dieFaces[diceSelected-1]);
                     Debug.Log (pointsLeft + " points left after paying " + diceUpgradeCost);
+                    remainingSP.text = $"{pointsLeft} SP left.";
+                    UpdatePlayerDiceStats(p, diceStats);
                 } else {
+                    upgradeTooltip.text = "Not enough points. Costs " + diceUpgradeCost + " SP but you have only " + pointsLeft;
                     Debug.Log("Not enough points. Costs " + diceUpgradeCost + ", but you have only " + pointsLeft);
                 }
             } else {
@@ -945,10 +991,49 @@ public class GameplayTest : MonoBehaviour
         {
             // Exit store restocking.
             m_ExitInventory.RaiseEvent();
-
+            storestockTooltip.enabled = false;
             audioSource.PlayOneShot(reverseSFX, 2f);
 
             phase = GamePhase.EndTurn;
+        }
+    }
+
+    // I ripped this from another script, delete this later
+    public void UpdatePlayerDiceStats(EntityPiece entity, GameObject diceStats)
+    {
+        // Visually updates the dice stats ui based on the entity and side
+        playerDiceNumbers.Clear();
+
+        // Goes through the diceStats UI List and finds the text components
+        foreach (Transform child in diceStats.transform)
+        {
+            playerDiceNumbers.Add(child.GetComponentInChildren<TextMeshProUGUI>());
+        }
+
+        // Updates each individual dice from the text list based on the type
+        // the following code is ABSOLUTELY DISGUSTING
+        var faceIndex = 0;
+
+        for (int i = 0; i < 6; i++)
+        {
+            playerDiceNumbers[i].text = $"{entity.strDie[faceIndex]}";
+            faceIndex++;
+        }
+
+        faceIndex = 0;
+
+        for (int i = 6; i < 12; i++)
+        {
+            playerDiceNumbers[i].text = $"{entity.dexDie[faceIndex]}";
+            faceIndex++;
+        }
+
+        faceIndex = 0;
+
+        for (int i = 12; i < 18; i++)
+        {
+            playerDiceNumbers[i].text = $"{entity.intDie[faceIndex]}";
+            faceIndex++;
         }
     }
 }

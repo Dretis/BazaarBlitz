@@ -277,7 +277,7 @@ public class CombatManager : MonoBehaviour
         m_EntityDied.RaiseEvent(retaliator, null);
         if (endingCombat == false) 
         {
-            endCombatSceneTimer = 1.0f;
+            endCombatSceneTimer = 2.0f;
             endingCombat = true;
             return; 
             // We'll come back later from update with endingCombat = true
