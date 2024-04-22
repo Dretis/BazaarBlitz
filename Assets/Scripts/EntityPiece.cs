@@ -21,8 +21,8 @@ public class EntityPiece : MonoBehaviour
     public bool isTurnSkipped = false;
 
     [Header("Combat Stats")]
-    public float health = 75;
-    public float maxHealth = 75;
+    public int health = 75;
+    public int maxHealth = 75;
 
     // Dice faces initialization.
     public DieConfig strDie => entityStats.dieConfigs[(int)EntityBaseStats.DieTypes.Strength];
