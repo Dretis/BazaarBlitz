@@ -312,8 +312,9 @@ public class CombatManager : MonoBehaviour
                 retaliator.traveledNodes.Add(retaliator.occupiedNode);
 
                 // Add defender's points to attacker's points 
-                initiator.heldPoints += retaliator.heldPoints;
-                retaliator.heldPoints = 0;
+                float points = 0.5f * retaliator.heldPoints;
+                initiator.heldPoints += Mathf.FloorToInt(points);
+                retaliator.heldPoints -= Mathf.CeilToInt(points);
 
                 float pointgain = 100 * Mathf.Pow(2, retaliator.RenownLevel - initiator.RenownLevel);
 
@@ -339,8 +340,9 @@ public class CombatManager : MonoBehaviour
             initiator.traveledNodes.Add(initiator.occupiedNode);
 
             // Add attacker's points to defender's points 
-            retaliator.heldPoints += initiator.heldPoints;
-            initiator.heldPoints = 0;
+            float points = 0.5f * initiator.heldPoints;
+            retaliator.heldPoints += Mathf.FloorToInt(points);
+            initiator.heldPoints -= Mathf.CeilToInt(points);
 
             float pointgain = 100 * Mathf.Pow(2, initiator.RenownLevel - retaliator.RenownLevel);
 
