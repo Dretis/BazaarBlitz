@@ -510,7 +510,7 @@ public class CombatManager : MonoBehaviour
             case Action.WeaponTypes.Special:
                 if (attack.type == Action.WeaponTypes.Special)
                 {
-                    attacker.health -= damage;
+                    attacker.health -= (int)damage;
                     damage = 0;
                 }
                 else
@@ -538,9 +538,9 @@ public class CombatManager : MonoBehaviour
 
         Debug.Log("Final Damage: " + damage);
 
-        defender.health -= damage;
+        defender.health -= (int)damage;
 
-        attacker.health += damage * attacker.currentStatsModifier.lifestealMult;
+        attacker.health += (int)(damage * attacker.currentStatsModifier.lifestealMult);
 
         m_DamageTaken.RaiseEvent(defender, damage);
 
