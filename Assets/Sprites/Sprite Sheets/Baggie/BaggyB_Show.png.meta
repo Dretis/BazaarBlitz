@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: fd60345e639455f418c409760cb655cf
+guid: bdd6313e569e6c54f96e5e7d573ec652
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -141,13 +141,76 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: BaggyB_IdleSheet_0
+      name: BaggyB_Show_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 640
+        width: 512
+        height: 640
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf8694ee69bde274abc7c1d1475bc7a4
+      internalID: -1789154436
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BaggyB_Show_1
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 640
+        width: 512
+        height: 640
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 680d0016ed92b42409dfb22a6a0e5a12
+      internalID: -524995866
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BaggyB_Show_2
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 640
+        width: 512
+        height: 640
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6169f93ef0d67064a839f7e2160d4dee
+      internalID: 1713679626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BaggyB_Show_3
       rect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 512
-        height: 512
+        height: 640
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -155,20 +218,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b59ea0ffe354f984a811ff81bcb55185
-      internalID: -594547152
+      spriteID: 6cc342d5e95de7b40994cb664fe1bc7d
+      internalID: 517476148
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: BaggyB_IdleSheet_1
+      name: BaggyB_Show_4
       rect:
         serializedVersion: 2
         x: 512
         y: 0
         width: 512
-        height: 512
+        height: 640
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -176,29 +239,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9b7b701aac2aa6748bf38f541d059cb6
-      internalID: 56575438
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: BaggyB_IdleSheet_2
-      rect:
-        serializedVersion: 2
-        x: 1024
-        y: 0
-        width: 512
-        height: 512
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 821b24810eaa1e6459a32d8524b34b87
-      internalID: -2044965509
+      spriteID: ac78ae56799b46340b32ee6ffb7cfa9c
+      internalID: -1507914926
       vertices: []
       indices: 
       edges: []
@@ -212,13 +254,14 @@ TextureImporter:
     indices: 
     edges: []
     weights: []
-    secondaryTextures:
-    - texture: {fileID: 2800000, guid: 1c8181738808ac94ca9e8828506bb036, type: 3}
-      name: _PaletteMap
+    secondaryTextures: []
     nameFileIdTable:
-      BaggyB_IdleSheet_0: -594547152
-      BaggyB_IdleSheet_1: 56575438
-      BaggyB_IdleSheet_2: -2044965509
+      BaggyB_Show_0: -1789154436
+      BaggyB_Show_1: -524995866
+      BaggyB_Show_2: 1713679626
+      BaggyB_Show_3: 517476148
+      BaggyB_Show_4: -1507914926
+      BaggyB_Show_5: 268806856
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0
