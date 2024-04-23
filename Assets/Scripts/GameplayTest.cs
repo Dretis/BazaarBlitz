@@ -406,7 +406,7 @@ public class GameplayTest : MonoBehaviour
                 p.stamps = new List<Stamp.StampType>(oldStamps);
                 p.heldPoints = oldPoints;
 
-                oldStamps.Clear();
+                oldStamps.Remove(stampCollected.stampType);
                 oldPoints = 0;
 
                 m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
