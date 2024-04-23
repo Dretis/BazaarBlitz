@@ -27,20 +27,20 @@ public class EntityBaseStats
 public class DieConfig
 {
     [SerializeField]
-    public float[] dieFaces = new float[6];
+    public int[] dieFaces = new int[6];
 
-    public float this[int faceIndex]
+    public int this[int faceIndex]
     {
         get => GetFaceValue(faceIndex);
         set => SetFace(faceIndex, value);
     }
 
-    public IEnumerable<float> GetAllFaceValues()
+    public IEnumerable<int> GetAllFaceValues()
     {
         return dieFaces;
     }
 
-    public void SetFace(int faceIndex, float value)
+    public void SetFace(int faceIndex, int value)
     {
         if (faceIndex < 0 || faceIndex > 5)
         {
@@ -51,7 +51,7 @@ public class DieConfig
         dieFaces[faceIndex] = value;
     }
 
-    public float GetFaceValue(int faceIndex)
+    public int GetFaceValue(int faceIndex)
     {
         if (faceIndex < 0 || faceIndex > 5)
         {

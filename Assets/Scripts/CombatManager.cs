@@ -390,7 +390,7 @@ public class CombatManager : MonoBehaviour
         }
         */
 
-        float damage = 0;
+        int damage = 0;
 
         Action attack = attacker.attackActions[attackerAction-1];
         Action defend = defender.defendActions[defenderAction-1];
@@ -529,7 +529,7 @@ public class CombatManager : MonoBehaviour
         m_DiceRolled.RaiseEvent(defender, defenseScore);
         defenseScore += 0.1f * defender.currentStatsModifier.defenseModifier;
 
-        damage = (damage * (1 - (0.1f * defenseScore)) * defendMultiplier);
+        damage = (int) (damage * (1 - (0.1f * defenseScore)) * defendMultiplier);
 
         if (damage < 0)
         {
@@ -540,7 +540,7 @@ public class CombatManager : MonoBehaviour
 
         defender.health -= damage;
 
-        attacker.health += damage * attacker.currentStatsModifier.lifestealMult;
+        attacker.health += (int) (damage * attacker.currentStatsModifier.lifestealMult);
 
         m_DamageTaken.RaiseEvent(defender, damage);
 
