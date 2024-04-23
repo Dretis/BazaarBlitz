@@ -11,17 +11,17 @@ public class CombatInputSystem : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
         {
             CombatManager.Instance.chooseAction(3, currentPlayer);
-            CombatManager.Instance.passTurn();
+            CombatManager.Instance.passSelectionTurn();
         }
         if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
         {
             CombatManager.Instance.chooseAction(2, currentPlayer);
-            CombatManager.Instance.passTurn();
+            CombatManager.Instance.passSelectionTurn();
         }
         if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
         {
             CombatManager.Instance.chooseAction(4, currentPlayer);
-            CombatManager.Instance.passTurn();
+            CombatManager.Instance.passSelectionTurn();
         }
         if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
         {
