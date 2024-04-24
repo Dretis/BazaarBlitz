@@ -52,7 +52,7 @@ public class CombatManager : MonoBehaviour
 
     private bool actionSelected = false;
     private bool showingChoices = false;
-    private bool attackingCurrently = false;
+    private bool showingChoicesCoroutineActive = false;
     private int damageToDeal = 0; // damage being dealt is delayed until animations play out.
 
     public CombatUIManager combatUIManager;
@@ -237,16 +237,24 @@ public class CombatManager : MonoBehaviour
     private void bothPlayersDecided() {
 
         
+        if (!showingChoices) {
+            showingChoicesCoroutineActive = false;
+        } else if (showingChoices && !showingChoicesCoroutineActive) {
 
-        if (showingChoices) {
-
-
+            showingChoicesCoroutineActive = true;
             // Call back here at the end of the coroutine with the above bool being false.
             StartCoroutine(SelectionAnimation(1.0f)); // CHANGE TO ANIMATION LENGTH
+            return;
+        } else {
+            return;
         }
 
         playTurn(); // Acts out the turn (most of the combat logic here, takes a while to get back)
 
+        
+    }
+
+    private void swapPhases() {
         m_SwapPhase.RaiseEvent(defender);
 
         initiatorAttacking = toggleBool(initiatorAttacking);
@@ -621,6 +629,8 @@ public class CombatManager : MonoBehaviour
         attacker.health += (int)(damageToDeal * attacker.currentStatsModifier.lifestealMult); // Attacker heals if they have lifesteal
 
         m_DamageTaken.RaiseEvent(defender, damageToDeal);
+
+        swapPhases();
     }
 
     public void chooseAction(int ActionID, bool isAttacker)
