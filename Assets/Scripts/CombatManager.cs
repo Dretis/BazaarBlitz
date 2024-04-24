@@ -542,7 +542,7 @@ public class CombatManager : MonoBehaviour
         defenseScore += 1f * defender.currentStatsModifier.defenseModifier; // Apply item effects like cloth
 
         // damage is reduced by 10% - 100% before a type advantage multiplier is applied
-        damage = (damage * (1 - (0.1f * defenseScore)) * damageTypeMultiplier);
+        damage = (int)(damage * (1 - (0.1f * defenseScore)) * damageTypeMultiplier);
 
         if (damage < 0)
         {
