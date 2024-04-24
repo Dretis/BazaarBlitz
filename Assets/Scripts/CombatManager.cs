@@ -413,7 +413,7 @@ public class CombatManager : MonoBehaviour
         }
         */
 
-        float damage = 0;
+        int damage = 0;
 
         // 0= Unused, 1= Gun, 2= Melee, 3=Magic. 
         Action attack = attacker.attackActions[attackerAction-1];
