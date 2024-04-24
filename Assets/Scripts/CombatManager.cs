@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class CombatManager : MonoBehaviour
 {
@@ -48,6 +49,11 @@ public class CombatManager : MonoBehaviour
     private bool endingCombat = false;
     private bool pausingCombat = false;
     private bool initiatorWon;
+
+    private bool actionSelected = false;
+    private bool showingChoices = false;
+    private bool attackingCurrently = false;
+    private int damageToDeal = 0; // damage being dealt is delayed until animations play out.
 
     public CombatUIManager combatUIManager;
     public SceneGameManager sceneManager;
@@ -176,7 +182,7 @@ public class CombatManager : MonoBehaviour
         combatUIManager.UpdateActionText(defender, Action.PhaseTypes.Defend);
 
         m_DecidedTurnOrder.RaiseEvent(attacker);
-        m_ActionSelected.RaiseEvent(attacker, Action.PhaseTypes.Attack);
+        //m_ActionSelected.RaiseEvent(attacker, Action.PhaseTypes.Attack);
         //combatUIManager.UpdateAction2Text(defender, Action.PhaseTypes.Defend);
     }
 
@@ -184,63 +190,97 @@ public class CombatManager : MonoBehaviour
     // It flips who's deciding their current action by toggling isIniatorTurn
     public void passSelectionTurn() 
     {
-        if (pausingCombat || endingCombat) // Prevent people from messing with selected actions as combat is ending
+        // An animation plays after selecting an action.
+        if (pausingCombat || endingCombat || actionSelected) // Prevent people from messing with selected actions as combat is ending
         {
             return; 
         }
 
+
+        // IF someone is attacking this turn
+        if ((isInitiatorTurn && initiatorAttacking) || (!isInitiatorTurn && !initiatorAttacking)) {
+            // Player just selected their action.
+            m_ActionSelected.RaiseEvent(attacker, Action.PhaseTypes.Attack);
+            actionSelected = true;
+            StartCoroutine(SelectionAnimation(1.0f)); // CHANGE TO ANIMATION LENGTH
+        } else {
+            // A player just defended
+            m_ActionSelected.RaiseEvent(defender, Action.PhaseTypes.Defend);
+            actionSelected = true;
+
+            // This coroutine will lead to bothPlayersDecided();
+            StartCoroutine(SelectionAnimation(1.0f)); // CHANGE TO ANIMATION LENGTH
+        }
+        
         // isInitatorTurn is used by CombatInputSystem.cs to decide who's selecting their action!
         isInitiatorTurn = toggleBool(isInitiatorTurn); // False on first selection, then true.
+        
 
         // But if its false (first guy went) AND the player was attacking, decide the enemy's defence immediately
+        // (will result in the AI opponent doing their pick animation at the same time, which should be fine to speed combat up)
         if ((!isInitiatorTurn && initiatorAttacking) && isFightingAI) 
         {
             defenderAction = decideDefendAI(); // Enemy tends towards reacting to the last attack (or using their best dice on turn 1)
 
             isInitiatorTurn = toggleBool(isInitiatorTurn); // now set the flag to true so the next if statement finishes stuff
-        }
 
-        if (isInitiatorTurn) // Means both players decided
-        {
             
-            playTurn(); // Acts out the turn
-
-            initiatorAttacking = toggleBool(initiatorAttacking);
-            retaliatorAttacking = toggleBool(retaliatorAttacking);
-
-            if (initiatorAttacking) // Should never happen
-            {
-                attacker = initiator;
-                defender = retaliator;
-            }
-            else // Turn 2
-            {
-                attacker = retaliator;
-                defender = initiator;
-            }
-
-            combatUIManager.UpdateActionText(attacker, Action.PhaseTypes.Attack);
-            combatUIManager.UpdateActionText(defender, Action.PhaseTypes.Defend);
-
-            m_DecidedTurnOrder.RaiseEvent(attacker);
-            m_ActionSelected.RaiseEvent(attacker, Action.PhaseTypes.Attack);
+            m_ActionSelected.RaiseEvent(defender, Action.PhaseTypes.Defend);
+            actionSelected = true;
         }
+
+
+
+
+    }
+
+    private void bothPlayersDecided() {
+
+        
+
+        if (showingChoices) {
+
+
+            // Call back here at the end of the coroutine with the above bool being false.
+            StartCoroutine(SelectionAnimation(1.0f)); // CHANGE TO ANIMATION LENGTH
+        }
+
+        playTurn(); // Acts out the turn (most of the combat logic here, takes a while to get back)
+
+        m_SwapPhase.RaiseEvent(defender);
+
+        initiatorAttacking = toggleBool(initiatorAttacking);
+        retaliatorAttacking = toggleBool(retaliatorAttacking);
+
+        if (initiatorAttacking) // Should never happen
+        {
+            attacker = initiator;
+            defender = retaliator;
+        }
+        else // Turn 2
+        {
+            attacker = retaliator;
+            defender = initiator;
+        }
+
+        combatUIManager.UpdateActionText(attacker, Action.PhaseTypes.Attack);
+        combatUIManager.UpdateActionText(defender, Action.PhaseTypes.Defend);
+
+
+        m_DecidedTurnOrder.RaiseEvent(attacker); // Whos the attacker was updated
 
         // On turn 2 against a now attacking enemy, immediately decide its attack action.
         if ((!isInitiatorTurn && !initiatorAttacking) && isFightingAI)
         {
             attackerAction = decideAttackAI();
             passSelectionTurn();
+
         }
     }
 
     // Handles the meta stuff for playactions (the big function), notably checking for victory conditions
     public void playTurn()
     {
-        if (pausingCombat || endingCombat) 
-        {
-            return; // Prevent people from trying to get an extra hit in before combat stops.
-        }
 
         playActions(attackerAction, defenderAction);
 
@@ -419,6 +459,8 @@ public class CombatManager : MonoBehaviour
         Action attack = attacker.attackActions[attackerAction-1];
         Action defend = defender.defendActions[defenderAction-1];
 
+
+
         
         // Melee beats magic, Magic beats gun, Gun beats melee. 1x, 1.5x, or 2x damage.
 
@@ -457,7 +499,7 @@ public class CombatManager : MonoBehaviour
 
                 for (int i = 0; i < attackerBonusRoll + attack.diesToRoll + 1; i++) // Account for an attack's bonus rolls, or item bonuses
                 {
-                    damageRoll += (int)attacker.strDie[rolledFace]; // Get the base pip value of the dice
+                    damageRoll = (int)attacker.strDie[rolledFace]; // Get the base pip value of the dice
 
                     // Important note: the below function is what adds damageRoll to damage (after applying item multipliers and boosts)
                     damage += (int)attacker.currentStatsModifier.ApplyDieModifier(EntityBaseStats.DieTypes.Strength, damageRoll); 
@@ -473,7 +515,7 @@ public class CombatManager : MonoBehaviour
 
                 for (int i = 0; i < attackerBonusRoll + attack.diesToRoll + 1; i++)
                 {
-                    damageRoll += (int)attacker.dexDie[rolledFace];
+                    damageRoll = (int)attacker.dexDie[rolledFace];
 
                     damage += (int)attacker.currentStatsModifier.ApplyDieModifier(EntityBaseStats.DieTypes.Dex, damageRoll);
 
@@ -486,7 +528,7 @@ public class CombatManager : MonoBehaviour
 
                 for (int i = 0; i < attackerBonusRoll + attack.diesToRoll + 1; i++)
                 {
-                    damageRoll += (int)attacker.intDie[rolledFace];
+                    damageRoll = (int)attacker.intDie[rolledFace];
 
                     damage += (int)attacker.currentStatsModifier.ApplyDieModifier(EntityBaseStats.DieTypes.Int, damageRoll);
 
@@ -506,9 +548,11 @@ public class CombatManager : MonoBehaviour
                 damage = 0;
                 break;
         }
-        m_DiceRolled.RaiseEvent(attacker, damageRoll);
 
         damage += (attackerBuffDamage + attack.bonusDamage); // Add special boosts and intrinsic damage boosts from the attack stats
+
+        int visibleDamageRoll = damage; // This is the damage we'll show on the dice visually.
+
         damage = damage * 10; // final damage before defense is pip value x 10
         Debug.Log($"Attacker damage: Raw roll {damageRoll}, Type {attack.type}, modified {damage}");
 
@@ -538,7 +582,6 @@ public class CombatManager : MonoBehaviour
         }
 
         Debug.Log($"Defend roll: {defend.type} {defenseScore}");
-        m_DiceRolled.RaiseEvent(defender, defenseScore);
         defenseScore += 1f * defender.currentStatsModifier.defenseModifier; // Apply item effects like cloth
 
         // damage is reduced by 10% - 100% before a type advantage multiplier is applied
@@ -549,14 +592,9 @@ public class CombatManager : MonoBehaviour
             damage = 0;
         }
 
-        Debug.Log("Final Damage: " + damage);
+        // Now we just calculated everything in advance, so lets fake it happening in real time!
 
-        defender.health -= (int)damage; // Apply final damage
-
-        attacker.health += (int)(damage * attacker.currentStatsModifier.lifestealMult); // Attacker heals if they have lifesteal
-
-        m_DamageTaken.RaiseEvent(defender, damage);
-
+        // First some cleanup.
         attackerBonusRoll = 0; // Clear effects (as they're applied additively to support multiple at once)
         defenderBonusRoll = 0;
         attackerBuffDamage = 0;
@@ -565,6 +603,24 @@ public class CombatManager : MonoBehaviour
         {
             playersLastAttack = attackerAction; // Used by the ai for defend behavior
         }
+
+        // Now the actual damage part is delayedd until we 1, show dice being rolled and 2, show the attack animations.
+        damageToDeal = damage;
+
+        
+        StartCoroutine(DiceRollAnimation(1.0f, damageRoll, (int)defenseScore)); // CHANGE TO ANIMATION LENGTH
+    }
+
+    private void dealDamage() {
+        // damage was set earlier in combat calulations.
+
+        Debug.Log("Final Damage: " + damageToDeal);
+
+        defender.health -= (int)damageToDeal; // Apply final damage
+
+        attacker.health += (int)(damageToDeal * attacker.currentStatsModifier.lifestealMult); // Attacker heals if they have lifesteal
+
+        m_DamageTaken.RaiseEvent(defender, damageToDeal);
     }
 
     public void chooseAction(int ActionID, bool isAttacker)
@@ -606,7 +662,7 @@ public class CombatManager : MonoBehaviour
         }
     }
 
-    private int decideDefendAI()
+    private int decideDefendAI() // No special at index 0, so 1, 2, 3 works unlike inputSystem
     {
         int roll = Random.Range(0, 6);
         if (roll < 3) // Enemy acts reactively 1/2 of the time
@@ -655,6 +711,69 @@ public class CombatManager : MonoBehaviour
         else
         {
             return true;
+        }
+    }
+
+    // Allows waiting and then going back to code
+    public IEnumerator SelectionAnimation(float animationTime)
+    {
+        // Selection animation was already triggered before calling this, but after this is the delay before the next player can select.
+
+        yield return new WaitForSeconds(animationTime);
+    
+        actionSelected = false;
+        
+        if (isInitiatorTurn) // Means both players decided
+        {
+            showingChoices = true;
+            bothPlayersDecided();
+        }
+    }
+
+    public IEnumerator ShowChoiceAnimation(float animationTime)
+    {
+        // PLAY ANIMATIONS HERE WHERE THE BAGGIES SHOW WHAT ATTACK TYPES THEY PICKED (before dice rolling though)
+        Action attack = attacker.attackActions[attackerAction-1];
+        Action defend = defender.defendActions[defenderAction-1];
+
+        // Commented out as im not sure if its implemented.
+        //m_BothActionsSelected.RaiseEvent();
+
+        yield return new WaitForSeconds(animationTime);
+    
+        showingChoices = false;
+        
+        bothPlayersDecided();
+    }
+
+    public IEnumerator DiceRollAnimation(float animationTime, int damageRoll, int defenseRoll)
+    {
+        //Play your dice rolling animation here
+
+        yield return new WaitForSeconds(animationTime);
+
+        m_DiceRolled.RaiseEvent(attacker, damageRoll); // Damage roll is the total of all rolled damage dice (if thats modified), and damage boosts, but no defense or type advantage involved.
+
+        m_DiceRolled.RaiseEvent(defender, defenseRoll);
+        
+        if (isInitiatorTurn) // both players are done rolling dice.
+        {
+            AttackAndDefendAnimation(1.0f); // REPLACE WITH ANIMATION LENGTH
+        }
+    }
+
+    public IEnumerator AttackAndDefendAnimation(float animationTime)
+    {
+        // It was mentioned some stuff like the defense animation could be tuned in the animation timeline, but this
+        // moment of the method represents the start of the attack animation.
+
+        m_PlayOutCombat.RaiseEvent(attacker); // I have no idea what the parameter is used for but the compiler is screaming at me
+
+        yield return new WaitForSeconds(animationTime);
+        
+        if (isInitiatorTurn) // Means both players decided
+        {
+            dealDamage();
         }
     }
 }
