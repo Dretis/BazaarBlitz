@@ -51,8 +51,6 @@ public class CombatManager : MonoBehaviour
     private bool initiatorWon;
 
     private bool actionSelected = false;
-    private bool showingChoices = false;
-    private bool showingChoicesCoroutineActive = false;
     private int damageToDeal = 0; // damage being dealt is delayed until animations play out.
 
     public CombatUIManager combatUIManager;
@@ -208,7 +206,7 @@ public class CombatManager : MonoBehaviour
             m_ActionSelected.RaiseEvent(defender, Action.PhaseTypes.Defend);
             actionSelected = true;
 
-            // This coroutine will lead to bothPlayersDecided();
+            // This coroutine will lead to playTurn()
             StartCoroutine(SelectionAnimation(1.0f)); // CHANGE TO ANIMATION LENGTH
         }
         
@@ -232,26 +230,6 @@ public class CombatManager : MonoBehaviour
 
 
 
-    }
-
-    private void bothPlayersDecided() {
-
-        
-        if (!showingChoices) {
-            showingChoicesCoroutineActive = false;
-        } else if (showingChoices && !showingChoicesCoroutineActive) {
-
-            showingChoicesCoroutineActive = true;
-            // Call back here at the end of the coroutine with the above bool being false.
-            StartCoroutine(SelectionAnimation(1.0f)); // CHANGE TO ANIMATION LENGTH
-            return;
-        } else {
-            return;
-        }
-
-        playTurn(); // Acts out the turn (most of the combat logic here, takes a while to get back)
-
-        
     }
 
     private void swapPhases() {
@@ -735,8 +713,7 @@ public class CombatManager : MonoBehaviour
         
         if (isInitiatorTurn) // Means both players decided
         {
-            showingChoices = true;
-            bothPlayersDecided();
+            StartCoroutine(ShowChoiceAnimation(1.0f)); // CHANGE TO ANIMATION LENGTH
         }
     }
 
@@ -751,9 +728,8 @@ public class CombatManager : MonoBehaviour
 
         yield return new WaitForSeconds(animationTime);
     
-        showingChoices = false;
         
-        bothPlayersDecided();
+        playTurn(); // Acts out the turn (most of the combat logic here, takes a while to get back)
     }
 
     public IEnumerator DiceRollAnimation(float animationTime, int damageRoll, int defenseRoll)
