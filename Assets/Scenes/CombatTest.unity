@@ -7143,6 +7143,7 @@ GameObject:
   - component: {fileID: 872686419}
   - component: {fileID: 872686418}
   - component: {fileID: 872686420}
+  - component: {fileID: 872686421}
   m_Layer: 0
   m_Name: Right Fighter
   m_TagString: Untagged
@@ -7170,7 +7171,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: cbafc000fd785b942882d3f508ff5b43, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -7238,6 +7239,30 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &872686421
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 872686417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7fc4f58c23ba4f4da0603439119ed01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ren: {fileID: 872686418}
+  paletteColorCount: 8
+  useInspectorPalette: 1
+  inspectorPalette:
+  - {r: 0.27058825, g: 0.24705882, b: 0.47058824, a: 1}
+  - {r: 0.24705882, g: 0.18039216, b: 0.3372549, a: 1}
+  - {r: 0.7764706, g: 0.7921569, b: 0.92941177, a: 1}
+  - {r: 0.2509804, g: 0.12156863, b: 0.24313726, a: 1}
+  - {r: 0.98039216, g: 0.9490196, b: 0.6313726, a: 1}
+  - {r: 0.9490196, g: 0.42352942, b: 0.4862745, a: 1}
+  - {r: 0.42745098, g: 0.62352943, b: 0.9490196, a: 1}
+  - {r: 0.88235295, g: 0.5568628, b: 1, a: 1}
 --- !u!1001 &895032414
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16639,6 +16664,7 @@ GameObject:
   - component: {fileID: 2022358467}
   - component: {fileID: 2022358466}
   - component: {fileID: 2022358468}
+  - component: {fileID: 2022358469}
   m_Layer: 0
   m_Name: Left Fighter
   m_TagString: Untagged
@@ -16666,7 +16692,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: cbafc000fd785b942882d3f508ff5b43, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -16734,6 +16760,30 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &2022358469
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2022358465}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7fc4f58c23ba4f4da0603439119ed01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ren: {fileID: 2022358466}
+  paletteColorCount: 8
+  useInspectorPalette: 1
+  inspectorPalette:
+  - {r: 0.8962264, g: 0.31001535, b: 0.31001535, a: 1}
+  - {r: 1, g: 0.8084838, b: 0, a: 1}
+  - {r: 0.78431374, g: 0.5058824, b: 0.8784314, a: 1}
+  - {r: 1, g: 0.58456254, b: 0, a: 1}
+  - {r: 1, g: 0.95953095, b: 0.759434, a: 1}
+  - {r: 0.9490196, g: 0.42352942, b: 0.4862745, a: 1}
+  - {r: 0.42745098, g: 0.62352943, b: 0.9490196, a: 1}
+  - {r: 0.88235295, g: 0.5568628, b: 1, a: 1}
 --- !u!1 &2029721150
 GameObject:
   m_ObjectHideFlags: 0
