@@ -40,11 +40,9 @@ public class GameplayTest : MonoBehaviour
     public int turn = 1;
     public GamePhase phase = GamePhase.RollDice;
     public int diceRoll;
-    private int yoinkRoll;
 
     public TextMeshProUGUI rollText;
     public TextMeshProUGUI turnText;
-    public TextMeshProUGUI gameInfo;
 
     public GameObject encounterScreen;
     public TextMeshProUGUI p1fight;
@@ -140,11 +138,9 @@ public class GameplayTest : MonoBehaviour
         //nextPlayers = playerUnits;
         encounterScreen.SetActive(false);
 
-        gameInfo.text = "[Scoreboard]";
         foreach (var player in playerUnits)
         {
             nextPlayers.Add(player);
-            gameInfo.text += "\n" + player.entityName + ": " + player.heldPoints + " | " + player.finalPoints;
 
             // Allow starting nodes to detect the player on them.
             var initialNode = player.occupiedNode;
@@ -886,7 +882,6 @@ public class GameplayTest : MonoBehaviour
             encounterOver = false;
             encounterScreen.SetActive(false);
             storeScreen.SetActive(false);
-            UpdatePoints();
             m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
             m_ExitStorefront.RaiseEvent();
         }
@@ -930,15 +925,6 @@ public class GameplayTest : MonoBehaviour
         currentPlayerInitialNode = currentPlayer.occupiedNode;
         oldStamps = new List<Stamp.StampType>(currentPlayer.stamps); // keeping track of stamps for next player
         phase = GamePhase.ItemSelection;
-    }
-
-    void UpdatePoints()
-    {
-        gameInfo.text = "[Scoreboard]";
-        foreach (var player in playerUnits)
-        {
-            gameInfo.text += "\n" + player.entityName + ": " + player.heldPoints + " | " + player.finalPoints;
-        }
     }
 
     private void _PlaceholderChangeAndContinue(ItemStats item)
