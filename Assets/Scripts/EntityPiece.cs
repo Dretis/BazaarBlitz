@@ -14,11 +14,10 @@ public class EntityPiece : MonoBehaviour
     [Header("Overworld Stats")]
     public int movementTotal;
     public int movementLeft;
-    public int finalPoints = 1;
     public int heldPoints = 0;
     public int storeCount = 0;
     public List<Stamp.StampType> stamps = new List<Stamp.StampType>();
-    public bool isTurnSkipped = false;
+    public bool isInDeathsRow = false;
 
     [Header("Combat Stats")]
     public int health = 75;
