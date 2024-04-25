@@ -984,11 +984,14 @@ public class GameplayTest : MonoBehaviour
         m_UpdatePlayerScore.RaiseEvent(p.id);
 
         // Warp player to specified destination.
-        p.occupiedNode = p.currentStatsModifier.warpDestination;
-        p.transform.position = p.occupiedNode.transform.position;
-        p.occupiedNodeCopy = p.occupiedNode;
-        p.traveledNodes.Clear();
-        p.traveledNodes.Add(p.occupiedNode);
+        if (p.currentStatsModifier.warpDestination != null)
+        {
+            p.occupiedNode = p.currentStatsModifier.warpDestination;
+            p.transform.position = p.occupiedNode.transform.position;
+            p.occupiedNodeCopy = p.occupiedNode;
+            p.traveledNodes.Clear();
+            p.traveledNodes.Add(p.occupiedNode);
+        }
     }
 
     private void RemoveDeathsRow(int id)
