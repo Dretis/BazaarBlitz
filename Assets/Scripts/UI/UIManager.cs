@@ -3,12 +3,16 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Linq;
+using UnityEngine.EventSystems;
 
 public class UIManager : MonoBehaviour
 {
     // CHANGE THIS SCRIPTS NAME, THIS ONE IS ONLY HANDLING STOREFRONT UI
     [Header("UI Elements")]
     [SerializeField] private Canvas storefrontCanvas;
+    [SerializeField] private List<Button> itemButtons;
+    [SerializeField] private List<ItemSelectionHandler> itemSelectionHandlers;
+    [SerializeField] private List<EventTrigger> itemSelectionTriggers;
     [SerializeField] private TextMeshProUGUI storeChatBubble;
     [SerializeField] private Image storekeeperImage;
 
@@ -80,11 +84,26 @@ public class UIManager : MonoBehaviour
         storekeeperImage.color = currentStore.playerOwner.playerColor;
         StockItems(itemInventory);
 
+        // Enable buying of items.
+        foreach (var button in itemButtons)
+        {
+            button.interactable = true;
+        }
+
+        foreach (var itemSelectionHandler in itemSelectionHandlers)
+        {
+            itemSelectionHandler.enabled = true;
+        }
+
+        foreach (var itemSelectionTrigger in itemSelectionTriggers)
+        {
+            itemSelectionTrigger.enabled = true;
+        }
+
         // If no item exists that is affordable to the player, enter Death's Row.
         if (!itemInventory.Exists(item => currentPlayer.heldPoints >= item.basePrice))
         {
             currentPlayer.isInDeathsRow = true;
-
             // Force player to buy cheapest item in the store.
             var cheapestItem = itemInventory.OrderBy(i => i.basePrice).FirstOrDefault();
             RemoveItemStockAt(itemInventory.FindIndex(i => i == cheapestItem));
@@ -93,12 +112,18 @@ public class UIManager : MonoBehaviour
 
     private void ExitStorefront()
     {
+        // Enable selection of items upon finishing a shopping sesh.
+        EnableItemSelection();
+
         storefrontCanvas.enabled = false;
         storefrontCanvas.gameObject.SetActive(false);
     }
 
     private void FinishShopping(ItemStats item)
     {
+        // Disable buying of all other items.
+        DisableItemSelection();
+
         if (currentPlayer.isInDeathsRow)
             storeChatBubble.text = "\"You have received " + item.itemName +". \n Unfortunately, you've just entered DEATH'S ROW.\"";
         else if (item != null)
@@ -203,7 +228,46 @@ public class UIManager : MonoBehaviour
             itemInventory[i] = items[i];
         }
     }
+    
+    // Functions to enable/disable item selection.
+    // The interactability of buttons determines the items' opacity.
+    // The selection handlers determine the "popping out" effect of the items on hover.
+    // The selection triggers determine the actual functionality of "selecting an item."
+    private void EnableItemSelection()
+    {
+        foreach (var button in itemButtons)
+        {
+            button.interactable = true;
+        }
 
+        foreach (var itemSelectionHandler in itemSelectionHandlers)
+        {
+            itemSelectionHandler.enabled = true;
+        }
+
+        foreach (var itemSelectionTrigger in itemSelectionTriggers)
+        {
+            itemSelectionTrigger.enabled = true;
+        }
+    }
+
+    private void DisableItemSelection()
+    {
+        foreach (var button in itemButtons)
+        {
+            button.interactable = false;
+        }
+
+        foreach (var itemSelectionHandler in itemSelectionHandlers)
+        {
+            itemSelectionHandler.enabled = false;
+        }
+
+        foreach (var itemSelectionTrigger in itemSelectionTriggers)
+        {
+            itemSelectionTrigger.enabled = false;
+        }
+    }
     private void ChangeInCurrency(EntityPiece ps)
     {
         // Update the text visually according to player's remaining currency and the item's price
