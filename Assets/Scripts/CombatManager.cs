@@ -50,7 +50,8 @@ public class CombatManager : MonoBehaviour
     private bool pausingCombat = false;
     private bool initiatorWon;
 
-    private bool actionSelected = false;
+    private bool actionSelected = false; // Did someone just press a button and start an animation? No one else can till its done
+    private bool turnInProcess = false; // If everyone's rolling dice or attacking or anything, no input is allowed.
     private int damageToDeal = 0; // damage being dealt is delayed until animations play out.
 
     public CombatUIManager combatUIManager;
@@ -188,11 +189,13 @@ public class CombatManager : MonoBehaviour
     // It flips who's deciding their current action by toggling isIniatorTurn
     public void passSelectionTurn() 
     {
+        Debug.Log("PAS");
         // An animation plays after selecting an action.
-        if (pausingCombat || endingCombat || actionSelected) // Prevent people from messing with selected actions as combat is ending
+        if (pausingCombat || endingCombat || actionSelected || turnInProcess) // Prevent people from messing with selected actions as combat is ending
         {
             return; 
         }
+        Debug.Log("SING");
 
 
         // IF someone is attacking this turn
@@ -249,14 +252,20 @@ public class CombatManager : MonoBehaviour
             defender = initiator;
         }
 
+        turnInProcess = false; // The turn is finally finished.
+
         combatUIManager.UpdateActionText(attacker, Action.PhaseTypes.Attack);
         combatUIManager.UpdateActionText(defender, Action.PhaseTypes.Defend);
 
 
         m_DecidedTurnOrder.RaiseEvent(attacker); // Whos the attacker was updated
 
+        Debug.Log(!isInitiatorTurn);
+        Debug.Log(!initiatorAttacking);
+
+
         // On turn 2 against a now attacking enemy, immediately decide its attack action.
-        if ((!isInitiatorTurn && !initiatorAttacking) && isFightingAI)
+        if ((!initiatorAttacking) && isFightingAI)
         {
             attackerAction = decideAttackAI();
             passSelectionTurn();
@@ -728,6 +737,8 @@ public class CombatManager : MonoBehaviour
 
     public IEnumerator ShowChoiceAnimation(float animationTime)
     {
+        turnInProcess = true; // Disable input so that there aren't parallel turns running.
+
         // PLAY ANIMATIONS HERE WHERE THE BAGGIES SHOW WHAT ATTACK TYPES THEY PICKED (before dice rolling though)
         Action attack = attacker.attackActions[attackerAction-1];
         Action defend = defender.defendActions[defenderAction-1];        
