@@ -4413,6 +4413,9 @@ MonoBehaviour:
   - {fileID: 1273892899}
   - {fileID: 1784744901}
   - {fileID: 1419713626}
+  healthyColor: {r: 0.50980395, g: 0.9058824, b: 0.53333336, a: 1}
+  injuredColor: {r: 1, g: 0.6949267, b: 0, a: 1}
+  dangerColor: {r: 0.6698113, g: 0, b: 0.22349763, a: 1}
   scoreCanvas: {fileID: 2015473009}
   playerNames:
   - {fileID: 1869264843}
@@ -7983,6 +7986,7 @@ MonoBehaviour:
   - {fileID: 254140134}
   - {fileID: 2080129354}
   - {fileID: 210437154}
+  storeInv: []
   m_ItemUsed: {fileID: 11400000, guid: 848f52d6f0e789e4ab1731d31de0ae96, type: 2}
   m_OpenInventory: {fileID: 11400000, guid: 91caeb767faff934e81ba8e6ff774d38, type: 2}
   m_ExitInventory: {fileID: 11400000, guid: 4992d66997435ac41b90fcee905517ec, type: 2}
@@ -30880,8 +30884,8 @@ MonoBehaviour:
     rollModifier: 0
   inventory:
   - {fileID: 11400000, guid: 4fd59672f461ffa4bb6c75f0339fc93d, type: 2}
-  - {fileID: 11400000, guid: 4fd59672f461ffa4bb6c75f0339fc93d, type: 2}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: c88d8aed1040f9b448f37a2983dd1fdd, type: 2}
+  - {fileID: 11400000, guid: ba165bec7fd5ad748b4e3a0ce659a0f1, type: 2}
   activeEffects: []
 --- !u!114 &1751578438
 MonoBehaviour:

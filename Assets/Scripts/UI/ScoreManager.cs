@@ -8,6 +8,11 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private EntityPiece currentPlayer;
     [SerializeField] private List<EntityPiece> players;
 
+    [Header("Colors")]
+    [SerializeField] private Color healthyColor;
+    [SerializeField] private Color injuredColor;
+    [SerializeField] private Color dangerColor;
+
     [Header("UI Elements")]
     [SerializeField] private Canvas scoreCanvas;
     [SerializeField] private List<TextMeshProUGUI> playerNames;
@@ -78,8 +83,17 @@ public class ScoreManager : MonoBehaviour
 
         // playerNames[id].text = "" + players[id].nickname;
         playerNames[id].text = "" + players[id].entityName;
-        playerScores[id].text = "<color=yellow>@</color> " + players[id].heldPoints;
-        playerHPs[id].text = "<color=red>HP</color> " + players[id].health + "/" + players[id].maxHealth;
+
+        if(players[id].heldPoints < 0)
+        {
+            // Red numbers when negative balance
+            playerScores[id].text = $"<color=yellow>@</color> <color=red>{players[id].heldPoints}</color>";
+        }
+        else
+        {
+            playerScores[id].text = $"<color=yellow>@</color>{players[id].heldPoints}";
+        }
+        playerHPs[id].text = $"<color=#A8B4FF>HP</color> {players[id].health}<size=24>/{players[id].maxHealth}</size>";
         playerImages[id].color = players[id].playerColor - new Color32(0, 0, 0, 125);
 
         // Placeholder for now
