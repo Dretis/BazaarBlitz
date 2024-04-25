@@ -921,10 +921,13 @@ public class GameplayTest : MonoBehaviour
     private void _PlaceholderChangeAndContinue(ItemStats item)
     {
         // When an item is bought, allow confirmation via SPACE bar to continue the game
-        encounterOver = true;
-        currentPlayer.heldPoints -= item.basePrice;
+        if (item != null)
+        {
+            encounterOver = true;
+            currentPlayer.heldPoints -= item.basePrice;
 
-        m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
+            m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
+        }
     }
 
     private void RemoveItemInPlayerInventory(int index)

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Linq;
 
 public class UIManager : MonoBehaviour
 {
@@ -78,6 +79,16 @@ public class UIManager : MonoBehaviour
         storeChatBubble.text = "\"Greetings, customer! Welcome to " + currentStore.playerOwner.entityName + "'s wonderful store! \nPlease purchase something.\"";
         storekeeperImage.color = currentStore.playerOwner.playerColor;
         StockItems(itemInventory);
+
+        // If no item exists that is affordable to the player, enter Death's Row.
+        if (!itemInventory.Exists(item => currentPlayer.heldPoints >= item.basePrice))
+        {
+            currentPlayer.isInDeathsRow = true;
+
+            // Force player to buy cheapest item in the store.
+            var cheapestItem = itemInventory.OrderBy(i => i.basePrice).FirstOrDefault();
+            RemoveItemStockAt(itemInventory.FindIndex(i => i == cheapestItem));
+        }
     }
 
     private void ExitStorefront()
@@ -90,8 +101,10 @@ public class UIManager : MonoBehaviour
     {
         if (currentPlayer.isInDeathsRow)
             storeChatBubble.text = "\"You have received " + item.itemName +". \n Unfortunately, you've just entered DEATH'S ROW.\"";
-        else
+        else if (item != null)
             storeChatBubble.text = "\"Enjoy your brand new " + item.itemName + "! \nThank you for your patronage, and we hope to see you very soon!\"";
+        else
+            storeChatBubble.text = "\"I'm sorry but you cannot afford this item.\"";
     }
 
     public void HighlightItem(int i)
@@ -136,35 +149,38 @@ public class UIManager : MonoBehaviour
 
     private void RemoveItemStockAt(int i)
     {
-        // Player unable to afford item, put them in death's row.
-        if (currentPlayer.heldPoints < itemInventory[i].basePrice)
+        if (currentPlayer.heldPoints >= itemInventory[i].basePrice)
         {
-            currentPlayer.isInDeathsRow = true;
+            // Visually remove the item from the list of items in the store
+            var itemImage = itemInventoryImages[i];
+
+            itemImage.sprite = null;
+            itemImage.color = new Color(itemImage.color.r, itemImage.color.g, itemImage.color.b, 0);
+
+            Debug.Log("Removed the " + itemImage + " sprite from the store.");
+
+            // May need to move the rest of the following code to another script
+
+            // Signal that this item was sold.
+            // Likely for the PlayerManager to subtract currency based off item's price.
+
+            m_itemSold.RaiseEvent(itemInventory[i]);
+
+            currentPlayer.inventory.Add(itemInventory[i]);
+            currentStore.playerOwner.heldPoints += itemInventory[i].basePrice;
+
+            // Update store owner's score.
+            m_UpdatePlayerScore.RaiseEvent(currentStore.playerOwner.id);
+
+            itemInventory[i] = null;
+            currentStore.storeInventory[i] = null;
         }
-
-        // Visually remove the item from the list of items in the store
-        var itemImage = itemInventoryImages[i];
-
-        itemImage.sprite = null;
-        itemImage.color = new Color(itemImage.color.r, itemImage.color.g, itemImage.color.b, 0);
-
-        Debug.Log("Removed the " + itemImage + " sprite from the store.");
-
-        // May need to move the rest of the following code to another script
-
-        // Signal that this item was sold.
-        // Likely for the PlayerManager to subtract currency based off item's price.
-
-        m_itemSold.RaiseEvent(itemInventory[i]);
-
-        currentPlayer.inventory.Add(itemInventory[i]);
-        currentStore.playerOwner.heldPoints += itemInventory[i].basePrice;
-
-        // Update store owner's score.
-        m_UpdatePlayerScore.RaiseEvent(currentStore.playerOwner.id);
-
-        itemInventory[i] = null;
-        currentStore.storeInventory[i] = null;         
+        else
+        {
+            Debug.Log("Not enough money to buy " + itemInventory[i] + " from the store.");
+            m_itemSold.RaiseEvent(null);
+        }
+        
     }
 
     private void StockItems(List<ItemStats> items)
