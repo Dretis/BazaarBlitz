@@ -22,6 +22,7 @@ public class ItemStats : ScriptableObject, IStatModifierChanger
     public int Duration => duration;
 
     public string itemName;
+    [SerializeField]
     private int duration = 1;
 
     [Header("Shop and Visual Information")]
