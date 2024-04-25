@@ -26,6 +26,9 @@ public class UIPromptManager : MonoBehaviour
     public PlayerEventChannelSO m_OverturnOpportunity;
     public IntEventChannelSO m_ItemUsed;
 
+    public VoidEventChannelSO m_EnableFreeview;
+    public VoidEventChannelSO m_ExitRaycastedTile;
+
     private void Start()
     {
         rolledNumber.text = "";
@@ -34,7 +37,6 @@ public class UIPromptManager : MonoBehaviour
 
     private void OnEnable()
     {
-        
         m_RollForMovement.OnEventRaised += RolledDice;
         m_DiceRollPrep.OnEventRaised += DisplayRollPrompt;
         m_DiceRollUndo.OnEventRaised += DisplayInitialMenu;
@@ -50,6 +52,9 @@ public class UIPromptManager : MonoBehaviour
         m_OverturnOpportunity.OnEventRaised += DisplayOverturnChoices;
 
         m_ItemUsed.OnEventRaised += StrikethroughInventoryPrompt;
+
+        m_EnableFreeview.OnEventRaised += HideInitialMenu;
+        m_ExitRaycastedTile.OnEventRaised += DisplayInitialMenu;
     }
 
     private void OnDisable()
@@ -69,6 +74,9 @@ public class UIPromptManager : MonoBehaviour
         m_OverturnOpportunity.OnEventRaised -= DisplayOverturnChoices;
 
         m_ItemUsed.OnEventRaised -= StrikethroughInventoryPrompt;
+
+        m_EnableFreeview.OnEventRaised -= HideInitialMenu;
+        m_ExitRaycastedTile.OnEventRaised -= DisplayInitialMenu;
     }
 
     private void RolledDice(int diceRoll)

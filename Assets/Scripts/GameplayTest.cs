@@ -58,6 +58,7 @@ public class GameplayTest : MonoBehaviour
     public MapNode wantedNode;
     private SceneGameManager sceneManager;
 
+    private bool freeviewEnabled = false;
     public bool encounterStarted = false;
     private bool playerUsedItem = false; // please change these down the line
     public bool isStockingStore = false;
@@ -87,6 +88,7 @@ public class GameplayTest : MonoBehaviour
 
     // Event Channels
     [Header("Broadcast on Event Channels")]
+    public VoidEventChannelSO m_EnableFreeview;
     public PlayerEventChannelSO m_DiceRollUndo;
     public PlayerEventChannelSO m_DiceRollPrep;
     public IntEventChannelSO m_RollForMovement;
@@ -114,6 +116,7 @@ public class GameplayTest : MonoBehaviour
     [Header("Listen on Event Channels")]
     public ItemEventChannelSO m_ItemBought; //Listening to this one
     public IntEventChannelSO m_ItemUsed; //Listening to this one
+    public VoidEventChannelSO m_ExitRaycastedTile; //Listening to this one
 
     // Placeholder code, basis items for storefront
     public List<ItemStats> tempItems;
@@ -123,6 +126,7 @@ public class GameplayTest : MonoBehaviour
         m_ItemBought.OnEventRaised += _PlaceholderChangeAndContinue;
         m_ItemUsed.OnEventRaised += RemoveItemInPlayerInventory;
         m_UpdatePlayerScore.OnEventRaised += RemoveDeathsRow;
+        m_ExitRaycastedTile.OnEventRaised += DisableFreeview;
     }
 
     private void OnDisable()
@@ -130,6 +134,7 @@ public class GameplayTest : MonoBehaviour
         m_ItemBought.OnEventRaised -= _PlaceholderChangeAndContinue;
         m_ItemUsed.OnEventRaised -= RemoveItemInPlayerInventory;
         m_UpdatePlayerScore.OnEventRaised -= RemoveDeathsRow;
+        m_ExitRaycastedTile.OnEventRaised -= DisableFreeview;
     }
 
     // Start is called before the first frame update
@@ -261,9 +266,14 @@ public class GameplayTest : MonoBehaviour
 
     private void InitialTurnMenu(EntityPiece p)
     {
+        if (freeviewEnabled)
+            return;
+
         if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
         {
             // This should let you look around the map freely.
+            m_EnableFreeview.RaiseEvent();
+            freeviewEnabled = true;
         }
         if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
         {
@@ -1040,5 +1050,10 @@ public class GameplayTest : MonoBehaviour
             playerDiceNumbers[i].text = $"{entity.intDie[faceIndex]}";
             faceIndex++;
         }
+    }
+
+    public void DisableFreeview()
+    {
+        freeviewEnabled = false;
     }
 }

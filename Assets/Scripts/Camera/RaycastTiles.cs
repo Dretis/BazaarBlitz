@@ -7,10 +7,25 @@ public class RaycastTiles : MonoBehaviour
 {
     Camera cam;
     private bool tileSelected = false;
+    private bool freeviewEnabled = false;
 
     [Header("Broadcast on Event Channels")]
     public NodeEventChannelSO m_EnterRaycastedTile;
     public VoidEventChannelSO m_ExitRaycastedTile;
+
+
+    [Header("Listen on Event Channels")]
+    public VoidEventChannelSO m_EnableFreeview;
+
+    private void OnEnable()
+    {
+        m_EnableFreeview.OnEventRaised += EnableRaycasting;
+    }
+
+    private void OnDisable()
+    {
+        m_EnableFreeview.OnEventRaised -= EnableRaycasting;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -21,25 +36,34 @@ public class RaycastTiles : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetMouseButtonDown(0))
+        if (freeviewEnabled)
         {
-            Debug.Log("click");
-            Vector2 rayPos = new Vector2(cam.ScreenToWorldPoint(Input.mousePosition).x, cam.ScreenToWorldPoint(Input.mousePosition).y);
-            RaycastHit2D hit = Physics2D.Raycast(rayPos, Vector2.zero, 0f);
-
-            if (hit)
+            if (Input.GetMouseButtonDown(0))
             {
-                Debug.Log($"hit {hit.transform.name}");
-                var node = hit.transform.GetComponent<MapNode>();
+                Debug.Log("click");
+                Vector2 rayPos = new Vector2(cam.ScreenToWorldPoint(Input.mousePosition).x, cam.ScreenToWorldPoint(Input.mousePosition).y);
+                RaycastHit2D hit = Physics2D.Raycast(rayPos, Vector2.zero, 0f);
 
-                tileSelected = true;
-                m_EnterRaycastedTile.RaiseEvent(node);
+                if (hit)
+                {
+                    Debug.Log($"hit {hit.transform.name}");
+                    var node = hit.transform.GetComponent<MapNode>();
+
+                    tileSelected = true;
+                    m_EnterRaycastedTile.RaiseEvent(node);
+                }
+            }
+            else if (Input.GetMouseButtonDown(1))
+            {
+                m_ExitRaycastedTile.RaiseEvent();
+                tileSelected = false;
+                freeviewEnabled = false;
             }
         }
-        if (Input.GetMouseButtonDown(1) && tileSelected)
-        {
-            m_ExitRaycastedTile.RaiseEvent();
-            tileSelected = false;
-        }
+    }
+
+    public void EnableRaycasting()
+    {
+        freeviewEnabled = true;
     }
 }
