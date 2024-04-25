@@ -102,6 +102,7 @@ public class GameplayTest : MonoBehaviour
     public PlayerEventChannelSO m_EncounterDecision;
 
     public PlayerEventChannelSO m_OpenInventory; // JASPER OR RUSSELL PLEASE USE THIS EVENT TO ACCESS THE INVENTORY
+    public NodeEventChannelSO m_RestockStore;
     public VoidEventChannelSO m_ExitInventory;
 
     public PlayerEventChannelSO m_OverturnOpportunity;
@@ -547,8 +548,9 @@ public class GameplayTest : MonoBehaviour
                 else
                 {
                     isStockingStore = true;
-                    m_OpenInventory.RaiseEvent(p);
-                    storestockTooltip.enabled = true;
+                    m_RestockStore.RaiseEvent(m);
+                    m_OpenInventory.RaiseEvent(p); // COMMENT THIS OUT WHEN RAISING THE RESTOCK EVENT
+                    storestockTooltip.enabled = true; // PROBABLY PUT THIS IN UI AS WELL
                     phase = GamePhase.StockStore;
                     /*
                     // Placeholder restock your store on landing
@@ -723,8 +725,10 @@ public class GameplayTest : MonoBehaviour
                 m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
 
                 isStockingStore = true;
-                m_OpenInventory.RaiseEvent(p);
-                storestockTooltip.enabled = true;
+
+                m_RestockStore.RaiseEvent(m);
+                m_OpenInventory.RaiseEvent(p); // COMMENT THIS OUT WHEN RAISING THE RESTOCK EVENT
+                storestockTooltip.enabled = true; // PROBABLY PUT THIS IN UI AS WELL
                 phase = GamePhase.StockStore;
                 /*
                 // Stock store
@@ -989,8 +993,8 @@ public class GameplayTest : MonoBehaviour
                 || !store.storeInventory.Exists(x => x == null))
         {
             // Exit store restocking.
-            m_ExitInventory.RaiseEvent();
-            storestockTooltip.enabled = false;
+            m_ExitInventory.RaiseEvent(); // REMOVE STOCKING STORE UI FROM SCREEN TOO
+            storestockTooltip.enabled = false; // DO THIS IN THE UI
             audioSource.PlayOneShot(reverseSFX, 2f);
 
             phase = GamePhase.EndTurn;
