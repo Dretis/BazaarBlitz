@@ -908,15 +908,6 @@ public class GameplayTest : MonoBehaviour
         nextPlayers.Add(currentPlayer);
         currentPlayer = nextPlayers[0];
 
-        // Check if next player has their turn skipped (and so on). If so, skip their turn.
-        while (currentPlayer.isTurnSkipped)
-        {
-            currentPlayer.isTurnSkipped = false;
-            nextPlayers.Remove(currentPlayer);
-            nextPlayers.Add(currentPlayer);
-            currentPlayer = nextPlayers[0];
-        }
-
         m_NextPlayerTurn.RaiseEvent(currentPlayer);
 
         turnText.text = currentPlayer.entityName + "'s Turn!";
@@ -930,15 +921,8 @@ public class GameplayTest : MonoBehaviour
     private void _PlaceholderChangeAndContinue(ItemStats item)
     {
         // When an item is bought, allow confirmation via SPACE bar to continue the game
-        // Can the player only buy 1 item? If so, prevent buying of other items through UI.
         encounterOver = true;
-        if (item != null)
-            currentPlayer.heldPoints -= item.basePrice;
-        else
-        {
-            Debug.Log("You can't buy shit! TURN SKIPPED!");
-            currentPlayer.isTurnSkipped = true;
-        }
+        currentPlayer.heldPoints -= item.basePrice;
 
         m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
     }

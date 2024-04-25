@@ -88,10 +88,10 @@ public class UIManager : MonoBehaviour
 
     private void FinishShopping(ItemStats item)
     {
-        if (item != null)
-            storeChatBubble.text = "\"Enjoy your brand new " + item.itemName + "! \nThank you for your patronage, and we hope to see you very soon!\"";
+        if (currentPlayer.isInDeathsRow)
+            storeChatBubble.text = "\"You have received " + item.itemName +". \n Unfortunately, you've just entered DEATH'S ROW.\"";
         else
-            storeChatBubble.text = "\"I'm sorry but you cannot afford this item.\"";
+            storeChatBubble.text = "\"Enjoy your brand new " + item.itemName + "! \nThank you for your patronage, and we hope to see you very soon!\"";
     }
 
     public void HighlightItem(int i)
@@ -136,41 +136,35 @@ public class UIManager : MonoBehaviour
 
     private void RemoveItemStockAt(int i)
     {
-        Debug.Log(currentPlayer);
-        if (currentPlayer.heldPoints >= itemInventory[i].basePrice)
+        // Player unable to afford item, put them in death's row.
+        if (currentPlayer.heldPoints < itemInventory[i].basePrice)
         {
-            Debug.Log(currentPlayer.heldPoints);
-            Debug.Log(itemInventory[i].basePrice);
-            // Visually remove the item from the list of items in the store
-            var itemImage = itemInventoryImages[i];
-
-            itemImage.sprite = null;
-            itemImage.color = new Color(itemImage.color.r, itemImage.color.g, itemImage.color.b, 0);
-
-            Debug.Log("Removed the " + itemImage + " sprite from the store.");
-
-            // May need to move the rest of the following code to another script
-
-            // Signal that this item was sold.
-            // Likely for the PlayerManager to subtract currency based off item's price.
-
-            m_itemSold.RaiseEvent(itemInventory[i]);
-
-            currentPlayer.inventory.Add(itemInventory[i]);
-            currentStore.playerOwner.heldPoints += itemInventory[i].basePrice;
-
-            // Update store owner's score.
-            m_UpdatePlayerScore.RaiseEvent(currentStore.playerOwner.id);
-
-            itemInventory[i] = null;
-            currentStore.storeInventory[i] = null;
+            currentPlayer.isInDeathsRow = true;
         }
-        else
-        {
-            Debug.Log("Not enough money to buy " + itemInventory[i] + " from the store.");
-            m_itemSold.RaiseEvent(null);
-        }
-        
+
+        // Visually remove the item from the list of items in the store
+        var itemImage = itemInventoryImages[i];
+
+        itemImage.sprite = null;
+        itemImage.color = new Color(itemImage.color.r, itemImage.color.g, itemImage.color.b, 0);
+
+        Debug.Log("Removed the " + itemImage + " sprite from the store.");
+
+        // May need to move the rest of the following code to another script
+
+        // Signal that this item was sold.
+        // Likely for the PlayerManager to subtract currency based off item's price.
+
+        m_itemSold.RaiseEvent(itemInventory[i]);
+
+        currentPlayer.inventory.Add(itemInventory[i]);
+        currentStore.playerOwner.heldPoints += itemInventory[i].basePrice;
+
+        // Update store owner's score.
+        m_UpdatePlayerScore.RaiseEvent(currentStore.playerOwner.id);
+
+        itemInventory[i] = null;
+        currentStore.storeInventory[i] = null;         
     }
 
     private void StockItems(List<ItemStats> items)
