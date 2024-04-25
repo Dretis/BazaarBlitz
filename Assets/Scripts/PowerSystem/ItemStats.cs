@@ -37,8 +37,6 @@ public class ItemStats : ScriptableObject, IStatModifierChanger
 
     public EntityStatsModifiers ApplyStatModChanges(EntityStatsModifiers currentStats, int currentTurn)
     {
-        // Mod effects are applied simultaneously.
-        // Items that have different effects on different turns of usage are not possible as of yet.
         foreach (var modifier in modifiers)
         {
             // Error checking.
@@ -47,6 +45,7 @@ public class ItemStats : ScriptableObject, IStatModifierChanger
             effectEndTurn = Mathf.Min(effectEndTurn, Duration); // Must be less than or equal to duration.
             effectStartTurn = Mathf.Min(effectStartTurn, effectEndTurn); // Must be less than or equal to effectEndTurn.
 
+            // Apply mod effect if in range of start and end turns.
             if (currentTurn >= effectStartTurn && currentTurn <= effectEndTurn)
                 currentStats = modifier.ApplyStatModChanges(currentStats, currentTurn);
         }
