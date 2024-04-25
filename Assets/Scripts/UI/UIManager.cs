@@ -94,14 +94,14 @@ public class UIManager : MonoBehaviour
             var cheapestItem = itemInventory.Where(item => item != null).
                 OrderBy(i => i.basePrice).FirstOrDefault();
             // Note: I don't think the SPACE bar prompt is displaying. UI Issue.
-            RemoveItemStockAt(itemInventory.FindIndex(item => item == cheapestItem));
+            EnableItemSelection(itemInventory.FindIndex(item => item == cheapestItem));
         }
     }
 
     private void ExitStorefront()
     {
         // Enable selection of items upon finishing a shopping sesh.
-        EnableItemSelection();
+        EnableItemSelections();
 
         storefrontCanvas.enabled = false;
         storefrontCanvas.gameObject.SetActive(false);
@@ -110,7 +110,7 @@ public class UIManager : MonoBehaviour
     private void FinishShopping(ItemStats item)
     {
         // Disable buying of all other items.
-        DisableItemSelection();
+        DisableItemSelections();
 
         if (currentPlayer.isInDeathsRow)
             storeChatBubble.text = "\"You have received " + item.itemName +". \n Unfortunately, you've just entered DEATH'S ROW.\"";
@@ -202,26 +202,40 @@ public class UIManager : MonoBehaviour
         for (int i = 0; i < items.Count; i++)
         {
             var itemImage = itemInventoryImages[i];
-            if(itemInventory[i] != null)
+            if (itemInventory[i] != null)
             {
                 itemImage.sprite = items[i].itemSprite;
                 itemImage.color = new Color(itemImage.color.r, itemImage.color.g, itemImage.color.b, 255);
+
+                if (currentPlayer.heldPoints < itemInventory[i].basePrice)
+                {
+                    DisableItemSelection(i);
+                }
             }
             else
             {
                 // make the sprite not visible to the player
                 itemImage.color = new Color(itemImage.color.r, itemImage.color.g, itemImage.color.b, 0);
+                DisableItemSelection(i);
             }
             // temp code, prob remove this later
-            itemInventory[i] = items[i];
+            itemInventory[i] = items[i];         
         }
     }
-    
+
     // Functions to enable/disable item selection.
     // The interactability of buttons determines the items' opacity.
     // The selection handlers determine the "popping out" effect of the items on hover.
     // The selection triggers determine the actual functionality of "selecting an item."
-    private void EnableItemSelection()
+
+    private void EnableItemSelection(int index)
+    {
+        itemButtons[index].interactable = true;
+        itemSelectionHandlers[index].enabled = true;
+        itemSelectionTriggers[index].enabled = true;
+    }
+
+    private void EnableItemSelections()
     {
         foreach (var button in itemButtons)
         {
@@ -239,7 +253,14 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    private void DisableItemSelection()
+    private void DisableItemSelection(int index)
+    {
+        itemButtons[index].interactable = false;
+        itemSelectionHandlers[index].enabled = false;
+        itemSelectionTriggers[index].enabled = false;
+    }
+
+    private void DisableItemSelections()
     {
         foreach (var button in itemButtons)
         {
@@ -256,6 +277,7 @@ public class UIManager : MonoBehaviour
             itemSelectionTrigger.enabled = false;
         }
     }
+
     private void ChangeInCurrency(EntityPiece ps)
     {
         // Update the text visually according to player's remaining currency and the item's price
