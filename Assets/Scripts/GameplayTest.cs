@@ -728,7 +728,6 @@ public class GameplayTest : MonoBehaviour
                 isStockingStore = true;
 
                 m_RestockStore.RaiseEvent(m);
-                //m_OpenInventory.RaiseEvent(p); // COMMENT THIS OUT WHEN RAISING THE RESTOCK EVENT
                 storestockTooltip.enabled = true; // PROBABLY PUT THIS IN UI AS WELL
                 phase = GamePhase.StockStore;
                 /*
@@ -912,6 +911,8 @@ public class GameplayTest : MonoBehaviour
         p.occupiedNode.playerOccupied = p; // update to have that player on that node now
         isStockingStore = false; // let next player access inventory
         playerUsedItem = false; // let next player access inventory
+
+        m_UpdatePlayerScore.RaiseEvent(0);
 
         // Change to the next player in the list (if their turn is not skipped).
 

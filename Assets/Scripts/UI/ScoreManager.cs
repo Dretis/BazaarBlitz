@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Unity.VisualScripting;
 
 public class ScoreManager : MonoBehaviour
 {
@@ -93,7 +94,7 @@ public class ScoreManager : MonoBehaviour
         {
             playerScores[id].text = $"<color=yellow>@</color>{players[id].heldPoints}";
         }
-        playerHPs[id].text = $"<color=#A8B4FF>HP</color> {players[id].health}<size=24>/{players[id].maxHealth}</size>";
+        playerHPs[id].text = $"<color=#{healthyColor.ToHexString()}>HP</color> {players[id].health}<size=24>/{players[id].maxHealth}</size>";
         playerImages[id].color = players[id].playerColor - new Color32(0, 0, 0, 125);
 
         // Placeholder for now
