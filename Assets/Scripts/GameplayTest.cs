@@ -34,17 +34,16 @@ public class GameplayTest : MonoBehaviour
         LevelUp,
         CombatTime,
         ConfirmContinue,
-        EndTurn
+        EndTurn,
+        EndGame
     }
 
     public int turn = 1;
     public GamePhase phase = GamePhase.RollDice;
     public int diceRoll;
-    private int yoinkRoll;
 
     public TextMeshProUGUI rollText;
     public TextMeshProUGUI turnText;
-    public TextMeshProUGUI gameInfo;
 
     public GameObject encounterScreen;
     public TextMeshProUGUI p1fight;
@@ -103,6 +102,7 @@ public class GameplayTest : MonoBehaviour
     public PlayerEventChannelSO m_EncounterDecision;
 
     public PlayerEventChannelSO m_OpenInventory; // JASPER OR RUSSELL PLEASE USE THIS EVENT TO ACCESS THE INVENTORY
+    public NodeEventChannelSO m_RestockStore;
     public VoidEventChannelSO m_ExitInventory;
 
     public PlayerEventChannelSO m_OverturnOpportunity;
@@ -122,12 +122,14 @@ public class GameplayTest : MonoBehaviour
     {
         m_ItemBought.OnEventRaised += _PlaceholderChangeAndContinue;
         m_ItemUsed.OnEventRaised += RemoveItemInPlayerInventory;
+        m_UpdatePlayerScore.OnEventRaised += RemoveDeathsRow;
     }
 
     private void OnDisable()
     {
         m_ItemBought.OnEventRaised -= _PlaceholderChangeAndContinue;
         m_ItemUsed.OnEventRaised -= RemoveItemInPlayerInventory;
+        m_UpdatePlayerScore.OnEventRaised -= RemoveDeathsRow;
     }
 
     // Start is called before the first frame update
@@ -140,11 +142,9 @@ public class GameplayTest : MonoBehaviour
         //nextPlayers = playerUnits;
         encounterScreen.SetActive(false);
 
-        gameInfo.text = "[Scoreboard]";
         foreach (var player in playerUnits)
         {
             nextPlayers.Add(player);
-            gameInfo.text += "\n" + player.entityName + ": " + player.heldPoints + " | " + player.finalPoints;
 
             // Allow starting nodes to detect the player on them.
             var initialNode = player.occupiedNode;
@@ -230,6 +230,11 @@ public class GameplayTest : MonoBehaviour
             case GamePhase.EndTurn:
                 EndOfTurn(currentPlayer);
                 break;
+            
+            // Game over! Someone has won!
+            case GamePhase.EndGame:
+                EndGame();
+                break;
         }
     }
 
@@ -248,6 +253,7 @@ public class GameplayTest : MonoBehaviour
             Debug.Log(s);
         }
 
+        ApplyItemEffects(p);
 
         p.UpdateStatModifiers();
 
@@ -472,14 +478,7 @@ public class GameplayTest : MonoBehaviour
                 m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
                 m_PassByPawnShop.RaiseEvent(); // change this later
             }
-
             p.stamps.Clear();
-            if(p.heldPoints >= 4000)
-            {
-                Debug.Log(p +" wins!");
-                encounterScreen.SetActive(true);
-                resultInfo.text = $"{p.entityName} WINS!!!";
-            }
         }
         else if (m.CompareTag("Stamp"))
         {
@@ -494,7 +493,12 @@ public class GameplayTest : MonoBehaviour
             }
         }
 
-        if (p.movementLeft <= 0)
+        // Change phase.
+        if (p.heldPoints >= 4000)
+        {
+            phase = GamePhase.EndGame;
+        }
+        else if (p.movementLeft <= 0)
         {
             p.traveledNodes.Clear(); // Forget all the nodes traveled to
             p.traveledNodes.Add(p.occupiedNode); //i need this i guess
@@ -545,8 +549,9 @@ public class GameplayTest : MonoBehaviour
                 else
                 {
                     isStockingStore = true;
-                    m_OpenInventory.RaiseEvent(p);
-                    storestockTooltip.enabled = true;
+                    m_RestockStore.RaiseEvent(m);
+                    m_OpenInventory.RaiseEvent(p); // COMMENT THIS OUT WHEN RAISING THE RESTOCK EVENT
+                    storestockTooltip.enabled = true; // PROBABLY PUT THIS IN UI AS WELL
                     phase = GamePhase.StockStore;
                     /*
                     // Placeholder restock your store on landing
@@ -721,8 +726,10 @@ public class GameplayTest : MonoBehaviour
                 m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
 
                 isStockingStore = true;
-                m_OpenInventory.RaiseEvent(p);
-                storestockTooltip.enabled = true;
+
+                m_RestockStore.RaiseEvent(m);
+                m_OpenInventory.RaiseEvent(p); // COMMENT THIS OUT WHEN RAISING THE RESTOCK EVENT
+                storestockTooltip.enabled = true; // PROBABLY PUT THIS IN UI AS WELL
                 phase = GamePhase.StockStore;
                 /*
                 // Stock store
@@ -886,7 +893,6 @@ public class GameplayTest : MonoBehaviour
             encounterOver = false;
             encounterScreen.SetActive(false);
             storeScreen.SetActive(false);
-            UpdatePoints();
             m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
             m_ExitStorefront.RaiseEvent();
         }
@@ -907,20 +913,11 @@ public class GameplayTest : MonoBehaviour
         isStockingStore = false; // let next player access inventory
         playerUsedItem = false; // let next player access inventory
 
-        // Change to the next player in the list (if their turn is not skipped).
+        // Change to the next player in the list.
 
         nextPlayers.Remove(currentPlayer);
         nextPlayers.Add(currentPlayer);
         currentPlayer = nextPlayers[0];
-
-        // Check if next player has their turn skipped (and so on). If so, skip their turn.
-        while (currentPlayer.isTurnSkipped)
-        {
-            currentPlayer.isTurnSkipped = false;
-            nextPlayers.Remove(currentPlayer);
-            nextPlayers.Add(currentPlayer);
-            currentPlayer = nextPlayers[0];
-        }
 
         m_NextPlayerTurn.RaiseEvent(currentPlayer);
 
@@ -932,29 +929,27 @@ public class GameplayTest : MonoBehaviour
         phase = GamePhase.ItemSelection;
     }
 
-    void UpdatePoints()
+    void EndGame()
     {
-        gameInfo.text = "[Scoreboard]";
-        foreach (var player in playerUnits)
-        {
-            gameInfo.text += "\n" + player.entityName + ": " + player.heldPoints + " | " + player.finalPoints;
-        }
+        // The player with the most points wins!
+        var winningPlayer = playerUnits.OrderBy(playerUnit => playerUnit.heldPoints).LastOrDefault();
+
+        // UPDATE WITH ACTUAL END GAME UI, AND MAKE IN DIFFERENT SCRIPT WITH EVENT RAISED HERE.
+        Debug.Log(winningPlayer.entityName + " is the KING OF THE MARKET!");
+        encounterScreen.SetActive(true);
+        resultInfo.text = $"{winningPlayer.entityName} WINS!!!";
     }
 
     private void _PlaceholderChangeAndContinue(ItemStats item)
     {
         // When an item is bought, allow confirmation via SPACE bar to continue the game
-        // Can the player only buy 1 item? If so, prevent buying of other items through UI.
-        encounterOver = true;
         if (item != null)
-            currentPlayer.heldPoints -= item.basePrice;
-        else
         {
-            Debug.Log("You can't buy shit! TURN SKIPPED!");
-            currentPlayer.isTurnSkipped = true;
-        }
+            encounterOver = true;
+            currentPlayer.heldPoints -= item.basePrice;
 
-        m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
+            m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
+        }
     }
 
     private void RemoveItemInPlayerInventory(int index)
@@ -970,11 +965,39 @@ public class GameplayTest : MonoBehaviour
         } 
         else
         {
-            currentPlayer.AddItemToActiveEffects(currentPlayer.inventory[index].duration, currentPlayer.inventory[index]);
+            currentPlayer.AddItemToActiveEffects(currentPlayer.inventory[index].Duration, currentPlayer.inventory[index]);
+
+            ApplyItemEffects(currentPlayer);
+
             currentPlayer.UpdateStatModifiers();
+
             currentPlayer.inventory.RemoveAt(index);
             playerUsedItem = true;
         }        
+    }
+
+    private void ApplyItemEffects(EntityPiece p)
+    {
+        // Regenerate health from active effects.
+        p.health = Mathf.Min(p.maxHealth, p.health + p.currentStatsModifier.healthRegen);
+
+        m_UpdatePlayerScore.RaiseEvent(p.id);
+
+        // Warp player to specified destination.
+        p.occupiedNode = p.currentStatsModifier.warpDestination;
+        p.transform.position = p.occupiedNode.transform.position;
+        p.occupiedNodeCopy = p.occupiedNode;
+        p.traveledNodes.Clear();
+        p.traveledNodes.Add(p.occupiedNode);
+    }
+
+    private void RemoveDeathsRow(int id)
+    {
+        if (playerUnits[id].heldPoints >= 0)
+        {
+            Debug.Log(playerUnits[id].entityName + " is no longer in Death's Row");
+            playerUnits[id].isInDeathsRow = false;
+        }
     }
 
     public void PlayAudio(AudioClip clip)
@@ -990,8 +1013,8 @@ public class GameplayTest : MonoBehaviour
                 || !store.storeInventory.Exists(x => x == null))
         {
             // Exit store restocking.
-            m_ExitInventory.RaiseEvent();
-            storestockTooltip.enabled = false;
+            m_ExitInventory.RaiseEvent(); // REMOVE STOCKING STORE UI FROM SCREEN TOO
+            storestockTooltip.enabled = false; // DO THIS IN THE UI
             audioSource.PlayOneShot(reverseSFX, 2f);
 
             phase = GamePhase.EndTurn;

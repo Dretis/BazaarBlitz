@@ -5,7 +5,7 @@ public class DefenseStatMod : StatModifierChangerSO
 {
     public float defenseModifier;
 
-    public override EntityStatsModifiers ApplyStatModChanges(EntityStatsModifiers currentStats)
+    public override EntityStatsModifiers ApplyStatModChanges(EntityStatsModifiers currentStats, int currentTurn)
     {
         currentStats.defenseModifier += defenseModifier;
 

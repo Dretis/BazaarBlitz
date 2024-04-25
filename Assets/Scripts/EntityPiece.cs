@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class EntityPiece : MonoBehaviour
@@ -14,11 +16,10 @@ public class EntityPiece : MonoBehaviour
     [Header("Overworld Stats")]
     public int movementTotal;
     public int movementLeft;
-    public int finalPoints = 1;
     public int heldPoints = 0;
     public int storeCount = 0;
     public List<Stamp.StampType> stamps = new List<Stamp.StampType>();
-    public bool isTurnSkipped = false;
+    public bool isInDeathsRow = false;
 
     [Header("Combat Stats")]
     public int health = 75;
@@ -43,7 +44,7 @@ public class EntityPiece : MonoBehaviour
 
     public int RenownLevel = 1; // Used to calculate the next level threshold.
 
-
+    [Serializable, Inspectable]
     public class ActiveEffect
     {
         public IStatModifierChanger statMod;
@@ -54,6 +55,7 @@ public class EntityPiece : MonoBehaviour
 
     public List<ItemStats> inventory = new();
 
+    [SerializeField]
     private List<ActiveEffect> activeEffects = new();
 
     /// <summary>
@@ -63,11 +65,22 @@ public class EntityPiece : MonoBehaviour
     /// <param name="item"></param>
     public void AddItemToActiveEffects(int duration, ItemStats item)
     {
-        activeEffects.Add(new ActiveEffect
+
+        var sameEffect = activeEffects.Find(activeEffect => (UnityEngine.Object) activeEffect.statMod == item);
+
+        // Refresh effect if same item has been used before. Otherwise, add new effect.
+        if (sameEffect != null)
         {
-            statMod = item,
-            turnsRemaining = duration
-        });
+            sameEffect.turnsRemaining = duration;
+        }
+        else
+        {
+            activeEffects.Add(new ActiveEffect
+            {
+                statMod = item,
+                turnsRemaining = duration
+            });
+        }
     }
 
     /// <summary>
@@ -81,7 +94,7 @@ public class EntityPiece : MonoBehaviour
 
         foreach (var item in activeEffects)
         {
-            currentStatsModifier = item.statMod.ApplyStatModChanges(currentStatsModifier);
+            currentStatsModifier = item.statMod.ApplyStatModChanges(currentStatsModifier, item.statMod.Duration-item.turnsRemaining);
         }
     }
 
