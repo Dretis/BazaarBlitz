@@ -90,6 +90,8 @@ public class UIManager : MonoBehaviour
             currentPlayer.isInDeathsRow = true;
             // Force player to buy cheapest item in the store.
             var cheapestItem = itemInventory.OrderBy(i => i.basePrice).FirstOrDefault();
+
+            // Note: I don't think the SPACE bar prompt is displaying. UI Issue.
             RemoveItemStockAt(itemInventory.FindIndex(i => i == cheapestItem));
         }
     }
