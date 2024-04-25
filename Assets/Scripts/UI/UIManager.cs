@@ -94,7 +94,7 @@ public class UIManager : MonoBehaviour
             var cheapestItem = itemInventory.Where(item => item != null).
                 OrderBy(i => i.basePrice).FirstOrDefault();
             // Note: I don't think the SPACE bar prompt is displaying. UI Issue.
-            RemoveItemStockAt(itemInventory.FindIndex(i => i == cheapestItem));
+            RemoveItemStockAt(itemInventory.FindIndex(item => item == cheapestItem));
         }
     }
 
