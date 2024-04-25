@@ -413,7 +413,12 @@ public class CombatManager : MonoBehaviour
         if (!loser.isEnemy && loser.isInDeathsRow)
             sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndGame);
         else
+        {
+            if (loser.heldPoints < 0)
+                loser.isInDeathsRow = true;
             sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
+        }
+            
 
         sceneManager.UnloadCombatScene(SceneManager.GetSceneAt(combatSceneIndex), combatSceneIndex);
 
