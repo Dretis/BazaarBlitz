@@ -269,7 +269,10 @@ public class CombatManager : MonoBehaviour
     {
 
         playActions(attackerAction, defenderAction);
+    }
 
+    // Code that was the wrapper for playTurn();
+    public void finishTurn() {
         phaseCount++;
 
         if (initiator.health <= 0)
@@ -609,6 +612,8 @@ public class CombatManager : MonoBehaviour
 
         AttackAndDefendAnimation(0.5f);
 
+        finishTurn();
+
         swapPhases();
     }
 
@@ -710,6 +715,8 @@ public class CombatManager : MonoBehaviour
 
         Debug.Log($"A player selected!");
         yield return new WaitForSeconds(animationTime);
+        
+        Debug.Log($"Done Selecting");
     
         actionSelected = false;
         
