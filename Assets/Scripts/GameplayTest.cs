@@ -294,11 +294,11 @@ public class GameplayTest : MonoBehaviour
 
             phase = GamePhase.Inventory;
         }
-        if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
+        if (Input.GetKeyDown(KeyCode.Tab))
         {
             howToPlayScreen.enabled = true;
         }
-        if (Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.A))
+        if (Input.GetKeyUp(KeyCode.Tab))
         {
             howToPlayScreen.enabled = false;
         }
