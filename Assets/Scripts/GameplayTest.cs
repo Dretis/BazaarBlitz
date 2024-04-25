@@ -253,8 +253,13 @@ public class GameplayTest : MonoBehaviour
             Debug.Log(s);
         }
 
+        // Regenerate health from active effects.
+        p.health = Mathf.Min(p.maxHealth, p.health + p.currentStatsModifier.healthRegen);
 
         p.UpdateStatModifiers();
+
+        // Update score display.
+        m_UpdatePlayerScore.RaiseEvent(p.id);
 
         phase = GamePhase.InitialTurnMenu;
     }
@@ -912,7 +917,7 @@ public class GameplayTest : MonoBehaviour
         isStockingStore = false; // let next player access inventory
         playerUsedItem = false; // let next player access inventory
 
-        // Change to the next player in the list (if their turn is not skipped).
+        // Change to the next player in the list.
 
         nextPlayers.Remove(currentPlayer);
         nextPlayers.Add(currentPlayer);
@@ -964,7 +969,7 @@ public class GameplayTest : MonoBehaviour
         } 
         else
         {
-            currentPlayer.AddItemToActiveEffects(currentPlayer.inventory[index].duration, currentPlayer.inventory[index]);
+            currentPlayer.AddItemToActiveEffects(currentPlayer.inventory[index].Duration, currentPlayer.inventory[index]);
             currentPlayer.UpdateStatModifiers();
             currentPlayer.inventory.RemoveAt(index);
             playerUsedItem = true;

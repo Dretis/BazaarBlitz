@@ -16,7 +16,7 @@ public class EntityStatsModifiers
 
     public float defenseModifier = 0;
     public float lifestealMult = 0;
-
+    public int healthRegen = 0;
     public int rollModifier;
 
     public float ApplyDieModifier(EntityBaseStats.DieTypes dieType, float baseRollValue)

@@ -19,8 +19,10 @@ public class ItemStats : ScriptableObject, IStatModifierChanger
         Special
     }
 
+    public int Duration => duration;
+
     public string itemName;
-    public int duration = 1;
+    private int duration = 1;
 
     [Header("Shop and Visual Information")]
     public Sprite itemSprite;
@@ -32,11 +34,20 @@ public class ItemStats : ScriptableObject, IStatModifierChanger
 
     public List<StatModifierChangerSO> modifiers;
 
-    public EntityStatsModifiers ApplyStatModChanges(EntityStatsModifiers currentStats)
+    public EntityStatsModifiers ApplyStatModChanges(EntityStatsModifiers currentStats, int currentTurn)
     {
-        foreach(var modifier in modifiers)
+        // Mod effects are applied simultaneously.
+        // Items that have different effects on different turns of usage are not possible as of yet.
+        foreach (var modifier in modifiers)
         {
-            currentStats = modifier.ApplyStatModChanges(currentStats);
+            // Error checking.
+            int effectStartTurn = Mathf.Max(1, modifier.activateEffectStartTurn); // Must be at least 1.
+            int effectEndTurn = Mathf.Max(1, modifier.activateEffectEndTurn); // Must be at least 1.
+            effectEndTurn = Mathf.Min(effectEndTurn, Duration); // Must be less than or equal to duration.
+            effectStartTurn = Mathf.Min(effectStartTurn, effectEndTurn); // Must be less than or equal to effectEndTurn.
+
+            if (currentTurn >= effectStartTurn && currentTurn <= effectEndTurn)
+                currentStats = modifier.ApplyStatModChanges(currentStats, currentTurn);
         }
 
         return currentStats;

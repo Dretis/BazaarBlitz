@@ -9,7 +9,7 @@ public class DieFinalValueMod : StatModifierChangerSO
     public int rollModifier = 1;
     public bool consumable = false;
 
-    public override EntityStatsModifiers ApplyStatModChanges(EntityStatsModifiers currentStats)
+    public override EntityStatsModifiers ApplyStatModChanges(EntityStatsModifiers currentStats, int currentTurn)
     {
         currentStats.dieModifiers[(int)targetDie].finalResultFlatModifier += flatModifier;
         currentStats.dieModifiers[(int)targetDie].finalResultMultModifier *= multModifier;
