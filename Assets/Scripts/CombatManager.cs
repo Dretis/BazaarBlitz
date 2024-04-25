@@ -424,7 +424,7 @@ public class CombatManager : MonoBehaviour
     // how much damage the defender receives.
     private void playActions(int attackerAction, int defenderAction)
     {
-        Debug.Log("I'm fighting in scene" + combatSceneIndex);
+        //Debug.Log("I'm fighting in scene" + combatSceneIndex);
         // run through the actions taken by both parties, dealing damage accordingly
         /*
         if (player1 == attacker)
@@ -540,7 +540,7 @@ public class CombatManager : MonoBehaviour
         int visibleDamageRoll = damage; // This is the damage we'll show on the dice visually.
 
         damage = damage * 10; // final damage before defense is pip value x 10
-        Debug.Log($"Attacker damage: Raw roll {damageRoll}, Type {attack.type}, modified {damage}");
+        //Debug.Log($"Damage Calcs done. PREDICTED Attacker damage before defense: {damage}");
 
         int rolledFaceDefense = Random.Range(0, 6);
 
@@ -567,7 +567,6 @@ public class CombatManager : MonoBehaviour
                 break;
         }
 
-        Debug.Log($"Defend roll: {defend.type} {defenseScore}");
         defenseScore += 1f * defender.currentStatsModifier.defenseModifier; // Apply item effects like cloth
 
         // damage is reduced by 10% - 100% before a type advantage multiplier is applied
@@ -607,6 +606,8 @@ public class CombatManager : MonoBehaviour
         attacker.health += (int)(damageToDeal * attacker.currentStatsModifier.lifestealMult); // Attacker heals if they have lifesteal
 
         m_DamageTaken.RaiseEvent(defender, damageToDeal);
+
+        AttackAndDefendAnimation(0.5f);
 
         swapPhases();
     }
@@ -707,6 +708,7 @@ public class CombatManager : MonoBehaviour
     {
         // Selection animation was already triggered before calling this, but after this is the delay before the next player can select.
 
+        Debug.Log($"A player selected!");
         yield return new WaitForSeconds(animationTime);
     
         actionSelected = false;
@@ -721,12 +723,15 @@ public class CombatManager : MonoBehaviour
     {
         // PLAY ANIMATIONS HERE WHERE THE BAGGIES SHOW WHAT ATTACK TYPES THEY PICKED (before dice rolling though)
         Action attack = attacker.attackActions[attackerAction-1];
-        Action defend = defender.defendActions[defenderAction-1];
+        Action defend = defender.defendActions[defenderAction-1];        
 
         // Commented out as im not sure if its implemented.
         //m_BothActionsSelected.RaiseEvent();
 
         yield return new WaitForSeconds(animationTime);
+
+        Debug.Log($"Attack: {attack.type}");
+        Debug.Log($"Defend: {defend.type}");
     
         
         playTurn(); // Acts out the turn (most of the combat logic here, takes a while to get back)
@@ -737,15 +742,16 @@ public class CombatManager : MonoBehaviour
         //Play your dice rolling animation here
 
         yield return new WaitForSeconds(animationTime);
+        
+        Debug.Log($"Damage roll: {damageRoll}");
+        Debug.Log($"Defend roll: {defenseRoll}");
 
         m_DiceRolled.RaiseEvent(attacker, damageRoll); // Damage roll is the total of all rolled damage dice (if thats modified), and damage boosts, but no defense or type advantage involved.
 
         m_DiceRolled.RaiseEvent(defender, defenseRoll);
         
-        if (isInitiatorTurn) // both players are done rolling dice.
-        {
-            AttackAndDefendAnimation(1.0f); // REPLACE WITH ANIMATION LENGTH
-        }
+        StartCoroutine(AttackAndDefendAnimation(1.0f)); // REPLACE WITH ANIMATION LENGTH
+
     }
 
     public IEnumerator AttackAndDefendAnimation(float animationTime)
@@ -753,13 +759,12 @@ public class CombatManager : MonoBehaviour
         // It was mentioned some stuff like the defense animation could be tuned in the animation timeline, but this
         // moment of the method represents the start of the attack animation.
 
-        m_PlayOutCombat.RaiseEvent(attacker); // I have no idea what the parameter is used for but the compiler is screaming at me
+        //causes compiler error right now for some reason (also unsure what parameter(s) to use)
+        // m_PlayOutCombat.RaiseEvent(attacker); // 
 
         yield return new WaitForSeconds(animationTime);
         
-        if (isInitiatorTurn) // Means both players decided
-        {
-            dealDamage();
-        }
+        dealDamage();
+
     }
 }
