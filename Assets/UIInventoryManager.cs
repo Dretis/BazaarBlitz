@@ -33,19 +33,23 @@ public class UIInventoryManager : MonoBehaviour
     [Header("Listen on Event Channels")]
     public PlayerEventChannelSO m_OpenInventory;
     public VoidEventChannelSO m_ExitInventory;
-    public NodeEventChannelSO m_RestockStore;
+    //public NodeEventChannelSO m_RestockStore;
 
     private void OnEnable()
     {
         inventoryGroup.alpha = 0;
         m_OpenInventory.OnEventRaised += DisplayInventory;
         m_ExitInventory.OnEventRaised += HideInventory;
+        m_ExitInventory.OnEventRaised += HideStoreStock;
+        //m_RestockStore.OnEventRaised += ShowStoreStock;
     }
 
     private void OnDisable()
     {
         m_OpenInventory.OnEventRaised -= DisplayInventory;
         m_ExitInventory.OnEventRaised -= HideInventory;
+        m_ExitInventory.OnEventRaised -= HideStoreStock;
+        //m_RestockStore.OnEventRaised -= ShowStoreStock;
     }
 
     private void DisplayInventory(EntityPiece entity)
@@ -148,6 +152,9 @@ public class UIInventoryManager : MonoBehaviour
         FadeTo(storestockGroup, 1, 0.25f);
 
         var storeInv = node.GetComponent<StoreManager>().storeInventory;
+
+        DisplayInventory(node.GetComponent<StoreManager>().playerOwner);
+
         ItemStats storeItem = null;
 
         for (int i = 0; i < storestockNames.Count; i++)
@@ -176,6 +183,11 @@ public class UIInventoryManager : MonoBehaviour
                 storestockNames[i].GetComponentInParent<Button>().interactable = false;
             }
         }
+    }
+
+    public void HideStoreStock()
+    {
+        FadeTo(storestockGroup, 0, 0.25f);
     }
 
     public void FadeTo(CanvasGroup group, float alphaValue, float duration)
