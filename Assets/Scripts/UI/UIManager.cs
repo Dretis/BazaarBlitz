@@ -85,12 +85,14 @@ public class UIManager : MonoBehaviour
         StockItems(itemInventory);
 
         // If no item exists that is affordable to the player, enter Death's Row.
-        if (!itemInventory.Where(item => item != null).ToList().Exists(item => currentPlayer.heldPoints >= item.basePrice))
+        if (!itemInventory.Where(item => item != null).ToList().
+            Exists(item => currentPlayer.heldPoints >= item.basePrice))
         {
             // Note: Need to display Death's Row notice somehow. Maybe have an icon in the overworld?
             currentPlayer.isInDeathsRow = true;
             // Force player to buy cheapest item in the store.
-            var cheapestItem = itemInventory.Where(item => item != null).OrderBy(i => i.basePrice).FirstOrDefault();
+            var cheapestItem = itemInventory.Where(item => item != null).
+                OrderBy(i => i.basePrice).FirstOrDefault();
             // Note: I don't think the SPACE bar prompt is displaying. UI Issue.
             RemoveItemStockAt(itemInventory.FindIndex(i => i == cheapestItem));
         }
