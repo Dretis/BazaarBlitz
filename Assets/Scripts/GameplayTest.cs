@@ -658,12 +658,12 @@ public class GameplayTest : MonoBehaviour
                 m_EncounterDecision.RaiseEvent(currentPlayer);
 
                 // Monster Encounter
-                if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
+                if (Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKeyDown(KeyCode.Space))
                 {
                     phase = GamePhase.RockPaperScissors;
                 }
                 // Build a Store
-                else if (Input.GetKeyDown(KeyCode.RightShift) || Input.GetKeyDown(KeyCode.LeftShift))
+                else if (Input.GetKeyDown(KeyCode.Mouse1) || Input.GetKeyDown(KeyCode.RightShift) || Input.GetKeyDown(KeyCode.LeftShift))
                 {
                     p.storeCount++;
                     p.heldPoints -= 200;
@@ -720,7 +720,7 @@ public class GameplayTest : MonoBehaviour
         else
         {
             // Overturn.
-            if (Input.GetKeyDown(KeyCode.RightShift) || Input.GetKeyDown(KeyCode.LeftShift))
+            if (Input.GetKeyDown(KeyCode.RightShift) || Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.Mouse1))
             {
                 GameObject tile = m.gameObject;
                 tile.GetComponent<SpriteRenderer>().color = currentPlayer.playerColor;
@@ -754,7 +754,7 @@ public class GameplayTest : MonoBehaviour
                 phase = GamePhase.EndTurn;
                 */
             }
-            else if (Input.GetKeyDown(KeyCode.Space)) // Don't overturn.
+            else if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Mouse0)) // Don't overturn.
             {
                 phase = GamePhase.EndTurn;
             }

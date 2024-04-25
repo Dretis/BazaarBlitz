@@ -120,16 +120,16 @@ public class UIPromptManager : MonoBehaviour
     private void DisplayRollPrompt(EntityPiece ps)
     {
         // This will get swapped out with a menu selection
-        inputPrompt.text = "<color=white>[SPACE]</color> to roll!";
-        inputPrompt.text += "\n<color=white>[LSHIFT]</color> to go back.";
+        inputPrompt.text = "<color=white>[LMB]/[SPACE]</color> to roll!";
+        inputPrompt.text += "\n<color=white>[RMB]/[SHIFT]</color> to go back.";
 
         HideInitialMenu();
     }
 
     private void DisplayFreeviewPrompt()
     {
-        inputPrompt.text = "<color=white>[Left Click]</color> View Tile Details";
-        inputPrompt.text += "\n<color=white>[Right Click]</color> Back";
+        inputPrompt.text = "<color=white>[LMB]</color> View Tile Details";
+        inputPrompt.text += "\n<color=white>[RMB]</color> Back";
     }
 
     private void DisplayInitialMenu(EntityPiece ps)
@@ -156,8 +156,8 @@ public class UIPromptManager : MonoBehaviour
 
     private void DisplayEncounterChoices(EntityPiece ps)
     {
-        inputPrompt.text = "<color=white>[SPACE/ENTER]</color> to encounter an enemy.";
-        inputPrompt.text += "\n<color=white>[SHIFT]</color> to build a store. <color=white>Costs</color> <color=yellow>@</color>200";
+        inputPrompt.text = "<color=white>[LMB]/[SPACE]</color> to encounter an enemy.";
+        inputPrompt.text += "\n<color=white>[RMB]/[SHIFT]</color> to build a store. <color=white>Costs</color> <color=yellow>@</color>200";
         inputPrompt.text += $"\nYou can build {4 - ps.storeCount} more stores.";
     }
 
@@ -198,7 +198,7 @@ public class UIPromptManager : MonoBehaviour
     private void DisplayOverturnChoices(EntityPiece storeOwner)
     {
         inputPrompt.text = $"There's no items in {storeOwner.entityName}'s store...  Overturn ownership?";
-        inputPrompt.text += "\n<color=white>[SPACE]</color> No, leave it alone.";
-        inputPrompt.text += "\n<color=white>[SHIFT]</color> Yes, take it over! <color=white>Costs</color> <color=yellow>@</color>600";
+        inputPrompt.text += "\n<color=white>[LMB]/[SPACE]</color> No, leave it alone.";
+        inputPrompt.text += "\n<color=white>[RMB]/[SHIFT]</color> Yes, take it over! <color=white>Costs</color> <color=yellow>@</color>600";
     }
 }
