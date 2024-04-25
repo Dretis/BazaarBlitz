@@ -81,14 +81,14 @@ public class UITileTooltipManager : MonoBehaviour
                 var stampHexColor = stamp.stampColor.ToHexString();
                 tileType.text = $"<color=#{stampHexColor}>{stamp.stampType} Stamp</color>";
                 tileDescription.text = $"Upon passing, collect the <color=#{stampHexColor}>{stamp.stampType}</color> stamp.";
-                tileDescription.text += "\n\nCan only collect one of this stamp at a time.";
+                tileDescription.text += "\n\nCan only hold one of this stamp at a time.";
             }
             // Pawn Shop
             else if (node.tag == "Castle") //please change this tag
             {
                 tileType.text = "Pawn Shop";
-                tileDescription.text = "Upon passing, exchange in all held stamps for <color=yellow>@</color>.";
-                tileDescription.text += "\n\nYou get more <color=yellow>@</color> the more stamps exchanged at once.";
+                tileDescription.text = "Upon passing, exchange all held stamps for <color=yellow>@</color>.";
+                tileDescription.text += "\n\n<color=yellow>@</color> recieved is based on the number of stamps exchanged at once.";
             }
             // Wild Tile
             else

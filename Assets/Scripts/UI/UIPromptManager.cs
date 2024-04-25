@@ -128,8 +128,9 @@ public class UIPromptManager : MonoBehaviour
 
     private void DisplayFreeviewPrompt()
     {
-        inputPrompt.text = "<color=white>[LMB]</color> View Tile Details";
+        inputPrompt.text = "<color=white>[LMB]</color> View Selected Tile";
         inputPrompt.text += "\n<color=white>[RMB]</color> Back";
+        inputPrompt.text += "\n<color=white>[Scroll Wheel]</color> Zoom In/Out";
     }
 
     private void DisplayInitialMenu(EntityPiece ps)
