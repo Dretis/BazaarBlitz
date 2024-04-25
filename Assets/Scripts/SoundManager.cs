@@ -6,7 +6,8 @@ public class SoundManager : MonoBehaviour
 {
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private List<AudioClip> soundList;
-
+    private AudioClip currentClip;
+ 
     private EntityPiece stupidFuck;
 
     [Header("Listen on Event Channels")]
@@ -45,18 +46,18 @@ public class SoundManager : MonoBehaviour
         m_ItemUsed.OnEventRaised += PlayUseItemSound;
         m_UpdatePlayerScore.OnEventRaised += PlayCurrencyChangeSound;
         m_ItemBought.OnEventRaised += PlayItemBoughtSound;
-        //m_ShowCombatBanner.OnEventRaised += PlayEnterBattleSound;
+        m_ShowCombatBanner.OnEventRaised += PlayEnterBattleSound;
 
 
-        // //Combat Events
-        // m_ActionSelected += PlaySelectCombatActionSound;
-        // m_UsedMeleeAttack += PlayMeleeAttackSound;
-        // m_UsedMagicAttack += PlayMagicAttackSound;
-        // m_UsedGunAttack += PlayGunAttackSound;
-        // m_ReceivedNotEffectiveAttack += PlayNotEffectiveHitSound;
-        // m_ReceivedEffectiveAttack += PlayEffectiveHitSound;
-        // m_ReceivedSuperEffectiveAttack += PlaySuperEffectiveHitSound;
-        // m_EntityDied += PlayDeathSound;
+        //Combat Events
+        // m_ActionSelected.OnEventRaised += PlaySelectCombatActionSound;
+        // m_UsedMeleeAttack.OnEventRaised += PlayMeleeAttackSound;
+        // m_UsedMagicAttack.OnEventRaised += PlayMagicAttackSound;
+        // m_UsedGunAttack.OnEventRaised += PlayGunAttackSound;
+        // m_ReceivedNotEffectiveAttack.OnEventRaised += PlayNotEffectiveHitSound;
+        // m_ReceivedEffectiveAttack.OnEventRaised += PlayEffectiveHitSound;
+        // m_ReceivedSuperEffectiveAttack.OnEventRaised += PlaySuperEffectiveHitSound;
+        // m_EntityDied.OnEventRaised += PlayDeathSound;
 
 
     }
@@ -69,10 +70,10 @@ public class SoundManager : MonoBehaviour
         m_RollForMovement.OnEventRaised -= PlayDiceHitSound;
         m_ItemUsed.OnEventRaised -= PlayUseItemSound;
         m_UpdatePlayerScore.OnEventRaised -= PlayCurrencyChangeSound;
-        //m_ShowCombatBanner.OnEventRaised -= PlayEnterBattleSound;
+        m_ShowCombatBanner.OnEventRaised -= PlayEnterBattleSound;
 
 
-        // //Combat Events
+        //Combat Events
         // m_ActionSelected -= PlaySelectCombatActionSound;
         // m_UsedMeleeAttack -= PlayMeleeAttackSound;
         // m_UsedMagicAttack -= PlayMagicAttackSound;
@@ -90,11 +91,15 @@ public class SoundManager : MonoBehaviour
 
     private void PlayDiceRollSound(EntityPiece entity)
     {
-        audioSource.PlayOneShot(soundList[1], 1.2f);
+        audioSource.clip = soundList[1];
+        audioSource.Play();
+        currentClip = soundList[1];
     }
 
     private void PlayDiceHitSound(int diceValue)
     {
+        audioSource.Stop();
+        audioSource.clip = null;
         audioSource.PlayOneShot(soundList[2], 2f);
     }
 
