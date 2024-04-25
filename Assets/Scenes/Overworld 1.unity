@@ -7852,6 +7852,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   storefrontCanvas: {fileID: 1564375436}
+  itemButtons:
+  - {fileID: 390244922}
+  - {fileID: 39715895}
+  - {fileID: 904451126}
+  itemSelectionHandlers:
+  - {fileID: 390244921}
+  - {fileID: 39715896}
+  - {fileID: 904451125}
+  itemSelectionTriggers:
+  - {fileID: 390244920}
+  - {fileID: 39715894}
+  - {fileID: 904451124}
   storeChatBubble: {fileID: 502979369}
   storekeeperImage: {fileID: 1178112125}
   itemInventoryImages:
@@ -21407,7 +21419,6 @@ MonoBehaviour:
   diceRoll: 0
   rollText: {fileID: 1903034394}
   turnText: {fileID: 1673688514}
-  gameInfo: {fileID: 882918293}
   encounterScreen: {fileID: 140310053}
   p1fight: {fileID: 990018812}
   p2fight: {fileID: 1136830903}
@@ -24738,11 +24749,10 @@ MonoBehaviour:
   traveledNodes: []
   movementTotal: 0
   movementLeft: 0
-  finalPoints: 1
   heldPoints: 500
   storeCount: 0
   stamps: 
-  isTurnSkipped: 0
+  isInDeathsRow: 0
   health: 75
   maxHealth: 75
   combatSceneIndex: -1
@@ -26618,11 +26628,10 @@ MonoBehaviour:
   traveledNodes: []
   movementTotal: 0
   movementLeft: 0
-  finalPoints: 1
   heldPoints: 500
   storeCount: 0
   stamps: 
-  isTurnSkipped: 0
+  isInDeathsRow: 0
   health: 75
   maxHealth: 75
   combatSceneIndex: -1
@@ -30827,11 +30836,10 @@ MonoBehaviour:
   traveledNodes: []
   movementTotal: 0
   movementLeft: 0
-  finalPoints: 1
   heldPoints: 500
   storeCount: 0
   stamps: 
-  isTurnSkipped: 0
+  isInDeathsRow: 0
   health: 75
   maxHealth: 75
   combatSceneIndex: -1
@@ -30867,9 +30875,9 @@ MonoBehaviour:
     lifestealMult: 0
     rollModifier: 0
   inventory:
-  - {fileID: 11400000, guid: c88d8aed1040f9b448f37a2983dd1fdd, type: 2}
-  - {fileID: 11400000, guid: 538c3ea9b77a52049adb54f819957e9b, type: 2}
-  - {fileID: 11400000, guid: 923ee1f783dd41345a759535103ee9a7, type: 2}
+  - {fileID: 11400000, guid: 4fd59672f461ffa4bb6c75f0339fc93d, type: 2}
+  - {fileID: 11400000, guid: 4fd59672f461ffa4bb6c75f0339fc93d, type: 2}
+  - {fileID: 0}
 --- !u!114 &1751578438
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31244,11 +31252,10 @@ MonoBehaviour:
   traveledNodes: []
   movementTotal: 0
   movementLeft: 0
-  finalPoints: 1
   heldPoints: 500
   storeCount: 0
   stamps: 
-  isTurnSkipped: 0
+  isInDeathsRow: 0
   health: 75
   maxHealth: 75
   combatSceneIndex: -1
