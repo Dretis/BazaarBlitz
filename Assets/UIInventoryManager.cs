@@ -4,11 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
-using static UnityEditor.Progress;
 
 public class UIInventoryManager : MonoBehaviour
 {
-    [SerializeField] private List<ItemStats> playerInventory;
+    [SerializeField] private List<ItemStats> playerInventory; //effectively copy of player's inv
 
     [Header("Main Inventory")]
     [SerializeField] private Canvas inventoryCanvas;
@@ -26,6 +25,7 @@ public class UIInventoryManager : MonoBehaviour
     [SerializeField] private List<Image> storestockIcons;
     [SerializeField] private List<TextMeshProUGUI> storestockNames;
     [SerializeField] private List<TextMeshProUGUI> storestockPrices;
+    [SerializeField] private List<ItemStats> storeInv;
 
     [Header("Broadcast on Event Channels")]
     public IntEventChannelSO m_ItemUsed;
@@ -33,15 +33,19 @@ public class UIInventoryManager : MonoBehaviour
     [Header("Listen on Event Channels")]
     public PlayerEventChannelSO m_OpenInventory;
     public VoidEventChannelSO m_ExitInventory;
-    //public NodeEventChannelSO m_RestockStore;
+    public NodeEventChannelSO m_RestockStore;
 
     private void OnEnable()
     {
         inventoryGroup.alpha = 0;
+        inventoryGroup.interactable = false;
+
+        storestockGroup.alpha = 0;
+
         m_OpenInventory.OnEventRaised += DisplayInventory;
         m_ExitInventory.OnEventRaised += HideInventory;
         m_ExitInventory.OnEventRaised += HideStoreStock;
-        //m_RestockStore.OnEventRaised += ShowStoreStock;
+        m_RestockStore.OnEventRaised += ShowStoreStock;
     }
 
     private void OnDisable()
@@ -49,12 +53,13 @@ public class UIInventoryManager : MonoBehaviour
         m_OpenInventory.OnEventRaised -= DisplayInventory;
         m_ExitInventory.OnEventRaised -= HideInventory;
         m_ExitInventory.OnEventRaised -= HideStoreStock;
-        //m_RestockStore.OnEventRaised -= ShowStoreStock;
+        m_RestockStore.OnEventRaised -= ShowStoreStock;
     }
 
     private void DisplayInventory(EntityPiece entity)
     {
         FadeTo(inventoryGroup, 1, 0.25f);
+        inventoryGroup.interactable = true;
 
         //inventoryCanvas.enabled = true;
         HideSelectedItemDetails();
@@ -98,18 +103,16 @@ public class UIInventoryManager : MonoBehaviour
     private void HideInventory()
     {
         FadeTo(inventoryGroup, 0, 0.25f);
+        inventoryGroup.interactable = false;
         //inventoryCanvas.enabled = false;
     }
 
     public void UseItem(int index)
     {
-        // Tell listeners that the item at this index in player's inventory is being used
-        m_ItemUsed.RaiseEvent(index);
-
-        playerInventory[index] = null;
-
         if (!GameplayTest.instance.isStockingStore)
         {
+            // Regular item use, visually removes the item from the player's inventory
+
             itemIcons[index].sprite = null;
             itemIcons[index].enabled = false;
             itemNames[index].text = "";
@@ -120,6 +123,33 @@ public class UIInventoryManager : MonoBehaviour
                 itemNames[i].GetComponentInParent<Button>().interactable = false;
             }
         }
+        else if(GameplayTest.instance.isStockingStore)
+        {
+            // Restocking Items in an owned store.
+
+            int storeTotalIndex = 0;
+
+            // Find the first empty spot/item in the store's inventory
+            for (int i = 0; i < storeInv.Count; i++)
+            {
+                if (storeInv[i] == null)
+                {
+                    storeInv[i] = playerInventory[index];
+                    storeTotalIndex = i;
+                    Debug.Log($"Found a null slot at {storeTotalIndex}");
+                    break;
+                }
+            }
+
+            // Visually update that spot in the Restock UI
+            storestockIcons[storeTotalIndex].sprite = playerInventory[index].itemSprite;
+            storestockIcons[storeTotalIndex].enabled = true;
+            storestockNames[storeTotalIndex].text = $"{playerInventory[index].itemName}";
+            storestockPrices[storeTotalIndex].text = $"<color=yellow>@</color>{playerInventory[index].basePrice}";
+        }
+
+        // Tell listeners that the item at this index in player's inventory is being used
+        m_ItemUsed.RaiseEvent(index);
     }
 
     public void ShowSelectedItemDetails(int index)
@@ -149,9 +179,16 @@ public class UIInventoryManager : MonoBehaviour
 
     public void ShowStoreStock(MapNode node)
     {
+        Debug.Log("Show store stock");
         FadeTo(storestockGroup, 1, 0.25f);
 
-        var storeInv = node.GetComponent<StoreManager>().storeInventory;
+        var storeInventory = node.GetComponent<StoreManager>().storeInventory;
+
+        storeInv.Clear();
+        foreach (ItemStats item in storeInventory)
+        {
+            storeInv.Add(item);
+        }
 
         DisplayInventory(node.GetComponent<StoreManager>().playerOwner);
 

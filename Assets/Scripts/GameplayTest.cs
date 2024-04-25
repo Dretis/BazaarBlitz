@@ -549,7 +549,7 @@ public class GameplayTest : MonoBehaviour
                 {
                     isStockingStore = true;
                     m_RestockStore.RaiseEvent(m);
-                    m_OpenInventory.RaiseEvent(p); // COMMENT THIS OUT WHEN RAISING THE RESTOCK EVENT
+                    //m_OpenInventory.RaiseEvent(p); // COMMENT THIS OUT WHEN RAISING THE RESTOCK EVENT
                     storestockTooltip.enabled = true; // PROBABLY PUT THIS IN UI AS WELL
                     phase = GamePhase.StockStore;
                     /*
@@ -671,7 +671,8 @@ public class GameplayTest : MonoBehaviour
 
                     isStockingStore = true;
 
-                    m_OpenInventory.RaiseEvent(p);
+                    //m_OpenInventory.RaiseEvent(p);
+                    m_RestockStore.RaiseEvent(m);
                     /*
                     // randomly pick 3 items to put into the base store stock
                     for (int i = 0; i < 3; i++)
@@ -727,7 +728,7 @@ public class GameplayTest : MonoBehaviour
                 isStockingStore = true;
 
                 m_RestockStore.RaiseEvent(m);
-                m_OpenInventory.RaiseEvent(p); // COMMENT THIS OUT WHEN RAISING THE RESTOCK EVENT
+                //m_OpenInventory.RaiseEvent(p); // COMMENT THIS OUT WHEN RAISING THE RESTOCK EVENT
                 storestockTooltip.enabled = true; // PROBABLY PUT THIS IN UI AS WELL
                 phase = GamePhase.StockStore;
                 /*
