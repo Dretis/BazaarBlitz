@@ -21,12 +21,19 @@ public class UIInventoryManager : MonoBehaviour
     [SerializeField] private Image selectedItemIcon;
     [SerializeField] private List<TextMeshProUGUI> selectedItemInfo;
 
+    [Header("Storestock Inventory")]
+    [SerializeField] private CanvasGroup storestockGroup;
+    [SerializeField] private List<Image> storestockIcons;
+    [SerializeField] private List<TextMeshProUGUI> storestockNames;
+    [SerializeField] private List<TextMeshProUGUI> storestockPrices;
+
     [Header("Broadcast on Event Channels")]
     public IntEventChannelSO m_ItemUsed;
 
     [Header("Listen on Event Channels")]
     public PlayerEventChannelSO m_OpenInventory;
     public VoidEventChannelSO m_ExitInventory;
+    public NodeEventChannelSO m_RestockStore;
 
     private void OnEnable()
     {
@@ -43,7 +50,7 @@ public class UIInventoryManager : MonoBehaviour
 
     private void DisplayInventory(EntityPiece entity)
     {
-        DOTween.To(() => inventoryGroup.alpha, x => inventoryGroup.alpha = x, 1, 0.25f);
+        FadeTo(inventoryGroup, 1, 0.25f);
 
         //inventoryCanvas.enabled = true;
         HideSelectedItemDetails();
@@ -86,7 +93,7 @@ public class UIInventoryManager : MonoBehaviour
 
     private void HideInventory()
     {
-        DOTween.To(() => inventoryGroup.alpha, x => inventoryGroup.alpha = x, 0, 0.25f);
+        FadeTo(inventoryGroup, 0, 0.25f);
         //inventoryCanvas.enabled = false;
     }
 
@@ -120,7 +127,7 @@ public class UIInventoryManager : MonoBehaviour
         selectedItemIcon.enabled = true;
 
         selectedItemInfo[0].text = $"{playerInventory[index].itemName}";
-        selectedItemInfo[1].text = $"<color=#C3B789>@</color>{playerInventory[index].basePrice}";
+        selectedItemInfo[1].text = $"<color=yellow>@</color>{playerInventory[index].basePrice}";
         selectedItemInfo[2].text = $"{playerInventory[index].effectDescription}";
         selectedItemInfo[3].text = $"{playerInventory[index].flavorText}";
     }
@@ -134,5 +141,45 @@ public class UIInventoryManager : MonoBehaviour
         selectedItemInfo[1].text = "";
         selectedItemInfo[2].text = "";
         selectedItemInfo[3].text = "";
+    }
+
+    public void ShowStoreStock(MapNode node)
+    {
+        FadeTo(storestockGroup, 1, 0.25f);
+
+        var storeInv = node.GetComponent<StoreManager>().storeInventory;
+        ItemStats storeItem = null;
+
+        for (int i = 0; i < storestockNames.Count; i++)
+        {
+            if (i < storeInv.Count)
+            {
+                storeItem = storeInv[i];
+            }
+
+            if (storeItem == null || i >= storeInv.Count)
+            {
+                storestockIcons[i].sprite = null;
+                storestockIcons[i].enabled = false;
+                storestockNames[i].text = "";
+                storestockPrices[i].text = "";
+
+                storestockNames[i].GetComponentInParent<Button>().interactable = false;
+            }
+            else
+            {
+                storestockIcons[i].sprite = storeItem.itemSprite;
+                storestockIcons[i].enabled = true;
+                storestockNames[i].text = $"{storeItem.itemName}";
+                storestockPrices[i].text = $"<color=yellow>@</color>{storeItem.basePrice}";
+
+                storestockNames[i].GetComponentInParent<Button>().interactable = false;
+            }
+        }
+    }
+
+    public void FadeTo(CanvasGroup group, float alphaValue, float duration)
+    {
+        DOTween.To(() => group.alpha, x => group.alpha = x, alphaValue, duration);
     }
 }
