@@ -6,6 +6,7 @@ public class SoundManager : MonoBehaviour
 {
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private List<AudioClip> soundList;
+    private AudioClip currentClip;
 
     private EntityPiece stupidFuck;
 
@@ -90,11 +91,15 @@ public class SoundManager : MonoBehaviour
 
     private void PlayDiceRollSound(EntityPiece entity)
     {
-        audioSource.PlayOneShot(soundList[1], 1.2f);
+        audioSource.clip = soundList[1];
+        audioSource.Play();
+        currentClip = soundList[1];
     }
 
     private void PlayDiceHitSound(int diceValue)
     {
+        audioSource.Stop();
+        audioSource.clip = null;
         audioSource.PlayOneShot(soundList[2], 2f);
     }
 
