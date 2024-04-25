@@ -253,13 +253,9 @@ public class GameplayTest : MonoBehaviour
             Debug.Log(s);
         }
 
-        // Regenerate health from active effects.
-        p.health = Mathf.Min(p.maxHealth, p.health + p.currentStatsModifier.healthRegen);
+        ApplyItemEffects(p);
 
         p.UpdateStatModifiers();
-
-        // Update score display.
-        m_UpdatePlayerScore.RaiseEvent(p.id);
 
         phase = GamePhase.InitialTurnMenu;
     }
@@ -970,10 +966,29 @@ public class GameplayTest : MonoBehaviour
         else
         {
             currentPlayer.AddItemToActiveEffects(currentPlayer.inventory[index].Duration, currentPlayer.inventory[index]);
+
+            ApplyItemEffects(currentPlayer);
+
             currentPlayer.UpdateStatModifiers();
+
             currentPlayer.inventory.RemoveAt(index);
             playerUsedItem = true;
         }        
+    }
+
+    private void ApplyItemEffects(EntityPiece p)
+    {
+        // Regenerate health from active effects.
+        p.health = Mathf.Min(p.maxHealth, p.health + p.currentStatsModifier.healthRegen);
+
+        m_UpdatePlayerScore.RaiseEvent(p.id);
+
+        // Warp player to specified destination.
+        p.occupiedNode = p.currentStatsModifier.warpDestination;
+        p.transform.position = p.occupiedNode.transform.position;
+        p.occupiedNodeCopy = p.occupiedNode;
+        p.traveledNodes.Clear();
+        p.traveledNodes.Add(p.occupiedNode);
     }
 
     private void RemoveDeathsRow(int id)
