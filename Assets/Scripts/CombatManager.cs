@@ -23,6 +23,9 @@ public class CombatManager : MonoBehaviour
     private EntityPiece attacker;
     private EntityPiece defender;
 
+    // Entity that loses the battle i.e. dies.
+    private EntityPiece loser;
+
     private int attackerAction; // Stores the move chosen by either player before playTurn() actually plays them out
     private int defenderAction;
 
@@ -289,6 +292,7 @@ public class CombatManager : MonoBehaviour
     // Decides the consequences of either the initiator/retaliator losing before destroying the scene
     public void endCombat()
     {
+        // Might want to change this if the player defeated is in Death's Row.
         m_EntityDied.RaiseEvent(retaliator, null);
         if (endingCombat == false) 
         {
@@ -302,6 +306,8 @@ public class CombatManager : MonoBehaviour
         if (initiatorWon)
         {
             Debug.Log("Initiator Wins!");
+
+            loser = retaliator;
 
             // Respawn defender at pawn shop with max health (or reset them as an enemy).
             retaliator.health = retaliator.maxHealth;
@@ -319,7 +325,6 @@ public class CombatManager : MonoBehaviour
             }
             else
             {
-
                 // Reset position of losing retaliator to spawn point.
                 retaliator.occupiedNode = sceneManager.spawnPoint;
                 retaliator.transform.position = retaliator.occupiedNode.transform.position;
@@ -327,10 +332,21 @@ public class CombatManager : MonoBehaviour
                 retaliator.traveledNodes.Clear();
                 retaliator.traveledNodes.Add(retaliator.occupiedNode);
 
-                // Add defender's points to attacker's points 
-                float points = 0.5f * retaliator.heldPoints;
-                initiator.heldPoints += Mathf.FloorToInt(points);
-                retaliator.heldPoints -= Mathf.CeilToInt(points);
+                // Change of money between the two players.
+                if (initiator.isInDeathsRow)
+                {
+                    // Player in Death's Row has negative points so flip sign to equalize.
+                    retaliator.heldPoints -= (-initiator.heldPoints);
+                    initiator.heldPoints = 0;
+                    initiator.isInDeathsRow= false;
+                }
+                else
+                {
+                    // Add defender's points to attacker's points 
+                    float points = 0.5f * retaliator.heldPoints;
+                    retaliator.heldPoints -= Mathf.CeilToInt(points);
+                    initiator.heldPoints += Mathf.FloorToInt(points);
+                }
 
                 // Base 100 xp, times 2 for every level the opponent is above you.
                 float pointgain = 100 * Mathf.Pow(2, retaliator.RenownLevel - initiator.RenownLevel);
@@ -347,6 +363,7 @@ public class CombatManager : MonoBehaviour
         {
             Debug.Log("Retaliator Wins!");
 
+            loser = initiator;
             // Respawn losing attacker at pawn shop with max health.
             initiator.health = initiator.maxHealth;
 
@@ -356,10 +373,21 @@ public class CombatManager : MonoBehaviour
             initiator.traveledNodes.Clear();
             initiator.traveledNodes.Add(initiator.occupiedNode);
 
-            // Add attacker's points to defender's points 
-            float points = 0.5f * initiator.heldPoints;
-            retaliator.heldPoints += Mathf.FloorToInt(points);
-            initiator.heldPoints -= Mathf.CeilToInt(points);
+            // Change of money between the two players.
+            if (retaliator.isInDeathsRow)
+            {
+                // Player in Death's Row has negative points so flip sign to equalize.
+                initiator.heldPoints -= (-retaliator.heldPoints);
+                retaliator.heldPoints = 0;
+                retaliator.isInDeathsRow = false;
+            }
+            else
+            {
+                // Add attacker's points to defender's points 
+                float points = 0.5f * initiator.heldPoints;
+                initiator.heldPoints -= Mathf.CeilToInt(points);
+                retaliator.heldPoints += Mathf.FloorToInt(points);
+            }
 
             float pointgain = 100 * Mathf.Pow(2, initiator.RenownLevel - retaliator.RenownLevel);
 
@@ -381,7 +409,12 @@ public class CombatManager : MonoBehaviour
         player1.combatSceneIndex = -1;
         player2.combatSceneIndex = -1;
 
-        sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
+        // If the player defeated is in Death's Row, end the game. Otherwise, go to the next player's turn.
+        if (!loser.isEnemy && loser.isInDeathsRow)
+            sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
+        else
+            sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndGame);
+
         sceneManager.UnloadCombatScene(SceneManager.GetSceneAt(combatSceneIndex), combatSceneIndex);
 
         // Re-enable scene
@@ -391,7 +424,6 @@ public class CombatManager : MonoBehaviour
         sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(initiator.id);
         if (!retaliator.isEnemy)
             sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(retaliator.id);
-        // wrap up the scene and transition back to board.
     }
 
     // Main code behind the combat system. This function is called every time both players select and action, calculating

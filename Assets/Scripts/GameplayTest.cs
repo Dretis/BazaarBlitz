@@ -34,7 +34,8 @@ public class GameplayTest : MonoBehaviour
         LevelUp,
         CombatTime,
         ConfirmContinue,
-        EndTurn
+        EndTurn,
+        EndGame
     }
 
     public int turn = 1;
@@ -120,12 +121,14 @@ public class GameplayTest : MonoBehaviour
     {
         m_ItemBought.OnEventRaised += _PlaceholderChangeAndContinue;
         m_ItemUsed.OnEventRaised += RemoveItemInPlayerInventory;
+        m_UpdatePlayerScore.OnEventRaised += RemoveDeathsRow;
     }
 
     private void OnDisable()
     {
         m_ItemBought.OnEventRaised -= _PlaceholderChangeAndContinue;
         m_ItemUsed.OnEventRaised -= RemoveItemInPlayerInventory;
+        m_UpdatePlayerScore.OnEventRaised -= RemoveDeathsRow;
     }
 
     // Start is called before the first frame update
@@ -225,6 +228,11 @@ public class GameplayTest : MonoBehaviour
             // End of turn, next player!
             case GamePhase.EndTurn:
                 EndOfTurn(currentPlayer);
+                break;
+            
+            // Game over! Someone has won!
+            case GamePhase.EndGame:
+                EndGame();
                 break;
         }
     }
@@ -468,14 +476,7 @@ public class GameplayTest : MonoBehaviour
                 m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
                 m_PassByPawnShop.RaiseEvent(); // change this later
             }
-
             p.stamps.Clear();
-            if(p.heldPoints >= 4000)
-            {
-                Debug.Log(p +" wins!");
-                encounterScreen.SetActive(true);
-                resultInfo.text = $"{p.entityName} WINS!!!";
-            }
         }
         else if (m.CompareTag("Stamp"))
         {
@@ -490,7 +491,12 @@ public class GameplayTest : MonoBehaviour
             }
         }
 
-        if (p.movementLeft <= 0)
+        // Change phase.
+        if (p.heldPoints >= 4000)
+        {
+            phase = GamePhase.EndGame;
+        }
+        else if (p.movementLeft <= 0)
         {
             p.traveledNodes.Clear(); // Forget all the nodes traveled to
             p.traveledNodes.Add(p.occupiedNode); //i need this i guess
@@ -918,6 +924,17 @@ public class GameplayTest : MonoBehaviour
         phase = GamePhase.ItemSelection;
     }
 
+    void EndGame()
+    {
+        // The player with the most points wins!
+        var winningPlayer = playerUnits.OrderBy(playerUnit => playerUnit.heldPoints).LastOrDefault();
+
+        // UPDATE WITH ACTUAL END GAME UI, AND MAKE IN DIFFERENT SCRIPT WITH EVENT RAISED HERE.
+        Debug.Log(winningPlayer.entityName + " is the KING OF THE MARKET!");
+        encounterScreen.SetActive(true);
+        resultInfo.text = $"{winningPlayer.entityName} WINS!!!";
+    }
+
     private void _PlaceholderChangeAndContinue(ItemStats item)
     {
         // When an item is bought, allow confirmation via SPACE bar to continue the game
@@ -948,6 +965,15 @@ public class GameplayTest : MonoBehaviour
             currentPlayer.inventory.RemoveAt(index);
             playerUsedItem = true;
         }        
+    }
+
+    private void RemoveDeathsRow(int id)
+    {
+        if (playerUnits[id].heldPoints >= 0)
+        {
+            Debug.Log(playerUnits[id].entityName + " is no longer in Death's Row");
+            playerUnits[id].isInDeathsRow = false;
+        }
     }
 
     public void PlayAudio(AudioClip clip)

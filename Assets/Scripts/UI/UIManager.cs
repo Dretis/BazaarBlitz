@@ -84,22 +84,6 @@ public class UIManager : MonoBehaviour
         storekeeperImage.color = currentStore.playerOwner.playerColor;
         StockItems(itemInventory);
 
-        // Enable buying of items.
-        foreach (var button in itemButtons)
-        {
-            button.interactable = true;
-        }
-
-        foreach (var itemSelectionHandler in itemSelectionHandlers)
-        {
-            itemSelectionHandler.enabled = true;
-        }
-
-        foreach (var itemSelectionTrigger in itemSelectionTriggers)
-        {
-            itemSelectionTrigger.enabled = true;
-        }
-
         // If no item exists that is affordable to the player, enter Death's Row.
         if (!itemInventory.Exists(item => currentPlayer.heldPoints >= item.basePrice))
         {
