@@ -138,7 +138,7 @@ public class GameplayTest : MonoBehaviour
     }
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         instance = this;
         audioSource = GetComponent<AudioSource>();
@@ -161,10 +161,13 @@ public class GameplayTest : MonoBehaviour
         //currentPlayer = nextPlayers[playerUnits.Count - 1];
         currentPlayerInitialNode = currentPlayer.occupiedNode;
 
-        m_NextPlayerTurn.RaiseEvent(currentPlayer);
-
         turnText.text = currentPlayer.entityName + "'s Turn!";
         turnText.color = currentPlayer.playerColor;
+    }
+
+    private void Start()
+    {
+        m_NextPlayerTurn.RaiseEvent(currentPlayer);
     }
 
     // Update is called once per frame
