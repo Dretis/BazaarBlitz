@@ -23,6 +23,8 @@ public class UIPromptManager : MonoBehaviour
 
     public PlayerEventChannelSO m_OpenInventory;
     public VoidEventChannelSO m_ExitInventory;
+    public NodeEventChannelSO m_RestockStore;
+
     public PlayerEventChannelSO m_OverturnOpportunity;
     public IntEventChannelSO m_ItemUsed;
 
@@ -49,10 +51,13 @@ public class UIPromptManager : MonoBehaviour
         m_OpenInventory.OnEventRaised += HideInitialMenu;
         m_ExitInventory.OnEventRaised += DisplayInitialMenu;
 
+        m_RestockStore.OnEventRaised += ClearInputText;
+
         m_OverturnOpportunity.OnEventRaised += DisplayOverturnChoices;
 
         m_ItemUsed.OnEventRaised += StrikethroughInventoryPrompt;
 
+        m_EnableFreeview.OnEventRaised += DisplayFreeviewPrompt;
         m_EnableFreeview.OnEventRaised += HideInitialMenu;
         m_ExitRaycastedTile.OnEventRaised += DisplayInitialMenu;
     }
@@ -68,8 +73,11 @@ public class UIPromptManager : MonoBehaviour
         m_LandOnStorefront.OnEventRaised -= DisplayStorefrontPrompt;
         m_ItemSold.OnEventRaised -= DisplayLeavePrompt;
 
+        m_EnableFreeview.OnEventRaised -= DisplayFreeviewPrompt;
         m_OpenInventory.OnEventRaised -= HideInitialMenu;
         m_ExitInventory.OnEventRaised -= DisplayInitialMenu;
+
+        m_RestockStore.OnEventRaised -= ClearInputText;
 
         m_OverturnOpportunity.OnEventRaised -= DisplayOverturnChoices;
 
@@ -114,24 +122,25 @@ public class UIPromptManager : MonoBehaviour
         // This will get swapped out with a menu selection
         inputPrompt.text = "<color=white>[SPACE]</color> to roll!";
         inputPrompt.text += "\n<color=white>[LSHIFT]</color> to go back.";
-        movementRoll.text = "-";
 
         HideInitialMenu();
     }
 
+    private void DisplayFreeviewPrompt()
+    {
+        inputPrompt.text = "<color=white>[Left Click]</color> View Tile Details";
+        inputPrompt.text += "\n<color=white>[Right Click]</color> Back";
+    }
+
     private void DisplayInitialMenu(EntityPiece ps)
     {
-        inputPrompt.text = "";
-        movementRoll.text = "-";
-
+        ClearInputText();
         menuPrompt.SetActive(true);
     }
 
     private void DisplayInitialMenu()
     {
-        inputPrompt.text = "";
-        movementRoll.text = "-";
-
+        ClearInputText();
         menuPrompt.SetActive(true);
     }
 
@@ -155,6 +164,13 @@ public class UIPromptManager : MonoBehaviour
     private void ClearInputText()
     {
         inputPrompt.text = "";
+        movementRoll.text = "";
+    }
+
+    private void ClearInputText(MapNode node)
+    {
+        inputPrompt.text = "";
+        movementRoll.text = "";
     }
 
     private void DisplayStorefrontPrompt(MapNode mapNode)
@@ -176,7 +192,7 @@ public class UIPromptManager : MonoBehaviour
 
     private void StrikethroughInventoryPrompt(int index)
     {
-        inventoryPromptText.text = "<s><color=grey>[S] Item</color></s>";
+        inventoryPromptText.text = "<color=grey>[S] Item</color>";
     }
 
     private void DisplayOverturnChoices(EntityPiece storeOwner)
