@@ -149,7 +149,7 @@ public class UIManager : MonoBehaviour
 
     private void RemoveItemStockAt(int i)
     {
-        if (currentPlayer.heldPoints >= itemInventory[i].basePrice)
+        if (currentPlayer.isInDeathsRow || currentPlayer.heldPoints >= itemInventory[i].basePrice)
         {
             // Visually remove the item from the list of items in the store
             var itemImage = itemInventoryImages[i];
