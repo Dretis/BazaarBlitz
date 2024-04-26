@@ -253,9 +253,9 @@ public class GameplayTest : MonoBehaviour
             Debug.Log(s);
         }
 
-        ApplyItemEffects(p);
-
         p.UpdateStatModifiers();
+
+        ApplyItemEffects(p);
 
         phase = GamePhase.InitialTurnMenu;
     }
@@ -967,9 +967,9 @@ public class GameplayTest : MonoBehaviour
         {
             currentPlayer.AddItemToActiveEffects(currentPlayer.inventory[index].Duration, currentPlayer.inventory[index]);
 
-            ApplyItemEffects(currentPlayer);
-
             currentPlayer.UpdateStatModifiers();
+
+            ApplyItemEffects(currentPlayer);
 
             currentPlayer.inventory.RemoveAt(index);
             playerUsedItem = true;
