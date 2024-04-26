@@ -253,9 +253,9 @@ public class GameplayTest : MonoBehaviour
             Debug.Log(s);
         }
 
-        ApplyItemEffects(p);
-
         p.UpdateStatModifiers();
+
+        ApplyItemEffects(p);
 
         phase = GamePhase.InitialTurnMenu;
     }
@@ -967,9 +967,9 @@ public class GameplayTest : MonoBehaviour
         {
             currentPlayer.AddItemToActiveEffects(currentPlayer.inventory[index].Duration, currentPlayer.inventory[index]);
 
-            ApplyItemEffects(currentPlayer);
-
             currentPlayer.UpdateStatModifiers();
+
+            ApplyItemEffects(currentPlayer);
 
             currentPlayer.inventory.RemoveAt(index);
             playerUsedItem = true;
@@ -984,11 +984,14 @@ public class GameplayTest : MonoBehaviour
         m_UpdatePlayerScore.RaiseEvent(p.id);
 
         // Warp player to specified destination.
-        p.occupiedNode = p.currentStatsModifier.warpDestination;
-        p.transform.position = p.occupiedNode.transform.position;
-        p.occupiedNodeCopy = p.occupiedNode;
-        p.traveledNodes.Clear();
-        p.traveledNodes.Add(p.occupiedNode);
+        if (currentPlayer.currentStatsModifier.warpDestination != null) 
+        {
+            p.occupiedNode = p.currentStatsModifier.warpDestination;
+            p.transform.position = p.occupiedNode.transform.position;
+            p.occupiedNodeCopy = p.occupiedNode;
+            p.traveledNodes.Clear();
+            p.traveledNodes.Add(p.occupiedNode);
+        }
     }
 
     private void RemoveDeathsRow(int id)
