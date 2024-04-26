@@ -10,14 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fdd1368eedb123d4db8a885acb84d3a9, type: 3}
-  m_Name: Potato
+  m_Name: Lychee
   m_EditorClassIdentifier: 
-  itemName: Potato
-  duration: 1
+  itemName: Lychee
+  duration: 4
   itemSprite: {fileID: 1420039512, guid: 3eb884c20bf4ccf4c998c0de17a982eb, type: 3}
-  effectDescription: Boosts your next attack by 20 damage.
-  flavorText: '"Also known as the earth apple and a trusty companion when things
-    get tough!"'
-  basePrice: 350
+  effectDescription: Heal 10 HP immediately, then heal 10 HP at the start of the
+    next 3 turns.
+  flavorText: '"This little red superstar has won the hearts and tastebuds of people
+    all over the world! Just don''t swallow the pits."'
+  basePrice: 200
   modifiers:
-  - {fileID: 11400000, guid: 18f104533345a7c48906f1950cf891e9, type: 2}
+  - {fileID: 11400000, guid: 62012388a1935fa4badede1c7728593a, type: 2}

@@ -9,11 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc5c01a00c5785a45bbd962c163ac0de, type: 3}
-  m_Name: FlatDamageMod_(1,1)
+  m_Script: {fileID: 11500000, guid: 6172ec047ec287041b063d9bc794f585, type: 3}
+  m_Name: RandomHealthRegen10,30Mod(1,1)
   m_EditorClassIdentifier: 
   activateEffectStartTurn: 1
   activateEffectEndTurn: 1
-  flatModifier: 20
-  multModifier: 1
-  consumable: 0
+  healthRegenMin: 10
+  healthRegenMax: 30
