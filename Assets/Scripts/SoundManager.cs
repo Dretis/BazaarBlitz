@@ -99,6 +99,7 @@ public class SoundManager : MonoBehaviour
     private void PlayDiceHitSound(int diceValue)
     {
         audioSource.Stop();
+        audioSource.clip = null;
         audioSource.PlayOneShot(soundList[2], 2f);
     }
 

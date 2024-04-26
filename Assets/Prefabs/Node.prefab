@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5360240772892884666}
   - component: {fileID: 3179785234722277277}
   - component: {fileID: 3468267535802386402}
+  - component: {fileID: 6593633649207188595}
   m_Layer: 0
   m_Name: Node
   m_TagString: Untagged
@@ -102,3 +103,19 @@ MonoBehaviour:
   east: {fileID: 0}
   south: {fileID: 0}
   west: {fileID: 0}
+--- !u!58 &6593633649207188595
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3637374162590643598}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0.15}
+  serializedVersion: 2
+  m_Radius: 0.3

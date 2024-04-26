@@ -22,9 +22,9 @@ public class CameraObserver : MonoBehaviour
     }
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        vcam = GetComponent<CinemachineVirtualCamera>();
+        vcam = GetComponentInChildren<CinemachineVirtualCamera>();
     }
 
     void SwitchTargetFocus(EntityPiece entity)

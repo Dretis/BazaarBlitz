@@ -58,6 +58,7 @@ public class GameplayTest : MonoBehaviour
     public MapNode wantedNode;
     private SceneGameManager sceneManager;
 
+    private bool freeviewEnabled = false;
     public bool encounterStarted = false;
     private bool playerUsedItem = false; // please change these down the line
     public bool isStockingStore = false;
@@ -87,6 +88,7 @@ public class GameplayTest : MonoBehaviour
 
     // Event Channels
     [Header("Broadcast on Event Channels")]
+    public VoidEventChannelSO m_EnableFreeview;
     public PlayerEventChannelSO m_DiceRollUndo;
     public PlayerEventChannelSO m_DiceRollPrep;
     public IntEventChannelSO m_RollForMovement;
@@ -114,6 +116,7 @@ public class GameplayTest : MonoBehaviour
     [Header("Listen on Event Channels")]
     public ItemEventChannelSO m_ItemBought; //Listening to this one
     public IntEventChannelSO m_ItemUsed; //Listening to this one
+    public VoidEventChannelSO m_ExitRaycastedTile; //Listening to this one
 
     // Placeholder code, basis items for storefront
     public List<ItemStats> tempItems;
@@ -123,6 +126,7 @@ public class GameplayTest : MonoBehaviour
         m_ItemBought.OnEventRaised += _PlaceholderChangeAndContinue;
         m_ItemUsed.OnEventRaised += RemoveItemInPlayerInventory;
         m_UpdatePlayerScore.OnEventRaised += RemoveDeathsRow;
+        m_ExitRaycastedTile.OnEventRaised += DisableFreeview;
     }
 
     private void OnDisable()
@@ -130,10 +134,11 @@ public class GameplayTest : MonoBehaviour
         m_ItemBought.OnEventRaised -= _PlaceholderChangeAndContinue;
         m_ItemUsed.OnEventRaised -= RemoveItemInPlayerInventory;
         m_UpdatePlayerScore.OnEventRaised -= RemoveDeathsRow;
+        m_ExitRaycastedTile.OnEventRaised -= DisableFreeview;
     }
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         instance = this;
         audioSource = GetComponent<AudioSource>();
@@ -156,10 +161,13 @@ public class GameplayTest : MonoBehaviour
         //currentPlayer = nextPlayers[playerUnits.Count - 1];
         currentPlayerInitialNode = currentPlayer.occupiedNode;
 
-        m_NextPlayerTurn.RaiseEvent(currentPlayer);
-
         turnText.text = currentPlayer.entityName + "'s Turn!";
         turnText.color = currentPlayer.playerColor;
+    }
+
+    private void Start()
+    {
+        m_NextPlayerTurn.RaiseEvent(currentPlayer);
     }
 
     // Update is called once per frame
@@ -262,9 +270,14 @@ public class GameplayTest : MonoBehaviour
 
     private void InitialTurnMenu(EntityPiece p)
     {
+        if (freeviewEnabled)
+            return;
+
         if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
         {
             // This should let you look around the map freely.
+            m_EnableFreeview.RaiseEvent();
+            freeviewEnabled = true;
         }
         if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
         {
@@ -295,11 +308,11 @@ public class GameplayTest : MonoBehaviour
 
             phase = GamePhase.Inventory;
         }
-        if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
+        if (Input.GetKeyDown(KeyCode.Tab))
         {
             howToPlayScreen.enabled = true;
         }
-        if (Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.A))
+        if (Input.GetKeyUp(KeyCode.Tab))
         {
             howToPlayScreen.enabled = false;
         }
@@ -550,7 +563,7 @@ public class GameplayTest : MonoBehaviour
                 {
                     isStockingStore = true;
                     m_RestockStore.RaiseEvent(m);
-                    m_OpenInventory.RaiseEvent(p); // COMMENT THIS OUT WHEN RAISING THE RESTOCK EVENT
+                    //m_OpenInventory.RaiseEvent(p); // COMMENT THIS OUT WHEN RAISING THE RESTOCK EVENT
                     storestockTooltip.enabled = true; // PROBABLY PUT THIS IN UI AS WELL
                     phase = GamePhase.StockStore;
                     /*
@@ -649,12 +662,12 @@ public class GameplayTest : MonoBehaviour
                 m_EncounterDecision.RaiseEvent(currentPlayer);
 
                 // Monster Encounter
-                if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
+                if (Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKeyDown(KeyCode.Space))
                 {
                     phase = GamePhase.RockPaperScissors;
                 }
                 // Build a Store
-                else if (Input.GetKeyDown(KeyCode.RightShift) || Input.GetKeyDown(KeyCode.LeftShift))
+                else if (Input.GetKeyDown(KeyCode.Mouse1) || Input.GetKeyDown(KeyCode.RightShift) || Input.GetKeyDown(KeyCode.LeftShift))
                 {
                     p.storeCount++;
                     p.heldPoints -= 200;
@@ -672,7 +685,8 @@ public class GameplayTest : MonoBehaviour
 
                     isStockingStore = true;
 
-                    m_OpenInventory.RaiseEvent(p);
+                    //m_OpenInventory.RaiseEvent(p);
+                    m_RestockStore.RaiseEvent(m);
                     /*
                     // randomly pick 3 items to put into the base store stock
                     for (int i = 0; i < 3; i++)
@@ -710,7 +724,7 @@ public class GameplayTest : MonoBehaviour
         else
         {
             // Overturn.
-            if (Input.GetKeyDown(KeyCode.RightShift) || Input.GetKeyDown(KeyCode.LeftShift))
+            if (Input.GetKeyDown(KeyCode.RightShift) || Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.Mouse1))
             {
                 GameObject tile = m.gameObject;
                 tile.GetComponent<SpriteRenderer>().color = currentPlayer.playerColor;
@@ -728,7 +742,6 @@ public class GameplayTest : MonoBehaviour
                 isStockingStore = true;
 
                 m_RestockStore.RaiseEvent(m);
-                m_OpenInventory.RaiseEvent(p); // COMMENT THIS OUT WHEN RAISING THE RESTOCK EVENT
                 storestockTooltip.enabled = true; // PROBABLY PUT THIS IN UI AS WELL
                 phase = GamePhase.StockStore;
                 /*
@@ -745,7 +758,7 @@ public class GameplayTest : MonoBehaviour
                 phase = GamePhase.EndTurn;
                 */
             }
-            else if (Input.GetKeyDown(KeyCode.Space)) // Don't overturn.
+            else if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Mouse0)) // Don't overturn.
             {
                 phase = GamePhase.EndTurn;
             }
@@ -913,7 +926,9 @@ public class GameplayTest : MonoBehaviour
         isStockingStore = false; // let next player access inventory
         playerUsedItem = false; // let next player access inventory
 
-        // Change to the next player in the list.
+        m_UpdatePlayerScore.RaiseEvent(0);
+
+        // Change to the next player in the list (if their turn is not skipped).
 
         nextPlayers.Remove(currentPlayer);
         nextPlayers.Add(currentPlayer);
@@ -1061,5 +1076,10 @@ public class GameplayTest : MonoBehaviour
             playerDiceNumbers[i].text = $"{entity.intDie[faceIndex]}";
             faceIndex++;
         }
+    }
+
+    public void DisableFreeview()
+    {
+        freeviewEnabled = false;
     }
 }
