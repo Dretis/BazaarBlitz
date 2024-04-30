@@ -14,7 +14,7 @@ public class UIInventoryManager : MonoBehaviour
     [SerializeField] private CanvasGroup inventoryGroup;
     [SerializeField] private List<Image> itemIcons;
     [SerializeField] private List<TextMeshProUGUI> itemNames;
-    [SerializeField] private List<TextMeshProUGUI> itemPrices;
+    //[SerializeField] private List<TextMeshProUGUI> itemPrices;
 
     [Header("Selected Item Details")]
     [SerializeField] private Image selectedItemIcon;
@@ -84,7 +84,7 @@ public class UIInventoryManager : MonoBehaviour
                 itemIcons[i].sprite = null;
                 itemIcons[i].enabled = false;
                 itemNames[i].text = "";
-                itemPrices[i].text = "";
+                //itemPrices[i].text = "";
 
                 itemNames[i].GetComponentInParent<Button>().interactable = false;
             }
@@ -93,7 +93,7 @@ public class UIInventoryManager : MonoBehaviour
                 itemIcons[i].sprite = playerItem.itemSprite;
                 itemIcons[i].enabled = true;
                 itemNames[i].text = $"{playerItem.itemName}";
-                itemPrices[i].text = $"<color=#C3B789>@</color>{playerItem.basePrice}";
+                //itemPrices[i].text = $"<color=#C3B789>@</color>{playerItem.basePrice}";
 
                 itemNames[i].GetComponentInParent<Button>().interactable = true;
             }
@@ -116,7 +116,7 @@ public class UIInventoryManager : MonoBehaviour
             itemIcons[index].sprite = null;
             itemIcons[index].enabled = false;
             itemNames[index].text = "";
-            itemPrices[index].text = "";
+            //itemPrices[index].text = "";
             for (int i = 0; i < itemNames.Count; i++)
             {
                 // Make the rest of the inventory interactable, prevents multiple item uses in one turn

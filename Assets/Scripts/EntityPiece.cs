@@ -7,8 +7,11 @@ public class EntityPiece : MonoBehaviour
 {
     public string entityName;
     public int id;
+
+    private PlayerPaletteLoader paletteLoader;
     public Color playerColor; // idk man
     public SpriteRenderer playerSprite; // idk man
+
     public MapNode occupiedNode; // Node player is currently on
     public MapNode occupiedNodeCopy; // Node player is currently on
     public List<MapNode> traveledNodes = new List<MapNode>(); // Tracks the nodes the player has gone to
@@ -113,9 +116,14 @@ public class EntityPiece : MonoBehaviour
     }
     
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        if (playerSprite != null)
+        paletteLoader = gameObject.GetComponent<PlayerPaletteLoader>() as PlayerPaletteLoader;
+
+        // otherwise use the first/main color in the palette
+        if (paletteLoader != null)
+            playerColor = paletteLoader.GetInspectorPaletteColor(0);
+        else if (playerSprite != null) // enemy thing
             playerSprite.color = playerColor;
         
         if (occupiedNode != null)
