@@ -347,6 +347,9 @@ public class GameplayTest : MonoBehaviour
                     rollsRemaining--;
                 }
 
+                diceRoll += currentPlayer.currentStatsModifier.movementFlatModifier;
+                diceRoll *= currentPlayer.currentStatsModifier.movementMultModifier;
+
                 // We just rolled for movement, tell listeners about it
                 m_RollForMovement.RaiseEvent(diceRoll);
 

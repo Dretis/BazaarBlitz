@@ -18,6 +18,8 @@ public class EntityStatsModifiers
     public float lifestealMult = 0;
     public int healthRegen = 0;
     public int rollModifier;
+    public int movementFlatModifier = 0;
+    public int movementMultModifier = 1;
     public MapNode warpDestination = null;
     public float ApplyDieModifier(EntityBaseStats.DieTypes dieType, float baseRollValue)
     {
