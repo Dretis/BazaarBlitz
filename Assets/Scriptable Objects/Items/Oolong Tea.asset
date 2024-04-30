@@ -10,14 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fdd1368eedb123d4db8a885acb84d3a9, type: 3}
-  m_Name: Potato
+  m_Name: Oolong Tea
   m_EditorClassIdentifier: 
-  itemName: Potato
+  itemName: Oolong Tea
   duration: 1
   itemSprite: {fileID: 1420039512, guid: 3eb884c20bf4ccf4c998c0de17a982eb, type: 3}
-  effectDescription: Boosts your next attack by 20 damage.
-  flavorText: '"Also known as the earth apple and a trusty companion when things
-    get tough!"'
+  effectDescription: Heal 10-30 and add 1-3 to your movement roll
+  flavorText: '"Can''t decide whether you want the bitterness of a black tea or the
+    healthy benefits of a green tea? Have some of both with an oolong tea! (Results
+    may vary)"'
   basePrice: 350
   modifiers:
-  - {fileID: 11400000, guid: 18f104533345a7c48906f1950cf891e9, type: 2}
+  - {fileID: 11400000, guid: de625216a5d2d86438edb9c1c17c0875, type: 2}
+  - {fileID: 0}

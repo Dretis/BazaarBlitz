@@ -984,7 +984,7 @@ public class GameplayTest : MonoBehaviour
         m_UpdatePlayerScore.RaiseEvent(p.id);
 
         // Warp player to specified destination.
-        if (currentPlayer.currentStatsModifier.warpDestination != null) 
+        if (p.currentStatsModifier.warpDestination != null)
         {
             p.occupiedNode = p.currentStatsModifier.warpDestination;
             p.transform.position = p.occupiedNode.transform.position;

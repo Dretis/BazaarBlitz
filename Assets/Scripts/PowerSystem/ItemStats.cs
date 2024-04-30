@@ -47,7 +47,12 @@ public class ItemStats : ScriptableObject, IStatModifierChanger
 
             // Apply mod effect if in range of start and end turns.
             if (currentTurn >= effectStartTurn && currentTurn <= effectEndTurn)
+            {
+                Debug.Log("Current Turn: " + currentTurn);
+                Debug.Log("My effect is activating.");
                 currentStats = modifier.ApplyStatModChanges(currentStats, currentTurn);
+            }
+                
         }
 
         return currentStats;
