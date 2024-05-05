@@ -255,7 +255,7 @@ public class GameplayTest : MonoBehaviour
 
         p.UpdateStatModifiers();
 
-        ApplyItemEffects(p);
+        ApplyItemEffectsOnTurnStart(p);
 
         phase = GamePhase.InitialTurnMenu;
     }
@@ -347,8 +347,9 @@ public class GameplayTest : MonoBehaviour
                     rollsRemaining--;
                 }
 
-                diceRoll += currentPlayer.currentStatsModifier.movementFlatModifier;
+                // Apply movement item effects.
                 diceRoll *= currentPlayer.currentStatsModifier.movementMultModifier;
+                diceRoll += currentPlayer.currentStatsModifier.movementFlatModifier;    
 
                 // We just rolled for movement, tell listeners about it
                 m_RollForMovement.RaiseEvent(diceRoll);
@@ -555,31 +556,7 @@ public class GameplayTest : MonoBehaviour
                     m_RestockStore.RaiseEvent(m);
                     m_OpenInventory.RaiseEvent(p); // COMMENT THIS OUT WHEN RAISING THE RESTOCK EVENT
                     storestockTooltip.enabled = true; // PROBABLY PUT THIS IN UI AS WELL
-                    phase = GamePhase.StockStore;
-                    /*
-                    // Placeholder restock your store on landing
-
-                    for (int i = 0; i < 3; i++)
-                    {
-                        var randomNum = Random.Range(0, tempItems.Count);
-                        if (store.storeInventory[i] == null)
-                        {
-                            store.storeInventory[i] = (tempItems[randomNum]);
-                        }
-                    }
-
-                    // Placeholder restock
-                    storeListings.text = "";
-                    storeListingsLabel.text = "You restock your empty listings. This store now contains: ";
-                    foreach (var listing in store.storeInventory)
-                    {
-                        if (listing != null) storeListings.text += listing.itemName + "\n";
-                    }
-                    storeScreen.SetActive(true);
-
-                    encounterOver = true;
-                    phase = GamePhase.ConfirmContinue;
-                    */
+                    phase = GamePhase.StockStore;                  
                 }
             }
             else if (m.CompareTag("Castle")) //Stash your points
@@ -587,13 +564,6 @@ public class GameplayTest : MonoBehaviour
                 encounterScreen.SetActive(true);
                 p1fight.text = "";
                 p2fight.text = "";
-                /*
-                resultInfo.text = "<size=45>[STASHING]</size>\n" + p.heldPoints + " point(s) have been stashed. \n<size=30> You are now at " + p.finalPoints + ". </size>";
-
-                if (p.heldPoints != 0)
-                    p.finalPoints += p.heldPoints;
-                p.heldPoints = 0;
-                */
                 resultInfo.text = "<size=45>[PAWN SHOP]</size>\nLanded on pawn shop. All held stamps have been converted to points.\n<size=30> [SPACE] to continue.</size>";
 
                 encounterOver = true;
@@ -633,11 +603,6 @@ public class GameplayTest : MonoBehaviour
                 {
                     phase = GamePhase.EndTurn;
                 }
-                // instance combat scene
-                // Combat scene gets a reference to GameplayTest
-                // Combat scene calls function in gameplay test when someone wins, with winner
-                //   and player objects (so items stay used)
-                // That returns the winner, and points are stolen accordingly w/ phase++;encounterOver
             }
             else if (m.CompareTag("Encounter")) // Regular Encounter
             {
@@ -676,25 +641,7 @@ public class GameplayTest : MonoBehaviour
                     isStockingStore = true;
 
                     m_OpenInventory.RaiseEvent(p);
-                    /*
-                    // randomly pick 3 items to put into the base store stock
-                    for (int i = 0; i < 3; i++)
-                    {
-                        var randomNum = Random.Range(0, tempItems.Count);
-                        store.storeInventory.Add(tempItems[randomNum]);
-                    }
 
-                    storeListings.text = "";
-                    storeListingsLabel.text = "Store purchased! It's stocked up with:";
-
-                    foreach (var listing in store.storeInventory)
-                    {
-                        if (listing != null) storeListings.text += listing.itemName + "\n";
-                    }
-                    storeScreen.SetActive(true);
-                    encounterOver = true;
-                    phase = GamePhase.ConfirmContinue;
-                    */
                     storestockTooltip.enabled = true;
                     phase = GamePhase.StockStore;
 
@@ -734,19 +681,6 @@ public class GameplayTest : MonoBehaviour
                 m_OpenInventory.RaiseEvent(p); // COMMENT THIS OUT WHEN RAISING THE RESTOCK EVENT
                 storestockTooltip.enabled = true; // PROBABLY PUT THIS IN UI AS WELL
                 phase = GamePhase.StockStore;
-                /*
-                // Stock store
-                for (int i = 0; i < 3; i++)
-                {
-                    var randomNum = Random.Range(0, tempItems.Count);
-                    if (store.storeInventory[i] == null)
-                    {
-                        store.storeInventory[i] = (tempItems[randomNum]);
-                    }
-                }
-
-                phase = GamePhase.EndTurn;
-                */
             }
             else if (Input.GetKeyDown(KeyCode.Space)) // Don't overturn.
             {
@@ -972,14 +906,14 @@ public class GameplayTest : MonoBehaviour
 
             currentPlayer.UpdateStatModifiers();
 
-            ApplyItemEffects(currentPlayer);
+            ApplyItemEffectsOnTurnStart(currentPlayer);
 
             currentPlayer.inventory.RemoveAt(index);
             playerUsedItem = true;
         }        
     }
 
-    private void ApplyItemEffects(EntityPiece p)
+    private void ApplyItemEffectsOnTurnStart(EntityPiece p)
     {
         // Regenerate health from active effects.
         p.health = Mathf.Min(p.maxHealth, p.health + p.currentStatsModifier.healthRegen);
