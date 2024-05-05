@@ -1,3 +1,6 @@
+using UnityEngine;
+
+[CreateAssetMenu(menuName = "StatMods/MovementDieMultValueMod")]
 public class MovementDieMultValueMod : StatModifierChangerSO
 {
     public int movementMultModifier;

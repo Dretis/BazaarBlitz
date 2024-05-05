@@ -1,3 +1,6 @@
+using UnityEngine;
+
+[CreateAssetMenu(menuName = "StatMods/MovementDieFlatValueMod")]
 public class MovementDieFlatValueMod : StatModifierChangerSO
 {
     public int movementFlatModifier;

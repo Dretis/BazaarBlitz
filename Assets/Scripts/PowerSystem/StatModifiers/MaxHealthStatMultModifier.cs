@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[CreateAssetMenu(menuName = "StatMods/MaxHealthStatMultValueMod")]
 public class MaxHealthStatMultValueMod : StatModifierChangerSO
 {
     public int maxHealthMultModifier;
