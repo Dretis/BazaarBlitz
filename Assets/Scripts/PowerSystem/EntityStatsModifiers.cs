@@ -18,6 +18,8 @@ public class EntityStatsModifiers
     public float lifestealMult = 0;
     public int healthRegen = 0;
     public int rollModifier;
+    public int maxHealthFlatModifier = 0;
+    public int maxHealthMultModifier = 1;
     public int movementFlatModifier = 0;
     public int movementMultModifier = 1;
     public MapNode warpDestination = null;

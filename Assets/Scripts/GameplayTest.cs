@@ -916,7 +916,9 @@ public class GameplayTest : MonoBehaviour
     private void ApplyItemEffectsOnTurnStart(EntityPiece p)
     {
         // Regenerate health from active effects.
-        p.health = Mathf.Min(p.maxHealth, p.health + p.currentStatsModifier.healthRegen);
+        p.health = Mathf.Min(p.maxHealth * p.currentStatsModifier.maxHealthMultModifier 
+            + p.currentStatsModifier.maxHealthFlatModifier, 
+            p.health + p.currentStatsModifier.healthRegen);
 
         m_UpdatePlayerScore.RaiseEvent(p.id);
 

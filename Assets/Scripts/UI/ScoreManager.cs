@@ -79,7 +79,9 @@ public class ScoreManager : MonoBehaviour
         // playerNames[id].text = "" + players[id].nickname;
         playerNames[id].text = "" + players[id].entityName;
         playerScores[id].text = "<color=yellow>@</color> " + players[id].heldPoints;
-        playerHPs[id].text = "<color=red>HP</color> " + players[id].health + "/" + players[id].maxHealth;
+        playerHPs[id].text = "<color=red>HP</color> " + players[id].health + "/" + 
+            (players[id].maxHealth * players[id].currentStatsModifier.maxHealthMultModifier + 
+            players[id].currentStatsModifier.maxHealthFlatModifier);
         playerImages[id].color = players[id].playerColor - new Color32(0, 0, 0, 125);
 
         // Placeholder for now
