@@ -282,9 +282,12 @@ public class CombatManager : MonoBehaviour
         phaseCount = 0;
         Debug.Log("I'm in scene" + combatSceneIndex);
         // Pause combat scene and re-enable overworld scene
+        // This does not remove the scene but makes all the game objects under the combat scene inactive.
+        // Similarly, all game objects in the overworld scene are re-enabled.
         sceneManager.DisableScene(combatSceneIndex);
         sceneManager.EnableScene(0);
 
+        // This changes the game phase in gameplay test remotely.
         sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
         Debug.Log("I have left scene" + combatSceneIndex);
     }
@@ -407,7 +410,8 @@ public class CombatManager : MonoBehaviour
 
         audioSource.PlayOneShot(explosionSFX, 2f);
 
-        // Players exit combat.
+        // Players exit combat. A combatSceneIndex of -1 indicates they are out of combat. Otherwise, the scene index
+        //  variable takes the current sceneIndex of the scene.
         player1.combatSceneIndex = -1;
         player2.combatSceneIndex = -1;
 
@@ -421,7 +425,7 @@ public class CombatManager : MonoBehaviour
             sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
         }
             
-
+        // Deletes the current combat scene.
         sceneManager.UnloadCombatScene(SceneManager.GetSceneAt(combatSceneIndex), combatSceneIndex);
 
         // Re-enable scene
