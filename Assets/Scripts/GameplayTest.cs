@@ -182,7 +182,7 @@ public class GameplayTest : MonoBehaviour
 
             // Pick choices
             case GamePhase.InitialTurnMenu:
-                InitialTurnMenu(currentPlayer);
+                InitialTurnMenu(currentPlayer, currentPlayer.occupiedNode);
                 break;
 
             case GamePhase.Inventory:
@@ -268,7 +268,7 @@ public class GameplayTest : MonoBehaviour
         phase = GamePhase.InitialTurnMenu;
     }
 
-    private void InitialTurnMenu(EntityPiece p)
+    private void InitialTurnMenu(EntityPiece p, MapNode m)
     {
         if (freeviewEnabled)
             return;
@@ -292,6 +292,31 @@ public class GameplayTest : MonoBehaviour
             // End of listener code
 
             phase = GamePhase.RollDice;
+        }
+        if (m.tag == "Encounter"
+            && (p.heldPoints >= 200 || p.storeCount < 4) 
+            && (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A)))
+        {
+            p.storeCount++;
+            p.heldPoints -= 200;
+
+            m_UpdatePlayerScore.RaiseEvent(p.id);
+            // Raise an eventchannel for BuildAStore to replace the code in here, replace ALOT OF THE CODE EHRE PLEASE
+            Debug.Log("I am a store");
+            GameObject tile = m.gameObject;
+            tile.tag = "Store";
+
+            tile.GetComponent<SpriteRenderer>().color = p.playerColor;
+
+            StoreManager store = tile.AddComponent<StoreManager>();
+            store.playerOwner = p;
+
+            isStockingStore = true;
+
+            m_RestockStore.RaiseEvent(m);
+
+            storestockTooltip.enabled = true;
+            phase = GamePhase.StockStore;
         }
         if (playerUsedItem == false && (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S)))
         {
@@ -619,6 +644,7 @@ public class GameplayTest : MonoBehaviour
             }
             else if (m.CompareTag("Encounter")) // Regular Encounter
             {
+                /*
                 // If unable to buy a store, skip the prompt and immediately enter combat.
                 if (p.heldPoints < 200 || p.storeCount >= 4)
                 {
@@ -659,6 +685,9 @@ public class GameplayTest : MonoBehaviour
                     phase = GamePhase.StockStore;
 
                 }
+                */
+
+                phase = GamePhase.RockPaperScissors;
             }
         }
     }
