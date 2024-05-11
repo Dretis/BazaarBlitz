@@ -905,7 +905,6 @@ public class GameplayTest : MonoBehaviour
             currentPlayer.AddItemToActiveEffects(currentPlayer.inventory[index].Duration, currentPlayer.inventory[index]);
 
             currentPlayer.UpdateStatModifiers();
-            Debug.Log(currentPlayer.currentStatsModifier.maxHealthFlatModifier);
             ApplyItemEffectsOnTurnStart(currentPlayer);
 
             currentPlayer.inventory.RemoveAt(index);
@@ -919,8 +918,6 @@ public class GameplayTest : MonoBehaviour
         p.health = Mathf.Min(p.maxHealth * p.currentStatsModifier.maxHealthMultModifier 
             + p.currentStatsModifier.maxHealthFlatModifier, 
             p.health + p.currentStatsModifier.healthRegen);
-        Debug.Log(p.currentStatsModifier.maxHealthFlatModifier);
-        Debug.Log("Max health: " + (p.maxHealth * p.currentStatsModifier.maxHealthMultModifier + p.currentStatsModifier.maxHealthFlatModifier));
         m_UpdatePlayerScore.RaiseEvent(p.id);
 
         // Warp player to specified destination.
