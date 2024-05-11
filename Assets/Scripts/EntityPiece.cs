@@ -94,7 +94,7 @@ public class EntityPiece : MonoBehaviour
 
         foreach (var item in activeEffects)
         {
-            currentStatsModifier = item.statMod.ApplyStatModChanges(currentStatsModifier);
+            currentStatsModifier = item.statMod.ApplyStatModChanges(currentStatsModifier, item.statMod.Duration-item.turnsRemaining);
         }
     }
 

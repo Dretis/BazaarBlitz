@@ -5,7 +5,7 @@ public class Lifesteal : StatModifierChangerSO
 {
     public float lifestealMult;
 
-    public override EntityStatsModifiers ApplyStatModChanges(EntityStatsModifiers currentStats)
+    public override EntityStatsModifiers ApplyStatModChanges(EntityStatsModifiers currentStats, int currentTurn)
     {
         currentStats.lifestealMult += lifestealMult;
 

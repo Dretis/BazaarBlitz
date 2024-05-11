@@ -94,7 +94,9 @@ public class ScoreManager : MonoBehaviour
         {
             playerScores[id].text = $"<color=yellow>@</color>{players[id].heldPoints}";
         }
-        playerHPs[id].text = $"<color=#{healthyColor.ToHexString()}>HP</color> {players[id].health}<size=24>/{players[id].maxHealth}</size>";
+        playerHPs[id].text = "<color=red>HP</color> " + players[id].health + "/" + 
+            (players[id].maxHealth * players[id].currentStatsModifier.maxHealthMultModifier + 
+            players[id].currentStatsModifier.maxHealthFlatModifier);
         playerImages[id].color = players[id].playerColor - new Color32(0, 0, 0, 125);
 
         // Placeholder for now

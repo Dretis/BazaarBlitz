@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdd1368eedb123d4db8a885acb84d3a9, type: 3}
+  m_Name: Longan
+  m_EditorClassIdentifier: 
+  itemName: Longan
+  duration: 4
+  itemSprite: {fileID: 1420039512, guid: 3eb884c20bf4ccf4c998c0de17a982eb, type: 3}
+  effectDescription: Heal 30 HP immediately, then heal 10 HP at the start of the
+    next 3 turns.
+  flavorText: '"Looks like an alien fruit tastes like a lychee. Don''t let it''s
+    tendrils scare you from having something sweet today!"'
+  basePrice: 250
+  modifiers:
+  - {fileID: 11400000, guid: 269c5464c9e8b4147a1736c1d0147440, type: 2}
+  - {fileID: 11400000, guid: 62012388a1935fa4badede1c7728593a, type: 2}

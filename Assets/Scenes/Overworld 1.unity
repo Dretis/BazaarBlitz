@@ -9424,6 +9424,7 @@ GameObject:
   m_Component:
   - component: {fileID: 841476314}
   - component: {fileID: 841476313}
+  - component: {fileID: 841476316}
   - component: {fileID: 841476315}
   m_Layer: 0
   m_Name: MusicPlayer
@@ -9442,7 +9443,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 1c5cc9bcce4182246a2ae169bc1d9cb2, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 0.215
   m_Pitch: 1
@@ -9566,9 +9567,9 @@ MonoBehaviour:
   - {fileID: 8300000, guid: dc2b25b33156ddd4db822a48b0352e08, type: 3}
   - {fileID: 8300000, guid: 0cf815a7cd2eb474d90c6d59b27f793c, type: 3}
   - {fileID: 8300000, guid: 7182722c35eebc54b9786bf23974a933, type: 3}
-  - {fileID: 8300000, guid: a9c3f41afdb5a9243b1c4c88a5819612, type: 3}
-  - {fileID: 8300000, guid: a4582cfac9082404cb4f2c60196e9774, type: 3}
-  - {fileID: 8300000, guid: 53c472c24773e3749bd0acc9344cf7dc, type: 3}
+  - {fileID: 8300000, guid: d25ff5d9d51259441950cd649829e2f4, type: 3}
+  - {fileID: 8300000, guid: fc9b4cb91a3352c41be6086566f0e920, type: 3}
+  - {fileID: 8300000, guid: bb64966bd0e42694ba17432c02e725b9, type: 3}
   - {fileID: 8300000, guid: 5f4a223680d93f3468aaf1457b5054c7, type: 3}
   - {fileID: 8300000, guid: 3aa35f5115c80f7479612869f4e12f9b, type: 3}
   - {fileID: 8300000, guid: 3cbec479f5e79144ebb6ab3b651b17d9, type: 3}
@@ -9587,6 +9588,102 @@ MonoBehaviour:
   m_EntityDied: {fileID: 0}
   m_ActionSelected: {fileID: 0}
   m_ShowCombatBanner: {fileID: 0}
+--- !u!82 &841476316
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 841476312}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: 1c5cc9bcce4182246a2ae169bc1d9cb2, type: 3}
+  m_PlayOnAwake: 1
+  m_Volume: 0.215
+  m_Pitch: 1
+  Loop: 1
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &844000267
 GameObject:
   m_ObjectHideFlags: 0
@@ -25829,7 +25926,13 @@ MonoBehaviour:
       finalResultMultModifier: 1
     defenseModifier: 0
     lifestealMult: 0
+    healthRegen: 0
     rollModifier: 0
+    maxHealthFlatModifier: 0
+    maxHealthMultModifier: 1
+    movementFlatModifier: 0
+    movementMultModifier: 1
+    warpDestination: {fileID: 0}
   inventory:
   - {fileID: 11400000, guid: ba165bec7fd5ad748b4e3a0ce659a0f1, type: 2}
   - {fileID: 11400000, guid: 8089e0e474c4f144f8164f37535a2cc3, type: 2}
@@ -27860,7 +27963,13 @@ MonoBehaviour:
       finalResultMultModifier: 1
     defenseModifier: 0
     lifestealMult: 0
+    healthRegen: 0
     rollModifier: 0
+    maxHealthFlatModifier: 0
+    maxHealthMultModifier: 1
+    movementFlatModifier: 0
+    movementMultModifier: 1
+    warpDestination: {fileID: 0}
   inventory:
   - {fileID: 11400000, guid: f26fa68957c44394997221a74fdb9939, type: 2}
   - {fileID: 11400000, guid: 923ee1f783dd41345a759535103ee9a7, type: 2}
@@ -32435,7 +32544,13 @@ MonoBehaviour:
       finalResultMultModifier: 1
     defenseModifier: 0
     lifestealMult: 0
+    healthRegen: 0
     rollModifier: 0
+    maxHealthFlatModifier: 0
+    maxHealthMultModifier: 1
+    movementFlatModifier: 0
+    movementMultModifier: 1
+    warpDestination: {fileID: 0}
   inventory:
   - {fileID: 11400000, guid: 4fd59672f461ffa4bb6c75f0339fc93d, type: 2}
   - {fileID: 11400000, guid: c88d8aed1040f9b448f37a2983dd1fdd, type: 2}
@@ -32937,7 +33052,13 @@ MonoBehaviour:
       finalResultMultModifier: 1
     defenseModifier: 0
     lifestealMult: 0
+    healthRegen: 0
     rollModifier: 0
+    maxHealthFlatModifier: 0
+    maxHealthMultModifier: 1
+    movementFlatModifier: 0
+    movementMultModifier: 1
+    warpDestination: {fileID: 0}
   inventory:
   - {fileID: 11400000, guid: 1178c93ae11a11e40b1c45d2c62fc845, type: 2}
   - {fileID: 11400000, guid: 8503e05f3a6bdcf408fae19a2cab1d52, type: 2}

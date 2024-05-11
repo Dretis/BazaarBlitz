@@ -310,7 +310,8 @@ public class CombatManager : MonoBehaviour
             loser = retaliator;
 
             // Respawn defender at pawn shop with max health (or reset them as an enemy).
-            retaliator.health = retaliator.maxHealth;
+            retaliator.health = retaliator.maxHealth * retaliator.currentStatsModifier.maxHealthMultModifier
+            + retaliator.currentStatsModifier.maxHealthFlatModifier;
 
             // Enemies can only ever be retaliators. They cannot be the party to engage combat.
             if (retaliator.isEnemy) 
@@ -365,7 +366,8 @@ public class CombatManager : MonoBehaviour
 
             loser = initiator;
             // Respawn losing attacker at pawn shop with max health.
-            initiator.health = initiator.maxHealth;
+            initiator.health = initiator.maxHealth * initiator.currentStatsModifier.maxHealthMultModifier
+            + initiator.currentStatsModifier.maxHealthFlatModifier;
 
             initiator.occupiedNode = sceneManager.spawnPoint;
             initiator.transform.position = initiator.occupiedNode.transform.position;
