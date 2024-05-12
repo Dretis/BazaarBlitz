@@ -179,7 +179,7 @@ public class UIManager : MonoBehaviour
 
             m_itemSold.RaiseEvent(itemInventory[i]);
 
-            currentPlayer.inventory.Add(itemInventory[i]);
+            //currentPlayer.inventory.Add(itemInventory[i]);
             currentStore.playerOwner.heldPoints += itemInventory[i].basePrice;
 
             // Update store owner's score.

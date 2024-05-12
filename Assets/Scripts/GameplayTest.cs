@@ -123,7 +123,7 @@ public class GameplayTest : MonoBehaviour
 
     private void OnEnable()
     {
-        m_ItemBought.OnEventRaised += _PlaceholderChangeAndContinue;
+        m_ItemBought.OnEventRaised += ConfirmPurchase;
         m_ItemUsed.OnEventRaised += RemoveItemInPlayerInventory;
         m_UpdatePlayerScore.OnEventRaised += RemoveDeathsRow;
         m_ExitRaycastedTile.OnEventRaised += DisableFreeview;
@@ -131,7 +131,7 @@ public class GameplayTest : MonoBehaviour
 
     private void OnDisable()
     {
-        m_ItemBought.OnEventRaised -= _PlaceholderChangeAndContinue;
+        m_ItemBought.OnEventRaised -= ConfirmPurchase;
         m_ItemUsed.OnEventRaised -= RemoveItemInPlayerInventory;
         m_UpdatePlayerScore.OnEventRaised -= RemoveDeathsRow;
         m_ExitRaycastedTile.OnEventRaised -= DisableFreeview;
@@ -920,15 +920,25 @@ public class GameplayTest : MonoBehaviour
         resultInfo.text = $"{winningPlayer.entityName} WINS!!!";
     }
 
-    private void _PlaceholderChangeAndContinue(ItemStats item)
+    private void ConfirmPurchase(ItemStats item)
     {
         // When an item is bought, allow confirmation via SPACE bar to continue the game
         if (item != null)
         {
-            encounterOver = true;
+            //encounterOver = true;
             currentPlayer.heldPoints -= item.basePrice;
 
             m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
+
+            if (currentPlayer.inventory.Count == 6)
+            {
+                // Raise drop item event, display drop item UI
+
+            }
+            else
+            {
+                encounterOver = true;
+            }
         }
     }
 
