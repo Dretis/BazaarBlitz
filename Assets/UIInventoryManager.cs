@@ -151,6 +151,12 @@ public class UIInventoryManager : MonoBehaviour
         // Tell listeners that the item at this index in player's inventory is being used
         m_ItemUsed.RaiseEvent(index);
     }
+    
+    // FOR NAM: Used when dropping items on full inventory.
+    public void DropItem(int index)
+    {
+        // Remove visual from inventory UI.
+    }
 
     public void ShowSelectedItemDetails(int index)
     {

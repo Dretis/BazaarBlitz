@@ -106,6 +106,7 @@ public class GameplayTest : MonoBehaviour
     public PlayerEventChannelSO m_OpenInventory; // JASPER OR RUSSELL PLEASE USE THIS EVENT TO ACCESS THE INVENTORY
     public NodeEventChannelSO m_RestockStore;
     public VoidEventChannelSO m_ExitInventory;
+    public EntityItemListEventChannelSO m_DropItems; // FOR NAM
 
     public PlayerEventChannelSO m_OverturnOpportunity;
 
@@ -932,7 +933,11 @@ public class GameplayTest : MonoBehaviour
 
             if (currentPlayer.inventory.Count == 6)
             {
-                // Raise drop item event, display drop item UI
+                List<ItemStats> incomingItems = new List<ItemStats> { item };
+
+                // FOR NAM
+                // Raise drop item event, display drop item UI.
+                // Set encounterOver = true when player has dropped enough items and close drop item UI (maybe in same function?).
 
             }
             else
@@ -963,6 +968,14 @@ public class GameplayTest : MonoBehaviour
             currentPlayer.inventory.RemoveAt(index);
             playerUsedItem = true;
         }        
+    }
+
+    private void DropItemInPlayerInventory(int index)
+    {
+        // FOR NAM, to remove item from inventory upon click.
+        // probably want to track how many items have been removed too and close the drop item UI
+        // when it reaches the necessary amount.
+        currentPlayer.inventory.RemoveAt(index);
     }
 
     private void ApplyItemEffectsOnTurnStart(EntityPiece p)

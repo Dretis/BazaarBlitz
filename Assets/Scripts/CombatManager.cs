@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -319,11 +320,23 @@ public class CombatManager : MonoBehaviour
             // Enemies can only ever be retaliators. They cannot be the party to engage combat.
             if (retaliator.isEnemy) 
             {
+
+                List<ItemStats> incomingItems = new List<ItemStats>();
+
+                for (int i = 0; i < 2; i++)
+                {
+                    int loot = Random.Range(0, 6);
+                    if (initiator.inventory.Count == 6)
+                    {
+                        incomingItems.Add(retaliator.inventory[loot]);
+                    }
+                    else
+                    {
+                        initiator.inventory.Add(retaliator.inventory[loot]);
+                    }
+                }
+
                 // Enemy inventories are 6 item loot tables. 2 items are given every combat. Rep
-                int loot = Random.Range(0, 6);
-                initiator.inventory.Add(retaliator.inventory[loot]);
-                loot = Random.Range(0, 6);
-                initiator.inventory.Add(retaliator.inventory[loot]);
                 initiator.ReputationPoints += retaliator.ReputationPoints; // a monster's rep is just its exp yield.
                 Debug.Log("Gained " + retaliator.ReputationPoints + " reputation points from monster! Now at rep: " + initiator.ReputationPoints);
             }
@@ -416,13 +429,21 @@ public class CombatManager : MonoBehaviour
         player2.combatSceneIndex = -1;
 
         // If the player defeated is in Death's Row, end the game. Otherwise, go to the next player's turn.
+
         if (!loser.isEnemy && loser.isInDeathsRow)
             sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndGame);
         else
         {
             if (loser.heldPoints < 0)
                 loser.isInDeathsRow = true;
-            sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
+
+            if (loser.isEnemy && initiator.inventory.Count == 6)
+            {
+                // FOR NAM, RAISE DROP ITEM EVENT HERE. LET PLAYER CHOOSE ITEMS TO DROP AND THEN SET encounterOver to true;
+                sceneManager.ChangeGamePhase(GameplayTest.GamePhase.ConfirmContinue);
+            }
+            else
+                sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
         }
             
         // Deletes the current combat scene.
