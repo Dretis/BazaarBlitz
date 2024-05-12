@@ -294,7 +294,7 @@ public class GameplayTest : MonoBehaviour
             phase = GamePhase.RollDice;
         }
         if (m.tag == "Encounter"
-            && (p.heldPoints >= 200 || p.storeCount < 4) 
+            && p.heldPoints >= 200 && p.storeCount < 4 
             && (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A)))
         {
             p.storeCount++;
