@@ -4,6 +4,7 @@ using UnityEngine;
 public class WarpMod : StatModifierChangerSO
 {
     public MapNode node;
+    public VoidEventChannelSO m_EnableFreeview;
 
     public override EntityStatsModifiers ApplyStatModChanges(EntityStatsModifiers currentStats, int currentTurn)
     {
