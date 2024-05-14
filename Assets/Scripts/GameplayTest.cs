@@ -30,9 +30,9 @@ public class GameplayTest : MonoBehaviour
         EncounterTime,
         StockStore,
         OverturnStore,
-        RockPaperScissors,
+        MonsterEncounter,
         LevelUp,
-        CombatTime,
+        PlayerEncounter,
         ConfirmContinue,
         EndTurn,
         EndGame
@@ -211,7 +211,7 @@ public class GameplayTest : MonoBehaviour
 
             // Battle-Event Phase
             case GamePhase.EncounterTime:
-                EncounterTime(currentPlayer, currentPlayer.occupiedNode);
+                PlayerEncounter(currentPlayer, currentPlayer.occupiedNode);
                 break;
 
             case GamePhase.StockStore:
@@ -222,8 +222,8 @@ public class GameplayTest : MonoBehaviour
                 OverturnStore(currentPlayer, currentPlayer.occupiedNode);
                 break;
 
-            case GamePhase.RockPaperScissors:
-                RockPaperScissors(currentPlayer);
+            case GamePhase.MonsterEncounter:
+                MonsterEncounter(currentPlayer);
                 break;
 
             case GamePhase.LevelUp:
@@ -552,12 +552,12 @@ public class GameplayTest : MonoBehaviour
             phase = GamePhase.PickDirection; // Go back to picking direction
     }
 
-    void EncounterTime(EntityPiece p, MapNode m)
+    void PlayerEncounter(EntityPiece p, MapNode m)
     {
         // Player has started combat
         if (p.combatSceneIndex != -1)
         {
-            phase = GamePhase.CombatTime;
+            phase = GamePhase.PlayerEncounter;
             sceneManager.DisableScene(0);
             sceneManager.EnableScene(p.combatSceneIndex);
         }
@@ -627,7 +627,7 @@ public class GameplayTest : MonoBehaviour
 
                 if (otherPlayer.combatSceneIndex == -1)
                 {
-                    phase = GamePhase.CombatTime;
+                    phase = GamePhase.PlayerEncounter;
 
                     //Debug.Log("Your Player: " + currentPlayer.nickname);
                     //Debug.Log("Other Player: " + otherPlayer.nickname);
@@ -645,50 +645,7 @@ public class GameplayTest : MonoBehaviour
             }
             else if (m.CompareTag("Encounter")) // Regular Encounter
             {
-                /*
-                // If unable to buy a store, skip the prompt and immediately enter combat.
-                if (p.heldPoints < 200 || p.storeCount >= 4)
-                {
-                    Debug.Log("You got no money to build a store, dipshit!");
-                    phase = GamePhase.RockPaperScissors;
-                    return;
-                }
-
-                m_EncounterDecision.RaiseEvent(currentPlayer);
-
-                // Monster Encounter
-                if (Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKeyDown(KeyCode.Space))
-                {
-                    phase = GamePhase.RockPaperScissors;
-                }
-                // Build a Store
-                else if (Input.GetKeyDown(KeyCode.Mouse1) || Input.GetKeyDown(KeyCode.RightShift) || Input.GetKeyDown(KeyCode.LeftShift))
-                {
-                    p.storeCount++;
-                    p.heldPoints -= 200;
-
-                    m_UpdatePlayerScore.RaiseEvent(p.id);
-                    // Raise an eventchannel for BuildAStore to replace the code in here, replace ALOT OF THE CODE EHRE PLEASE
-                    Debug.Log("I am a store");
-                    GameObject tile = m.gameObject;
-                    tile.tag = "Store";
-
-                    tile.GetComponent<SpriteRenderer>().color = p.playerColor;
-
-                    StoreManager store = tile.AddComponent<StoreManager>();
-                    store.playerOwner = p;
-
-                    isStockingStore = true;
-
-                    m_RestockStore.RaiseEvent(m);
-                    
-                    storestockTooltip.enabled = true;
-                    phase = GamePhase.StockStore;
-
-                }
-                */
-
-                phase = GamePhase.RockPaperScissors;
+                phase = GamePhase.MonsterEncounter;
             }
         }
     }
@@ -731,7 +688,7 @@ public class GameplayTest : MonoBehaviour
         }
     }
 
-    void RockPaperScissors(EntityPiece p)
+    void MonsterEncounter(EntityPiece p)
     {
         encounterStarted = true;
 
@@ -931,7 +888,7 @@ public class GameplayTest : MonoBehaviour
 
             m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
 
-            if (currentPlayer.inventory.Count == 6)
+            if (currentPlayer.inventory.Count > 6)
             {
                 List<ItemStats> incomingItems = new List<ItemStats> { item };
 

@@ -306,6 +306,7 @@ public class CombatManager : MonoBehaviour
             // We'll come back later from update with endingCombat = true
         }
 
+        List<ItemStats> incomingItems = new List<ItemStats>();
 
         if (initiatorWon)
         {
@@ -319,21 +320,12 @@ public class CombatManager : MonoBehaviour
 
             // Enemies can only ever be retaliators. They cannot be the party to engage combat.
             if (retaliator.isEnemy) 
-            {
-
-                List<ItemStats> incomingItems = new List<ItemStats>();
+            {          
 
                 for (int i = 0; i < 2; i++)
                 {
                     int loot = Random.Range(0, 6);
-                    if (initiator.inventory.Count == 6)
-                    {
-                        incomingItems.Add(retaliator.inventory[loot]);
-                    }
-                    else
-                    {
-                        initiator.inventory.Add(retaliator.inventory[loot]);
-                    }
+                    initiator.inventory.Add(retaliator.inventory[loot]);
                 }
 
                 // Enemy inventories are 6 item loot tables. 2 items are given every combat. Rep
@@ -437,10 +429,10 @@ public class CombatManager : MonoBehaviour
             if (loser.heldPoints < 0)
                 loser.isInDeathsRow = true;
 
-            if (loser.isEnemy && initiator.inventory.Count == 6)
+            if (initiator.inventory.Count > 6)
             {
-                // FOR NAM, RAISE DROP ITEM EVENT HERE. LET PLAYER CHOOSE ITEMS TO DROP AND THEN SET encounterOver to true;
                 sceneManager.ChangeGamePhase(GameplayTest.GamePhase.ConfirmContinue);
+                // FOR NAM, RAISE DROP ITEM EVENT HERE. LET PLAYER CHOOSE ITEMS TO DROP AND THEN SET encounterOver to true;
             }
             else
                 sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
