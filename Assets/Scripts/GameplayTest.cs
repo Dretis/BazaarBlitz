@@ -942,6 +942,7 @@ public class GameplayTest : MonoBehaviour
             }
             else
             {
+                currentPlayer.inventory.Add(item);
                 encounterOver = true;
             }
         }
