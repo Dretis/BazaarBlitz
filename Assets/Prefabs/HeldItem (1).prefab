@@ -35,7 +35,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 109.30671, y: 26.1397}
+  m_AnchoredPosition: {x: 109.30671, y: 0}
   m_SizeDelta: {x: 196.0382, y: 46}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &2177283802952047190
@@ -148,6 +148,7 @@ GameObject:
   - component: {fileID: 2177283803536277972}
   - component: {fileID: 2177283803536277931}
   - component: {fileID: 2177283803536277930}
+  - component: {fileID: 1145042924376403005}
   m_Layer: 5
   m_Name: HeldItem (1)
   m_TagString: Untagged
@@ -329,6 +330,26 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1145042924376403005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2177283803536277935}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4cc1ad3f9e2c65c45bda36b7384b7d3e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  heldItem: {fileID: 0}
+  itemIcon: {fileID: 4645786429603770994}
+  itemName: {fileID: 2177283802952047189}
+  itemPrice: {fileID: 7291270089867236918}
+  m_ItemSelected: {fileID: 11400000, guid: 49087bd72a461bd46b0fb8d2f16c4d6e, type: 2}
+  verticalMoveAmount: 30
+  moveTime: 0.1
+  scaleAmount: 1.1
 --- !u!1 &3284764735413676007
 GameObject:
   m_ObjectHideFlags: 0

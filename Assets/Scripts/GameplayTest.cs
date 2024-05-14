@@ -931,7 +931,7 @@ public class GameplayTest : MonoBehaviour
 
             m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
 
-            if (currentPlayer.inventory.Count == 6)
+            if (currentPlayer.inventory.Count > 6)
             {
                 List<ItemStats> incomingItems = new List<ItemStats> { item };
 

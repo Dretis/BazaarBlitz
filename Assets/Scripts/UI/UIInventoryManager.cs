@@ -7,11 +7,18 @@ using DG.Tweening;
 
 public class UIInventoryManager : MonoBehaviour
 {
+    public enum InventoryState
+    {
+        UseItem,
+        RestockStore,
+        DropItem
+    }
     [SerializeField] private List<ItemStats> playerInventory; //effectively copy of player's inv
 
     [Header("Main Inventory")]
     [SerializeField] private Canvas inventoryCanvas;
     [SerializeField] private CanvasGroup inventoryGroup;
+    [SerializeField] private RectTransform inventoryGridContainer;
     [SerializeField] private List<Image> itemIcons;
     [SerializeField] private List<TextMeshProUGUI> itemNames;
     [SerializeField] private List<TextMeshProUGUI> itemPrices;
@@ -27,6 +34,19 @@ public class UIInventoryManager : MonoBehaviour
     [SerializeField] private List<TextMeshProUGUI> storestockPrices;
     [SerializeField] private List<ItemStats> storeInv;
 
+    [Header("Extra Space")]
+    [SerializeField] private CanvasGroup extraGroup;
+    [SerializeField] private List<Image> extraIcons;
+    [SerializeField] private List<TextMeshProUGUI> extraNames;
+    [SerializeField] private List<TextMeshProUGUI> extraPrices;
+    [SerializeField] private List<ItemStats> extraInv;
+
+    [Header("Inventory Stats")]
+    [SerializeField] private InventoryState currentState;
+    [SerializeField] private int currentItemCount;
+    [SerializeField] private const int INVENTORY_LIMIT = 6;
+    [SerializeField] private GameObject heldItemPrefab;
+
     [Header("Broadcast on Event Channels")]
     public IntEventChannelSO m_ItemUsed;
 
@@ -34,6 +54,7 @@ public class UIInventoryManager : MonoBehaviour
     public PlayerEventChannelSO m_OpenInventory;
     public VoidEventChannelSO m_ExitInventory;
     public NodeEventChannelSO m_RestockStore;
+    public ItemEventChannelSO m_ItemSelected;
 
     private void OnEnable()
     {
@@ -46,6 +67,8 @@ public class UIInventoryManager : MonoBehaviour
         m_ExitInventory.OnEventRaised += HideInventory;
         m_ExitInventory.OnEventRaised += HideStoreStock;
         m_RestockStore.OnEventRaised += ShowStoreStock;
+
+        m_ItemSelected.OnEventRaised += ShowSelectedItemDetails;
     }
 
     private void OnDisable()
@@ -54,6 +77,35 @@ public class UIInventoryManager : MonoBehaviour
         m_ExitInventory.OnEventRaised -= HideInventory;
         m_ExitInventory.OnEventRaised -= HideStoreStock;
         m_RestockStore.OnEventRaised -= ShowStoreStock;
+
+        m_ItemSelected.OnEventRaised -= ShowSelectedItemDetails;
+    }
+
+    private void SpawnItemsInInventory(List<ItemStats> playerInventory)
+    {
+        var inventoryParentTransform = inventoryGridContainer.transform;
+        var itemsToSpawn = playerInventory.Count;
+
+        if(itemsToSpawn <= INVENTORY_LIMIT)
+        {
+            itemsToSpawn = INVENTORY_LIMIT;
+        }
+
+        ItemStats itemToSpawn;
+        for (int i = 0; i < itemsToSpawn; i++)
+        {
+            if (i < playerInventory.Count)
+            {
+                itemToSpawn = playerInventory[i];
+            }
+            else
+            {
+                itemToSpawn = null;
+            }
+
+            var item = Instantiate(heldItemPrefab, inventoryParentTransform);
+            item.GetComponent<InventorySelectionHandler>().UpdateItemInfo(itemToSpawn);
+        }
     }
 
     private void DisplayInventory(EntityPiece entity)
@@ -64,6 +116,8 @@ public class UIInventoryManager : MonoBehaviour
         //inventoryCanvas.enabled = true;
         HideSelectedItemDetails();
 
+        SpawnItemsInInventory(entity.inventory);
+        /*
         playerInventory.Clear();
         foreach (ItemStats item in entity.inventory)
         {
@@ -98,6 +152,7 @@ public class UIInventoryManager : MonoBehaviour
                 itemNames[i].GetComponentInParent<Button>().interactable = true;
             }
         }
+        */
     }
 
     private void HideInventory()
@@ -105,11 +160,25 @@ public class UIInventoryManager : MonoBehaviour
         FadeTo(inventoryGroup, 0, 0.25f);
         inventoryGroup.interactable = false;
         //inventoryCanvas.enabled = false;
+
+        DestroyAllHeldItems();
+    }
+
+    private void DestroyAllHeldItems()
+    {
+        // Gets rid of all the held item containers in the inventory UI
+
+        var inventoryParentTransform = inventoryGridContainer.transform;
+
+        for (int i = inventoryParentTransform.childCount - 1; i >= 0; i--)
+        {
+            Destroy(inventoryParentTransform.GetChild(i).gameObject);
+        }
     }
 
     public void UseItem(int index)
     {
-        if (!GameplayTest.instance.isStockingStore)
+        if (currentState == InventoryState.UseItem) //|| !GameplayTest.instance.isStockingStore)
         {
             // Regular item use, visually removes the item from the player's inventory
 
@@ -170,6 +239,20 @@ public class UIInventoryManager : MonoBehaviour
         selectedItemInfo[1].text = $"<color=yellow>@</color>{playerInventory[index].basePrice}";
         selectedItemInfo[2].text = $"{playerInventory[index].effectDescription}";
         selectedItemInfo[3].text = $"{playerInventory[index].flavorText}";
+    }
+
+    public void ShowSelectedItemDetails(ItemStats item)
+    {
+        if (item == null)
+            return;
+
+        selectedItemIcon.sprite = item.itemSprite;
+        selectedItemIcon.enabled = true;
+
+        selectedItemInfo[0].text = $"{item.itemName}";
+        selectedItemInfo[1].text = $"<color=yellow>@</color>{item.basePrice}";
+        selectedItemInfo[2].text = $"{item.effectDescription}";
+        selectedItemInfo[3].text = $"{item.flavorText}";
     }
 
     public void HideSelectedItemDetails()

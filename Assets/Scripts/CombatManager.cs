@@ -437,7 +437,7 @@ public class CombatManager : MonoBehaviour
             if (loser.heldPoints < 0)
                 loser.isInDeathsRow = true;
 
-            if (loser.isEnemy && initiator.inventory.Count == 6)
+            if (loser.isEnemy && initiator.inventory.Count > 6)
             {
                 // FOR NAM, RAISE DROP ITEM EVENT HERE. LET PLAYER CHOOSE ITEMS TO DROP AND THEN SET encounterOver to true;
                 sceneManager.ChangeGamePhase(GameplayTest.GamePhase.ConfirmContinue);
