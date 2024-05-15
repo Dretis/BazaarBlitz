@@ -509,7 +509,35 @@ public class GameplayTest : MonoBehaviour
                 m_PassByStamp.RaiseEvent(p);
             }
         }
+        else if (m.playerOccupied != null && m.playerOccupied != p)
+        {
+            EntityPiece otherPlayer = m.playerOccupied;
 
+            if (p.currentStatsModifier.canStealOnPassBy && otherPlayer.inventory.Count > 0)
+            {
+                int indexToSteal = Random.Range(0, otherPlayer.inventory.Count);
+                p.inventory.Add(otherPlayer.inventory[indexToSteal]);
+
+                if (p.inventory.Count > 6)
+                {
+                    // Raise event to drop items.
+                }
+
+                otherPlayer.inventory.RemoveAt(indexToSteal);
+
+                // Raise event to show UI of item stolen. Not sure what to do if other player has no items to steal.
+
+                // Deactivate all active effects of items that end on stealing.
+                foreach (var effect in p.activeEffects)
+                {
+                    if (ItemLists.StealOnPassByItemNames.Contains(effect.originalItem.name))
+                    {
+                        Debug.Log(effect.originalItem.name + "'s effect is removed!");
+                        p.activeEffects.Remove(effect);
+                    }
+                }
+            }
+        }
         // Change phase.
         if (p.heldPoints >= 4000)
         {

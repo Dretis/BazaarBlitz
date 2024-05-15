@@ -23,6 +23,9 @@ public class EntityStatsModifiers
     public int movementFlatModifier = 0;
     public int movementMultModifier = 1;
     public MapNode warpDestination = null;
+
+    public bool canStealOnPassBy = false;
+
     public float ApplyDieModifier(EntityBaseStats.DieTypes dieType, float baseRollValue)
     {
         Debug.Log("Original Roll" + baseRollValue);

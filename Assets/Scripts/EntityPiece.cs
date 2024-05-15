@@ -47,7 +47,7 @@ public class EntityPiece : MonoBehaviour
     [Serializable, Inspectable]
     public class ActiveEffect
     {
-        public IStatModifierChanger statMod;
+        public ItemStats originalItem;
         public int turnsRemaining;
     }
 
@@ -56,7 +56,7 @@ public class EntityPiece : MonoBehaviour
     public List<ItemStats> inventory = new();
 
     [SerializeField]
-    private List<ActiveEffect> activeEffects = new();
+    public List<ActiveEffect> activeEffects = new();
 
     /// <summary>
     /// Add a specified item to this player's list of active stat modifier effects
@@ -66,7 +66,7 @@ public class EntityPiece : MonoBehaviour
     public void AddItemToActiveEffects(int duration, ItemStats item)
     {
 
-        var sameEffect = activeEffects.Find(activeEffect => (UnityEngine.Object) activeEffect.statMod == item);
+        var sameEffect = activeEffects.Find(activeEffect => (UnityEngine.Object) activeEffect.originalItem == item);
 
         // Refresh effect if same item has been used before. Otherwise, add new effect.
         if (sameEffect != null)
@@ -77,7 +77,7 @@ public class EntityPiece : MonoBehaviour
         {
             activeEffects.Add(new ActiveEffect
             {
-                statMod = item,
+                originalItem = item,
                 turnsRemaining = duration
             });
         }
@@ -94,7 +94,7 @@ public class EntityPiece : MonoBehaviour
 
         foreach (var item in activeEffects)
         {
-            currentStatsModifier = item.statMod.ApplyStatModChanges(currentStatsModifier, item.statMod.Duration-item.turnsRemaining);
+            currentStatsModifier = item.originalItem.ApplyStatModChanges(currentStatsModifier, item.originalItem.Duration-item.turnsRemaining);
         }
     }
 
