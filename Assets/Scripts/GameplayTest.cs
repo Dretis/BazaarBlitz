@@ -509,6 +509,13 @@ public class GameplayTest : MonoBehaviour
                 m_PassByStamp.RaiseEvent(p);
             }
         }
+        else if (m.CompareTag("Store"))
+        {
+            if (p.currentStatsModifier.canStopOnStoreOnPassBy)
+            {
+                p.movementLeft = 0;
+            }
+        }
         else if (m.playerOccupied != null && m.playerOccupied != p)
         {
             EntityPiece otherPlayer = m.playerOccupied;

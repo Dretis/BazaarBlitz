@@ -26,6 +26,7 @@ public class EntityStatsModifiers
 
     public bool canStealOnPassBy = false;
     public bool canInitiateCombatOnPassBy = false;
+    public bool canStopOnStoreOnPassBy = false;
     public float ApplyDieModifier(EntityBaseStats.DieTypes dieType, float baseRollValue)
     {
         Debug.Log("Original Roll" + baseRollValue);
