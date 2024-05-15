@@ -494,7 +494,7 @@ public class GameplayTest : MonoBehaviour
     }
 
     void PassBy(EntityPiece p, MapNode m)
-    {
+    {       
         // Cash in Stamps
         if (m.CompareTag("Castle"))
         {
@@ -522,14 +522,8 @@ public class GameplayTest : MonoBehaviour
                 m_PassByStamp.RaiseEvent(p);
             }
         }
-        else if (m.CompareTag("Store") && p.currentStatsModifier.canStopOnStoreOnPassBy)
-        {
-            m_StopOnStoreOnPassBy.RaiseEvent();
 
-            // Deactivate all active effects of items that end on store.
-            p.RemoveItemEffectOnUse(ItemLists.StopOnStoreOnPassBy);
-        }
-        else if (m.playerOccupied != null && m.playerOccupied != p)
+        if (m.playerOccupied != null && m.playerOccupied != p)
         {
             EntityPiece otherPlayer = m.playerOccupied;
             Debug.Log("hello");
@@ -555,15 +549,23 @@ public class GameplayTest : MonoBehaviour
 
                     m_InitiateCombatOnPassBy.RaiseEvent(otherPlayer);
 
-                    p.traveledNodes.Clear(); 
+                    p.traveledNodes.Clear();
                     p.traveledNodes.Add(p.occupiedNode);
 
                     // Need NAM to disable input prompt (the number that shows up on top of the screen on roll).
                     // If enter combat before it fades, it persists on next player's turn.
                     return;
                 }
-            }           
+            }
         }
+        else if (m.CompareTag("Store") && p.currentStatsModifier.canStopOnStoreOnPassBy)
+        {
+            m_StopOnStoreOnPassBy.RaiseEvent();
+
+            // Deactivate all active effects of items that end on store.
+            p.RemoveItemEffectOnUse(ItemLists.StopOnStoreOnPassBy);
+        }       
+        
         // Change phase.
         if (p.heldPoints >= 4000)
         {
