@@ -23,6 +23,9 @@ public class PlayerInputController : MonoBehaviour
     public NodeEventChannelSO m_RestockStore;
     public VoidEventChannelSO m_ExitInventory;
 
+    [Header("Listen on Event Channels")]
+    public PlayerEventChannelSO m_NextPlayerTurn;
+
     // Start is called before the first frame update
     private void Start()
     {
@@ -31,6 +34,16 @@ public class PlayerInputController : MonoBehaviour
         playerInput.currentActionMap.Disable();
         playerInput.SwitchCurrentActionMap("Initial Turn Menu");
         playerInput.currentActionMap.Enable();
+    }
+
+    private void OnEnable()
+    {
+        m_NextPlayerTurn.OnEventRaised += SetCurrentPlayer;
+    }
+
+    private void OnDisable()
+    {
+        m_NextPlayerTurn.OnEventRaised -= SetCurrentPlayer;
     }
 
     #region 'Inital Turn Menu' Action Map
@@ -209,6 +222,14 @@ public class PlayerInputController : MonoBehaviour
 
         playerInput.currentActionMap.Enable();
         Debug.Log(playerInput.currentActionMap);
+    }
 
+    private void SetCurrentPlayer(EntityPiece player)
+    {
+        currentPlayer = player;
+        playerInput.SwitchCurrentActionMap("UI"); // FUCK YOU
+        playerInput.currentActionMap.Disable();
+        playerInput.SwitchCurrentActionMap("Initial Turn Menu");
+        playerInput.currentActionMap.Enable();
     }
 }
