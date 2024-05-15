@@ -565,14 +565,15 @@ public class GameplayTest : MonoBehaviour
                 {
                     phase = GamePhase.CombatTime;
 
-                    //Debug.Log("Your Player: " + currentPlayer.nickname);
-                    //Debug.Log("Other Player: " + otherPlayer.nickname);
                     encounterStarted = true;
 
                     // Set IDs of players entering combat.
                     sceneManager.player1ID = currentPlayer.id;
                     sceneManager.player2ID = otherPlayer.id;
                     sceneManager.LoadCombatScene();
+
+                    p.traveledNodes.Clear(); 
+                    p.traveledNodes.Add(p.occupiedNode); 
 
                     return;
                 }
@@ -587,8 +588,8 @@ public class GameplayTest : MonoBehaviour
         }
         else if (p.movementLeft <= 0)
         {
-            p.traveledNodes.Clear(); // Forget all the nodes traveled to
-            p.traveledNodes.Add(p.occupiedNode); //i need this i guess
+            p.traveledNodes.Clear(); 
+            p.traveledNodes.Add(p.occupiedNode); 
 
             phase = GamePhase.EncounterTime; // next phase
         }
