@@ -113,6 +113,11 @@ public class GameplayTest : MonoBehaviour
     public NodeEventChannelSO m_LandOnStorefront;
     public VoidEventChannelSO m_ExitStorefront;
 
+    // Pass-by Event Channels
+    public PlayerEventChannelSO m_StealOnPassBy;
+    public PlayerEventChannelSO m_InitiateCombatOnPassBy;
+    public VoidEventChannelSO m_StopOnStoreOnPassBy;
+
     [Header("Listen on Event Channels")]
     public ItemEventChannelSO m_ItemBought; //Listening to this one
     public IntEventChannelSO m_ItemUsed; //Listening to this one
@@ -127,6 +132,10 @@ public class GameplayTest : MonoBehaviour
         m_ItemUsed.OnEventRaised += RemoveItemInPlayerInventory;
         m_UpdatePlayerScore.OnEventRaised += RemoveDeathsRow;
         m_ExitRaycastedTile.OnEventRaised += DisableFreeview;
+
+        m_StealOnPassBy.OnEventRaised += StealFromPlayer;
+        m_InitiateCombatOnPassBy.OnEventRaised += InitiateCombatOnPlayer;
+        m_StopOnStoreOnPassBy.OnEventRaised += StopOnStore;
     }
 
     private void OnDisable()
@@ -135,6 +144,10 @@ public class GameplayTest : MonoBehaviour
         m_ItemUsed.OnEventRaised -= RemoveItemInPlayerInventory;
         m_UpdatePlayerScore.OnEventRaised -= RemoveDeathsRow;
         m_ExitRaycastedTile.OnEventRaised -= DisableFreeview;
+
+        m_StealOnPassBy.OnEventRaised -= StealFromPlayer;
+        m_InitiateCombatOnPassBy.OnEventRaised -= InitiateCombatOnPlayer;
+        m_StopOnStoreOnPassBy.OnEventRaised -= StopOnStore;
     }
 
     // Start is called before the first frame update
@@ -482,7 +495,6 @@ public class GameplayTest : MonoBehaviour
 
     void PassBy(EntityPiece p, MapNode m)
     {
-        List<EntityPiece.ActiveEffect> effectsToRemove = new List<EntityPiece.ActiveEffect>();
         // Cash in Stamps
         if (m.CompareTag("Castle"))
         {
@@ -514,21 +526,11 @@ public class GameplayTest : MonoBehaviour
         {
             if (p.currentStatsModifier.canStopOnStoreOnPassBy)
             {
-                p.movementLeft = 0;
+                m_StopOnStoreOnPassBy.RaiseEvent();
             }
 
-            // Deactivate all active effects of items that end on stealing.
-            foreach (var effect in p.activeEffects)
-            {
-                if (ItemLists.StopOnStoreOnPassBy.Contains(effect.originalItem.name))
-                {
-                    Debug.Log(effect.originalItem.name + "'s effect is removed!");
-                    effectsToRemove.Add(effect);
-                }
-            }
-
-            p.activeEffects.RemoveAll(effect => effectsToRemove.Contains(effect));
-            p.RefreshStatModifiers();
+            // Deactivate all active effects of items that end on store.
+            p.RemoveItemEffectOnUse(ItemLists.StopOnStoreOnPassBy);
         }
         else if (m.playerOccupied != null && m.playerOccupied != p)
         {
@@ -537,60 +539,22 @@ public class GameplayTest : MonoBehaviour
             // Check if can steal item from player.
             if (p.currentStatsModifier.canStealOnPassBy && otherPlayer.inventory.Count > 0)
             {
-                int indexToSteal = Random.Range(0, otherPlayer.inventory.Count);
-                p.inventory.Add(otherPlayer.inventory[indexToSteal]);
-
-                if (p.inventory.Count > 6)
-                {
-                    // Raise event to drop items.
-                }
-
-                otherPlayer.inventory.RemoveAt(indexToSteal);
-
-                // Raise event to show UI of item stolen. Not sure what to do if other player has no items to steal.
-
-                
+                m_StealOnPassBy.RaiseEvent(otherPlayer);
 
                 // Deactivate all active effects of items that end on stealing.
-                foreach (var effect in p.activeEffects)
-                {
-                    if (ItemLists.StealOnPassByItemNames.Contains(effect.originalItem.name))
-                    {
-                        Debug.Log(effect.originalItem.name + "'s effect is removed!");
-                        effectsToRemove.Add(effect);
-                    }
-                }
-
-                p.activeEffects.RemoveAll(effect => effectsToRemove.Contains(effect));
-                p.RefreshStatModifiers();
+                p.RemoveItemEffectOnUse(ItemLists.StealOnPassByItemNames);
             }
 
             // Check if can initiate combat.
             if (p.currentStatsModifier.canInitiateCombatOnPassBy)
             {
-                // Deactivate all active effects of items that end on combat.
-                foreach (var effect in p.activeEffects)
-                {
-                    if (ItemLists.CombatOnPassByItemNames.Contains(effect.originalItem.name))
-                    {
-                        Debug.Log(effect.originalItem.name + "'s effect is removed!");
-                        effectsToRemove.Add(effect);
-                    }
-                }
-
-                p.activeEffects.RemoveAll(effect => effectsToRemove.Contains(effect));
-                p.RefreshStatModifiers();
+                p.RemoveItemEffectOnUse(ItemLists.CombatOnPassByItemNames);
 
                 if (otherPlayer.combatSceneIndex == -1)
                 {
                     phase = GamePhase.CombatTime;
 
-                    encounterStarted = true;
-
-                    // Set IDs of players entering combat.
-                    sceneManager.player1ID = currentPlayer.id;
-                    sceneManager.player2ID = otherPlayer.id;
-                    sceneManager.LoadCombatScene();
+                    m_InitiateCombatOnPassBy.RaiseEvent(otherPlayer);
 
                     p.traveledNodes.Clear(); 
                     p.traveledNodes.Add(p.occupiedNode);
@@ -1109,4 +1073,37 @@ public class GameplayTest : MonoBehaviour
     {
         freeviewEnabled = false;
     }
+
+    public void StealFromPlayer(EntityPiece otherPlayer)
+    {
+        int indexToSteal = Random.Range(0, otherPlayer.inventory.Count);
+        currentPlayer.inventory.Add(otherPlayer.inventory[indexToSteal]);
+
+        if (currentPlayer.inventory.Count > 6)
+        {
+            // Raise event to drop items.
+        }
+
+        otherPlayer.inventory.RemoveAt(indexToSteal);
+
+        // Raise event to show UI of item stolen. Not sure what to do if other player has no items to steal.
+    }
+
+    public void InitiateCombatOnPlayer(EntityPiece otherPlayer)
+    {
+        encounterStarted = true;
+
+        // Set IDs of players entering combat.
+        sceneManager.player1ID = currentPlayer.id;
+        sceneManager.player2ID = otherPlayer.id;
+        sceneManager.LoadCombatScene();
+    }
+
+    public void StopOnStore()
+    {
+        currentPlayer.movementLeft = 0;
+    }
+
+
+   
 }

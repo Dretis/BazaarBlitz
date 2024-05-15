@@ -121,7 +121,24 @@ public class EntityPiece : MonoBehaviour
             }
         }
     }
-    
+
+    public void RemoveItemEffectOnUse(HashSet<string> itemNames)
+    {
+        List<EntityPiece.ActiveEffect> effectsToRemove = new List<EntityPiece.ActiveEffect>();
+
+        foreach (var effect in activeEffects)
+        {
+            if (itemNames.Contains(effect.originalItem.name))
+            {
+                Debug.Log(effect.originalItem.name + "'s effect is removed!");
+                effectsToRemove.Add(effect);
+            }
+        }
+
+        activeEffects.RemoveAll(effect => effectsToRemove.Contains(effect));
+        RefreshStatModifiers();
+    }
+
     // Start is called before the first frame update
     void Start()
     {

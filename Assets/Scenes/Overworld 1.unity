@@ -22513,6 +22513,9 @@ MonoBehaviour:
   m_OverturnOpportunity: {fileID: 11400000, guid: b97cd2f064ff0934db3edfa396c94215, type: 2}
   m_LandOnStorefront: {fileID: 11400000, guid: f648c693d8451764f96f063b6b3da44b, type: 2}
   m_ExitStorefront: {fileID: 11400000, guid: 410e906b10aa4ae49ab7395fffa23d79, type: 2}
+  m_StealOnPassBy: {fileID: 11400000, guid: 1d00bb47d6ddfd74abef5ca674e588cd, type: 2}
+  m_InitiateCombatOnPassBy: {fileID: 11400000, guid: 738add0769a4e0047bfef96c86d9f906, type: 2}
+  m_StopOnStoreOnPassBy: {fileID: 11400000, guid: fb2c2ec21fc8d414db8431c8c21563f1, type: 2}
   m_ItemBought: {fileID: 11400000, guid: ace0aa03bf09d91469d5914ce815154e, type: 2}
   m_ItemUsed: {fileID: 11400000, guid: 848f52d6f0e789e4ab1731d31de0ae96, type: 2}
   m_ExitRaycastedTile: {fileID: 11400000, guid: bb03629fcd15efc49a85071214823911, type: 2}
@@ -25957,6 +25960,9 @@ MonoBehaviour:
     movementFlatModifier: 0
     movementMultModifier: 1
     warpDestination: {fileID: 0}
+    canStealOnPassBy: 0
+    canInitiateCombatOnPassBy: 0
+    canStopOnStoreOnPassBy: 0
   inventory:
   - {fileID: 11400000, guid: ba165bec7fd5ad748b4e3a0ce659a0f1, type: 2}
   - {fileID: 11400000, guid: 8089e0e474c4f144f8164f37535a2cc3, type: 2}
@@ -27994,6 +28000,9 @@ MonoBehaviour:
     movementFlatModifier: 0
     movementMultModifier: 1
     warpDestination: {fileID: 0}
+    canStealOnPassBy: 0
+    canInitiateCombatOnPassBy: 0
+    canStopOnStoreOnPassBy: 0
   inventory:
   - {fileID: 11400000, guid: f26fa68957c44394997221a74fdb9939, type: 2}
   - {fileID: 11400000, guid: 923ee1f783dd41345a759535103ee9a7, type: 2}
@@ -32575,6 +32584,9 @@ MonoBehaviour:
     movementFlatModifier: 0
     movementMultModifier: 1
     warpDestination: {fileID: 0}
+    canStealOnPassBy: 0
+    canInitiateCombatOnPassBy: 0
+    canStopOnStoreOnPassBy: 0
   inventory:
   - {fileID: 11400000, guid: 4fd59672f461ffa4bb6c75f0339fc93d, type: 2}
   - {fileID: 11400000, guid: c88d8aed1040f9b448f37a2983dd1fdd, type: 2}
@@ -33083,6 +33095,9 @@ MonoBehaviour:
     movementFlatModifier: 0
     movementMultModifier: 1
     warpDestination: {fileID: 0}
+    canStealOnPassBy: 0
+    canInitiateCombatOnPassBy: 0
+    canStopOnStoreOnPassBy: 0
   inventory:
   - {fileID: 11400000, guid: 1178c93ae11a11e40b1c45d2c62fc845, type: 2}
   - {fileID: 11400000, guid: 8503e05f3a6bdcf408fae19a2cab1d52, type: 2}
