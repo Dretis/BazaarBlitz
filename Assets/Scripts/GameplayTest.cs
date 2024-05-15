@@ -599,9 +599,7 @@ public class GameplayTest : MonoBehaviour
                     // If enter combat before it fades, it persists on next player's turn.
                     return;
                 }
-            }
-
-            
+            }           
         }
         // Change phase.
         if (p.heldPoints >= 4000)
