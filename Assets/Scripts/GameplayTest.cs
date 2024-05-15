@@ -482,6 +482,7 @@ public class GameplayTest : MonoBehaviour
 
     void PassBy(EntityPiece p, MapNode m)
     {
+        List<EntityPiece.ActiveEffect> effectsToRemove = new List<EntityPiece.ActiveEffect>();
         // Cash in Stamps
         if (m.CompareTag("Castle"))
         {
@@ -515,11 +516,23 @@ public class GameplayTest : MonoBehaviour
             {
                 p.movementLeft = 0;
             }
+
+            // Deactivate all active effects of items that end on stealing.
+            foreach (var effect in p.activeEffects)
+            {
+                if (ItemLists.StopOnStoreOnPassBy.Contains(effect.originalItem.name))
+                {
+                    Debug.Log(effect.originalItem.name + "'s effect is removed!");
+                    effectsToRemove.Add(effect);
+                }
+            }
+
+            p.activeEffects.RemoveAll(effect => effectsToRemove.Contains(effect));
+            p.RefreshStatModifiers();
         }
         else if (m.playerOccupied != null && m.playerOccupied != p)
         {
             EntityPiece otherPlayer = m.playerOccupied;
-            List<EntityPiece.ActiveEffect> effectsToRemove = new List<EntityPiece.ActiveEffect>();
 
             // Check if can steal item from player.
             if (p.currentStatsModifier.canStealOnPassBy && otherPlayer.inventory.Count > 0)
