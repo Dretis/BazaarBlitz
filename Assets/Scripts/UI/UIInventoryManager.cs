@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
+using static UnityEditor.Progress;
+using UnityEngine.EventSystems;
 
 public class UIInventoryManager : MonoBehaviour
 {
@@ -46,6 +48,7 @@ public class UIInventoryManager : MonoBehaviour
     [SerializeField] private int currentItemCount;
     [SerializeField] private const int INVENTORY_LIMIT = 6;
     [SerializeField] private GameObject heldItemPrefab;
+    [SerializeField] private List<GameObject> heldItemHolders;
 
     [Header("Broadcast on Event Channels")]
     public IntEventChannelSO m_ItemUsed;
@@ -83,6 +86,7 @@ public class UIInventoryManager : MonoBehaviour
 
     private void SpawnItemsInInventory(List<ItemStats> playerInventory)
     {
+        heldItemHolders.Clear();
         var inventoryParentTransform = inventoryGridContainer.transform;
         var itemsToSpawn = playerInventory.Count;
 
@@ -105,6 +109,14 @@ public class UIInventoryManager : MonoBehaviour
 
             var item = Instantiate(heldItemPrefab, inventoryParentTransform);
             item.GetComponent<InventorySelectionHandler>().UpdateItemInfo(itemToSpawn);
+            item.GetComponent<InventorySelectionHandler>().itemIndex = i;
+
+            heldItemHolders.Add(item);
+
+            if(i == 0)
+            {
+                EventSystem.current.SetSelectedGameObject(item);
+            }
         }
     }
 
@@ -182,15 +194,18 @@ public class UIInventoryManager : MonoBehaviour
         {
             // Regular item use, visually removes the item from the player's inventory
 
+            /*
             itemIcons[index].sprite = null;
             itemIcons[index].enabled = false;
             itemNames[index].text = "";
             itemPrices[index].text = "";
+
             for (int i = 0; i < itemNames.Count; i++)
             {
                 // Make the rest of the inventory interactable, prevents multiple item uses in one turn
                 itemNames[i].GetComponentInParent<Button>().interactable = false;
             }
+            */
         }
         else if(GameplayTest.instance.isStockingStore)
         {

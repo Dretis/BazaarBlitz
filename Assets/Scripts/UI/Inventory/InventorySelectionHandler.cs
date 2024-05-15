@@ -4,17 +4,19 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using Unity.VisualScripting;
 
-public class InventorySelectionHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler
+public class InventorySelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler
 {
     [Header("Item Info")]
-    //[SerializeField] private int itemIndex;
+    public int itemIndex;
     [SerializeField] private ItemStats heldItem;
     [SerializeField] private Image itemIcon;
     [SerializeField] private TextMeshProUGUI itemName;
     [SerializeField] private TextMeshProUGUI itemPrice;
 
     [Header("Broadcast On Event")]
+    public IntEventChannelSO m_ItemUsed;
     public ItemEventChannelSO m_ItemSelected; // basically hovering on item in inv
 
     public ItemStats HeldItem { 
@@ -58,6 +60,32 @@ public class InventorySelectionHandler : MonoBehaviour, IPointerEnterHandler, IP
         }
     }
 
+    public void OnSubmit(BaseEventData eventData)
+    {
+        Debug.Log("submit");
+
+        m_ItemUsed.RaiseEvent(itemIndex);
+
+        itemIcon.sprite = null;
+        itemIcon.enabled = false;
+        itemName.text = "";
+        itemPrice.text = "";
+
+        GetComponent<Button>().interactable = false;
+    }
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        Debug.Log("click");
+
+        m_ItemUsed.RaiseEvent(itemIndex);
+
+        itemIcon.sprite = null;
+        itemIcon.enabled = false;
+        itemName.text = "";
+        itemPrice.text = "";
+
+        GetComponent<Button>().interactable = false;
+    }
 
     public void OnPointerEnter(PointerEventData eventData)
     {

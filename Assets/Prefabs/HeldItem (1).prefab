@@ -233,35 +233,11 @@ MonoBehaviour:
   - eventID: 0
     callback:
       m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: UIInventoryManager, Assembly-CSharp
-          m_MethodName: ShowHoveredItemDetails
-          m_Mode: 3
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
+        m_Calls: []
   - eventID: 4
     callback:
       m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: UIInventoryManager, Assembly-CSharp
-          m_MethodName: UseItem
-          m_Mode: 3
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
+        m_Calls: []
 --- !u!114 &2177283803536277930
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -342,10 +318,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4cc1ad3f9e2c65c45bda36b7384b7d3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  itemIndex: 0
   heldItem: {fileID: 0}
   itemIcon: {fileID: 4645786429603770994}
   itemName: {fileID: 2177283802952047189}
   itemPrice: {fileID: 7291270089867236918}
+  m_ItemUsed: {fileID: 11400000, guid: 848f52d6f0e789e4ab1731d31de0ae96, type: 2}
   m_ItemSelected: {fileID: 11400000, guid: 49087bd72a461bd46b0fb8d2f16c4d6e, type: 2}
   verticalMoveAmount: 30
   moveTime: 0.1
@@ -385,8 +363,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 109.31, y: -22.6}
-  m_SizeDelta: {x: 196.03, y: 48}
+  m_AnchoredPosition: {x: 109.31, y: -34.8}
+  m_SizeDelta: {x: 196.03, y: 23.6}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &6369142250663139605
 CanvasRenderer:
@@ -445,7 +423,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 32
+  m_fontSize: 23.6
   m_fontSizeBase: 32
   m_fontWeight: 400
   m_enableAutoSizing: 1
