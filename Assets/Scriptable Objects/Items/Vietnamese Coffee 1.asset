@@ -10,12 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fdd1368eedb123d4db8a885acb84d3a9, type: 3}
-  m_Name: Vietnamese Coffee
+  m_Name: Vietnamese Coffee 1
   m_EditorClassIdentifier: 
   itemName: Vietnamese Coffee
   duration: 3
   itemSprite: {fileID: 1420039512, guid: 3eb884c20bf4ccf4c998c0de17a982eb, type: 3}
-  effectDescription: Double your next movement roll for 1-3 turns.
+  effectDescription: Double your next movement roll for 2 turns.
   flavorText: '"Oh yeah. This is the real stuff. You can tell from the strong Phin-ish."'
-  basePrice: 550
-  modifiers: []
+  basePrice: 750
+  modifiers:
+  - {fileID: 11400000, guid: ff44de6e92c1c31448e5dce3421c4a66, type: 2}
