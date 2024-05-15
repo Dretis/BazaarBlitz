@@ -527,15 +527,19 @@ public class GameplayTest : MonoBehaviour
 
                 // Raise event to show UI of item stolen. Not sure what to do if other player has no items to steal.
 
+                List<EntityPiece.ActiveEffect> effectsToRemove = new List<EntityPiece.ActiveEffect>();
+
                 // Deactivate all active effects of items that end on stealing.
                 foreach (var effect in p.activeEffects)
                 {
                     if (ItemLists.StealOnPassByItemNames.Contains(effect.originalItem.name))
                     {
                         Debug.Log(effect.originalItem.name + "'s effect is removed!");
-                        p.activeEffects.Remove(effect);
+                        effectsToRemove.Add(effect);
                     }
                 }
+
+                p.activeEffects.RemoveAll(effect => effectsToRemove.Contains(effect));
             }
         }
         // Change phase.
