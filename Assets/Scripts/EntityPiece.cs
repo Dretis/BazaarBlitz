@@ -98,6 +98,16 @@ public class EntityPiece : MonoBehaviour
         }
     }
 
+    public void RefreshStatModifiers()
+    {
+        currentStatsModifier = new EntityStatsModifiers();
+
+        foreach (var item in activeEffects)
+        {
+            currentStatsModifier = item.originalItem.ApplyStatModChanges(currentStatsModifier, item.originalItem.Duration - item.turnsRemaining);
+        }
+    }
+
     private void TickDownActiveEffects()
     {
         for (int i = 0; i < activeEffects.Count; i++)

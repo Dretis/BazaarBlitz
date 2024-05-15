@@ -512,7 +512,9 @@ public class GameplayTest : MonoBehaviour
         else if (m.playerOccupied != null && m.playerOccupied != p)
         {
             EntityPiece otherPlayer = m.playerOccupied;
+            List<EntityPiece.ActiveEffect> effectsToRemove = new List<EntityPiece.ActiveEffect>();
 
+            // Check if can steal item from player.
             if (p.currentStatsModifier.canStealOnPassBy && otherPlayer.inventory.Count > 0)
             {
                 int indexToSteal = Random.Range(0, otherPlayer.inventory.Count);
@@ -527,7 +529,7 @@ public class GameplayTest : MonoBehaviour
 
                 // Raise event to show UI of item stolen. Not sure what to do if other player has no items to steal.
 
-                List<EntityPiece.ActiveEffect> effectsToRemove = new List<EntityPiece.ActiveEffect>();
+                
 
                 // Deactivate all active effects of items that end on stealing.
                 foreach (var effect in p.activeEffects)
@@ -540,7 +542,43 @@ public class GameplayTest : MonoBehaviour
                 }
 
                 p.activeEffects.RemoveAll(effect => effectsToRemove.Contains(effect));
+                p.RefreshStatModifiers();
             }
+
+            // Check if can initiate combat.
+            if (p.currentStatsModifier.canInitiateCombatOnPassBy)
+            {
+                // Deactivate all active effects of items that end on combat.
+                foreach (var effect in p.activeEffects)
+                {
+                    if (ItemLists.CombatOnPassByItemNames.Contains(effect.originalItem.name))
+                    {
+                        Debug.Log(effect.originalItem.name + "'s effect is removed!");
+                        effectsToRemove.Add(effect);
+                    }
+                }
+
+                p.activeEffects.RemoveAll(effect => effectsToRemove.Contains(effect));
+                p.RefreshStatModifiers();
+
+                if (otherPlayer.combatSceneIndex == -1)
+                {
+                    phase = GamePhase.CombatTime;
+
+                    //Debug.Log("Your Player: " + currentPlayer.nickname);
+                    //Debug.Log("Other Player: " + otherPlayer.nickname);
+                    encounterStarted = true;
+
+                    // Set IDs of players entering combat.
+                    sceneManager.player1ID = currentPlayer.id;
+                    sceneManager.player2ID = otherPlayer.id;
+                    sceneManager.LoadCombatScene();
+
+                    return;
+                }
+            }
+
+            
         }
         // Change phase.
         if (p.heldPoints >= 4000)
