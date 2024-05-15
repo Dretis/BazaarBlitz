@@ -573,8 +573,10 @@ public class GameplayTest : MonoBehaviour
                     sceneManager.LoadCombatScene();
 
                     p.traveledNodes.Clear(); 
-                    p.traveledNodes.Add(p.occupiedNode); 
+                    p.traveledNodes.Add(p.occupiedNode);
 
+                    // Need NAM to disable input prompt (the number that shows up on top of the screen on roll).
+                    // If enter combat before it fades, it persists on next player's turn.
                     return;
                 }
             }
