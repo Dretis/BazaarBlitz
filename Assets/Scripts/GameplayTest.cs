@@ -522,12 +522,9 @@ public class GameplayTest : MonoBehaviour
                 m_PassByStamp.RaiseEvent(p);
             }
         }
-        else if (m.CompareTag("Store"))
+        else if (m.CompareTag("Store") && p.currentStatsModifier.canStopOnStoreOnPassBy)
         {
-            if (p.currentStatsModifier.canStopOnStoreOnPassBy)
-            {
-                m_StopOnStoreOnPassBy.RaiseEvent();
-            }
+            m_StopOnStoreOnPassBy.RaiseEvent();
 
             // Deactivate all active effects of items that end on store.
             p.RemoveItemEffectOnUse(ItemLists.StopOnStoreOnPassBy);
@@ -535,10 +532,11 @@ public class GameplayTest : MonoBehaviour
         else if (m.playerOccupied != null && m.playerOccupied != p)
         {
             EntityPiece otherPlayer = m.playerOccupied;
-
+            Debug.Log("hello");
             // Check if can steal item from player.
             if (p.currentStatsModifier.canStealOnPassBy && otherPlayer.inventory.Count > 0)
             {
+                Debug.Log("Steal");
                 m_StealOnPassBy.RaiseEvent(otherPlayer);
 
                 // Deactivate all active effects of items that end on stealing.
@@ -548,6 +546,7 @@ public class GameplayTest : MonoBehaviour
             // Check if can initiate combat.
             if (p.currentStatsModifier.canInitiateCombatOnPassBy)
             {
+                Debug.Log("Combat");
                 p.RemoveItemEffectOnUse(ItemLists.CombatOnPassByItemNames);
 
                 if (otherPlayer.combatSceneIndex == -1)
@@ -1076,6 +1075,7 @@ public class GameplayTest : MonoBehaviour
 
     public void StealFromPlayer(EntityPiece otherPlayer)
     {
+        Debug.Log("StealFromPlayer");
         int indexToSteal = Random.Range(0, otherPlayer.inventory.Count);
         currentPlayer.inventory.Add(otherPlayer.inventory[indexToSteal]);
 
@@ -1091,6 +1091,7 @@ public class GameplayTest : MonoBehaviour
 
     public void InitiateCombatOnPlayer(EntityPiece otherPlayer)
     {
+        Debug.Log("InitiateCombatOnPlayer");
         encounterStarted = true;
 
         // Set IDs of players entering combat.
@@ -1101,6 +1102,7 @@ public class GameplayTest : MonoBehaviour
 
     public void StopOnStore()
     {
+        Debug.Log("StopOnStore");
         currentPlayer.movementLeft = 0;
     }
 
