@@ -22,6 +22,7 @@ public class GameplayTest : MonoBehaviour
     {
         InitialTurnMenu,
         ItemSelection,
+        RaycastTargetSelection,
         Inventory,
         RollDice,
         PickDirection,
@@ -118,10 +119,13 @@ public class GameplayTest : MonoBehaviour
     public PlayerEventChannelSO m_InitiateCombatOnPassBy;
     public VoidEventChannelSO m_StopOnStoreOnPassBy;
 
+    public VoidEventChannelSO m_EnterRaycastTargetSelection;
+    public VoidEventChannelSO m_ExitRaycastTargetSelection;
+
     [Header("Listen on Event Channels")]
     public ItemEventChannelSO m_ItemBought; //Listening to this one
     public IntEventChannelSO m_ItemUsed; //Listening to this one
-    public VoidEventChannelSO m_ExitRaycastedTile; //Listening to this one
+    public VoidEventChannelSO m_DisableFreeview;
 
     // Placeholder code, basis items for storefront
     public List<ItemStats> tempItems;
@@ -131,7 +135,7 @@ public class GameplayTest : MonoBehaviour
         m_ItemBought.OnEventRaised += _PlaceholderChangeAndContinue;
         m_ItemUsed.OnEventRaised += RemoveItemInPlayerInventory;
         m_UpdatePlayerScore.OnEventRaised += RemoveDeathsRow;
-        m_ExitRaycastedTile.OnEventRaised += DisableFreeview;
+        m_DisableFreeview.OnEventRaised += DisableFreeview;
 
         m_StealOnPassBy.OnEventRaised += StealFromPlayer;
         m_InitiateCombatOnPassBy.OnEventRaised += InitiateCombatOnPlayer;
@@ -143,7 +147,7 @@ public class GameplayTest : MonoBehaviour
         m_ItemBought.OnEventRaised -= _PlaceholderChangeAndContinue;
         m_ItemUsed.OnEventRaised -= RemoveItemInPlayerInventory;
         m_UpdatePlayerScore.OnEventRaised -= RemoveDeathsRow;
-        m_ExitRaycastedTile.OnEventRaised -= DisableFreeview;
+        m_DisableFreeview.OnEventRaised -= DisableFreeview;
 
         m_StealOnPassBy.OnEventRaised -= StealFromPlayer;
         m_InitiateCombatOnPassBy.OnEventRaised -= InitiateCombatOnPlayer;
@@ -191,6 +195,10 @@ public class GameplayTest : MonoBehaviour
             // Checks item effects on player
             case GamePhase.ItemSelection:
                 SelectItem(currentPlayer);
+                break;
+
+            case GamePhase.RaycastTargetSelection:
+                SelectRaycastTarget(currentPlayer);
                 break;
 
             // Pick choices
@@ -979,6 +987,17 @@ public class GameplayTest : MonoBehaviour
 
             currentPlayer.inventory.RemoveAt(index);
             playerUsedItem = true;
+
+            if (currentPlayer.currentStatsModifier.warpMode != EntityStatsModifiers.WarpMode.None) 
+            {
+                m_ExitInventory.RaiseEvent();
+                // Raise free view event I guess?
+                m_EnableFreeview.RaiseEvent();
+                m_EnterRaycastTargetSelection.RaiseEvent();
+                freeviewEnabled = true;
+
+                phase = GamePhase.RaycastTargetSelection;
+            }
         }        
     }
 
@@ -1001,6 +1020,19 @@ public class GameplayTest : MonoBehaviour
         }
     }
 
+    private void ApplyItemEffectsOnTargetSelection(EntityPiece p) 
+    {
+        // Warp player to specified destination.
+        if (p.currentStatsModifier.warpDestination != null)
+        {
+            p.occupiedNode = p.currentStatsModifier.warpDestination;
+            p.transform.position = p.occupiedNode.transform.position;
+            p.occupiedNodeCopy = p.occupiedNode;
+            p.traveledNodes.Clear();
+            p.traveledNodes.Add(p.occupiedNode);
+        }
+    }
+
     private void RemoveDeathsRow(int id)
     {
         if (playerUnits[id].heldPoints >= 0)
@@ -1008,11 +1040,6 @@ public class GameplayTest : MonoBehaviour
             Debug.Log(playerUnits[id].entityName + " is no longer in Death's Row");
             playerUnits[id].isInDeathsRow = false;
         }
-    }
-
-    public void PlayAudio(AudioClip clip)
-    {
-        audioSource.PlayOneShot(clip, 2f);
     }
 
     private void StockStore(EntityPiece p, MapNode m)
@@ -1106,8 +1133,32 @@ public class GameplayTest : MonoBehaviour
     {
         Debug.Log("StopOnStore");
         currentPlayer.movementLeft = 0;
+    }  
+
+    public void SelectRaycastTarget(EntityPiece p)
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (p.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Tiles)
+            {
+                if (RaycastTiles.tileSelected != null)
+                    WarpConfirmed(p);
+            }
+            else if (p.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Players)
+            {
+                if (RaycastTiles.tileSelected.playerOccupied != null
+                && RaycastTiles.tileSelected.playerOccupied != p)
+                    WarpConfirmed(p);
+            }
+        }
     }
 
-
-   
+    private void WarpConfirmed(EntityPiece p)
+    {
+        m_DisableFreeview.RaiseEvent();
+        m_ExitRaycastTargetSelection.RaiseEvent();
+        p.currentStatsModifier.warpDestination = RaycastTiles.tileSelected;
+        ApplyItemEffectsOnTargetSelection(p);
+        phase = GamePhase.InitialTurnMenu;
+    }
 }

@@ -6,8 +6,11 @@ using UnityEngine;
 public class RaycastTiles : MonoBehaviour
 {
     Camera cam;
-    private bool tileSelected = false;
+    private bool isTileSelected = false;
     private bool freeviewEnabled = false;
+    private bool mustSelectTarget = false;
+
+    public static MapNode tileSelected = null;
 
     [Header("Broadcast on Event Channels")]
     public NodeEventChannelSO m_EnterRaycastedTile;
@@ -16,15 +19,24 @@ public class RaycastTiles : MonoBehaviour
 
     [Header("Listen on Event Channels")]
     public VoidEventChannelSO m_EnableFreeview;
+    public VoidEventChannelSO m_DisableFreeview;
+    public VoidEventChannelSO m_EnterRaycastTargetSelection;
+    public VoidEventChannelSO m_ExitRaycastTargetSelection;
 
     private void OnEnable()
     {
         m_EnableFreeview.OnEventRaised += EnableRaycasting;
+        m_DisableFreeview.OnEventRaised += DisableRaycasting;
+        m_EnterRaycastTargetSelection.OnEventRaised += EnableMustSelectTarget;
+        m_ExitRaycastTargetSelection.OnEventRaised += DisableMustSelectTarget;
     }
 
     private void OnDisable()
     {
         m_EnableFreeview.OnEventRaised -= EnableRaycasting;
+        m_DisableFreeview.OnEventRaised -= DisableRaycasting;
+        m_EnterRaycastTargetSelection.OnEventRaised -= EnableMustSelectTarget;
+        m_ExitRaycastTargetSelection.OnEventRaised -= DisableMustSelectTarget;
     }
 
     // Start is called before the first frame update
@@ -47,17 +59,23 @@ public class RaycastTiles : MonoBehaviour
                 if (hit)
                 {
                     Debug.Log($"hit {hit.transform.name}");
-                    var node = hit.transform.GetComponent<MapNode>();
+                    tileSelected = hit.transform.GetComponent<MapNode>();
 
-                    tileSelected = true;
-                    m_EnterRaycastedTile.RaiseEvent(node);
+                    isTileSelected = true;
+                    m_EnterRaycastedTile.RaiseEvent(tileSelected);
+                }
+                else
+                {
+                    m_ExitRaycastedTile.RaiseEvent();
+                    tileSelected = null;
+                    isTileSelected = false;
                 }
             }
-            else if (Input.GetMouseButtonDown(1))
+            else if (!mustSelectTarget && Input.GetMouseButtonDown(1))
             {
-                m_ExitRaycastedTile.RaiseEvent();
-                tileSelected = false;
-                freeviewEnabled = false;
+               
+                isTileSelected = false;
+                m_DisableFreeview.RaiseEvent();
             }
         }
     }
@@ -65,5 +83,21 @@ public class RaycastTiles : MonoBehaviour
     public void EnableRaycasting()
     {
         freeviewEnabled = true;
+    }
+
+    public void DisableRaycasting()
+    {
+        m_ExitRaycastedTile.RaiseEvent();
+        freeviewEnabled = false;
+    }
+
+    public void EnableMustSelectTarget()
+    {
+        mustSelectTarget = true;
+    }
+
+    public void DisableMustSelectTarget()
+    {
+        mustSelectTarget = false;
     }
 }
