@@ -993,6 +993,7 @@ public class GameplayTest : MonoBehaviour
                 m_ExitInventory.RaiseEvent();
                 // Raise free view event I guess?
                 m_EnableFreeview.RaiseEvent();
+                // FOR NAM: USE THIS EVENT TO SHOW SELECT TILE/PLAYER UI.
                 m_EnterRaycastTargetSelection.RaiseEvent();
                 freeviewEnabled = true;
 
@@ -1156,6 +1157,8 @@ public class GameplayTest : MonoBehaviour
     private void WarpConfirmed(EntityPiece p)
     {
         m_DisableFreeview.RaiseEvent();
+
+        // FOR NAM: USE THIS EVENT TO HIDE SELECT TILE/PLAYER UI
         m_ExitRaycastTargetSelection.RaiseEvent();
         p.currentStatsModifier.warpDestination = RaycastTiles.tileSelected;
         ApplyItemEffectsOnTargetSelection(p);
