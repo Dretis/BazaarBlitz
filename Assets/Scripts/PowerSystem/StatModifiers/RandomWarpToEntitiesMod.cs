@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "StatMods/RandEntityWarpMod")]
+[CreateAssetMenu(menuName = "StatMods/RandomWarpToEntitiesWarpMod")]
 public class RandomWarpToEntitiesMod : StatModifierChangerSO
 {
 

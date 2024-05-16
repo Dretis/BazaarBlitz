@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "StatMods/WarpMod")]
+[CreateAssetMenu(menuName = "StatMods/SelectTileWarpMod")]
 public class SelectTileWarpMod : StatModifierChangerSO
 {
 
