@@ -11,6 +11,13 @@ public class EntityStatsModifiers
         }
     }
 
+    public enum WarpMode
+    {
+        None,
+        Tiles,
+        Players
+    }
+
     // List of all stats
     public DieModifier[] dieModifiers = new DieModifier[(int)EntityBaseStats.DieTypes.Count];
 
@@ -23,6 +30,7 @@ public class EntityStatsModifiers
     public int movementFlatModifier = 0;
     public int movementMultModifier = 1;
     public MapNode warpDestination = null;
+    public WarpMode warpMode = WarpMode.None;
 
     public bool canStealOnPassBy = false;
     public bool canInitiateCombatOnPassBy = false;

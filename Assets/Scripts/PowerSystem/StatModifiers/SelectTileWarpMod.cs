@@ -1,13 +1,12 @@
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "StatMods/WarpMod")]
-public class WarpMod : StatModifierChangerSO
+public class SelectTileWarpMod : StatModifierChangerSO
 {
-    public MapNode node;
 
     public override EntityStatsModifiers ApplyStatModChanges(EntityStatsModifiers currentStats, int currentTurn)
     {
-        currentStats.warpDestination = node;
+        currentStats.warpMode = EntityStatsModifiers.WarpMode.Tiles;
 
         return currentStats;
     }
