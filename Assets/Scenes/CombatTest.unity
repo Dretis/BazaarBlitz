@@ -3741,12 +3741,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9715807e9aca2af419385bfcbdd25edb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isInitiatorTurn: 0
-  initiatorAttacking: 0
-  retaliatorAttacking: 0
-  combatActive: 0
   player1: {fileID: 2060781258}
   player2: {fileID: 1239771809}
+  attacker: {fileID: 0}
+  defender: {fileID: 0}
+  player1Attacking: 0
+  player2Attacking: 0
   smackSFX: {fileID: 8300000, guid: c8e9a2f1d06062c4f81b10d5c437a921, type: 3}
   clankSFX: {fileID: 8300000, guid: 7332912025e28204db328991cab83e6e, type: 3}
   explosionSFX: {fileID: 8300000, guid: fd978366f596652498b8e9dc04ce3c94, type: 3}
@@ -3758,7 +3758,7 @@ MonoBehaviour:
   m_SwapPhase: {fileID: 11400000, guid: 5fe2f16d1a7ee994d93f14d183b3029b, type: 2}
   m_ActionSelected: {fileID: 11400000, guid: fc7127886f7f7ed458771b3e118932a0, type: 2}
   m_DiceRolled: {fileID: 11400000, guid: ef8018f7217679c479e9e86e849b14c8, type: 2}
-  m_PlayOutCombat: {fileID: 0}
+  m_PlayOutCombat: {fileID: 11400000, guid: 92bd6a37ff6a3344cb44842875da70ca, type: 2}
   m_DamageTaken: {fileID: 11400000, guid: 21e2d2c157c4e564db136dc7709f07b4, type: 2}
   m_EntityDied: {fileID: 11400000, guid: 8d61128e2ea86d248a5d122114fb8c8e, type: 2}
   m_Stalemate: {fileID: 11400000, guid: 46592635a96967f4ab8e8dfbf5f7379d, type: 2}
@@ -4348,6 +4348,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   howToPlayScreen: {fileID: 1530692743}
+  m_SwapPhase: {fileID: 11400000, guid: 5fe2f16d1a7ee994d93f14d183b3029b, type: 2}
 --- !u!224 &470383604 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6051684997082574127, guid: c8e4d3328645e3446ad7ed36310951ab, type: 3}

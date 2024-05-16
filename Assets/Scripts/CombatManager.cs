@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class CombatManager : MonoBehaviour
 {
@@ -28,6 +29,7 @@ public class CombatManager : MonoBehaviour
 
     private bool waitingForSelection; // If true, players need to select their actions still. If not, combat's running and the input listener is ignored.
     private bool isFirstPhase; // If true, is true, then false for every combat. Mostly for convenience.
+    private bool onePlayerSelected = false; // Set to true when someone chooses an action. Next time an animation finishes, progress combat till next phase
 
 
 
@@ -126,7 +128,7 @@ public class CombatManager : MonoBehaviour
 
         if (player2.isEnemy) { // scene manager guarantees an wild encounter will be loaded in player 2's slot. This decides the kind of combat this is.
             attacker = player1;
-            retaliator = player2;
+            defender = player2;
             player1Attacking = true;
             player2Attacking = false;
             isFightingAI = true;
@@ -163,16 +165,221 @@ public class CombatManager : MonoBehaviour
         }
     }
 
-
     // Called when m_ActionSelected is raised with 
     public void ActionSelected(EntityPiece player, Action action) {
-        if (action.Phase == 'Attack') {
+        if (waitingForSelection == false) {
+            Debug.Log("Turn in progress");
+            return;
+        }
+
+        if (action.phase == Action.PhaseTypes.Attack) {
             attackerAction = action;
             m_ActionSelected.RaiseEvent(attacker, Action.PhaseTypes.Attack);
-        } else if (action.Phase == 'Defend') {
-            defenderAction = defend;
+        } else if (action.phase == Action.PhaseTypes.Defend) {
+            defenderAction = action;
             m_ActionSelected.RaiseEvent(defender, Action.PhaseTypes.Defend);
         }
+
+        // float animationLength = action.animationLength;
+
+        StartCoroutine(SelectionAnimation(1.0f));
+
+    }
+
+    public void ShowChoices() {
+        waitingForSelection = false;
+
+        //m_BothActionsSelected.RaiseEvent(???); // Call animation players to run through event
+
+        // float animationLength = some constant probably;
+
+        StartCoroutine(ShowChoiceAnimation(1.0f));
+
+    }
+    
+    // This script begins the actual combat calculations up to the point of deciding the RNG values of both sides.
+    public void DiceRolls() {
+
+        int rolledFaceAttack = Random.Range(0, 6); // Which dice index was selected
+        int damageRoll = 0; // Intermediate value used to get the damage dice total
+        int damage = 0; // total dice pips rolled after counting effects
+
+        // less important variables for occasional item effects
+        int attackerBonusRoll = 0; // May be set to something other than 1 in the for loop (if an item effect for this is active)
+
+        Action attack = attackerAction;
+        Action defend = defenderAction;
+
+        switch (attack.type)
+        {
+            case Action.WeaponTypes.Melee:
+
+                for (int i = 0; i < attackerBonusRoll + attack.diesToRoll + 1; i++) // Account for an attack's bonus rolls, or item bonuses
+                {
+                    damageRoll = (int)attacker.strDie[rolledFaceAttack]; // Get the base pip value of the dice respecting upgrades
+
+                    // Important note: the below function is what adds damageRoll to damage (after applying item multipliers and boosts)
+                    damage += (int)attacker.currentStatsModifier.ApplyDieModifier(EntityBaseStats.DieTypes.Strength, damageRoll); // counting items, add that damage
+
+                    attackerBonusRoll = (int)attacker.currentStatsModifier.rollModifier; // and end most of the time, unless we have extra combat rolls.
+                    
+                }
+
+                
+                
+                break;
+            case Action.WeaponTypes.Gun:
+
+                for (int i = 0; i < attackerBonusRoll + attack.diesToRoll + 1; i++)
+                {
+                    damageRoll = (int)attacker.dexDie[rolledFaceAttack];
+
+                    damage += (int)attacker.currentStatsModifier.ApplyDieModifier(EntityBaseStats.DieTypes.Dex, damageRoll);
+
+                    attackerBonusRoll = (int)attacker.currentStatsModifier.rollModifier;
+                }
+                
+                
+                break;
+            case Action.WeaponTypes.Magic:
+
+                for (int i = 0; i < attackerBonusRoll + attack.diesToRoll + 1; i++)
+                {
+                    damageRoll = (int)attacker.intDie[rolledFaceAttack];
+
+                    damage += (int)attacker.currentStatsModifier.ApplyDieModifier(EntityBaseStats.DieTypes.Int, damageRoll);
+
+                    attackerBonusRoll = (int)attacker.currentStatsModifier.rollModifier;
+                }
+                
+                
+                break;
+            default:
+
+                damageRoll = 0;
+                damage = 0;
+                break;
+        }
+
+        damage += (attack.bonusDamage); // Final damage dice pips. Not multiplied by 10 yet.
+        
+
+        int rolledFaceDefense = Random.Range(0, 6);
+
+        float defenseScore = 0; // Every point of this reduces damage by 10%. Can be increased by items or dice pips
+        switch (defend.type)
+        {
+            case Action.WeaponTypes.Melee:
+                defenseScore = defender.strDie[rolledFaceDefense];
+                break;
+            case Action.WeaponTypes.Gun:
+                defenseScore = defender.dexDie[rolledFaceDefense];
+                //Debug.Log("GunDefense");
+                break;
+            case Action.WeaponTypes.Magic:
+                defenseScore = defender.intDie[rolledFaceDefense];
+                //Debug.Log("MagicDefense");
+                break;
+            default:
+                defenseScore = 0;
+                break;
+        }
+
+        // Apply item effects like cloth (Seems a little weird to be included in dice, but this is essential for clarity so people visually see the 10-100% mod w/ cloth)
+        defenseScore += 1f * defender.currentStatsModifier.defenseModifier; 
+        
+
+        
+        m_DiceRolled.RaiseEvent(attacker, damage); // Send events so that everyone can see what was rolled on either side after a moment. Assumed to start the animation
+
+        m_DiceRolled.RaiseEvent(defender, defenseScore);
+
+        // float animationLength = some constant probably;
+
+        StartCoroutine(DiceRollAnimation(1.0f, damage, (int)defenseScore));
+
+    }
+
+    public void PlayOutPhase(int damage, int defenseScore) {
+        Action attack = attackerAction;
+        Action defend = defenderAction;
+
+        float damageTypeMultiplier = 1f; // Attacker deals this much times more damage
+        if (attack.type == defend.type)
+        {
+            damageTypeMultiplier = 1.5f; // Neutral
+        }
+        else if ( (attack.type == Action.WeaponTypes.Melee && defend.type == Action.WeaponTypes.Gun)
+               || (attack.type == Action.WeaponTypes.Gun && defend.type == Action.WeaponTypes.Magic)
+               || (attack.type == Action.WeaponTypes.Magic && defend.type == Action.WeaponTypes.Melee) )
+        {
+            damageTypeMultiplier = 1f; // Incorrect defense option
+        }
+        else
+        {
+            damageTypeMultiplier = 2f; // Super effective
+        }
+
+        damage = damage * 10;
+
+        int finalDamage = (int)(damage * (1 - (0.1f * defenseScore)) * damageTypeMultiplier);
+
+        if (finalDamage < 0)
+        {
+            finalDamage = 0;
+        }
+
+        //m_PlayOutCombat.RaiseEvent(); // Set attack animation to play early
+
+        //float animationLength = attack.animationLength;
+
+        StartCoroutine(AttackAndDefendAnimation(1.0f, finalDamage));
+
+    }
+
+    // Final parts of the turn here, where we actually deal damage and soon after flip phases
+    private void dealDamage(int damageToDeal) {
+        // damage was set earlier in combat calulations.
+
+        Debug.Log("Final Damage: " + damageToDeal);
+
+        defender.health -= (int)damageToDeal; // Apply final damage
+
+        attacker.health += (int)(damageToDeal * attacker.currentStatsModifier.lifestealMult); // Attacker heals if they have lifesteal
+
+        m_DamageTaken.RaiseEvent(defender, damageToDeal);
+
+        StartCoroutine(PhaseEndDelay(0.5f));
+    }
+
+    private void endPhase() {
+        waitingForSelection = true;
+        if (player1.health <= 0 || player2.health <= 0) // before we even swap, see if someone died.
+        {
+            StartCoroutine(EndCombatDelay(1.5f)); // These aren't based on animations so they're constants.
+            return;
+        }
+
+        // Now we should swap around the attacker and defender.
+        EntityPiece tempDefender = defender;
+        defender = attacker;
+        attacker = tempDefender;
+
+        m_SwapPhase.RaiseEvent(attacker);
+
+
+
+        // With that done, iterate isFirstPhase to see if we should pause combat.
+        if (isFirstPhase == true) { // iterate to next phase
+            isFirstPhase = false;
+        } else { // but pause combat if we looped twice
+            isFirstPhase = true;
+            StartCoroutine(PauseCombatDelay(1f));
+        }
+        
+
+        
+        
 
     }
 
@@ -189,11 +396,7 @@ public class CombatManager : MonoBehaviour
     {
         m_Stalemate.RaiseEvent();
 
-        // Now onto the main code:
-
-
-
-        // Finally more scene management stuff
+        // Mostly scene management stuff here
 
         // Pause combat scene and re-enable overworld scene
         // This does not remove the scene but makes all the game objects under the combat scene inactive.
@@ -205,11 +408,71 @@ public class CombatManager : MonoBehaviour
         sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
     }
 
-    // Decides the consequences of either the initiator/retaliator losing before destroying the scene
+    // Decides the consequences of either player 1 or player 2 losing before destroying the scene
     public void endCombat()
     {
+        EntityPiece winner;
+        EntityPiece loser;
 
-        m_EntityDied.RaiseEvent(retaliator, null);
+        bool player1Wins;
+        if (player2.health <= 0) { // Player 1 wins
+            player1Wins = true;
+            m_EntityDied.RaiseEvent(player2, null);
+            player2.health = player2.maxHealth;
+
+            winner = player1;
+            loser = player2;
+
+        } else { // Player 2 wins
+            player1Wins = false;
+            m_EntityDied.RaiseEvent(player1, null);
+            player1.health = player1.maxHealth;
+
+            loser = player1;
+            winner = player2;
+        }
+
+        if ( (isFightingAI && player1Wins) == false ) {
+            loser.occupiedNode = sceneManager.spawnPoint;
+            loser.transform.position = loser.occupiedNode.transform.position;
+            loser.occupiedNodeCopy = loser.occupiedNode;
+            loser.traveledNodes.Clear();
+            loser.traveledNodes.Add(loser.occupiedNode);
+
+            // Add defender's points to attacker's points 
+            float points = 0.5f * loser.heldPoints;
+            winner.heldPoints += Mathf.FloorToInt(points);
+            loser.heldPoints -= Mathf.CeilToInt(points);
+
+            // Base 100 xp, times 2 for every level the opponent is above you.
+            float reputationGain = 100 * Mathf.Pow(2, loser.RenownLevel - winner.RenownLevel);
+
+            if (reputationGain < 100)
+            {
+                reputationGain = 0; // Should it just be 0 if the opponent is lower level?
+            }
+            
+            if (player2.isEnemy) { // Enemies dont increase the amount of xp they give
+                reputationGain = 0;
+            }
+
+            winner.ReputationPoints += reputationGain;
+            Debug.Log("Gained " + reputationGain + " reputation points! Now at rep: " + winner.ReputationPoints);
+
+            // Remember to throw in that new level up UI in here soon!
+        } else {
+            int loot = Random.Range(0, 6);
+            player1.inventory.Add(player2.inventory[loot]); // Enemy inventories are effectively static loot tables (they always have 6 items)
+            loot = Random.Range(0, 6);
+            player1.inventory.Add(player2.inventory[loot]);
+            player1.ReputationPoints += player2.ReputationPoints; // a monster's rep is just its exp yield.
+            Debug.Log("Gained " + player2.ReputationPoints + " reputation points from monster! Now at rep: " + player1.ReputationPoints);
+
+            
+        }
+
+        
+        
 
 
         
@@ -229,23 +492,107 @@ public class CombatManager : MonoBehaviour
         sceneManager.EnableScene(0);
 
         // Update player scores.
-        sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(initiator.id);
-        if (!retaliator.isEnemy) {
-            sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(retaliator.id);
-        }
-
-        // Helper function to keep code from getting even more cluttered
-        private bool toggleBool(bool boolToToggle)
-        { 
-            if (boolToToggle)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+        sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(player1.id);
+        if (player2.isEnemy) {
+            sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(player2.id);
         }
     }
+
+    // IENUMERATORS (Coroutines that delay code so animations can run)
+
+    // Allows waiting and then going back to code
+    public IEnumerator SelectionAnimation(float animationLength)
+    {
+        // Selection animation done within the previously called event
+
+        Debug.Log($"A player selected!");
+        yield return new WaitForSeconds(animationLength);
+        Debug.Log($"Done Selecting");
+        
+        if (onePlayerSelected) // Means both players decided
+        {
+            onePlayerSelected = false; // For next phase
+            ShowChoices(); // Progress combat through showing choices until the phase plays out.
+            
+        } else {
+            onePlayerSelected = true;
+        }
+    }
+
+    public IEnumerator ShowChoiceAnimation(float animationTime)
+    {
+        
+        Debug.Log($"Revealing Actions!");
+        yield return new WaitForSeconds(animationTime);
+        Debug.Log($"Attack: {attackerAction.type}");
+        Debug.Log($"Defend: {defenderAction.type}");
+    
+        
+        DiceRolls(); // Acts out the turn (most of the combat logic here, takes a while to get back)
+    }
+
+    public IEnumerator DiceRollAnimation(float animationTime, int damageRoll, int defenseRoll)
+    {
+        //Play your dice rolling animation here (assuming they were started by the event)
+
+        yield return new WaitForSeconds(animationTime);
+        
+        Debug.Log($"Damage roll: {damageRoll}");
+        Debug.Log($"Defend roll: {defenseRoll}");
+
+        //m_DiceRolled.RaiseEvent(attacker, damageRoll); // Damage roll is the total of all rolled damage dice (if thats modified), and damage boosts, but no defense or type advantage involved.
+
+        //m_DiceRolled.RaiseEvent(defender, defenseRoll);
+        
+        PlayOutPhase(damageRoll, defenseRoll); // Now that we know the base damage, we can simply progress with combat after counting type advantage.
+
+    }
+
+    public IEnumerator AttackAndDefendAnimation(float animationTime, int damageToDeal)
+    {
+        // It was mentioned some stuff like the defense animation could be tuned in the animation timeline, but this
+        // moment of the method represents the start of the attack animation.
+
+        yield return new WaitForSeconds(animationTime);
+        
+        dealDamage(damageToDeal);
+
+    }
+
+    
+    public IEnumerator PhaseEndDelay(float animationTime) // Exists so there's a half a second or something before the phase ends
+    {
+        // It was mentioned some stuff like the defense animation could be tuned in the animation timeline, but this
+        // moment of the method represents the start of the attack animation.
+
+        yield return new WaitForSeconds(animationTime);
+        
+        endPhase();
+    }
+
+    public IEnumerator PauseCombatDelay(float animationTime) // Exists so there's a half a second or something before the phase ends
+    {
+        // It was mentioned some stuff like the defense animation could be tuned in the animation timeline, but this
+        // moment of the method represents the start of the attack animation.
+
+        yield return new WaitForSeconds(animationTime);
+        
+        pauseCombat();
+
+    }
+
+    public IEnumerator EndCombatDelay(float animationTime) // Exists so there's a half a second or something before the phase ends
+    {
+        // It was mentioned some stuff like the defense animation could be tuned in the animation timeline, but this
+        // moment of the method represents the start of the attack animation.
+
+        yield return new WaitForSeconds(animationTime);
+        
+        endCombat();
+
+    }
+
+
+}
 
 

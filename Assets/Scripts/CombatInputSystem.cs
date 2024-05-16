@@ -8,22 +8,24 @@ public class CombatInputSystem : MonoBehaviour
     // I tried to make the update code self contained so it shouldn't be a hard port.
     bool player1Went = false;
     bool player2Went = false;
+    
+    bool player1Attacking = CombatManager.Instance.player1Attacking;
+    bool player2Attacking = CombatManager.Instance.player2Attacking;
+
+    EntityPiece player1 = CombatManager.Instance.player1;
+    EntityPiece player2 = CombatManager.Instance.player2;
+
+    
     //public ????? m_ActionSelected;
 
-    //public PlayerEventChannelSO m_SwapPhase; // Will be used to notify combatinputsystem when a turn is finished and new input is needed
+    public PlayerEventChannelSO m_SwapPhase; // Will be used to notify combatinputsystem when a turn is finished and new input is needed
 
     void OnEnable() {
-        //m_SwapPhase.OnEventRaised += PhasePassed;
+        m_SwapPhase.OnEventRaised += PhasePassed;
     }
 
     void Update()
     {
-        bool player1Attacking = CombatManager.Instance.player1Attacking;
-        bool player2Attacking = CombatManager.Instance.player2Attacking;
-        
-        EntityPiece player1 = CombatManager.Instance.player1;
-        EntityPiece player2 = CombatManager.Instance.player2;
-
 
         if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
         {
@@ -73,6 +75,8 @@ public class CombatInputSystem : MonoBehaviour
             return;
         }
 
+        Debug.Log(actionID);
+
         if (isPlayer1) {
             player1Went = true;
             Action action;
@@ -98,9 +102,22 @@ public class CombatInputSystem : MonoBehaviour
         }
     }
 
-    void PhasePassed() {
+    private void PhasePassed(EntityPiece attacker) {
         player1Went = false;
         player2Went = false;
+
+        if (player1Attacking) {
+            player1Attacking = false;
+        } else {
+            player1Attacking = true;
+        }
+
+        if (player2Attacking) {
+            player2Attacking = false;
+        } else {
+            player2Attacking = true;
+        }
+        
     }
 
 
