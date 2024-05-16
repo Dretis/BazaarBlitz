@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 using static GameplayTest;
 
 public class PlayerInputController : MonoBehaviour
@@ -73,6 +74,7 @@ public class PlayerInputController : MonoBehaviour
         if (p.occupiedNode.tag == "Encounter"
             && p.heldPoints >= 200 && p.storeCount < 4)
         {
+            Debug.Log("Built a store");
             // Build a store in the current tile
             m_BuildStore.RaiseEvent(currentPlayer);
             //m_RestockStore.RaiseEvent(currentPlayer.occupiedNode);
@@ -81,6 +83,7 @@ public class PlayerInputController : MonoBehaviour
         }
         else
         {
+            Debug.Log("Can't build store");
             // Give some notification
         }
 
@@ -100,8 +103,33 @@ public class PlayerInputController : MonoBehaviour
     #region 'Moving' Action Map
     private void OnMove(InputValue value)
     {
+        var p = currentPlayer;
         Debug.Log($"{value.Get<Vector2>()}");
+        var x = value.Get<Vector2>().x;
+        var y = value.Get<Vector2>().y;
 
+        switch (x, y)
+        {
+            case (0, 1):
+                Debug.Log("north");
+                GameplayTest.instance.wantedNode = p.occupiedNode.north;
+                break;
+            case (1, 0):
+                GameplayTest.instance.wantedNode = p.occupiedNode.east;
+                break;
+            case (0, -1):
+                GameplayTest.instance.wantedNode = p.occupiedNode.south;
+                break;
+            case (-1, 0):
+                GameplayTest.instance.wantedNode = p.occupiedNode.west;
+                break;
+
+        }
+        if (GameplayTest.instance.wantedNode != null)
+        {
+            GameplayTest.instance.phase = GamePhase.MoveAround;
+            // prob replace this part w/ an event call
+        }
     }
 
     private void OnToggleFreeview()
@@ -115,6 +143,7 @@ public class PlayerInputController : MonoBehaviour
     {
         Debug.Log("Dice rolled!");
         m_RollForMovement.RaiseEvent(10);
+        currentPlayer.movementTotal = currentPlayer.movementLeft = 10;
         SwitchActionMap(GamePhase.PickDirection);
     }
 

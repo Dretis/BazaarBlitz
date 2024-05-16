@@ -17,6 +17,7 @@ public class InventorySelectionHandler : MonoBehaviour, ISubmitHandler, IPointer
 
     [Header("Broadcast On Event")]
     public IntEventChannelSO m_ItemUsed;
+    public IntItemEventChannelSO m_ItemStocked;
     public ItemEventChannelSO m_ItemSelected; // basically hovering on item in inv
 
     public ItemStats HeldItem { 
@@ -62,19 +63,35 @@ public class InventorySelectionHandler : MonoBehaviour, ISubmitHandler, IPointer
 
     public void OnSubmit(BaseEventData eventData)
     {
-        Debug.Log("submit");
+        if (heldItem == null) return;
 
-        m_ItemUsed.RaiseEvent(itemIndex);
+        if(GameplayTest.instance.phase == GameplayTest.GamePhase.StockStore) 
+        {
+            // Stock Item into Store
+            Debug.Log($"{heldItem.name} stocked");
+            itemIcon.sprite = null;
+            itemIcon.enabled = false;
+            itemName.text = "";
+            itemPrice.text = "";
 
-        itemIcon.sprite = null;
-        itemIcon.enabled = false;
-        itemName.text = "";
-        itemPrice.text = "";
+            GetComponent<Button>().interactable = false;
+            m_ItemStocked.RaiseEvent(itemIndex, heldItem);
+        }
+        else
+        {
+            Debug.Log($"{heldItem.name} used");
+            itemIcon.sprite = null;
+            itemIcon.enabled = false;
+            itemName.text = "";
+            itemPrice.text = "";
 
-        GetComponent<Button>().interactable = false;
+            GetComponent<Button>().interactable = false;
+            m_ItemUsed.RaiseEvent(itemIndex);
+        }
     }
     public void OnPointerClick(PointerEventData eventData)
     {
+        /*
         Debug.Log("click");
 
         m_ItemUsed.RaiseEvent(itemIndex);
@@ -85,6 +102,7 @@ public class InventorySelectionHandler : MonoBehaviour, ISubmitHandler, IPointer
         itemPrice.text = "";
 
         GetComponent<Button>().interactable = false;
+        */
     }
 
     public void OnPointerEnter(PointerEventData eventData)

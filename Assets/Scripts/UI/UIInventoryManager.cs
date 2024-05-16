@@ -6,6 +6,7 @@ using TMPro;
 using DG.Tweening;
 using static UnityEditor.Progress;
 using UnityEngine.EventSystems;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class UIInventoryManager : MonoBehaviour
 {
@@ -15,7 +16,8 @@ public class UIInventoryManager : MonoBehaviour
         RestockStore,
         DropItem
     }
-    [SerializeField] private List<ItemStats> playerInventory; //effectively copy of player's inv
+    //[SerializeField] private List<ItemStats> playerInventory; //effectively copy of player's inv
+    [SerializeField] private EntityPiece currentPlayer; //reference of player
 
     [Header("Main Inventory")]
     [SerializeField] private Canvas inventoryCanvas;
@@ -56,8 +58,11 @@ public class UIInventoryManager : MonoBehaviour
     [Header("Listen on Event Channels")]
     public PlayerEventChannelSO m_OpenInventory;
     public VoidEventChannelSO m_ExitInventory;
+    public PlayerEventChannelSO m_RefreshInventory;
     public NodeEventChannelSO m_RestockStore;
+    public IntItemEventChannelSO m_ItemStocked;
     public ItemEventChannelSO m_ItemSelected;
+
 
     private void OnEnable()
     {
@@ -69,7 +74,9 @@ public class UIInventoryManager : MonoBehaviour
         m_OpenInventory.OnEventRaised += DisplayInventory;
         m_ExitInventory.OnEventRaised += HideInventory;
         m_ExitInventory.OnEventRaised += HideStoreStock;
+        m_RefreshInventory.OnEventRaised += RefreshInventory;
         m_RestockStore.OnEventRaised += ShowStoreStock;
+        m_ItemStocked.OnEventRaised += AddItemToStoreStock;
 
         m_ItemSelected.OnEventRaised += ShowSelectedItemDetails;
     }
@@ -79,18 +86,21 @@ public class UIInventoryManager : MonoBehaviour
         m_OpenInventory.OnEventRaised -= DisplayInventory;
         m_ExitInventory.OnEventRaised -= HideInventory;
         m_ExitInventory.OnEventRaised -= HideStoreStock;
+        m_RefreshInventory.OnEventRaised -= RefreshInventory;
         m_RestockStore.OnEventRaised -= ShowStoreStock;
+        m_ItemStocked.OnEventRaised -= AddItemToStoreStock;
 
         m_ItemSelected.OnEventRaised -= ShowSelectedItemDetails;
     }
 
     private void SpawnItemsInInventory(List<ItemStats> playerInventory)
     {
+        Debug.Log("spawning");
         heldItemHolders.Clear();
         var inventoryParentTransform = inventoryGridContainer.transform;
         var itemsToSpawn = playerInventory.Count;
 
-        if(itemsToSpawn <= INVENTORY_LIMIT)
+        if (itemsToSpawn <= INVENTORY_LIMIT)
         {
             itemsToSpawn = INVENTORY_LIMIT;
         }
@@ -113,7 +123,7 @@ public class UIInventoryManager : MonoBehaviour
 
             heldItemHolders.Add(item);
 
-            if(i == 0)
+            if (i == 0)
             {
                 EventSystem.current.SetSelectedGameObject(item);
             }
@@ -176,6 +186,30 @@ public class UIInventoryManager : MonoBehaviour
         DestroyAllHeldItems();
     }
 
+    private void RefreshInventory(EntityPiece entity)
+    {
+        //DestroyAllHeldItems();
+        //SpawnItemsInInventory(entity.inventory);
+
+        var playerInventory = entity.inventory;
+        ItemStats itemToSpawn;
+
+        for (int i = 0; i < INVENTORY_LIMIT; i++)
+        {
+            if (i < playerInventory.Count)
+            {
+                itemToSpawn = playerInventory[i];
+            }
+            else
+            {
+                itemToSpawn = null;
+            }
+
+            heldItemHolders[i].GetComponent<InventorySelectionHandler>().UpdateItemInfo(itemToSpawn);
+        }
+        EventSystem.current.SetSelectedGameObject(heldItemHolders[0]);
+    }
+
     private void DestroyAllHeldItems()
     {
         // Gets rid of all the held item containers in the inventory UI
@@ -209,51 +243,42 @@ public class UIInventoryManager : MonoBehaviour
         }
         else if(GameplayTest.instance.isStockingStore)
         {
-            // Restocking Items in an owned store.
-
-            int storeTotalIndex = 0;
-
-            // Find the first empty spot/item in the store's inventory
-            for (int i = 0; i < storeInv.Count; i++)
-            {
-                if (storeInv[i] == null)
-                {
-                    storeInv[i] = playerInventory[index];
-                    storeTotalIndex = i;
-                    Debug.Log($"Found a null slot at {storeTotalIndex}");
-                    break;
-                }
-            }
-
-            // Visually update that spot in the Restock UI
-            storestockIcons[storeTotalIndex].sprite = playerInventory[index].itemSprite;
-            storestockIcons[storeTotalIndex].enabled = true;
-            storestockNames[storeTotalIndex].text = $"{playerInventory[index].itemName}";
-            storestockPrices[storeTotalIndex].text = $"<color=yellow>@</color>{playerInventory[index].basePrice}";
+            //AddItemToStoreStock(index);
         }
 
         // Tell listeners that the item at this index in player's inventory is being used
         m_ItemUsed.RaiseEvent(index);
+    }
+
+    public void AddItemToStoreStock(int index, ItemStats item)
+    {
+        //var item = currentPlayer.inventory[index];
+        // Restocking Items in an owned store.
+        int storeTotalIndex = 0;
+
+        // Find the first empty spot/item in the store's inventory
+        for (int i = 0; i < storeInv.Count; i++)
+        {
+            if (storeInv[i] == null)
+            {
+                storeInv[i] = item;
+                storeTotalIndex = i;
+                Debug.Log($"Found a null slot at {storeTotalIndex}");
+                break;
+            }
+        }
+
+        // Visually update that spot in the Restock UI
+        storestockIcons[storeTotalIndex].sprite = item.itemSprite;
+        storestockIcons[storeTotalIndex].enabled = true;
+        storestockNames[storeTotalIndex].text = $"{item.itemName}";
+        storestockPrices[storeTotalIndex].text = $"<color=yellow>@</color>{item.basePrice}";
     }
     
     // FOR NAM: Used when dropping items on full inventory.
     public void DropItem(int index)
     {
         // Remove visual from inventory UI.
-    }
-
-    public void ShowSelectedItemDetails(int index)
-    {
-        if (index >= playerInventory.Count || playerInventory[index] == null)
-            return;
-
-        selectedItemIcon.sprite = playerInventory[index].itemSprite;
-        selectedItemIcon.enabled = true;
-
-        selectedItemInfo[0].text = $"{playerInventory[index].itemName}";
-        selectedItemInfo[1].text = $"<color=yellow>@</color>{playerInventory[index].basePrice}";
-        selectedItemInfo[2].text = $"{playerInventory[index].effectDescription}";
-        selectedItemInfo[3].text = $"{playerInventory[index].flavorText}";
     }
 
     public void ShowSelectedItemDetails(ItemStats item)

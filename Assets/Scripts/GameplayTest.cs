@@ -41,6 +41,7 @@ public class GameplayTest : MonoBehaviour
     public int turn = 1;
     public GamePhase phase = GamePhase.RollDice;
     public int diceRoll;
+    public List<ItemStats> recentStockedItems;
 
     public TextMeshProUGUI rollText;
     public TextMeshProUGUI turnText;
@@ -104,6 +105,7 @@ public class GameplayTest : MonoBehaviour
     public PlayerEventChannelSO m_EncounterDecision;
 
     public PlayerEventChannelSO m_OpenInventory; // JASPER OR RUSSELL PLEASE USE THIS EVENT TO ACCESS THE INVENTORY
+    public PlayerEventChannelSO m_RefreshInventory;
     public NodeEventChannelSO m_RestockStore;
     public VoidEventChannelSO m_ExitInventory;
     public EntityItemListEventChannelSO m_DropItems; // FOR NAM
@@ -117,10 +119,9 @@ public class GameplayTest : MonoBehaviour
     [Header("Listen on Event Channels")]
     public ItemEventChannelSO m_ItemBought; //Listening to this one
     public IntEventChannelSO m_ItemUsed; //Listening to this one
+    public IntItemEventChannelSO m_ItemStocked;
     public VoidEventChannelSO m_ExitRaycastedTile; //Listening to this one
-
-    // Placeholder code, basis items for storefront
-    public List<ItemStats> tempItems;
+    public PlayerEventChannelSO m_BuildStore; //Listening to this one
 
     private void OnEnable()
     {
@@ -128,6 +129,8 @@ public class GameplayTest : MonoBehaviour
         m_ItemUsed.OnEventRaised += RemoveItemInPlayerInventory;
         m_UpdatePlayerScore.OnEventRaised += RemoveDeathsRow;
         m_ExitRaycastedTile.OnEventRaised += DisableFreeview;
+        m_BuildStore.OnEventRaised += BuildStore;
+        m_ItemStocked.OnEventRaised += TrackItemFromPlayerInventory;
     }
 
     private void OnDisable()
@@ -136,6 +139,8 @@ public class GameplayTest : MonoBehaviour
         m_ItemUsed.OnEventRaised -= RemoveItemInPlayerInventory;
         m_UpdatePlayerScore.OnEventRaised -= RemoveDeathsRow;
         m_ExitRaycastedTile.OnEventRaised -= DisableFreeview;
+        m_BuildStore.OnEventRaised -= BuildStore;
+        m_ItemStocked.OnEventRaised -= TrackItemFromPlayerInventory;
     }
 
     // Start is called before the first frame update
@@ -215,7 +220,7 @@ public class GameplayTest : MonoBehaviour
                 break;
 
             case GamePhase.StockStore:
-                StockStore(currentPlayer, currentPlayer.occupiedNode);
+                StockStore(currentPlayer);
                 break;
 
             case GamePhase.OverturnStore:
@@ -298,6 +303,7 @@ public class GameplayTest : MonoBehaviour
             && p.heldPoints >= 200 && p.storeCount < 4 
             && (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A)))
         {
+            /*
             p.storeCount++;
             p.heldPoints -= 200;
 
@@ -318,6 +324,7 @@ public class GameplayTest : MonoBehaviour
 
             storestockTooltip.enabled = true;
             phase = GamePhase.StockStore;
+            */
         }
         if (playerUsedItem == false && (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S)))
         {
@@ -346,6 +353,7 @@ public class GameplayTest : MonoBehaviour
 
     private void OpenInventory(EntityPiece p)
     {
+        /*
         if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.Mouse1))
         {
             // Undo rolling, back to menu
@@ -355,6 +363,7 @@ public class GameplayTest : MonoBehaviour
 
             phase = GamePhase.InitialTurnMenu;
         }
+        */
     }
 
     void RollDice(EntityPiece p)
@@ -1011,10 +1020,10 @@ public class GameplayTest : MonoBehaviour
         audioSource.PlayOneShot(clip, 2f);
     }
 
-    private void StockStore(EntityPiece p, MapNode m)
+    private void StockStore(EntityPiece p)
     {
-        GameObject tile = m.gameObject;
-        StoreManager store = tile.GetComponent<StoreManager>();
+        /*
+        StoreManager store = p.occupiedNode.GetComponent<StoreManager>();
         if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.Mouse1)
                 || !store.storeInventory.Exists(x => x == null))
         {
@@ -1025,6 +1034,7 @@ public class GameplayTest : MonoBehaviour
 
             phase = GamePhase.EndTurn;
         }
+        */
     }
 
     // I ripped this from another script, delete this later
@@ -1069,5 +1079,38 @@ public class GameplayTest : MonoBehaviour
     public void DisableFreeview()
     {
         freeviewEnabled = false;
+    }
+
+    public void BuildStore(EntityPiece p)
+    {
+        p.storeCount++;
+        p.heldPoints -= 200;
+
+        m_UpdatePlayerScore.RaiseEvent(p.id);
+        // Raise an eventchannel for BuildAStore to replace the code in here, replace ALOT OF THE CODE EHRE PLEASE
+        Debug.Log("I am a store");
+        GameObject tile = p.occupiedNode.gameObject;
+        tile.tag = "Store";
+
+        tile.GetComponent<SpriteRenderer>().color = p.playerColor;
+
+        StoreManager store = tile.AddComponent<StoreManager>();
+        store.playerOwner = p;
+
+        isStockingStore = true;
+
+        m_RestockStore.RaiseEvent(p.occupiedNode);
+
+        storestockTooltip.enabled = true;
+    }
+
+    public void TrackItemFromPlayerInventory(int index, ItemStats itemStats)
+    {
+        // Keep track of items stocked
+        // this is to make sure if player cancels their selection you can give back the items
+        recentStockedItems.Add(itemStats);
+
+        currentPlayer.inventory.RemoveAt(index);
+        m_RefreshInventory.RaiseEvent(currentPlayer);
     }
 }
