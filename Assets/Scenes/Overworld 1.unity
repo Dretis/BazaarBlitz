@@ -8719,6 +8719,7 @@ MonoBehaviour:
   m_OverturnOpportunity: {fileID: 11400000, guid: b97cd2f064ff0934db3edfa396c94215, type: 2}
   m_ItemUsed: {fileID: 11400000, guid: 848f52d6f0e789e4ab1731d31de0ae96, type: 2}
   m_EnableFreeview: {fileID: 11400000, guid: d7e81995233eb6340bf998043ae2294f, type: 2}
+  m_DisableFreeview: {fileID: 11400000, guid: 9dfdcd33a17daa44088bf0e8fe4c1898, type: 2}
   m_ExitRaycastedTile: {fileID: 11400000, guid: bb03629fcd15efc49a85071214823911, type: 2}
 --- !u!114 &761271144
 MonoBehaviour:
@@ -22518,7 +22519,7 @@ MonoBehaviour:
   m_StopOnStoreOnPassBy: {fileID: 11400000, guid: fb2c2ec21fc8d414db8431c8c21563f1, type: 2}
   m_ItemBought: {fileID: 11400000, guid: ace0aa03bf09d91469d5914ce815154e, type: 2}
   m_ItemUsed: {fileID: 11400000, guid: 848f52d6f0e789e4ab1731d31de0ae96, type: 2}
-  m_ExitRaycastedTile: {fileID: 11400000, guid: bb03629fcd15efc49a85071214823911, type: 2}
+  m_DisableFreeview: {fileID: 11400000, guid: 9dfdcd33a17daa44088bf0e8fe4c1898, type: 2}
   tempItems:
   - {fileID: 11400000, guid: 4fd59672f461ffa4bb6c75f0339fc93d, type: 2}
   - {fileID: 11400000, guid: 8503e05f3a6bdcf408fae19a2cab1d52, type: 2}
@@ -25960,6 +25961,7 @@ MonoBehaviour:
     movementFlatModifier: 0
     movementMultModifier: 1
     warpDestination: {fileID: 0}
+    warpMode: 0
     canStealOnPassBy: 0
     canInitiateCombatOnPassBy: 0
     canStopOnStoreOnPassBy: 0
@@ -28000,6 +28002,7 @@ MonoBehaviour:
     movementFlatModifier: 0
     movementMultModifier: 1
     warpDestination: {fileID: 0}
+    warpMode: 0
     canStealOnPassBy: 0
     canInitiateCombatOnPassBy: 0
     canStopOnStoreOnPassBy: 0
@@ -32584,6 +32587,7 @@ MonoBehaviour:
     movementFlatModifier: 0
     movementMultModifier: 1
     warpDestination: {fileID: 0}
+    warpMode: 0
     canStealOnPassBy: 0
     canInitiateCombatOnPassBy: 0
     canStopOnStoreOnPassBy: 0
@@ -32591,6 +32595,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4fd59672f461ffa4bb6c75f0339fc93d, type: 2}
   - {fileID: 11400000, guid: c88d8aed1040f9b448f37a2983dd1fdd, type: 2}
   - {fileID: 11400000, guid: ba165bec7fd5ad748b4e3a0ce659a0f1, type: 2}
+  - {fileID: 11400000, guid: 17f44431f77d4774cbc29d11b9c5d2e9, type: 2}
   activeEffects: []
 --- !u!114 &1751578438
 MonoBehaviour:
@@ -32678,6 +32683,7 @@ MonoBehaviour:
   m_EnterRaycastedTile: {fileID: 11400000, guid: afbe9acd002146a46991e60f337ba054, type: 2}
   m_ExitRaycastedTile: {fileID: 11400000, guid: bb03629fcd15efc49a85071214823911, type: 2}
   m_EnableFreeview: {fileID: 11400000, guid: d7e81995233eb6340bf998043ae2294f, type: 2}
+  m_DisableFreeview: {fileID: 11400000, guid: 9dfdcd33a17daa44088bf0e8fe4c1898, type: 2}
 --- !u!114 &1763117829
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32693,6 +32699,7 @@ MonoBehaviour:
   minOrthDistance: 1.04
   maxOrthDistance: 5.04
   m_NextPlayerTurn: {fileID: 11400000, guid: 45e13c3cd9283b74989c51218c39f6c2, type: 2}
+  m_DisableFreeview: {fileID: 11400000, guid: 9dfdcd33a17daa44088bf0e8fe4c1898, type: 2}
 --- !u!114 &1763117830
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33095,6 +33102,7 @@ MonoBehaviour:
     movementFlatModifier: 0
     movementMultModifier: 1
     warpDestination: {fileID: 0}
+    warpMode: 0
     canStealOnPassBy: 0
     canInitiateCombatOnPassBy: 0
     canStopOnStoreOnPassBy: 0

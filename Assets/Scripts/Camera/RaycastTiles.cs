@@ -16,6 +16,7 @@ public class RaycastTiles : MonoBehaviour
 
     [Header("Listen on Event Channels")]
     public VoidEventChannelSO m_EnableFreeview;
+    public VoidEventChannelSO m_DisableFreeview;
 
     private void OnEnable()
     {
@@ -60,7 +61,9 @@ public class RaycastTiles : MonoBehaviour
             }
             else if (Input.GetMouseButtonDown(1))
             {
-                freeviewEnabled = false;
+                m_ExitRaycastedTile.RaiseEvent();
+                tileSelected = false;
+                m_DisableFreeview.RaiseEvent();
             }
         }
     }
@@ -68,5 +71,10 @@ public class RaycastTiles : MonoBehaviour
     public void EnableRaycasting()
     {
         freeviewEnabled = true;
+    }
+
+    public void DisableRaycasting()
+    {
+        freeviewEnabled = false;
     }
 }

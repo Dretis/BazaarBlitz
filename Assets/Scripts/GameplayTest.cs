@@ -122,7 +122,7 @@ public class GameplayTest : MonoBehaviour
     [Header("Listen on Event Channels")]
     public ItemEventChannelSO m_ItemBought; //Listening to this one
     public IntEventChannelSO m_ItemUsed; //Listening to this one
-    public VoidEventChannelSO m_ExitRaycastedTile; //Listening to this one
+    public VoidEventChannelSO m_DisableFreeview;
 
     // Placeholder code, basis items for storefront
     public List<ItemStats> tempItems;
@@ -132,7 +132,7 @@ public class GameplayTest : MonoBehaviour
         m_ItemBought.OnEventRaised += _PlaceholderChangeAndContinue;
         m_ItemUsed.OnEventRaised += RemoveItemInPlayerInventory;
         m_UpdatePlayerScore.OnEventRaised += RemoveDeathsRow;
-        m_ExitRaycastedTile.OnEventRaised += DisableFreeview;
+        m_DisableFreeview.OnEventRaised += DisableFreeview;
 
         m_StealOnPassBy.OnEventRaised += StealFromPlayer;
         m_InitiateCombatOnPassBy.OnEventRaised += InitiateCombatOnPlayer;
@@ -144,7 +144,7 @@ public class GameplayTest : MonoBehaviour
         m_ItemBought.OnEventRaised -= _PlaceholderChangeAndContinue;
         m_ItemUsed.OnEventRaised -= RemoveItemInPlayerInventory;
         m_UpdatePlayerScore.OnEventRaised -= RemoveDeathsRow;
-        m_ExitRaycastedTile.OnEventRaised -= DisableFreeview;
+        m_DisableFreeview.OnEventRaised -= DisableFreeview;
 
         m_StealOnPassBy.OnEventRaised -= StealFromPlayer;
         m_InitiateCombatOnPassBy.OnEventRaised -= InitiateCombatOnPlayer;

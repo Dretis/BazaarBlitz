@@ -29,6 +29,7 @@ public class UIPromptManager : MonoBehaviour
     public IntEventChannelSO m_ItemUsed;
 
     public VoidEventChannelSO m_EnableFreeview;
+    public VoidEventChannelSO m_DisableFreeview;
     public VoidEventChannelSO m_ExitRaycastedTile;
 
     private void Start()
@@ -59,7 +60,7 @@ public class UIPromptManager : MonoBehaviour
 
         m_EnableFreeview.OnEventRaised += DisplayFreeviewPrompt;
         m_EnableFreeview.OnEventRaised += HideInitialMenu;
-        m_ExitRaycastedTile.OnEventRaised += DisplayInitialMenu;
+        m_DisableFreeview.OnEventRaised += DisplayInitialMenu;
     }
 
     private void OnDisable()
@@ -84,7 +85,7 @@ public class UIPromptManager : MonoBehaviour
         m_ItemUsed.OnEventRaised -= StrikethroughInventoryPrompt;
 
         m_EnableFreeview.OnEventRaised -= HideInitialMenu;
-        m_ExitRaycastedTile.OnEventRaised -= DisplayInitialMenu;
+        m_DisableFreeview.OnEventRaised -= DisplayInitialMenu;
     }
 
     private void RolledDice(int diceRoll)
