@@ -22,6 +22,7 @@ public class GameplayTest : MonoBehaviour
     {
         InitialTurnMenu,
         ItemSelection,
+        RaycastTargetSelection,
         Inventory,
         RollDice,
         PickDirection,
@@ -191,6 +192,10 @@ public class GameplayTest : MonoBehaviour
             // Checks item effects on player
             case GamePhase.ItemSelection:
                 SelectItem(currentPlayer);
+                break;
+
+            case GamePhase.RaycastTargetSelection:
+                SelectRaycastTarget(currentPlayer);
                 break;
 
             // Pick choices
@@ -979,6 +984,16 @@ public class GameplayTest : MonoBehaviour
 
             currentPlayer.inventory.RemoveAt(index);
             playerUsedItem = true;
+
+            if (currentPlayer.currentStatsModifier.warpMode != EntityStatsModifiers.WarpMode.None) 
+            {
+                m_ExitInventory.RaiseEvent();
+                // Raise free view event I guess?
+                m_EnableFreeview.RaiseEvent();
+                freeviewEnabled = true;
+
+                phase = GamePhase.RaycastTargetSelection;
+            }
         }        
     }
 
@@ -1008,11 +1023,6 @@ public class GameplayTest : MonoBehaviour
             Debug.Log(playerUnits[id].entityName + " is no longer in Death's Row");
             playerUnits[id].isInDeathsRow = false;
         }
-    }
-
-    public void PlayAudio(AudioClip clip)
-    {
-        audioSource.PlayOneShot(clip, 2f);
     }
 
     private void StockStore(EntityPiece p, MapNode m)
@@ -1106,8 +1116,13 @@ public class GameplayTest : MonoBehaviour
     {
         Debug.Log("StopOnStore");
         currentPlayer.movementLeft = 0;
+    }  
+
+    public void SelectRaycastTarget(EntityPiece p)
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            phase = GamePhase.InitialTurnMenu;
+        }
     }
-
-
-   
 }

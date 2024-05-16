@@ -52,11 +52,14 @@ public class RaycastTiles : MonoBehaviour
                     tileSelected = true;
                     m_EnterRaycastedTile.RaiseEvent(node);
                 }
+                else
+                {
+                    m_ExitRaycastedTile.RaiseEvent();
+                    tileSelected = false;
+                }
             }
             else if (Input.GetMouseButtonDown(1))
             {
-                m_ExitRaycastedTile.RaiseEvent();
-                tileSelected = false;
                 freeviewEnabled = false;
             }
         }
