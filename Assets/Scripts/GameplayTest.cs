@@ -119,6 +119,9 @@ public class GameplayTest : MonoBehaviour
     public PlayerEventChannelSO m_InitiateCombatOnPassBy;
     public VoidEventChannelSO m_StopOnStoreOnPassBy;
 
+    public VoidEventChannelSO m_EnterRaycastTargetSelection;
+    public VoidEventChannelSO m_ExitRaycastTargetSelection;
+
     [Header("Listen on Event Channels")]
     public ItemEventChannelSO m_ItemBought; //Listening to this one
     public IntEventChannelSO m_ItemUsed; //Listening to this one
@@ -990,6 +993,7 @@ public class GameplayTest : MonoBehaviour
                 m_ExitInventory.RaiseEvent();
                 // Raise free view event I guess?
                 m_EnableFreeview.RaiseEvent();
+                m_EnterRaycastTargetSelection.RaiseEvent();
                 freeviewEnabled = true;
 
                 phase = GamePhase.RaycastTargetSelection;
@@ -1005,6 +1009,19 @@ public class GameplayTest : MonoBehaviour
             p.health + p.currentStatsModifier.healthRegen);
         m_UpdatePlayerScore.RaiseEvent(p.id);
 
+        // Warp player to specified destination.
+        if (p.currentStatsModifier.warpDestination != null)
+        {
+            p.occupiedNode = p.currentStatsModifier.warpDestination;
+            p.transform.position = p.occupiedNode.transform.position;
+            p.occupiedNodeCopy = p.occupiedNode;
+            p.traveledNodes.Clear();
+            p.traveledNodes.Add(p.occupiedNode);
+        }
+    }
+
+    private void ApplyItemEffectsOnTargetSelection(EntityPiece p) 
+    {
         // Warp player to specified destination.
         if (p.currentStatsModifier.warpDestination != null)
         {
@@ -1122,7 +1139,26 @@ public class GameplayTest : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            phase = GamePhase.InitialTurnMenu;
+            if (p.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Tiles)
+            {
+                if (RaycastTiles.tileSelected != null)
+                    WarpConfirmed(p);
+            }
+            else if (p.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Players)
+            {
+                if (RaycastTiles.tileSelected.playerOccupied != null
+                && RaycastTiles.tileSelected.playerOccupied != p)
+                    WarpConfirmed(p);
+            }
         }
+    }
+
+    private void WarpConfirmed(EntityPiece p)
+    {
+        m_DisableFreeview.RaiseEvent();
+        m_ExitRaycastTargetSelection.RaiseEvent();
+        p.currentStatsModifier.warpDestination = RaycastTiles.tileSelected;
+        ApplyItemEffectsOnTargetSelection(p);
+        phase = GamePhase.InitialTurnMenu;
     }
 }
