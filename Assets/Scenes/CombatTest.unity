@@ -3125,10 +3125,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackColor:
     serializedVersion: 2
-    rgba: 3238655
+    rgba: 2939251455
   defendColor:
     serializedVersion: 2
-    rgba: 11168327
+    rgba: 2947181127
   grayoutColor:
     serializedVersion: 2
     rgba: 6842472
@@ -3143,8 +3143,10 @@ MonoBehaviour:
   diceNumbers: []
   leftAttackPrompt: {fileID: 1118318251}
   leftDefendPrompt: {fileID: 1697479780}
+  leftSelectedAction: {fileID: 1171973593}
   rightAttackPrompt: {fileID: 188922325}
   rightDefendPrompt: {fileID: 1137568115}
+  rightSelectedAction: {fileID: 1965366910}
   leftHealthPoints: {fileID: 1224071777}
   rightHealthPoints: {fileID: 204465696}
   phaseTestPrompt: {fileID: 1897884682}
@@ -3160,8 +3162,9 @@ MonoBehaviour:
   m_DecidedTurnOrder: {fileID: 11400000, guid: 92bd6a37ff6a3344cb44842875da70ca, type: 2}
   m_SwapPhase: {fileID: 11400000, guid: 5fe2f16d1a7ee994d93f14d183b3029b, type: 2}
   m_ActionSelected: {fileID: 11400000, guid: fc7127886f7f7ed458771b3e118932a0, type: 2}
+  m_BothActionsSelected: {fileID: 11400000, guid: 5e6e7809c5de840469b11fa61d18be8f, type: 2}
   m_DiceRolled: {fileID: 11400000, guid: ef8018f7217679c479e9e86e849b14c8, type: 2}
-  m_PlayOutCombat: {fileID: 0}
+  m_PlayOutCombat: {fileID: 11400000, guid: 92bd6a37ff6a3344cb44842875da70ca, type: 2}
   m_DamageTaken: {fileID: 11400000, guid: 21e2d2c157c4e564db136dc7709f07b4, type: 2}
   m_EntityDied: {fileID: 11400000, guid: 8d61128e2ea86d248a5d122114fb8c8e, type: 2}
   m_Stalemate: {fileID: 11400000, guid: 46592635a96967f4ab8e8dfbf5f7379d, type: 2}
@@ -5428,7 +5431,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &634954689
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9292,13 +9295,14 @@ GameObject:
   - component: {fileID: 1171973590}
   - component: {fileID: 1171973592}
   - component: {fileID: 1171973591}
+  - component: {fileID: 1171973593}
   m_Layer: 5
   m_Name: Picked Action [Left]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1171973590
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9358,6 +9362,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1171973589}
   m_CullTransparentMesh: 1
+--- !u!225 &1171973593
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1171973589}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &1173726249
 GameObject:
   m_ObjectHideFlags: 0
@@ -9596,8 +9612,8 @@ CanvasGroup:
   m_GameObject: {fileID: 1179397207}
   m_Enabled: 1
   m_Alpha: 0
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
 --- !u!114 &1179397210
 MonoBehaviour:
@@ -16076,13 +16092,14 @@ GameObject:
   - component: {fileID: 1965366907}
   - component: {fileID: 1965366909}
   - component: {fileID: 1965366908}
+  - component: {fileID: 1965366910}
   m_Layer: 5
   m_Name: Picked Action [Right]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1965366907
 RectTransform:
   m_ObjectHideFlags: 0
@@ -16142,6 +16159,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1965366906}
   m_CullTransparentMesh: 1
+--- !u!225 &1965366910
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1965366906}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1001 &1971398641
 PrefabInstance:
   m_ObjectHideFlags: 0
