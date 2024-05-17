@@ -3,9 +3,6 @@ using UnityEngine;
 public class CombatInputSystem : MonoBehaviour
 {
     public Canvas howToPlayScreen;
-<<<<<<< Updated upstream
-    // Update is called once per frame
-=======
 
     // Seems the on press stuff is something I'll have to do in person :(
     // I tried to make the update code self contained so it shouldn't be a hard port.
@@ -29,7 +26,7 @@ public class CombatInputSystem : MonoBehaviour
         m_SwapPhase.OnEventRaised += PhasePassed;
     }
 
->>>>>>> Stashed changes
+
     void Update()
     {
         bool currentPlayer = CombatManager.Instance.isInitiatorTurn;
@@ -58,8 +55,6 @@ public class CombatInputSystem : MonoBehaviour
             howToPlayScreen.enabled = false;
         }
     }
-<<<<<<< Updated upstream
-=======
 
     void sendAction(bool isPlayer1, int actionID) {
         player1Attacking = CombatManager.Instance.player1Attacking;
@@ -122,5 +117,4 @@ public class CombatInputSystem : MonoBehaviour
     }
 
 
->>>>>>> Stashed changes
 }

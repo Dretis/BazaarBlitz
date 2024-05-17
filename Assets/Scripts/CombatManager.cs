@@ -72,15 +72,12 @@ public class CombatManager : MonoBehaviour
     public EntityItemEventChannelSO m_EntityDied; // someone's HP dropped to 0, Victory, show rewards
     public VoidEventChannelSO m_Stalemate; // Combat is suspended, no one died this time
 
-<<<<<<< Updated upstream
-=======
     //public EntityActionEventChannelSO m_ActionSelected; // I'm leaving this part till after the tuesday meeting, as it should use the same input system as the controller.
     // For now, a debug implementation with WASD and arrowkeys is in place that I'll soon replace. (I also had 1 controller so I couldn't debug at home)
 
 
 
     // Code from the old combat manager to set things up. Russell wrote most of this so I mostly copied over in the revamp, with slight edits.
->>>>>>> Stashed changes
     private void Awake()
     {
         sceneManager = GameObject.FindWithTag("SceneManager").GetComponent<SceneGameManager>();
@@ -238,53 +235,6 @@ public class CombatManager : MonoBehaviour
             m_ActionSelected.RaiseEvent(attacker, Action.PhaseTypes.Attack);
         }
 
-<<<<<<< Updated upstream
-        // On turn 2 against a now attacking enemy, immediately decide its attack action.
-        if ((!isInitiatorTurn && !initiatorAttacking) && isFightingAI)
-        {
-            attackerAction = decideAttackAI();
-            passSelectionTurn();
-        }
-    }
-
-    // Handles the meta stuff for playactions (the big function), notably checking for victory conditions
-    public void playTurn()
-    {
-        if (pausingCombat || endingCombat) 
-        {
-            return; // Prevent people from trying to get an extra hit in before combat stops.
-        }
-
-        playActions(attackerAction, defenderAction);
-
-        phaseCount++;
-
-        if (initiator.health <= 0)
-        {
-            initiatorWon = false;
-            endCombat();
-        }
-        else if (retaliator.health <= 0)
-        {
-            initiatorWon = true;
-            endCombat();
-        }
-        else if (phaseCount == 2)
-        {
-            pauseCombat();
-        }
-    }
-
-    // Suspends and resets the combat scene so that the next player can take a turn. Returns when its either fighter's turn.
-    public void pauseCombat() 
-    {
-        m_Stalemate.RaiseEvent();
-        if (pausingCombat == false) 
-        { 
-            // Return in 1 second from Update.
-            pausingCombat = true;
-            endCombatSceneTimer = 1.5f;
-=======
         // The input event stuff isn't in yet (I have to talk about that during capstone), but with a tweak to combatinput and uncommenting this it should be easy
         //m_ActionSelected.OnEventRaised += playerSelected;
 
@@ -311,10 +261,9 @@ public class CombatManager : MonoBehaviour
 
     // Called when m_ActionSelected is raised with 
     public void ActionSelected(EntityPiece player, Action action) {
-        sceneManager.EnableScene(combatSceneIndex);
+        //sceneManager.EnableScene(combatSceneIndex);
         if (waitingForSelection == false) {
             Debug.Log("Turn in progress");
->>>>>>> Stashed changes
             return;
         }
 
@@ -346,12 +295,6 @@ public class CombatManager : MonoBehaviour
             // We'll come back later from update with endingCombat = true
         }
 
-<<<<<<< Updated upstream
-
-        if (initiatorWon)
-        {
-            Debug.Log("Initiator Wins!");
-=======
         if (isFightingAI && action.phase == Action.PhaseTypes.Attack) {
             defenderAction = decideAttackAI();
             m_ActionSelected.RaiseEvent(defender, Action.PhaseTypes.Attack);
@@ -367,7 +310,6 @@ public class CombatManager : MonoBehaviour
         
 
         StartCoroutine(SelectionAnimation(1.0f));
->>>>>>> Stashed changes
 
             loser = retaliator;
 
@@ -515,19 +457,11 @@ public class CombatManager : MonoBehaviour
         }
         */
 
-<<<<<<< Updated upstream
-        int damage = 0;
-
-        // 0= Unused, 1= Gun, 2= Melee, 3=Magic. 
-        Action attack = attacker.attackActions[attackerAction-1];
-        Action defend = defender.defendActions[defenderAction-1];
-=======
         m_BothActionsSelected.RaiseEvent(attacker, attackerAction); // Call animation players to run through event
         m_BothActionsSelected.RaiseEvent(defender, defenderAction); // Call animation players to run through event
 
     
         // float animationLength = some constant probably;
->>>>>>> Stashed changes
 
         
         // Melee beats magic, Magic beats gun, Gun beats melee. 1x, 1.5x, or 2x damage.
@@ -691,8 +625,6 @@ public class CombatManager : MonoBehaviour
         {
             defenderAction = ActionID;
         }
-<<<<<<< Updated upstream
-=======
 
         damage = damage * 10;
 
@@ -758,32 +690,11 @@ public class CombatManager : MonoBehaviour
         
         
 
->>>>>>> Stashed changes
     }
 
 
     private int decideAttackAI()
     {
-<<<<<<< Updated upstream
-        int roll = Random.Range(0, 6); // 0 - 5
-        
-        if (roll < 3) // total 4/6 chance of using favorite attack
-        {
-            return player2.favoredAttack;
-        }
-        else if (roll < 4) // Decide randomly 1/2 the time
-        {
-            return 1;
-        }
-        else if (roll < 5)
-        {
-            return 2;
-        }
-        else
-        {
-            return 3;
-        }
-=======
         m_Stalemate.RaiseEvent();
 
         // Mostly scene management stuff here
@@ -797,7 +708,6 @@ public class CombatManager : MonoBehaviour
         sceneManager.EnableScene(0);
 
         // This changes the game phase in gameplay test remotely.
->>>>>>> Stashed changes
     }
 
     private int decideDefendAI()
@@ -823,9 +733,6 @@ public class CombatManager : MonoBehaviour
                 return decideAttackAI();
             }
         }
-<<<<<<< Updated upstream
-        else if (roll < 4)
-=======
     
         // Rest is (mostly) scene management stuff / events
 
@@ -894,7 +801,6 @@ public class CombatManager : MonoBehaviour
         Debug.Log($"Done Selecting");
         
         if (onePlayerSelected) // Means both players decided
->>>>>>> Stashed changes
         {
             return 1;
         }
@@ -908,22 +814,6 @@ public class CombatManager : MonoBehaviour
         }
     }
 
-<<<<<<< Updated upstream
-
-
-    // Helper function to keep code from getting even more cluttered
-    private bool toggleBool(bool boolToToggle)
-    { 
-        if (boolToToggle)
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
-    }
-=======
     public IEnumerator ShowChoiceAnimation(float animationTime)
     {
         
@@ -998,5 +888,4 @@ public class CombatManager : MonoBehaviour
     }
 
 
->>>>>>> Stashed changes
 }
