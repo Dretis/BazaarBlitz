@@ -378,6 +378,14 @@ public class CombatManager : MonoBehaviour
         defender = attacker;
         attacker = tempDefender;
 
+        if (player1Attacking) {
+            player1Attacking = false;
+            player1Attacking = true;
+        } else {
+            player1Attacking = true;
+            player2Attacking = false;
+        }
+
         m_SwapPhase.RaiseEvent(attacker);
 
 
