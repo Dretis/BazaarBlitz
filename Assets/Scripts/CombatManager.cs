@@ -514,7 +514,7 @@ public class CombatManager : MonoBehaviour
 
         // Update player scores.
         sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(player1.id);
-        if (player2.isEnemy) {
+        if (!player2.isEnemy) {
             sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(player2.id);
         }
     }
