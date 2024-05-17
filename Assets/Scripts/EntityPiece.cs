@@ -89,13 +89,13 @@ public class EntityPiece : MonoBehaviour
     public void UpdateStatModifiers()
     {
         TickDownActiveEffects();
+        RefreshStatModifiers();
+    }
 
-        currentStatsModifier = new EntityStatsModifiers();
-
-        foreach (var item in activeEffects)
-        {
-            currentStatsModifier = item.originalItem.ApplyStatModChanges(currentStatsModifier, item.originalItem.Duration-item.turnsRemaining);
-        }
+    public void UpdateStatModifier(ActiveEffect effect)
+    {
+        TickDownActiveEffect(effect);
+        RefreshStatModifiers();
     }
 
     public void RefreshStatModifiers()
@@ -119,6 +119,24 @@ public class EntityPiece : MonoBehaviour
                 activeEffects.RemoveAt(i);
                 i--;
             }
+        }
+    }
+
+    private void TickDownActiveEffect(ActiveEffect effect)
+    {
+        var effectIndex = activeEffects.FindIndex(activeEffect => activeEffect.originalItem == effect.originalItem);
+        if (effectIndex != -1)
+        {
+            activeEffects[effectIndex].turnsRemaining--;
+
+            if (activeEffects[effectIndex].turnsRemaining < 0)
+            {
+                activeEffects.RemoveAt(effectIndex);
+            }
+        }
+        else
+        {
+            Debug.Log("Effect not found");
         }
     }
 

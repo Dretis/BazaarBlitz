@@ -982,7 +982,12 @@ public class GameplayTest : MonoBehaviour
         {
             currentPlayer.AddItemToActiveEffects(currentPlayer.inventory[index].Duration, currentPlayer.inventory[index]);
 
-            currentPlayer.UpdateStatModifiers();
+            currentPlayer.UpdateStatModifier(new EntityPiece.ActiveEffect
+            {
+                originalItem = currentPlayer.inventory[index],
+                turnsRemaining = currentPlayer.inventory[index].Duration - 1
+            });
+
             ApplyItemEffectsOnTurnStart(currentPlayer);
 
             currentPlayer.inventory.RemoveAt(index);
