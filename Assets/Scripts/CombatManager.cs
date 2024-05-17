@@ -171,6 +171,8 @@ public class CombatManager : MonoBehaviour
             return;
         }
 
+        Debug.Log(action);
+
         if (action.phase == Action.PhaseTypes.Attack) {
             attackerAction = action;
             m_ActionSelected.RaiseEvent(attacker, Action.PhaseTypes.Attack);
@@ -530,22 +532,31 @@ public class CombatManager : MonoBehaviour
     private Action decideAttackAI()
     {
         int roll = Random.Range(0, 6); // 0 - 5
-        
-        if (roll < 3) // total 4/6 chance of using favorite attack
-        {
-            return player2.attackActions[player2.favoredAttack - 1];
-        }
-        else if (roll < 4) // Decide randomly 1/2 the time
-        {
-            return player2.attackActions[0];
-        }
-        else if (roll < 5)
-        {
-            return player2.attackActions[1];
-        }
-        else
-        {
-            return player2.attackActions[2];
+
+        if (player2Attacking) {
+            switch (roll)
+            {
+            case 5:
+                return player2.attackActions[2];
+            case 4:
+                return player2.attackActions[1];
+            case 3:
+                return player2.attackActions[0];
+            default:
+                return player2.attackActions[player2.favoredAttack - 1];
+            }
+        } else {
+            switch (roll)
+            {
+            case 5:
+                return player2.defendActions[2];
+            case 4:
+                return player2.defendActions[1];
+            case 3:
+                return player2.defendActions[0];
+            default:
+                return player2.defendActions[player2.favoredAttack - 1];
+            }
         }
     }
 
