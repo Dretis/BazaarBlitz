@@ -53,7 +53,7 @@ public class CombatManager : MonoBehaviour
     public PlayerEventChannelSO m_DecidedTurnOrder; // pass in the attacker
     public PlayerEventChannelSO m_SwapPhase; // void event
     public EntityActionPhaseEventChannelSO m_ActionSelected; // Entity, check side and phase | Either the attacker or defender picked an action
-    //public ActionSelectEventChannelSO m_BothActionsSelected; // prep time to show what they picked, follow with the dice roll too
+    public EntityActionEventChannelSO m_BothActionsSelected; // prep time to show what they picked, follow with the dice roll too
     public DamageEventChannelSO m_DiceRolled; // 2 floats
     public PlayerEventChannelSO m_PlayOutCombat; // play attack anim and defend anim
     public DamageEventChannelSO m_DamageTaken; //upon attack anim finishing, show floating dmg ontop of defender, play hurt anim
@@ -179,6 +179,16 @@ public class CombatManager : MonoBehaviour
             m_ActionSelected.RaiseEvent(defender, Action.PhaseTypes.Defend);
         }
 
+        if (isFightingAI && action.phase == Action.PhaseTypes.Attack) {
+            defenderAction = decideAttackAI();
+            m_ActionSelected.RaiseEvent(defender, Action.PhaseTypes.Attack);
+            onePlayerSelected = true;
+        } else if (isFightingAI && action.phase == Action.PhaseTypes.Defend) {
+            attackerAction = decideAttackAI();
+            m_ActionSelected.RaiseEvent(attacker, Action.PhaseTypes.Attack);
+            onePlayerSelected = true;
+        }
+
         // float animationLength = action.animationLength;
 
         StartCoroutine(SelectionAnimation(1.0f));
@@ -188,7 +198,8 @@ public class CombatManager : MonoBehaviour
     public void ShowChoices() {
         waitingForSelection = false;
 
-        //m_BothActionsSelected.RaiseEvent(???); // Call animation players to run through event
+        m_BothActionsSelected.RaiseEvent(attacker, attackerAction); // Call animation players to run through event
+        m_BothActionsSelected.RaiseEvent(defender, defenderAction); // Call animation players to run through event
 
         // float animationLength = some constant probably;
 
@@ -328,7 +339,7 @@ public class CombatManager : MonoBehaviour
             finalDamage = 0;
         }
 
-        //m_PlayOutCombat.RaiseEvent(); // Set attack animation to play early
+        m_PlayOutCombat.RaiseEvent(attacker); // Set attack animation to play early. Also play defense animation (prob from dice roll event?)
 
         //float animationLength = attack.animationLength;
 
@@ -347,6 +358,9 @@ public class CombatManager : MonoBehaviour
         attacker.health += (int)(damageToDeal * attacker.currentStatsModifier.lifestealMult); // Attacker heals if they have lifesteal
 
         m_DamageTaken.RaiseEvent(defender, damageToDeal);
+
+        combatUIManager.UpdateActionText(attacker, Action.PhaseTypes.Attack);
+        combatUIManager.UpdateActionText(defender, Action.PhaseTypes.Defend);
 
         StartCoroutine(PhaseEndDelay(0.5f));
     }

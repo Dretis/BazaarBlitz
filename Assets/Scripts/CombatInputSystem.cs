@@ -74,11 +74,12 @@ public class CombatInputSystem : MonoBehaviour
 
         player1 = CombatManager.Instance.player1;
         player2 = CombatManager.Instance.player2;
+
         if (player1Went && isPlayer1) {
             return;
         } else if (player2Went && !isPlayer1) {
             return;
-        } else if (!isPlayer1 && player1.isEnemy) {
+        } else if (!isPlayer1 && player2.isEnemy) {
             return;
         }
 
