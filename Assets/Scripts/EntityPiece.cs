@@ -66,7 +66,7 @@ public class EntityPiece : MonoBehaviour
     public void AddItemToActiveEffects(int duration, ItemStats item)
     {
 
-        var sameEffect = activeEffects.Find(activeEffect => activeEffect.originalItem == item);
+        var sameEffect = activeEffects.Find(activeEffect => (UnityEngine.Object) activeEffect.originalItem == item);
 
         // Refresh effect if same item has been used before. Otherwise, add new effect.
         if (sameEffect != null)
@@ -98,17 +98,6 @@ public class EntityPiece : MonoBehaviour
         }
     }
 
-    public void UpdateStatModifier(ActiveEffect effect)
-    {
-        TickDownActiveEffect(effect);
-
-        Debug.Log(effect.originalItem.name);
-        currentStatsModifier = new EntityStatsModifiers();
-
-        currentStatsModifier = effect.originalItem.ApplyStatModChanges(currentStatsModifier, effect.originalItem.Duration - effect.turnsRemaining);
-
-    }
-
     public void RefreshStatModifiers()
     {
         currentStatsModifier = new EntityStatsModifiers();
@@ -130,24 +119,6 @@ public class EntityPiece : MonoBehaviour
                 activeEffects.RemoveAt(i);
                 i--;
             }
-        }
-    }
-
-    private void TickDownActiveEffect(ActiveEffect effect)
-    {
-        var effectIndex = activeEffects.FindIndex(activeEffect => activeEffect.originalItem == effect.originalItem);
-        if (effectIndex != -1) 
-        {
-            activeEffects[effectIndex].turnsRemaining--;
-
-            if (activeEffects[effectIndex].turnsRemaining < 0)
-            {
-                activeEffects.RemoveAt(effectIndex);
-            }
-        }
-        else
-        {
-            Debug.Log("Effect not found");
         }
     }
 
