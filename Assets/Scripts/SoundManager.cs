@@ -72,7 +72,7 @@ public class SoundManager : MonoBehaviour
         m_RollForMovement.OnEventRaised -= PlayDiceHitSound;
         m_ItemUsed.OnEventRaised -= PlayUseItemSound;
         m_UpdatePlayerScore.OnEventRaised -= PlayCurrencyChangeSound;
-        m_NextPlayerTurn.OnEventRaised += PlayNextPlayerTurnSound;
+        m_NextPlayerTurn.OnEventRaised -= PlayNextPlayerTurnSound;
         //m_ShowCombatBanner.OnEventRaised -= PlayEnterBattleSound;
 
 

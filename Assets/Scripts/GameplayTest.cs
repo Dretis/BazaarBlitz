@@ -1041,7 +1041,7 @@ public class GameplayTest : MonoBehaviour
 
     private void RemoveDeathsRow(int id)
     {
-        if (playerUnits[id].heldPoints >= 0)
+        if (id > -1 && playerUnits[id].heldPoints >= 0 && playerUnits[id].isInDeathsRow)
         {
             Debug.Log(playerUnits[id].entityName + " is no longer in Death's Row");
             playerUnits[id].isInDeathsRow = false;
