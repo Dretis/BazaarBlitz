@@ -3,6 +3,7 @@ using UnityEngine;
 using TMPro;
 using DG.Tweening;
 using System.Linq;
+using static UnityEditor.Progress;
 
 public class GameplayTest : MonoBehaviour
 {
@@ -982,7 +983,11 @@ public class GameplayTest : MonoBehaviour
         {
             currentPlayer.AddItemToActiveEffects(currentPlayer.inventory[index].Duration, currentPlayer.inventory[index]);
 
-            currentPlayer.UpdateStatModifiers();
+            currentPlayer.UpdateStatModifier(new EntityPiece.ActiveEffect {
+                originalItem = currentPlayer.inventory[index],
+                turnsRemaining = currentPlayer.inventory[index].Duration-1
+            });
+
             ApplyItemEffectsOnTurnStart(currentPlayer);
 
             currentPlayer.inventory.RemoveAt(index);
