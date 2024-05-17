@@ -1,42 +1,40 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class CombatManager : MonoBehaviour
 {
     public static CombatManager Instance;
 
-    // All 3 are toggled every attack. Mainly used for the turn order framework and supporting AI
-    public bool isInitiatorTurn = false; 
-    public bool initiatorAttacking = false;
-    public bool retaliatorAttacking = false;
 
-    // Mostly used to load player data, the script refers primarily to attacker/defender
-    [SerializeField] public EntityPiece player1;
-    [SerializeField] public EntityPiece player2; // If its a wild encounter, this is the enemy.
+    // EXTREMELY IMPORTANT COMBAT VARIABLES
 
-    // Represents the first / second to attack after the battle's start. Both never swap!
-    
-    private EntityPiece initiator;
-    private EntityPiece retaliator;
+    // Mostly used to load player data and calculate the results of combat, the script refers primarily to attacker/defender.
+    [SerializeField] public EntityPiece player1; // Not necessarily the person who attacked first.
+    [SerializeField] public EntityPiece player2; // However if its a wild encounter, we know this is the enemy.
 
-    // Attacker / Defender represent the current player attacking / defending, swaps every turn.
-    private EntityPiece attacker;
-    private EntityPiece defender;
+    public EntityPiece attacker; // another reference to the person attacking THIS TURN. Swaps every phase (attack/defend).
+    public EntityPiece defender; // Every combat round lasts 1-2 phases until either character dies.
 
-    // Entity that loses the battle i.e. dies.
-    private EntityPiece loser;
+    public bool player1Attacking;
+    public bool player2Attacking; // If false, they're defending. Flipped every phase.
 
-    private int attackerAction; // Stores the move chosen by either player before playTurn() actually plays them out
-    private int defenderAction;
+    private bool isFightingAI = false; // If true, then its a wild encounter and player 2 is automated by an AI (plus they always attack second)
 
-    private int attackerBuffDamage = 0; // Boosts the dice pip value of the attacker (+10 base damage) for each buff point
-    private int defenderBonusRoll = 0; // Reduces the attacker's damage by an additive 10% for each buff point
-    private int attackerBonusRoll = 0; // Causes another roll to be added to the attacker's damage for each buff point.
 
-    
-    private bool isFightingAI = false; // If true, Player2 (always player2!) has their turn automated (and uses their inventory as a loot table).
-     
-    private int playersLastAttack = -1; // Records Player1's last attack. An AI will more likely counter that attack after
+    // MODERATE IMPORTANCE VARIABLES
+    private Action attackerAction; // Temporarily stores either fighter's action until the phase can progress
+    private Action defenderAction; // We receive this from the listener to combatInputManager and reset it next turn (when it corresponds to swapped players)
+
+    private bool waitingForSelection; // If true, players need to select their actions still. If not, combat's running and the input listener is ignored.
+    private bool isFirstPhase; // If true, is true, then false for every combat. Mostly for convenience.
+    private bool onePlayerSelected = false; // Set to true when someone chooses an action. Next time an animation finishes, progress combat till next phase
+
+
+
+
+
+
 
     //SOUND SHIT
     public AudioClip smackSFX;
@@ -45,34 +43,24 @@ public class CombatManager : MonoBehaviour
     public AudioClip shootSFX;
     AudioSource audioSource;
 
+    // Scene stuff
     public int combatSceneIndex;
-
-    private float endCombatSceneTimer = 0.0f;
-    private bool endingCombat = false;
-    private bool pausingCombat = false;
-    private bool initiatorWon;
-
     public CombatUIManager combatUIManager;
     public SceneGameManager sceneManager;
 
-    private int phaseCount = 0; // Increases after every turn. Once it hits 2, a round passed and unfinished combat is paused.
-
+    // Events
     [Header("Broadcast on Event Channels")]
     public PlayerEventChannelSO m_DecidedTurnOrder; // pass in the attacker
     public PlayerEventChannelSO m_SwapPhase; // void event
-
     public EntityActionPhaseEventChannelSO m_ActionSelected; // Entity, check side and phase | Either the attacker or defender picked an action
-    public EntityActionEventChannelSO m_BothActionsSelected; // both players call this at once to start their animation showing their items
+    //public ActionSelectEventChannelSO m_BothActionsSelected; // prep time to show what they picked, follow with the dice roll too
     public DamageEventChannelSO m_DiceRolled; // 2 floats
-
     public PlayerEventChannelSO m_PlayOutCombat; // play attack anim and defend anim
-
     public DamageEventChannelSO m_DamageTaken; //upon attack anim finishing, show floating dmg ontop of defender, play hurt anim
-
     public EntityItemEventChannelSO m_EntityDied; // someone's HP dropped to 0, Victory, show rewards
     public VoidEventChannelSO m_Stalemate; // Combat is suspended, no one died this time
 
-    //public EntityActionEventChannelSO m_ActionSelected; // I'm leaving this part till after the tuesday meeting, as it should use the same input system as the controller.
+    //public ????? m_ActionSelected; // I'm leaving this part till after the tuesday meeting, as it should use the same input system as the controller.
     // For now, a debug implementation with WASD and arrowkeys is in place that I'll soon replace. (I also had 1 controller so I couldn't debug at home)
 
 
@@ -80,7 +68,12 @@ public class CombatManager : MonoBehaviour
     // Code from the old combat manager to set things up. Russell wrote most of this so I mostly copied over in the revamp, with slight edits.
     private void Awake()
     {
+        combatUIManager = GetComponent<CombatUIManager>();
+
+        audioSource = GetComponent<AudioSource>();
+
         sceneManager = GameObject.FindWithTag("SceneManager").GetComponent<SceneGameManager>();
+
         if (sceneManager)
         {
 
@@ -99,140 +92,53 @@ public class CombatManager : MonoBehaviour
 
         // Get the scene index of the combat scene and set it to the active scene.
         combatSceneIndex = SceneManager.sceneCount - 1;
-        // SceneManager.SetActiveScene(SceneManager.GetSceneAt(combatSceneIndex));
 
         // Indicate which combat scene each player is in.
         player1.combatSceneIndex = combatSceneIndex;
         player2.combatSceneIndex = combatSceneIndex;
 
         Instance = this;
-        initializeCombat();
 
-
-        combatUIManager = GetComponent<CombatUIManager>();
-    }
-
-    void Update() 
-    {
-        // When either guy dies, endingCombat state is entered so that the animations are played out.
-        if (endingCombat) 
-        {
-            endCombatSceneTimer -= Time.deltaTime; // 1.5 second timer
-            if (endCombatSceneTimer <= 0.0f) 
-            {
-                endCombat();
-            }
-        }
-        // Same for pausing combat
-        else if (pausingCombat) 
-        {
-            endCombatSceneTimer -= Time.deltaTime;
-            if (endCombatSceneTimer <= 0.0f) 
-            {
-                pauseCombat();
-            }
-        }
-    }
-
-
-    public void Start()
-    {
-        audioSource = GetComponent<AudioSource>();
-    }
-
-    private void OnEnable()
-    {
-        Instance = this;
-    }
-
-    public void initializeCombat()
-    {
+        // Onto main combat setup:
+        
         player1.fightingPosition = CombatUIManager.FightingPosition.Left;
         player2.fightingPosition = CombatUIManager.FightingPosition.Right;
 
+        initializeCombat();
 
-        isInitiatorTurn = true;
-        initiatorAttacking = true;
-        retaliatorAttacking = false;
-        playersLastAttack = -1; // AI will defend randomly at first
-
-        if (player2.isEnemy)
-        {
-            initiator = player1;
-            retaliator = player2;
-            isFightingAI = true;
-        }
-        else // If player 2 and 1 are both players, card draw who goes first
-        {
-            int whosFirst = Random.Range(0, 2); // Add button prompt later
-
-            if (whosFirst == 0)
-            {
-                initiator = player1;
-                retaliator = player2;
-            }
-            else
-            {
-                initiator = player2;
-                retaliator = player1;
-            }
-        }
-
-        attacker = initiator; // These are the current atk/defenders, changes every turn unlike above
-        defender = retaliator;
+        // Has to be done after randomly deciding turn order
 
         combatUIManager.UpdateActionText(attacker, Action.PhaseTypes.Attack);
         combatUIManager.UpdateActionText(defender, Action.PhaseTypes.Defend);
 
         m_DecidedTurnOrder.RaiseEvent(attacker);
         m_ActionSelected.RaiseEvent(attacker, Action.PhaseTypes.Attack);
-        //combatUIManager.UpdateAction2Text(defender, Action.PhaseTypes.Defend);
+
+        
     }
 
-    // Whenever someone presses a button to decide how they'll attack/defend, this function is called.
-    // It flips who's deciding their current action by toggling isIniatorTurn
-    public void passSelectionTurn() 
+    // Main logic code for setting up combat (deciding turn order, setting parameters, all that stuff)
+    // After this and the stuff in awake, combat is only continued from the button press event signal when both players select an action
+    public void initializeCombat()
     {
-        if (pausingCombat || endingCombat) // Prevent people from messing with selected actions as combat is ending
-        {
-            return; 
+        waitingForSelection = false; // Will be true after setup, when the attacker/defender have to choose an action
+
+        isFirstPhase = true; // True for first half of combat
+
+        if (player2.isEnemy) { // scene manager guarantees an wild encounter will be loaded in player 2's slot. This decides the kind of combat this is.
+            attacker = player1;
+            defender = player2;
+            player1Attacking = true;
+            player2Attacking = false;
+            isFightingAI = true;
         }
-
-        // isInitatorTurn is used by CombatInputSystem.cs to decide who's selecting their action!
-        isInitiatorTurn = toggleBool(isInitiatorTurn); // False on first selection, then true.
-
-        // But if its false (first guy went) AND the player was attacking, decide the enemy's defence immediately
-        if ((!isInitiatorTurn && initiatorAttacking) && isFightingAI) 
-        {
-            defenderAction = decideDefendAI(); // Enemy tends towards reacting to the last attack (or using their best dice on turn 1)
-
-            isInitiatorTurn = toggleBool(isInitiatorTurn); // now set the flag to true so the next if statement finishes stuff
-        }
-
-        if (isInitiatorTurn) // Means both players decided
-        {
+        else {
+            isFightingAI = false;
             
-            playTurn(); // Acts out the turn
+            int whosFirst = Random.Range(0, 2); // In the final version of the game this should show a button prompt, which will make this another waiting period
+            // This shouldn't be hard to add later, though I'll keep the old functionality for now as we have no animation (also other things are more urgent)
 
-            initiatorAttacking = toggleBool(initiatorAttacking);
-            retaliatorAttacking = toggleBool(retaliatorAttacking);
-
-            if (initiatorAttacking) // Should never happen
-            {
-                attacker = initiator;
-                defender = retaliator;
-            }
-            else // Turn 2
-            {
-                attacker = retaliator;
-                defender = initiator;
-            }
-
-            combatUIManager.UpdateActionText(attacker, Action.PhaseTypes.Attack);
-            combatUIManager.UpdateActionText(defender, Action.PhaseTypes.Defend);
-
-            m_DecidedTurnOrder.RaiseEvent(attacker);
-            m_ActionSelected.RaiseEvent(attacker, Action.PhaseTypes.Attack);
+            randomlyDecidePlayers(whosFirst); // Add a coroutine / wait call for this when we have an animation.
         }
 
         // The input event stuff isn't in yet (I have to talk about that during capstone), but with a tweak to combatinput and uncommenting this it should be easy
@@ -240,7 +146,6 @@ public class CombatManager : MonoBehaviour
 
         waitingForSelection = true; // Now we'll continue from the event listener.
 
-        
 
         
     }
@@ -261,239 +166,48 @@ public class CombatManager : MonoBehaviour
 
     // Called when m_ActionSelected is raised with 
     public void ActionSelected(EntityPiece player, Action action) {
-        //sceneManager.EnableScene(combatSceneIndex);
         if (waitingForSelection == false) {
             Debug.Log("Turn in progress");
             return;
         }
 
-        endCombatSceneTimer = 1.5f;
-        pausingCombat = false;
-        phaseCount = 0;
-        Debug.Log("I'm in scene" + combatSceneIndex);
-        // Pause combat scene and re-enable overworld scene
-        // This does not remove the scene but makes all the game objects under the combat scene inactive.
-        // Similarly, all game objects in the overworld scene are re-enabled.
-        sceneManager.DisableScene(combatSceneIndex);
-        sceneManager.EnableScene(0);
-
-        // This changes the game phase in gameplay test remotely.
-        sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
-        Debug.Log("I have left scene" + combatSceneIndex);
-    }
-
-    // Decides the consequences of either the initiator/retaliator losing before destroying the scene
-    public void endCombat()
-    {
-        // Might want to change this if the player defeated is in Death's Row.
-        m_EntityDied.RaiseEvent(retaliator, null);
-        if (endingCombat == false) 
-        {
-            endCombatSceneTimer = 1.5f;
-            endingCombat = true;
-            return; 
-            // We'll come back later from update with endingCombat = true
-        }
-
-        if (isFightingAI && action.phase == Action.PhaseTypes.Attack) {
-            defenderAction = decideAttackAI();
-            m_ActionSelected.RaiseEvent(defender, Action.PhaseTypes.Attack);
-            onePlayerSelected = true;
-        } else if (isFightingAI && action.phase == Action.PhaseTypes.Defend) {
-            attackerAction = decideAttackAI();
+        if (action.phase == Action.PhaseTypes.Attack) {
+            attackerAction = action;
             m_ActionSelected.RaiseEvent(attacker, Action.PhaseTypes.Attack);
-            onePlayerSelected = true;
+        } else if (action.phase == Action.PhaseTypes.Defend) {
+            defenderAction = action;
+            m_ActionSelected.RaiseEvent(defender, Action.PhaseTypes.Defend);
         }
 
         // float animationLength = action.animationLength;
 
-        
-
         StartCoroutine(SelectionAnimation(1.0f));
 
-            loser = retaliator;
-
-            // Respawn defender at pawn shop with max health (or reset them as an enemy).
-            retaliator.health = retaliator.maxHealth * retaliator.currentStatsModifier.maxHealthMultModifier
-            + retaliator.currentStatsModifier.maxHealthFlatModifier;
-
-            // Enemies can only ever be retaliators. They cannot be the party to engage combat.
-            if (retaliator.isEnemy) 
-            {
-                // Enemy inventories are 6 item loot tables. 2 items are given every combat. Rep
-                int loot = Random.Range(0, 6);
-                initiator.inventory.Add(retaliator.inventory[loot]);
-                loot = Random.Range(0, 6);
-                initiator.inventory.Add(retaliator.inventory[loot]);
-                initiator.ReputationPoints += retaliator.ReputationPoints; // a monster's rep is just its exp yield.
-                Debug.Log("Gained " + retaliator.ReputationPoints + " reputation points from monster! Now at rep: " + initiator.ReputationPoints);
-            }
-            else
-            {
-                // Reset position of losing retaliator to spawn point.
-                retaliator.occupiedNode = sceneManager.spawnPoint;
-                retaliator.transform.position = retaliator.occupiedNode.transform.position;
-                retaliator.occupiedNodeCopy = retaliator.occupiedNode;
-                retaliator.traveledNodes.Clear();
-                retaliator.traveledNodes.Add(retaliator.occupiedNode);
-
-                // Change of money between the two players.
-                if (initiator.isInDeathsRow)
-                {
-                    // Player in Death's Row has negative points so flip sign to equalize.
-                    retaliator.heldPoints -= (-initiator.heldPoints);
-                    initiator.heldPoints = 0;
-                    initiator.isInDeathsRow= false;
-                }
-                else
-                {
-                    // Add defender's points to attacker's points 
-                    float points = 0.5f * retaliator.heldPoints;
-                    retaliator.heldPoints -= Mathf.CeilToInt(points);
-                    initiator.heldPoints += Mathf.FloorToInt(points);
-                }
-
-                // Base 100 xp, times 2 for every level the opponent is above you.
-                float pointgain = 100 * Mathf.Pow(2, retaliator.RenownLevel - initiator.RenownLevel);
-
-                if (pointgain < 100) {
-                    pointgain = 0; // Should it just be 0 if the opponent is lower level?
-                }
-
-                initiator.ReputationPoints += pointgain;
-                Debug.Log("Gained " + pointgain + " reputation points! Now at rep: " + initiator.ReputationPoints);
-            }
-        }
-        else
-        {
-            Debug.Log("Retaliator Wins!");
-
-            loser = initiator;
-            // Respawn losing attacker at pawn shop with max health.
-            initiator.health = initiator.maxHealth * initiator.currentStatsModifier.maxHealthMultModifier
-            + initiator.currentStatsModifier.maxHealthFlatModifier;
-
-            initiator.occupiedNode = sceneManager.spawnPoint;
-            initiator.transform.position = initiator.occupiedNode.transform.position;
-            initiator.occupiedNodeCopy = initiator.occupiedNode;
-            initiator.traveledNodes.Clear();
-            initiator.traveledNodes.Add(initiator.occupiedNode);
-
-            // Change of money between the two players.
-            if (retaliator.isInDeathsRow)
-            {
-                // Player in Death's Row has negative points so flip sign to equalize.
-                initiator.heldPoints -= (-retaliator.heldPoints);
-                retaliator.heldPoints = 0;
-                retaliator.isInDeathsRow = false;
-            }
-            else
-            {
-                // Add attacker's points to defender's points 
-                float points = 0.5f * initiator.heldPoints;
-                initiator.heldPoints -= Mathf.CeilToInt(points);
-                retaliator.heldPoints += Mathf.FloorToInt(points);
-            }
-
-            float pointgain = 100 * Mathf.Pow(2, initiator.RenownLevel - retaliator.RenownLevel);
-
-            if (retaliator.isEnemy) { // Enemies dont increase the amount of xp they give
-                pointgain = 0;
-            }
-
-            if (pointgain < 100) { // Beating up lower level players doesn't give renown
-                pointgain = 0;
-            }
-
-            retaliator.ReputationPoints += pointgain;
-            Debug.Log("Gained " + pointgain + " reputation points! Now at rep: " + retaliator.ReputationPoints);
-        }
-
-        audioSource.PlayOneShot(explosionSFX, 2f);
-
-        // Players exit combat. A combatSceneIndex of -1 indicates they are out of combat. Otherwise, the scene index
-        //  variable takes the current sceneIndex of the scene.
-        player1.combatSceneIndex = -1;
-        player2.combatSceneIndex = -1;
-
-        // If the player defeated is in Death's Row, end the game. Otherwise, go to the next player's turn.
-        if (!loser.isEnemy && loser.isInDeathsRow)
-            sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndGame);
-        else
-        {
-            if (loser.heldPoints < 0)
-                loser.isInDeathsRow = true;
-            sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
-        }
-            
-        // Deletes the current combat scene.
-        sceneManager.UnloadCombatScene(SceneManager.GetSceneAt(combatSceneIndex), combatSceneIndex);
-
-        // Re-enable scene
-        sceneManager.EnableScene(0);
-
-        // Update player scores.
-        sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(initiator.id);
-        if (!retaliator.isEnemy)
-            sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(retaliator.id);
     }
 
-    // Main code behind the combat system. This function is called every time both players select and action, calculating
-    // how much damage the defender receives.
-    private void playActions(int attackerAction, int defenderAction)
-    {
-        Debug.Log("I'm fighting in scene" + combatSceneIndex);
-        // run through the actions taken by both parties, dealing damage accordingly
-        /*
-        if (player1 == attacker)
-        {
-            combatUIManager.UpdateActionAnimation(attackerAction, player1.fightingPosition);
-            combatUIManager.UpdateActionAnimation(defenderAction + 4, player2.fightingPosition);
-        }
-        else
-        {
-            combatUIManager.UpdateActionAnimation(attackerAction, player2.fightingPosition);
-            combatUIManager.UpdateActionAnimation(defenderAction + 4, player1.fightingPosition);
-        }
-        */
+    public void ShowChoices() {
+        waitingForSelection = false;
 
-        m_BothActionsSelected.RaiseEvent(attacker, attackerAction); // Call animation players to run through event
-        m_BothActionsSelected.RaiseEvent(defender, defenderAction); // Call animation players to run through event
+        //m_BothActionsSelected.RaiseEvent(???); // Call animation players to run through event
 
-    
         // float animationLength = some constant probably;
 
-        
-        // Melee beats magic, Magic beats gun, Gun beats melee. 1x, 1.5x, or 2x damage.
+        StartCoroutine(ShowChoiceAnimation(1.0f));
 
-        float damageTypeMultiplier = 1f; // Attacker deals this much times more damage
-        if (attack.type == defend.type)
-        {
-            damageTypeMultiplier = 1.5f; // Neutral
-        }
-        else if (attack.type == Action.WeaponTypes.Melee && defend.type == Action.WeaponTypes.Gun)
-        {
-            damageTypeMultiplier = 1f; // Weaknesses
-        }
-        else if (attack.type == Action.WeaponTypes.Gun && defend.type == Action.WeaponTypes.Magic)
-        {
-            damageTypeMultiplier = 1f;
-        }
-        else if (attack.type == Action.WeaponTypes.Magic && defend.type == Action.WeaponTypes.Melee)
-        {
-            damageTypeMultiplier = 1f;
-        }
-        else if (attack.type == Action.WeaponTypes.Special)
-        {
-            damageTypeMultiplier = 0f; // No fourth option right now
-        }
-        else
-        {
-            damageTypeMultiplier = 2f; // Super effective
-        }
+    }
+    
+    // This script begins the actual combat calculations up to the point of deciding the RNG values of both sides.
+    public void DiceRolls() {
 
-        int rolledFace = Random.Range(0, 6); // Which dice index was selected
-        int damageRoll = 0; // Actual value in dice pips of the damage (this is later reused for defence)
+        int rolledFaceAttack = Random.Range(0, 6); // Which dice index was selected
+        int damageRoll = 0; // Intermediate value used to get the damage dice total
+        int damage = 0; // total dice pips rolled after counting effects
+
+        // less important variables for occasional item effects
+        int attackerBonusRoll = 0; // May be set to something other than 1 in the for loop (if an item effect for this is active)
+
+        Action attack = attackerAction;
+        Action defend = defenderAction;
 
         switch (attack.type)
         {
@@ -501,48 +215,43 @@ public class CombatManager : MonoBehaviour
 
                 for (int i = 0; i < attackerBonusRoll + attack.diesToRoll + 1; i++) // Account for an attack's bonus rolls, or item bonuses
                 {
-                    damageRoll += (int)attacker.strDie[rolledFace]; // Get the base pip value of the dice
+                    damageRoll = (int)attacker.strDie[rolledFaceAttack]; // Get the base pip value of the dice respecting upgrades
 
                     // Important note: the below function is what adds damageRoll to damage (after applying item multipliers and boosts)
-                    damage += (int)attacker.currentStatsModifier.ApplyDieModifier(EntityBaseStats.DieTypes.Strength, damageRoll); 
-                    
-                    attackerBonusRoll = (int)attacker.currentStatsModifier.rollModifier; // If we have extra rolls, set them so we can loop
+                    damage += (int)attacker.currentStatsModifier.ApplyDieModifier(EntityBaseStats.DieTypes.Strength, damageRoll); // counting items, add that damage
+
+                    attackerBonusRoll = (int)attacker.currentStatsModifier.rollModifier; // and end most of the time, unless we have extra combat rolls.
                     
                 }
 
-                audioSource.PlayOneShot(smackSFX, 1f);
-                //Debug.Log("MeleeAttack");
+                
+                
                 break;
             case Action.WeaponTypes.Gun:
 
                 for (int i = 0; i < attackerBonusRoll + attack.diesToRoll + 1; i++)
                 {
-                    damageRoll += (int)attacker.dexDie[rolledFace];
+                    damageRoll = (int)attacker.dexDie[rolledFaceAttack];
 
                     damage += (int)attacker.currentStatsModifier.ApplyDieModifier(EntityBaseStats.DieTypes.Dex, damageRoll);
 
                     attackerBonusRoll = (int)attacker.currentStatsModifier.rollModifier;
                 }
-                audioSource.PlayOneShot(shootSFX, 1f);
-                //Debug.Log("GunAttack");
+                
+                
                 break;
             case Action.WeaponTypes.Magic:
 
                 for (int i = 0; i < attackerBonusRoll + attack.diesToRoll + 1; i++)
                 {
-                    damageRoll += (int)attacker.intDie[rolledFace];
+                    damageRoll = (int)attacker.intDie[rolledFaceAttack];
 
                     damage += (int)attacker.currentStatsModifier.ApplyDieModifier(EntityBaseStats.DieTypes.Int, damageRoll);
 
                     attackerBonusRoll = (int)attacker.currentStatsModifier.rollModifier;
                 }
-                audioSource.PlayOneShot(clankSFX, 1f);
-                //Debug.Log("MagicAttack");
-                break;
-            case Action.WeaponTypes.Special:
-
-                damageRoll = 0;
-                damage = 0;
+                
+                
                 break;
             default:
 
@@ -550,11 +259,9 @@ public class CombatManager : MonoBehaviour
                 damage = 0;
                 break;
         }
-        m_DiceRolled.RaiseEvent(attacker, damageRoll);
 
-        damage += (attackerBuffDamage + attack.bonusDamage); // Add special boosts and intrinsic damage boosts from the attack stats
-        damage = damage * 10; // final damage before defense is pip value x 10
-        Debug.Log($"Attacker damage: Raw roll {damageRoll}, Type {attack.type}, modified {damage}");
+        damage += (attack.bonusDamage); // Final damage dice pips. Not multiplied by 10 yet.
+        
 
         int rolledFaceDefense = Random.Range(0, 6);
 
@@ -572,58 +279,44 @@ public class CombatManager : MonoBehaviour
                 defenseScore = defender.intDie[rolledFaceDefense];
                 //Debug.Log("MagicDefense");
                 break;
-            case Action.WeaponTypes.Special:
-                defenseScore = 0;
-                //Debug.Log("HammerDefense");
-                break;
             default:
                 defenseScore = 0;
                 break;
         }
 
-        Debug.Log($"Defend roll: {defend.type} {defenseScore}");
+        // Apply item effects like cloth (Seems a little weird to be included in dice, but this is essential for clarity so people visually see the 10-100% mod w/ cloth)
+        defenseScore += 1f * defender.currentStatsModifier.defenseModifier; 
+        
+
+        
+        m_DiceRolled.RaiseEvent(attacker, damage); // Send events so that everyone can see what was rolled on either side after a moment. Assumed to start the animation
+
         m_DiceRolled.RaiseEvent(defender, defenseScore);
-        defenseScore += 1f * defender.currentStatsModifier.defenseModifier; // Apply item effects like cloth
 
-        // damage is reduced by 10% - 100% before a type advantage multiplier is applied
-        damage = (int)(damage * (1 - (0.1f * defenseScore)) * damageTypeMultiplier);
+        // float animationLength = some constant probably;
 
-        if (damage < 0)
-        {
-            damage = 0;
-        }
+        StartCoroutine(DiceRollAnimation(1.0f, damage, (int)defenseScore));
 
-        Debug.Log("Final Damage: " + damage);
-
-        defender.health -= (int)damage; // Apply final damage
-
-        attacker.health += (int)(damage * attacker.currentStatsModifier.lifestealMult); // Attacker heals if they have lifesteal
-
-        m_DamageTaken.RaiseEvent(defender, damage);
-
-        attackerBonusRoll = 0; // Clear effects (as they're applied additively to support multiple at once)
-        defenderBonusRoll = 0;
-        attackerBuffDamage = 0;
-
-        if (initiatorAttacking && isFightingAI)
-        {
-            playersLastAttack = attackerAction; // Used by the ai for defend behavior
-        }
     }
 
-    public void chooseAction(int ActionID, bool isAttacker)
-    {
-        //combatUIManager.UpdateActionAnimation(0, player1.fightingPosition);
-        //combatUIManager.UpdateActionAnimation(0, player2.fightingPosition);
-        
-        if (isAttacker)
+    public void PlayOutPhase(int damage, int defenseScore) {
+        Action attack = attackerAction;
+        Action defend = defenderAction;
+
+        float damageTypeMultiplier = 1f; // Attacker deals this much times more damage
+        if (attack.type == defend.type)
         {
-            attackerAction = ActionID;
-            m_ActionSelected.RaiseEvent(defender, Action.PhaseTypes.Defend);
+            damageTypeMultiplier = 1.5f; // Neutral
+        }
+        else if ( (attack.type == Action.WeaponTypes.Melee && defend.type == Action.WeaponTypes.Gun)
+               || (attack.type == Action.WeaponTypes.Gun && defend.type == Action.WeaponTypes.Magic)
+               || (attack.type == Action.WeaponTypes.Magic && defend.type == Action.WeaponTypes.Melee) )
+        {
+            damageTypeMultiplier = 1f; // Incorrect defense option
         }
         else
         {
-            defenderAction = ActionID;
+            damageTypeMultiplier = 2f; // Super effective
         }
 
         damage = damage * 10;
@@ -635,7 +328,7 @@ public class CombatManager : MonoBehaviour
             finalDamage = 0;
         }
 
-        m_PlayOutCombat.RaiseEvent(attacker); // Set attack animation to play early
+        //m_PlayOutCombat.RaiseEvent(); // Set attack animation to play early
 
         //float animationLength = attack.animationLength;
 
@@ -644,7 +337,7 @@ public class CombatManager : MonoBehaviour
     }
 
     // Final parts of the turn here, where we actually deal damage and soon after flip phases
-    private void DealDamage(int damageToDeal) {
+    private void dealDamage(int damageToDeal) {
         // damage was set earlier in combat calulations.
 
         Debug.Log("Final Damage: " + damageToDeal);
@@ -671,9 +364,6 @@ public class CombatManager : MonoBehaviour
         defender = attacker;
         attacker = tempDefender;
 
-        combatUIManager.UpdateActionText(attacker, Action.PhaseTypes.Attack);
-        combatUIManager.UpdateActionText(defender, Action.PhaseTypes.Defend);
-
         m_SwapPhase.RaiseEvent(attacker);
 
 
@@ -693,7 +383,15 @@ public class CombatManager : MonoBehaviour
     }
 
 
-    private int decideAttackAI()
+
+
+
+
+
+    //   TWO COMBAT WRAP UP FUNCTIONS:
+
+    // Suspends and resets the combat scene so that the next player can take a turn. Returns when its either fighter's turn.
+    public void pauseCombat() 
     {
         m_Stalemate.RaiseEvent();
 
@@ -702,45 +400,78 @@ public class CombatManager : MonoBehaviour
         // Pause combat scene and re-enable overworld scene
         // This does not remove the scene but makes all the game objects under the combat scene inactive.
         // Similarly, all game objects in the overworld scene are re-enabled.
-        
-        sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
         sceneManager.DisableScene(combatSceneIndex);
         sceneManager.EnableScene(0);
 
         // This changes the game phase in gameplay test remotely.
+        sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
     }
 
-    private int decideDefendAI()
+    // Decides the consequences of either player 1 or player 2 losing before destroying the scene
+    public void endCombat()
     {
-        int roll = Random.Range(0, 6);
-        if (roll < 3) // Enemy acts reactively 1/2 of the time
-        {
-            if (playersLastAttack == 1) // Player used gun, so use magic
-            {
-                return 3; 
-            }
-            else if (playersLastAttack == 2) // Player used melee, so use gun
-            {
-                return 1;
-            }
-            else if (playersLastAttack == 3) // Player used magic, so use melee
-            {
-                return 2;
-            }
-            else // First turn, decide based on what the enemy's best at for attacking
-            {
-                // This will be what the AI relies on unless a combat drags on for multiple rounds.
-                return decideAttackAI();
-            }
+        EntityPiece winner;
+        EntityPiece loser;
+
+        bool player1Wins;
+        if (player2.health <= 0) { // Player 1 wins
+            player1Wins = true;
+            m_EntityDied.RaiseEvent(player2, null);
+            player2.health = player2.maxHealth;
+
+            winner = player1;
+            loser = player2;
+
+        } else { // Player 2 wins
+            player1Wins = false;
+            m_EntityDied.RaiseEvent(player1, null);
+            player1.health = player1.maxHealth;
+
+            loser = player1;
+            winner = player2;
         }
-    
-        // Rest is (mostly) scene management stuff / events
 
-        // Players exit combat. A combatSceneIndex of -1 indicates they are out of combat. Otherwise, the scene index
-        //  variable takes the current sceneIndex of the scene.
-        player1.combatSceneIndex = -1;
-        player2.combatSceneIndex = -1;
+        if ( (isFightingAI && player1Wins) == false ) {
+            loser.occupiedNode = sceneManager.spawnPoint;
+            loser.transform.position = loser.occupiedNode.transform.position;
+            loser.occupiedNodeCopy = loser.occupiedNode;
+            loser.traveledNodes.Clear();
+            loser.traveledNodes.Add(loser.occupiedNode);
 
+            // Add defender's points to attacker's points 
+            float points = 0.5f * loser.heldPoints;
+            winner.heldPoints += Mathf.FloorToInt(points);
+            loser.heldPoints -= Mathf.CeilToInt(points);
+
+            // Base 100 xp, times 2 for every level the opponent is above you.
+            float reputationGain = 100 * Mathf.Pow(2, loser.RenownLevel - winner.RenownLevel);
+
+            if (reputationGain < 100)
+            {
+                reputationGain = 0; // Should it just be 0 if the opponent is lower level?
+            }
+            
+            if (player2.isEnemy) { // Enemies dont increase the amount of xp they give
+                reputationGain = 0;
+            }
+
+            winner.ReputationPoints += reputationGain;
+            Debug.Log("Gained " + reputationGain + " reputation points! Now at rep: " + winner.ReputationPoints);
+
+            // Remember to throw in that new level up UI in here soon!
+        } else {
+            int loot = Random.Range(0, 6);
+            player1.inventory.Add(player2.inventory[loot]); // Enemy inventories are effectively static loot tables (they always have 6 items)
+            loot = Random.Range(0, 6);
+            player1.inventory.Add(player2.inventory[loot]);
+            player1.ReputationPoints += player2.ReputationPoints; // a monster's rep is just its exp yield.
+            Debug.Log("Gained " + player2.ReputationPoints + " reputation points from monster! Now at rep: " + player1.ReputationPoints);
+
+            
+        }
+
+        
+        // If the player defeated is in Death's Row, end the game. Otherwise, go to the next player's turn.
         if (!loser.isEnemy && loser.isInDeathsRow)
             sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndGame);
         else
@@ -750,7 +481,16 @@ public class CombatManager : MonoBehaviour
             sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
         }
 
-        //audioSource.PlayOneShot(explosionSFX, 2f);
+
+        
+        // Rest is (mostly) scene management stuff / events
+
+        // Players exit combat. A combatSceneIndex of -1 indicates they are out of combat. Otherwise, the scene index
+        //  variable takes the current sceneIndex of the scene.
+        player1.combatSceneIndex = -1;
+        player2.combatSceneIndex = -1;
+
+        audioSource.PlayOneShot(explosionSFX, 2f);
             
         // Deletes the current combat scene.
         sceneManager.UnloadCombatScene(SceneManager.GetSceneAt(combatSceneIndex), combatSceneIndex);
@@ -760,10 +500,9 @@ public class CombatManager : MonoBehaviour
 
         // Update player scores.
         sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(player1.id);
-        if (!player2.isEnemy) {
+        if (player2.isEnemy) {
             sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(player2.id);
         }
-        
     }
 
     private Action decideAttackAI()
@@ -788,7 +527,6 @@ public class CombatManager : MonoBehaviour
         }
     }
 
-
     // IENUMERATORS (Coroutines that delay code so animations can run)
 
     // Allows waiting and then going back to code
@@ -802,15 +540,11 @@ public class CombatManager : MonoBehaviour
         
         if (onePlayerSelected) // Means both players decided
         {
-            return 1;
-        }
-        else if (roll < 5)
-        {
-            return 2;
-        }
-        else
-        {
-            return 3;
+            onePlayerSelected = false; // For next phase
+            ShowChoices(); // Progress combat through showing choices until the phase plays out.
+            
+        } else {
+            onePlayerSelected = true;
         }
     }
 
@@ -823,7 +557,7 @@ public class CombatManager : MonoBehaviour
         Debug.Log($"Defend: {defenderAction.type}");
     
         
-        DiceRolls(); // Calculates random damage and effects in the turn to get base damage / defense (also plays dice roll animation)
+        DiceRolls(); // Acts out the turn (most of the combat logic here, takes a while to get back)
     }
 
     public IEnumerator DiceRollAnimation(float animationTime, int damageRoll, int defenseRoll)
@@ -850,7 +584,7 @@ public class CombatManager : MonoBehaviour
 
         yield return new WaitForSeconds(animationTime);
         
-        DealDamage(damageToDeal);
+        dealDamage(damageToDeal);
 
     }
 
@@ -889,3 +623,5 @@ public class CombatManager : MonoBehaviour
 
 
 }
+
+
