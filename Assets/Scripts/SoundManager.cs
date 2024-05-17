@@ -26,6 +26,7 @@ public class SoundManager : MonoBehaviour
     public PlayerEventChannelSO m_EntityDied;
     public PlayerEventChannelSO m_ActionSelected;
     public PlayerEventChannelSO m_ShowCombatBanner;
+    public PlayerEventChannelSO m_NextPlayerTurn;
 
 
 
@@ -46,6 +47,7 @@ public class SoundManager : MonoBehaviour
         m_ItemUsed.OnEventRaised += PlayUseItemSound;
         m_UpdatePlayerScore.OnEventRaised += PlayCurrencyChangeSound;
         m_ItemBought.OnEventRaised += PlayItemBoughtSound;
+        m_NextPlayerTurn.OnEventRaised += PlayNextPlayerTurnSound;
         //m_ShowCombatBanner.OnEventRaised += PlayEnterBattleSound;
 
 
@@ -70,6 +72,7 @@ public class SoundManager : MonoBehaviour
         m_RollForMovement.OnEventRaised -= PlayDiceHitSound;
         m_ItemUsed.OnEventRaised -= PlayUseItemSound;
         m_UpdatePlayerScore.OnEventRaised -= PlayCurrencyChangeSound;
+        m_NextPlayerTurn.OnEventRaised += PlayNextPlayerTurnSound;
         //m_ShowCombatBanner.OnEventRaised -= PlayEnterBattleSound;
 
 
@@ -166,70 +169,80 @@ public class SoundManager : MonoBehaviour
         audioSource.PlayOneShot(soundList[14], 1.2f);
     }
 
+    private void PlayNextPlayerTurnSound(EntityPiece entity)
+    {
+        audioSource.PlayOneShot(soundList[15], 2.5f);
+        Debug.Log("played next player sound");
+    }
 
-    // private void Update()
-    // {
-    //     if (Input.GetKeyDown(KeyCode.Alpha1))
-    //     {
-    //         PlayStampSound(stupidFuck);
-    //     }
-    //     else if (Input.GetKeyDown(KeyCode.Alpha2))
-    //     {
-    //         PlayDiceRollSound(stupidFuck);
-    //     }
-    //     else if (Input.GetKeyDown(KeyCode.Alpha3))
-    //     {
-    //         PlayDiceHitSound(0);
-    //     }
-    //     else if (Input.GetKeyDown(KeyCode.Alpha4))
-    //     {
-    //         PlayCurrencyChangeSound(1);
-    //     }
-    //     else if (Input.GetKeyDown(KeyCode.Alpha5))
-    //     {
-    //         PlayCurrencyChangeSound(-1);
-    //     }
-    //     else if (Input.GetKeyDown(KeyCode.Alpha6))
-    //     {
-    //         PlayUseItemSound(0);
-    //     }
-    //     else if (Input.GetKeyDown(KeyCode.Alpha7))
-    //     {
-    //         PlayMeleeAttackSound(stupidFuck);
-    //     }
-    //     else if (Input.GetKeyDown(KeyCode.Alpha8))
-    //     {
-    //         PlayMagicAttackSound(stupidFuck);
-    //     }
-    //     else if (Input.GetKeyDown(KeyCode.Alpha9))
-    //     {
-    //         PlayGunAttackSound(stupidFuck);
-    //     }
-    //     else if (Input.GetKeyDown(KeyCode.Alpha0))
-    //     {
-    //         PlayNotEffectiveHitSound(stupidFuck);
-    //     }
-    //     else if (Input.GetKeyDown(KeyCode.Q))
-    //     {
-    //         PlayEffectiveHitSound(stupidFuck);
-    //     }
-    //     else if (Input.GetKeyDown(KeyCode.W))
-    //     {
-    //         PlaySuperEffectiveHitSound(stupidFuck);
-    //     }
-    //     else if (Input.GetKeyDown(KeyCode.E))
-    //     {
-    //         PlaySelectCombatActionSound(stupidFuck);
-    //     }
-    //     else if (Input.GetKeyDown(KeyCode.R))
-    //     {
-    //         PlayEnterBattleSound(stupidFuck);
-    //     }
-    //     else if (Input.GetKeyDown(KeyCode.T))
-    //     {
-    //         PlayDeathSound(stupidFuck);
-    //     }
-    // }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            PlayStampSound(stupidFuck);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            PlayDiceRollSound(stupidFuck);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            PlayDiceHitSound(0);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            PlayCurrencyChangeSound(1);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            PlayCurrencyChangeSound(-1);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha6))
+        {
+            PlayUseItemSound(0);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha7))
+        {
+            PlayMeleeAttackSound(stupidFuck);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha8))
+        {
+            PlayMagicAttackSound(stupidFuck);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha9))
+        {
+            PlayGunAttackSound(stupidFuck);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha0))
+        {
+            PlayNotEffectiveHitSound(stupidFuck);
+        }
+        else if (Input.GetKeyDown(KeyCode.Q))
+        {
+            PlayEffectiveHitSound(stupidFuck);
+        }
+        else if (Input.GetKeyDown(KeyCode.W))
+        {
+            PlaySuperEffectiveHitSound(stupidFuck);
+        }
+        else if (Input.GetKeyDown(KeyCode.E))
+        {
+            PlaySelectCombatActionSound(stupidFuck);
+        }
+        else if (Input.GetKeyDown(KeyCode.R))
+        {
+            PlayEnterBattleSound(stupidFuck);
+        }
+        else if (Input.GetKeyDown(KeyCode.T))
+        {
+            PlayDeathSound(stupidFuck);
+        }
+        else if (Input.GetKeyDown(KeyCode.Y))
+        {
+            PlayNextPlayerTurnSound(stupidFuck);
+        }
+    }
 
 
 
