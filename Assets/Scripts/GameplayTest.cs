@@ -774,7 +774,7 @@ public class GameplayTest : MonoBehaviour
 
         bool lookingForTarget = true;
         while (lookingForTarget) {
-            var monsterType = Random.Range(-6, 0); // int from -6 to -1
+            var monsterType = Random.Range(-13, 0); // int from -6 to -1
 
             sceneManager.player2ID = monsterType;
 
