@@ -188,12 +188,22 @@ public class UIPromptManager : MonoBehaviour
 
     private void NormalizeInventoryPrompt(EntityPiece ps)
     {
-        inventoryPromptText.text = "<color=white>[S]</color> Item";
+        inventoryPromptText.text = "Item";
     }
 
     private void StrikethroughInventoryPrompt(int index)
     {
-        inventoryPromptText.text = "<color=grey>[S] Item</color>";
+        inventoryPromptText.text = "<color=grey>Item</color>";
+    }
+
+    private void NormalizeBuildPrompt(EntityPiece ps)
+    {
+        inventoryPromptText.text = "Build";
+    }
+
+    private void StrikethroughBuildPrompt(int index)
+    {
+        inventoryPromptText.text = "<color=grey>Build</color>";
     }
 
     private void DisplayOverturnChoices(EntityPiece storeOwner)

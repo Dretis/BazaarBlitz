@@ -28,6 +28,7 @@ public class GameplayTest : MonoBehaviour
         MoveAround,
         PassBy,
         EncounterTime,
+        InStore, // new for input system
         StockStore,
         OverturnStore,
         RockPaperScissors,
@@ -61,7 +62,7 @@ public class GameplayTest : MonoBehaviour
 
     private bool freeviewEnabled = false;
     public bool encounterStarted = false;
-    private bool playerUsedItem = false; // please change these down the line
+    public bool playerUsedItem = false; // please change these down the line
     public bool isStockingStore = false;
 
     //SOUND SHIT
@@ -122,6 +123,7 @@ public class GameplayTest : MonoBehaviour
     public IntItemEventChannelSO m_ItemStocked;
     public VoidEventChannelSO m_ExitRaycastedTile; //Listening to this one
     public PlayerEventChannelSO m_BuildStore; //Listening to this one
+    public PlayerEventChannelSO m_FinishStockingStore;
 
     private void OnEnable()
     {
@@ -130,6 +132,7 @@ public class GameplayTest : MonoBehaviour
         m_UpdatePlayerScore.OnEventRaised += RemoveDeathsRow;
         m_ExitRaycastedTile.OnEventRaised += DisableFreeview;
         m_BuildStore.OnEventRaised += BuildStore;
+        m_FinishStockingStore.OnEventRaised += AddRecentStockIntoStore;
         m_ItemStocked.OnEventRaised += TrackItemFromPlayerInventory;
     }
 
@@ -140,6 +143,7 @@ public class GameplayTest : MonoBehaviour
         m_UpdatePlayerScore.OnEventRaised -= RemoveDeathsRow;
         m_ExitRaycastedTile.OnEventRaised -= DisableFreeview;
         m_BuildStore.OnEventRaised -= BuildStore;
+        m_FinishStockingStore.OnEventRaised -= AddRecentStockIntoStore;
         m_ItemStocked.OnEventRaised -= TrackItemFromPlayerInventory;
     }
 
@@ -278,7 +282,7 @@ public class GameplayTest : MonoBehaviour
     {
         if (freeviewEnabled)
             return;
-
+        /*
         if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
         {
             // This should let you look around the map freely.
@@ -324,7 +328,7 @@ public class GameplayTest : MonoBehaviour
 
             storestockTooltip.enabled = true;
             phase = GamePhase.StockStore;
-            */
+            
         }
         if (playerUsedItem == false && (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S)))
         {
@@ -341,6 +345,8 @@ public class GameplayTest : MonoBehaviour
 
             phase = GamePhase.Inventory;
         }
+        */
+        
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             howToPlayScreen.enabled = true;
@@ -574,13 +580,13 @@ public class GameplayTest : MonoBehaviour
         else
         {
             var otherPlayer = p.occupiedNode.playerOccupied;
-            if (m.CompareTag("Store")) // Forced to buy item(s)
+            if (m.TryGetComponent<StoreManager>(out StoreManager component)) // Forced to buy item(s)
             {
                 // Have the node be occupied by the current player.
                 m.playerOccupied = p;
                 // Update portions of this code later
                 GameObject tile = m.gameObject;
-                StoreManager store = tile.GetComponent<StoreManager>();
+                StoreManager store = component;
                 if (store.playerOwner != currentPlayer)
                 {
                     // Forced to buy item(s) from another player's store
@@ -886,6 +892,16 @@ public class GameplayTest : MonoBehaviour
         }
     }
 
+    public void ConfirmContinue()
+    {
+        phase = GamePhase.EndTurn;
+        encounterOver = false;
+        encounterScreen.SetActive(false);
+        storeScreen.SetActive(false);
+        m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
+        m_ExitStorefront.RaiseEvent();
+    }
+
     void EndOfTurn(EntityPiece p)
     {
         if (currentPlayerInitialNode.playerOccupied == currentPlayer)
@@ -961,11 +977,13 @@ public class GameplayTest : MonoBehaviour
         // This should be in its own script
         if (isStockingStore)
         {
+            /*
             var store = currentPlayer.occupiedNode.GetComponent<StoreManager>();
             //Debug.Log(index);
             store.AddItem(currentPlayer.inventory[index]);
             currentPlayer.inventory.RemoveAt(index);
-            m_OpenInventory.RaiseEvent(currentPlayer);
+            */
+            //m_OpenInventory.RaiseEvent(currentPlayer);
         } 
         else
         {
@@ -1099,7 +1117,7 @@ public class GameplayTest : MonoBehaviour
 
         isStockingStore = true;
 
-        m_RestockStore.RaiseEvent(p.occupiedNode);
+        //m_RestockStore.RaiseEvent(p.occupiedNode);
 
         storestockTooltip.enabled = true;
     }
@@ -1112,5 +1130,17 @@ public class GameplayTest : MonoBehaviour
 
         currentPlayer.inventory.RemoveAt(index);
         m_RefreshInventory.RaiseEvent(currentPlayer);
+    }
+
+    public void AddRecentStockIntoStore(EntityPiece player)
+    {
+        StoreManager store = player.occupiedNode.GetComponent<StoreManager>();
+        foreach(ItemStats item in recentStockedItems)
+        {
+            store.AddItem(item);
+        }
+
+        recentStockedItems.Clear();
+        m_ExitInventory.RaiseEvent();
     }
 }

@@ -37,6 +37,7 @@ public class UIInventoryManager : MonoBehaviour
     [SerializeField] private List<TextMeshProUGUI> storestockNames;
     [SerializeField] private List<TextMeshProUGUI> storestockPrices;
     [SerializeField] private List<ItemStats> storeInv;
+    [SerializeField] private TextMeshProUGUI storestockTooltip;
 
     [Header("Extra Space")]
     [SerializeField] private CanvasGroup extraGroup;
@@ -132,6 +133,7 @@ public class UIInventoryManager : MonoBehaviour
 
     private void DisplayInventory(EntityPiece entity)
     {
+        Debug.Log("wtf how");
         FadeTo(inventoryGroup, 1, 0.25f);
         inventoryGroup.interactable = true;
 
@@ -224,30 +226,12 @@ public class UIInventoryManager : MonoBehaviour
 
     public void UseItem(int index)
     {
-        if (currentState == InventoryState.UseItem) //|| !GameplayTest.instance.isStockingStore)
-        {
-            // Regular item use, visually removes the item from the player's inventory
 
-            /*
-            itemIcons[index].sprite = null;
-            itemIcons[index].enabled = false;
-            itemNames[index].text = "";
-            itemPrices[index].text = "";
-
-            for (int i = 0; i < itemNames.Count; i++)
-            {
-                // Make the rest of the inventory interactable, prevents multiple item uses in one turn
-                itemNames[i].GetComponentInParent<Button>().interactable = false;
-            }
-            */
-        }
-        else if(GameplayTest.instance.isStockingStore)
-        {
-            //AddItemToStoreStock(index);
-        }
-
-        // Tell listeners that the item at this index in player's inventory is being used
-        m_ItemUsed.RaiseEvent(index);
+         for (int i = 0; i < itemNames.Count; i++)
+         {
+             // Make the rest of the inventory interactable, prevents multiple item uses in one turn
+             itemNames[i].GetComponentInParent<Button>().interactable = false;
+         }
     }
 
     public void AddItemToStoreStock(int index, ItemStats item)

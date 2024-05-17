@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Rendering;
 using static GameplayTest;
 
 public class PlayerInputController : MonoBehaviour
@@ -21,6 +20,7 @@ public class PlayerInputController : MonoBehaviour
     public IntEventChannelSO m_RollForMovement;
     public PlayerEventChannelSO m_OpenInventory; 
     public PlayerEventChannelSO m_BuildStore; 
+    public PlayerEventChannelSO m_FinishStockingStore; 
     public NodeEventChannelSO m_RestockStore;
     public VoidEventChannelSO m_ExitInventory;
 
@@ -40,11 +40,13 @@ public class PlayerInputController : MonoBehaviour
     private void OnEnable()
     {
         m_NextPlayerTurn.OnEventRaised += SetCurrentPlayer;
+        m_RestockStore.OnEventRaised += OnRestockStore;
     }
 
     private void OnDisable()
     {
         m_NextPlayerTurn.OnEventRaised -= SetCurrentPlayer;
+        m_RestockStore.OnEventRaised -= OnRestockStore;
     }
 
     #region 'Inital Turn Menu' Action Map
@@ -64,8 +66,15 @@ public class PlayerInputController : MonoBehaviour
     private void OnInv()
     {
         Debug.Log("menu item pressed as message");
-        m_OpenInventory.RaiseEvent(currentPlayer);
-        SwitchActionMap(GamePhase.Inventory);
+        if (!GameplayTest.instance.playerUsedItem)
+        {
+            m_OpenInventory.RaiseEvent(currentPlayer);
+            SwitchActionMap(GamePhase.Inventory);
+        }
+        else
+        {
+            // play some nuh-uh sound
+        }
     }
 
     private void OnBuild()
@@ -77,14 +86,14 @@ public class PlayerInputController : MonoBehaviour
             Debug.Log("Built a store");
             // Build a store in the current tile
             m_BuildStore.RaiseEvent(currentPlayer);
-            //m_RestockStore.RaiseEvent(currentPlayer.occupiedNode);
-            SwitchActionMap(GamePhase.StockStore);
+            m_RestockStore.RaiseEvent(currentPlayer.occupiedNode);
+            //SwitchActionMap(GamePhase.StockStore);
 
         }
         else
         {
             Debug.Log("Can't build store");
-            // Give some notification
+            // Give some notification/play some nuh-uh sound
         }
 
     }
@@ -93,8 +102,15 @@ public class PlayerInputController : MonoBehaviour
     # region 'UI' Action Map
     private void OnCancel()
     {
-        Debug.Log("cancel inv as message");
-        m_ExitInventory.RaiseEvent();
+        switch (GameplayTest.instance.phase)
+        {
+            case GamePhase.StockStore:
+                m_FinishStockingStore.RaiseEvent(currentPlayer);
+                break;
+            case GamePhase.Inventory:
+                m_ExitInventory.RaiseEvent();
+                break;
+        }
         SwitchActionMap(GamePhase.InitialTurnMenu);
     }
 
@@ -141,17 +157,34 @@ public class PlayerInputController : MonoBehaviour
     #region 'Confirmation' Action Map
     private void OnYes()
     {
-        Debug.Log("Dice rolled!");
-        m_RollForMovement.RaiseEvent(10);
-        currentPlayer.movementTotal = currentPlayer.movementLeft = 10;
-        SwitchActionMap(GamePhase.PickDirection);
+        switch (GameplayTest.instance.phase)
+        {
+            case GamePhase.RollDice:
+                Debug.Log("Dice rolled!");
+                m_RollForMovement.RaiseEvent(10);
+                currentPlayer.movementTotal = currentPlayer.movementLeft = 10;
+                SwitchActionMap(GamePhase.PickDirection);
+                break;
+            case GamePhase.ConfirmContinue:
+                Debug.Log("confirm to continued!");
+                GameplayTest.instance.ConfirmContinue();
+                break;
+        }
     }
 
     private void OnNo()
     {
-        Debug.Log("undo confirm pressed");
-        m_DiceRollUndo.RaiseEvent(currentPlayer);
-        SwitchActionMap(GamePhase.InitialTurnMenu);
+        switch (GameplayTest.instance.phase)
+        {
+            case GamePhase.RollDice:
+                Debug.Log("undo confirm pressed");
+                m_DiceRollUndo.RaiseEvent(currentPlayer);
+                SwitchActionMap(GamePhase.InitialTurnMenu);
+                break;
+            case GamePhase.ConfirmContinue:
+                GameplayTest.instance.ConfirmContinue();
+                break;
+        }
     }
     #endregion
     /*
@@ -216,7 +249,6 @@ public class PlayerInputController : MonoBehaviour
                 break;
 
             case GamePhase.Inventory:
-                Debug.Log("yuh");
                 playerInput.SwitchCurrentActionMap("UI");
                 break;
 
@@ -260,5 +292,10 @@ public class PlayerInputController : MonoBehaviour
         playerInput.currentActionMap.Disable();
         playerInput.SwitchCurrentActionMap("Initial Turn Menu");
         playerInput.currentActionMap.Enable();
+    }
+
+    private void OnRestockStore(MapNode node)
+    {
+        SwitchActionMap(GamePhase.StockStore);
     }
 }
