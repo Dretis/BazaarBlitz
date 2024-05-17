@@ -181,7 +181,7 @@ public class CombatManager : MonoBehaviour
 
         if (isFightingAI && action.phase == Action.PhaseTypes.Attack) {
             defenderAction = decideAttackAI();
-            m_ActionSelected.RaiseEvent(defender, Action.PhaseTypes.Attack);
+            m_ActionSelected.RaiseEvent(defender, Action.PhaseTypes.Defend);
             onePlayerSelected = true;
         } else if (isFightingAI && action.phase == Action.PhaseTypes.Defend) {
             attackerAction = decideAttackAI();
