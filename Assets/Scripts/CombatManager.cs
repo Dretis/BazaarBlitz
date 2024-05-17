@@ -380,7 +380,7 @@ public class CombatManager : MonoBehaviour
 
         if (player1Attacking) {
             player1Attacking = false;
-            player1Attacking = true;
+            player2Attacking = true;
         } else {
             player1Attacking = true;
             player2Attacking = false;
