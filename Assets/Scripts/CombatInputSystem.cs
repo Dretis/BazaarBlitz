@@ -15,6 +15,8 @@ public class CombatInputSystem : MonoBehaviour
     EntityPiece player1;
     EntityPiece player2;
 
+    CombatManager combatManager;
+
     
     //public ????? m_ActionSelected;
 
@@ -23,6 +25,11 @@ public class CombatInputSystem : MonoBehaviour
     void OnEnable() {
         m_SwapPhase.OnEventRaised += PhasePassed;
     }
+
+    void Awake() {
+        combatManager = FindObjectOfType<CombatManager>();
+    }
+
 
     void Update()
     {
@@ -69,19 +76,24 @@ public class CombatInputSystem : MonoBehaviour
     }
 
     void sendAction(bool isPlayer1, int actionID) {
-        player1Attacking = CombatManager.Instance.player1Attacking;
-        player2Attacking = CombatManager.Instance.player2Attacking;
 
-        player1 = CombatManager.Instance.player1;
-        player2 = CombatManager.Instance.player2;
-
-        if (player1Went && isPlayer1) {
+        if (this.gameObject.activeSelf == false) {
+            return;
+        } else if (player1Went && isPlayer1) {
             return;
         } else if (player2Went && !isPlayer1) {
             return;
-        } else if (!isPlayer1 && player2.isEnemy) {
+        } else if (!isPlayer1 && combatManager.player2.isEnemy) {
             return;
         }
+
+        Debug.Log(combatManager.combatSceneIndex);
+
+        player1Attacking = combatManager.player1Attacking;
+        player2Attacking = combatManager.player2Attacking;
+
+        player1 = combatManager.player1;
+        player2 = combatManager.player2;
 
         Debug.Log(actionID);
 
@@ -94,7 +106,7 @@ public class CombatInputSystem : MonoBehaviour
             else {
                 action = player1.defendActions[actionID];
             }
-            CombatManager.Instance.ActionSelected(player1, action);
+            combatManager.ActionSelected(player1, action);
             //m_ActionSelected.RaiseEvent(player1, action);
         } else {
             player2Went = true;
@@ -105,7 +117,7 @@ public class CombatInputSystem : MonoBehaviour
             else {
                 action = player2.defendActions[actionID];
             }
-            CombatManager.Instance.ActionSelected(player2, action);
+            combatManager.ActionSelected(player2, action);
             //m_ActionSelected.RaiseEvent(player2, action);
         }
     }
