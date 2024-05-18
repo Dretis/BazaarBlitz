@@ -74,6 +74,7 @@ public class UICombatOverlayManager : MonoBehaviour
     public DamageEventChannelSO m_DamageTaken; //upon attack anim finishing, show floating dmg ontop of defender, play hurt anim
 
     public EntityItemEventChannelSO m_EntityDied; // someone's HP dropped to 0, Victory, show rewards
+    public ItemListEventChannelSO m_VictoryAgainstEnemy;
     public VoidEventChannelSO m_Stalemate; // Combat is suspended, no one died this stime
 
     private void OnEnable()
@@ -81,6 +82,7 @@ public class UICombatOverlayManager : MonoBehaviour
         resultTestText.text = "";
         leftDiceRoll.GetComponent<TextMeshProUGUI>().text = "";
         rightDiceRoll.GetComponent<TextMeshProUGUI>().text = "";
+        resultsScreen.alpha = 0;
 
 
         m_DecidedTurnOrder.OnEventRaised += UpdateInputPrompts;
@@ -94,7 +96,7 @@ public class UICombatOverlayManager : MonoBehaviour
 
         m_DamageTaken.OnEventRaised += ShowFloatingDamageNumber;
 
-        m_EntityDied.OnEventRaised += VictoryResults;
+        m_VictoryAgainstEnemy.OnEventRaised += VictoryResults;
         m_Stalemate.OnEventRaised += StalemateResults;
 
     }
@@ -112,7 +114,7 @@ public class UICombatOverlayManager : MonoBehaviour
 
         m_DamageTaken.OnEventRaised -= ShowFloatingDamageNumber;
 
-        m_EntityDied.OnEventRaised -= VictoryResults;
+        m_VictoryAgainstEnemy.OnEventRaised -= VictoryResults;
         m_Stalemate.OnEventRaised -= StalemateResults;
 
     }
@@ -135,6 +137,8 @@ public class UICombatOverlayManager : MonoBehaviour
 
         ShowVSHeader();
         ShowDiceInfo();
+
+
     }
 
     private void Update()
@@ -185,7 +189,7 @@ public class UICombatOverlayManager : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.Alpha8))
         {
-            VictoryResults(CombatManager.Instance.player2, null);
+            //VictoryResults(CombatManager.Instance.player2, null);
         }
         if (Input.GetKeyDown(KeyCode.Alpha9))
         {
@@ -384,7 +388,7 @@ public class UICombatOverlayManager : MonoBehaviour
         */
     }
 
-    public void VictoryResults(EntityPiece loser, ItemStats item)
+    public void VictoryResults(List<ItemStats> items)
     {
         Debug.Log("victory!");
         DisplayResultsScreen();
@@ -392,13 +396,12 @@ public class UICombatOverlayManager : MonoBehaviour
         var result = resultsScreen.GetComponentInChildren<TextMeshProUGUI>();
         result.color = new Color32(240, 250, 0, 255);
         result.text = $"Victory!\n";
-        if (loser.isEnemy)
+
+        result.text += "Obtained:\n";
+        foreach(var item in items)
         {
-            result.text += $"Found items!{item}\n";
-            result.text += $"Gained {loser.ReputationPoints} rep.\n";
+            result.text += $"<color=white>{item.itemName}</color>\n";
         }
-        else
-            result.text += $"Stole loser's @!\n";
             /*
         resultTestText.color = new Color32(240, 250, 0, 255);
         resultTestText.text = $"Victory!\n";

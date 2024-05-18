@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using System.Collections.Generic;
 
 public class CombatManager : MonoBehaviour
 {
@@ -59,6 +60,7 @@ public class CombatManager : MonoBehaviour
     public DamageEventChannelSO m_DamageTaken; //upon attack anim finishing, show floating dmg ontop of defender, play hurt anim
     public EntityItemEventChannelSO m_EntityDied; // someone's HP dropped to 0, Victory, show rewards
     public VoidEventChannelSO m_Stalemate; // Combat is suspended, no one died this time
+    public ItemListEventChannelSO m_VictoryAgainstEnemy;
 
     //public ????? m_ActionSelected; // I'm leaving this part till after the tuesday meeting, as it should use the same input system as the controller.
     // For now, a debug implementation with WASD and arrowkeys is in place that I'll soon replace. (I also had 1 controller so I couldn't debug at home)
@@ -646,6 +648,22 @@ public class CombatManager : MonoBehaviour
     {
         // It was mentioned some stuff like the defense animation could be tuned in the animation timeline, but this
         // moment of the method represents the start of the attack animation.
+
+        if (isFightingAI && player2.health <= 0)
+        {
+            int loot1 = Random.Range(0, 6);
+            player1.inventory.Add(player2.inventory[loot1]); // Enemy inventories are effectively static loot tables (they always have 6 items)
+            int loot2 = Random.Range(0, 6);
+            player1.inventory.Add(player2.inventory[loot2]);
+
+            List<ItemStats> newlyGainedItems = new List<ItemStats>();
+            newlyGainedItems.Add(player2.inventory[loot1]); 
+            newlyGainedItems.Add(player2.inventory[loot2]);
+
+            player1.ReputationPoints += player2.ReputationPoints; // a monster's rep is just its exp yield.
+
+            m_VictoryAgainstEnemy.RaiseEvent(newlyGainedItems);
+        }
 
         yield return new WaitForSeconds(animationTime);
         
