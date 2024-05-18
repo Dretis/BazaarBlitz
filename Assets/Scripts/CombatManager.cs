@@ -193,7 +193,7 @@ public class CombatManager : MonoBehaviour
 
         // float animationLength = action.animationLength;
 
-        StartCoroutine(SelectionAnimation(1.0f));
+        StartCoroutine(SelectionAnimation(0.5f));
 
     }
 
@@ -205,7 +205,7 @@ public class CombatManager : MonoBehaviour
 
         // float animationLength = some constant probably;
 
-        StartCoroutine(ShowChoiceAnimation(1.0f));
+        StartCoroutine(ShowChoiceAnimation(0.5f));
 
     }
     
@@ -308,7 +308,7 @@ public class CombatManager : MonoBehaviour
 
         // float animationLength = some constant probably;
 
-        StartCoroutine(DiceRollAnimation(1.0f, damage, (int)defenseScore));
+        StartCoroutine(DiceRollAnimation(0.5f, damage, (int)defenseScore));
 
     }
 
@@ -345,7 +345,7 @@ public class CombatManager : MonoBehaviour
 
         //float animationLength = attack.animationLength;
 
-        StartCoroutine(AttackAndDefendAnimation(1.0f, finalDamage));
+        StartCoroutine(AttackAndDefendAnimation(0.5f, finalDamage));
 
     }
 
@@ -417,7 +417,6 @@ public class CombatManager : MonoBehaviour
     // Suspends and resets the combat scene so that the next player can take a turn. Returns when its either fighter's turn.
     public void pauseCombat() 
     {
-        m_Stalemate.RaiseEvent();
 
         // Mostly scene management stuff here
 
@@ -636,7 +635,7 @@ public class CombatManager : MonoBehaviour
     {
         // It was mentioned some stuff like the defense animation could be tuned in the animation timeline, but this
         // moment of the method represents the start of the attack animation.
-
+        m_Stalemate.RaiseEvent();
         yield return new WaitForSeconds(animationTime);
         
         pauseCombat();

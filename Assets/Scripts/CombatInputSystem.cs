@@ -25,6 +25,10 @@ public class CombatInputSystem : MonoBehaviour
     void OnEnable() {
         m_SwapPhase.OnEventRaised += PhasePassed;
     }
+    void OnDisable()
+    {
+        m_SwapPhase.OnEventRaised -= PhasePassed;
+    }
 
     void Awake() {
         combatManager = FindObjectOfType<CombatManager>();
