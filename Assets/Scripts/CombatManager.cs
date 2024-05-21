@@ -300,7 +300,7 @@ public class CombatManager : MonoBehaviour
         }
 
         // Apply item effects like cloth (Seems a little weird to be included in dice, but this is essential for clarity so people visually see the 10-100% mod w/ cloth)
-        defenseScore += 1f * defender.currentStatsModifier.defenseModifier; 
+        defenseScore += 0.1f * defender.currentStatsModifier.defenseModifier; 
         
 
         
