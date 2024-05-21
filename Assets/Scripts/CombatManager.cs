@@ -333,9 +333,9 @@ public class CombatManager : MonoBehaviour
             damageTypeMultiplier = 2f; // Super effective
         }
 
-        damage = damage * 10;
-
-        damage = (int) defender.currentStatsModifier.defenseModifier;
+        Debug.Log(damage);
+        damage = damage * 10 - (int)defender.currentStatsModifier.defenseModifier;
+        Debug.Log(damage);
 
         if (damage < 0) { // negative defense mod debuff?   
             damage = 0;
