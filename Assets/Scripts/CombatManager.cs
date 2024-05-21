@@ -335,7 +335,7 @@ public class CombatManager : MonoBehaviour
 
         damage = damage * 10;
 
-        finalDamage -= defender.currentStatsModifier.defenseModifier;
+        damage = (int) defender.currentStatsModifier.defenseModifier;
 
         if (damage < 0) { // negative defense mod debuff?   
             damage = 0;
