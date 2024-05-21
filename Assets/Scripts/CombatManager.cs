@@ -335,12 +335,16 @@ public class CombatManager : MonoBehaviour
 
         damage = damage * 10;
 
+        finalDamage -= defender.currentStatsModifier.defenseModifier;
+
+        if (damage < 0) { // negative defense mod debuff?   
+            damage = 0;
+        }
+
         int finalDamage = (int)(damage * (1 - (0.1f * defenseScore)) * damageTypeMultiplier);
         
         // if something like cloth was used, it seperately reduces damage by a percent (ex 20 means 20% of damage is negated).
-        if (defender.currentStatsModifier.defenseModifier != 0) { // negative defense mod debuff?
-            finalDamage = finalDamage - (int) (finalDamage * (defender.currentStatsModifier.defenseModifier / 100f));
-        }
+
 
         m_PlayOutCombat.RaiseEvent(attacker); // Set attack animation to play early. Also play defense animation (prob from dice roll event?)
 
