@@ -7,6 +7,8 @@ using DG.Tweening;
 
 public class UICombatOverlayManager : MonoBehaviour
 {
+    [SerializeField] private ParticleSystem hitParticle;
+
     [Header("Colors")]
     [SerializeField] private Color32 attackColor;
     [SerializeField] private Color32 defendColor;
@@ -446,17 +448,21 @@ public class UICombatOverlayManager : MonoBehaviour
         {
             initPos = floatingDmgRightInitPosition;
             goToPos = floatingDmgRightPosition;
+            hitParticle.transform.position = new Vector3(4.5f, .5f, 0);
         }
         else
         {
             // Defender is on the left
             initPos = floatingDmgLeftInitPosition;
             goToPos = floatingDmgLeftPosition;
+            hitParticle.transform.position = new Vector3(-4.5f, .5f,0);
         }
         dmgPos.anchoredPosition = initPos;
 
         ShowInputPrompt(floatingDamage, 0.05f);
         floatingDamage.GetComponent<TextMeshProUGUI>().text = $"{(int)damage}";
+
+        hitParticle.Play();
 
         dmgPos.DOAnchorPos(goToPos, 0.25f, false).SetEase(Ease.OutBounce);
 
