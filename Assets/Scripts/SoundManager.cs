@@ -147,17 +147,17 @@ public class SoundManager : MonoBehaviour
 
     private void PlayNotEffectiveHitSound()
     {
-        audioSource.PlayOneShot(soundList[9], 3f);
+        audioSource.PlayOneShot(soundList[9], 2f);
     }
 
     private void PlayEffectiveHitSound()
     {
-        audioSource.PlayOneShot(soundList[10], 1.2f);
+        audioSource.PlayOneShot(soundList[10], 2f);
     }
 
     private void PlaySuperEffectiveHitSound()
     {
-        audioSource.PlayOneShot(soundList[11], 1.5f);
+        audioSource.PlayOneShot(soundList[11], 2.5f);
     }
 
     private void PlayDeathSound()
@@ -167,7 +167,7 @@ public class SoundManager : MonoBehaviour
 
     private void PlaySelectCombatActionSound(EntityPiece entity, Action.PhaseTypes phase)
     {
-        audioSource.PlayOneShot(soundList[13], 2f);
+        audioSource.PlayOneShot(soundList[13], 2.5f);
     }
 
     private void PlayEnterBattleSound(EntityPiece entity)
