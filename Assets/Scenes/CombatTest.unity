@@ -3159,7 +3159,6 @@ MonoBehaviour:
   floatingDmgRightPosition: {x: 500, y: 120}
   diceInitialPosition: {x: 0, y: 0}
   diceHidePosition: {x: 0, y: -250}
-  m_DecidedTurnOrder: {fileID: 11400000, guid: 92bd6a37ff6a3344cb44842875da70ca, type: 2}
   m_SwapPhase: {fileID: 11400000, guid: 5fe2f16d1a7ee994d93f14d183b3029b, type: 2}
   m_ActionSelected: {fileID: 11400000, guid: fc7127886f7f7ed458771b3e118932a0, type: 2}
   m_BothActionsSelected: {fileID: 11400000, guid: 5e6e7809c5de840469b11fa61d18be8f, type: 2}
@@ -3768,6 +3767,7 @@ MonoBehaviour:
   m_EntityDied: {fileID: 11400000, guid: 8d61128e2ea86d248a5d122114fb8c8e, type: 2}
   m_Stalemate: {fileID: 11400000, guid: 46592635a96967f4ab8e8dfbf5f7379d, type: 2}
   m_VictoryAgainstEnemy: {fileID: 11400000, guid: 43ee4be2eb4d26c4ab4d77545214a372, type: 2}
+  m_AttackImpact: {fileID: 11400000, guid: 9e5c549844a53f2479ba5224defc75a9, type: 2}
 --- !u!114 &373411699
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7150,7 +7150,6 @@ GameObject:
   - component: {fileID: 872686419}
   - component: {fileID: 872686418}
   - component: {fileID: 872686420}
-  - component: {fileID: 872686421}
   - component: {fileID: 872686422}
   m_Layer: 0
   m_Name: Right Fighter
@@ -7247,30 +7246,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &872686421
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 872686417}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a7fc4f58c23ba4f4da0603439119ed01, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ren: {fileID: 872686418}
-  paletteColorCount: 8
-  useInspectorPalette: 1
-  inspectorPalette:
-  - {r: 0.27058825, g: 0.24705882, b: 0.47058824, a: 1}
-  - {r: 0.24705882, g: 0.18039216, b: 0.3372549, a: 1}
-  - {r: 0.7764706, g: 0.7921569, b: 0.92941177, a: 1}
-  - {r: 0.2509804, g: 0.12156863, b: 0.24313726, a: 1}
-  - {r: 0.98039216, g: 0.9490196, b: 0.6313726, a: 1}
-  - {r: 0.9490196, g: 0.42352942, b: 0.4862745, a: 1}
-  - {r: 0.42745098, g: 0.62352943, b: 0.9490196, a: 1}
-  - {r: 0.88235295, g: 0.5568628, b: 1, a: 1}
 --- !u!114 &872686422
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7284,6 +7259,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fightingPosition: 1
+  m_AttackImpact: {fileID: 11400000, guid: 9e5c549844a53f2479ba5224defc75a9, type: 2}
   m_SwapPhase: {fileID: 11400000, guid: 5fe2f16d1a7ee994d93f14d183b3029b, type: 2}
   m_ActionSelected: {fileID: 11400000, guid: fc7127886f7f7ed458771b3e118932a0, type: 2}
   m_BothActionsSelected: {fileID: 11400000, guid: 5e6e7809c5de840469b11fa61d18be8f, type: 2}
@@ -16720,7 +16696,6 @@ GameObject:
   - component: {fileID: 2022358467}
   - component: {fileID: 2022358466}
   - component: {fileID: 2022358468}
-  - component: {fileID: 2022358469}
   - component: {fileID: 2022358470}
   m_Layer: 0
   m_Name: Left Fighter
@@ -16817,30 +16792,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &2022358469
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2022358465}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a7fc4f58c23ba4f4da0603439119ed01, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ren: {fileID: 2022358466}
-  paletteColorCount: 8
-  useInspectorPalette: 1
-  inspectorPalette:
-  - {r: 0.8962264, g: 0.31001535, b: 0.31001535, a: 1}
-  - {r: 1, g: 0.8084838, b: 0, a: 1}
-  - {r: 0.78431374, g: 0.5058824, b: 0.8784314, a: 1}
-  - {r: 1, g: 0.58456254, b: 0, a: 1}
-  - {r: 1, g: 0.95953095, b: 0.759434, a: 1}
-  - {r: 0.9490196, g: 0.42352942, b: 0.4862745, a: 1}
-  - {r: 0.42745098, g: 0.62352943, b: 0.9490196, a: 1}
-  - {r: 0.88235295, g: 0.5568628, b: 1, a: 1}
 --- !u!114 &2022358470
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16854,6 +16805,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fightingPosition: 0
+  m_AttackImpact: {fileID: 11400000, guid: 9e5c549844a53f2479ba5224defc75a9, type: 2}
   m_SwapPhase: {fileID: 11400000, guid: 5fe2f16d1a7ee994d93f14d183b3029b, type: 2}
   m_ActionSelected: {fileID: 11400000, guid: fc7127886f7f7ed458771b3e118932a0, type: 2}
   m_BothActionsSelected: {fileID: 11400000, guid: 5e6e7809c5de840469b11fa61d18be8f, type: 2}

@@ -62,7 +62,7 @@ public class UICombatOverlayManager : MonoBehaviour
     // private RectTransform vsHeaderRectTransform;
 
     [Header("Listen on Event Channels")]
-    public PlayerEventChannelSO m_DecidedTurnOrder; // pass in the attacker
+    //public PlayerEventChannelSO m_DecidedTurnOrder; // pass in the attacker
     public PlayerEventChannelSO m_SwapPhase; // void event
 
     public EntityActionPhaseEventChannelSO m_ActionSelected; // Entity, check side and phase | Either the attacker or defender picked an action
@@ -85,7 +85,7 @@ public class UICombatOverlayManager : MonoBehaviour
         resultsScreen.alpha = 0;
 
 
-        m_DecidedTurnOrder.OnEventRaised += UpdateInputPrompts;
+        //m_DecidedTurnOrder.OnEventRaised += UpdateInputPrompts;
         m_SwapPhase.OnEventRaised += SwapPhaseTransitions;
 
         m_ActionSelected.OnEventRaised += UpdatePhaseTextPrompt;
@@ -103,7 +103,7 @@ public class UICombatOverlayManager : MonoBehaviour
 
     private void OnDisable()
     {
-        m_DecidedTurnOrder.OnEventRaised -= UpdateInputPrompts;
+        //m_DecidedTurnOrder.OnEventRaised -= UpdateInputPrompts;
         m_SwapPhase.OnEventRaised -= SwapPhaseTransitions;
 
         m_ActionSelected.OnEventRaised -= UpdatePhaseTextPrompt;
@@ -265,6 +265,9 @@ public class UICombatOverlayManager : MonoBehaviour
 
     public void ShowSelectedAction(EntityPiece entity, Action action)
     {
+        HideHeaderInfo();
+        //HideBothInutPrompts();
+
         CanvasGroup sideSelectedAction;
         if (entity.fightingPosition == CombatUIManager.FightingPosition.Left)
         {
@@ -371,6 +374,15 @@ public class UICombatOverlayManager : MonoBehaviour
         }
     }
 
+    public void HideBothInutPrompts()
+    {
+        HideInputPrompt(leftDefendPrompt, 0.15f);
+        HideInputPrompt(rightAttackPrompt, 0.15f);
+
+        HideInputPrompt(rightDefendPrompt, 0.15f);
+        HideInputPrompt(leftAttackPrompt, 0.15f);
+    }
+
     public void StalemateResults()
     {
         Debug.Log("stalemate.");
@@ -469,7 +481,7 @@ public class UICombatOverlayManager : MonoBehaviour
         rightDiceRoll.GetComponent<TextMeshProUGUI>().text = "";
     }
 
-    public void HideHeaderInfo(EntityPiece entity)
+    public void HideHeaderInfo()
     {
         phaseTestPrompt.text = "";
 

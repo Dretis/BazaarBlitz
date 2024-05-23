@@ -31,7 +31,7 @@ public class CombatManager : MonoBehaviour
     private bool isFirstPhase; // If true, is true, then false for every combat. Mostly for convenience.
     private bool onePlayerSelected = false; // Set to true when someone chooses an action. Next time an animation finishes, progress combat till next phase
 
-
+    private int finalDamage;
 
 
 
@@ -65,8 +65,18 @@ public class CombatManager : MonoBehaviour
     //public ????? m_ActionSelected; // I'm leaving this part till after the tuesday meeting, as it should use the same input system as the controller.
     // For now, a debug implementation with WASD and arrowkeys is in place that I'll soon replace. (I also had 1 controller so I couldn't debug at home)
 
+    [Header("Listen on Event Channels")]
+    public VoidEventChannelSO m_AttackImpact;
 
+    private void OnEnable()
+    {
+        m_AttackImpact.OnEventRaised += OnAttackImpact;
+    }
 
+    private void OnDisable()
+    {
+        m_AttackImpact.OnEventRaised -= OnAttackImpact;
+    }
     // Code from the old combat manager to set things up. Russell wrote most of this so I mostly copied over in the revamp, with slight edits.
     private void Awake()
     {
@@ -207,7 +217,7 @@ public class CombatManager : MonoBehaviour
 
         // float animationLength = some constant probably;
 
-        StartCoroutine(ShowChoiceAnimation(0.5f));
+        StartCoroutine(ShowChoiceAnimation(0.75f));
 
     }
     
@@ -339,7 +349,7 @@ public class CombatManager : MonoBehaviour
             damage = 0;
         }
 
-        int finalDamage = (int)(damage * (1 - (0.1f * defenseScore)) * damageTypeMultiplier);
+        finalDamage = (int)(damage * (1 - (0.1f * defenseScore)) * damageTypeMultiplier);
         
         // if something like cloth was used, it seperately reduces damage by a percent (ex 20 means 20% of damage is negated).
 
@@ -348,8 +358,14 @@ public class CombatManager : MonoBehaviour
 
         //float animationLength = attack.animationLength;
 
-        StartCoroutine(AttackAndDefendAnimation(0.5f, finalDamage));
+        //StartCoroutine(AttackAndDefendAnimation(0.5f, finalDamage)); Got replaced w/ OnAttackAnimationFished listener function
 
+    }
+
+    private void OnAttackImpact()
+    {
+        Debug.Log("animation attack heard and calling damamge deal");
+        dealDamage(finalDamage);
     }
 
     // Final parts of the turn here, where we actually deal damage and soon after flip phases
@@ -367,7 +383,7 @@ public class CombatManager : MonoBehaviour
         combatUIManager.UpdateActionText(attacker, Action.PhaseTypes.Attack);
         combatUIManager.UpdateActionText(defender, Action.PhaseTypes.Defend);
 
-        StartCoroutine(PhaseEndDelay(0.5f));
+        StartCoroutine(PhaseEndDelay(0.75f));
     }
 
     private void endPhase() {

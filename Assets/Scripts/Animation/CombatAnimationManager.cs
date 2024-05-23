@@ -8,7 +8,10 @@ public class CombatAnimationManager : MonoBehaviour
     private EntityPiece thisEntity;
 
     [SerializeField] private CombatUIManager.FightingPosition fightingPosition;
-    private Action.WeaponTypes weaponType;
+    private Action.PhaseTypes phaseType;
+
+    [Header("Broadcast on Event Channels")]
+    public VoidEventChannelSO m_AttackImpact;
 
     [Header("Listen on Event Channels")]
     //public PlayerEventChannelSO m_DecidedTurnOrder; // pass in the attacker
@@ -60,14 +63,16 @@ public class CombatAnimationManager : MonoBehaviour
 
     private void OnActionSelected(EntityPiece entity, Action.PhaseTypes type)
     {
-        if (entity.fightingPosition != fightingPosition) return; 
+        if (entity.fightingPosition != fightingPosition) return;
 
-        // Animation plays: Baggie stuffs face inward
-        if(type == Action.PhaseTypes.Attack) 
+        // Track if attacking or defending here
+        phaseType = type;
+        if(phaseType == Action.PhaseTypes.Attack) 
             animator.SetBool("IsAttacking", true);
         else 
             animator.SetBool("IsAttacking", false);
 
+        // Animation plays: Baggie stuffs face inward
         animator.SetBool("Action Picked", true);
     }
 
@@ -78,6 +83,7 @@ public class CombatAnimationManager : MonoBehaviour
         // play reveal roll anim
         animator.SetTrigger("Reveal Roll");
 
+        // Prep which animation to play for attacking
         switch (action.type)
         {
             case Action.WeaponTypes.Melee:
@@ -90,10 +96,6 @@ public class CombatAnimationManager : MonoBehaviour
                 animator.SetInteger("Action ID", 3);
                 break;
         }
-
-        var state = animator.GetCurrentAnimatorStateInfo(0);
-        Debug.Log($"Current Animation State Length:{state.length}");
-
     }
 
     private IEnumerator DelayActionAnimation(float duration)
@@ -105,6 +107,26 @@ public class CombatAnimationManager : MonoBehaviour
     private void OnPlayOutCombat(EntityPiece entity)
     {
         animator.SetTrigger("Play Action");
+        /*
+        if (phaseType == Action.PhaseTypes.Attack)
+        {
+            var animationLength = animator.GetCurrentAnimatorStateInfo(0).length;
+            Debug.Log($"AttackAnimation Length:{animationLength}");
+            StartCoroutine(WaitForAttackAnimation(animationLength));
+        }*/
+    }
+
+    private IEnumerator WaitForAttackAnimation(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        m_AttackImpact.RaiseEvent();
+    }
+
+    public void AttackImpact()
+    {
+        // Call function in Animator as an animation event
+        // Basically the moment of impact
+        m_AttackImpact.RaiseEvent();
     }
 
     private void OnDamageTaken(EntityPiece entity, float damage)
@@ -112,11 +134,17 @@ public class CombatAnimationManager : MonoBehaviour
         if (entity.fightingPosition != fightingPosition) return;
 
         if(entity.health <= 0)
+        {
             animator.SetTrigger("Death");
+            return;
+        }
         else if (damage >= 50)
-            animator.SetTrigger("Take Damage Strong");
-        else 
-            animator.SetTrigger("Take Damage");
+            animator.SetInteger("Damage ID", 3); // Effective
+        else if (damage <= 15)
+            animator.SetInteger("Damage ID", 1); // Ineffective
+        else
+            animator.SetInteger("Damage ID", 2); // Regular
+        animator.SetTrigger("Take Damage");
     }
 
     private void OnEntityDied(EntityPiece entity, ItemStats item)
