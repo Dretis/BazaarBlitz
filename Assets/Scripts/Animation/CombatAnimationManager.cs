@@ -104,7 +104,6 @@ public class CombatAnimationManager : MonoBehaviour
 
     private void OnPlayOutCombat(EntityPiece entity)
     {
-        if (entity.fightingPosition != fightingPosition) return;
         animator.SetTrigger("Play Action");
     }
 
