@@ -20,11 +20,17 @@ public class SoundManager : MonoBehaviour
     public PlayerEventChannelSO m_UsedMeleeAttack;
     public PlayerEventChannelSO m_UsedMagicAttack;
     public PlayerEventChannelSO m_UsedGunAttack;
-    public PlayerEventChannelSO m_ReceivedNotEffectiveAttack;
-    public PlayerEventChannelSO m_EffectiveAttack;
-    public PlayerEventChannelSO m_SuperEffectiveAttack;
-    public PlayerEventChannelSO m_EntityDied;
-    public PlayerEventChannelSO m_ActionSelected;
+
+    public VoidEventChannelSO m_IneffectiveAttack;
+    public VoidEventChannelSO m_EffectiveAttack;
+    public VoidEventChannelSO m_SuperEffectiveAttack;
+    public VoidEventChannelSO m_SomeoneDied;
+
+    public VoidEventChannelSO m_AttackImpact;
+
+    public EntityItemEventChannelSO m_EntityDied;
+    public EntityActionPhaseEventChannelSO m_ActionSelected;
+    public DamageEventChannelSO m_DamageTaken;
     public PlayerEventChannelSO m_ShowCombatBanner;
     public PlayerEventChannelSO m_NextPlayerTurn;
 
@@ -52,14 +58,14 @@ public class SoundManager : MonoBehaviour
 
 
         // //Combat Events
-        // m_ActionSelected += PlaySelectCombatActionSound;
+        m_ActionSelected.OnEventRaised += PlaySelectCombatActionSound;
         // m_UsedMeleeAttack += PlayMeleeAttackSound;
         // m_UsedMagicAttack += PlayMagicAttackSound;
         // m_UsedGunAttack += PlayGunAttackSound;
-        // m_ReceivedNotEffectiveAttack += PlayNotEffectiveHitSound;
-        // m_ReceivedEffectiveAttack += PlayEffectiveHitSound;
-        // m_ReceivedSuperEffectiveAttack += PlaySuperEffectiveHitSound;
-        // m_EntityDied += PlayDeathSound;
+        m_IneffectiveAttack.OnEventRaised += PlayNotEffectiveHitSound;
+        m_EffectiveAttack.OnEventRaised += PlayEffectiveHitSound;
+        m_SuperEffectiveAttack.OnEventRaised += PlaySuperEffectiveHitSound;
+        m_SomeoneDied.OnEventRaised += PlayDeathSound;
 
 
     }
@@ -77,14 +83,14 @@ public class SoundManager : MonoBehaviour
 
 
         // //Combat Events
-        // m_ActionSelected -= PlaySelectCombatActionSound;
+        m_ActionSelected.OnEventRaised -= PlaySelectCombatActionSound;
         // m_UsedMeleeAttack -= PlayMeleeAttackSound;
         // m_UsedMagicAttack -= PlayMagicAttackSound;
         // m_UsedGunAttack -= PlayGunAttackSound;
-        // m_ReceivedNotEffectiveAttack -= PlayNotEffectiveHitSound;
-        // m_ReceivedEffectiveAttack -= PlayEffectiveHitSound;
-        // m_ReceivedSuperEffectiveAttack -= PlaySuperEffectiveHitSound;
-        // m_EntityDied -= PlayDeathSound;
+        m_IneffectiveAttack.OnEventRaised -= PlayNotEffectiveHitSound;
+        m_EffectiveAttack.OnEventRaised -= PlayEffectiveHitSound;
+        m_SuperEffectiveAttack.OnEventRaised -= PlaySuperEffectiveHitSound;
+        m_SomeoneDied.OnEventRaised -= PlayDeathSound;
     }
 
     private void PlayStampSound(EntityPiece entity)
@@ -139,27 +145,27 @@ public class SoundManager : MonoBehaviour
         audioSource.PlayOneShot(soundList[8], 2f);
     }
 
-    private void PlayNotEffectiveHitSound(EntityPiece entity)
+    private void PlayNotEffectiveHitSound()
     {
         audioSource.PlayOneShot(soundList[9], 3f);
     }
 
-    private void PlayEffectiveHitSound(EntityPiece entity)
+    private void PlayEffectiveHitSound()
     {
         audioSource.PlayOneShot(soundList[10], 1.2f);
     }
 
-    private void PlaySuperEffectiveHitSound(EntityPiece entity)
+    private void PlaySuperEffectiveHitSound()
     {
         audioSource.PlayOneShot(soundList[11], 1.5f);
     }
 
-    private void PlayDeathSound(EntityPiece entity)
+    private void PlayDeathSound()
     {
         audioSource.PlayOneShot(soundList[12], 2f);
     }
 
-    private void PlaySelectCombatActionSound(EntityPiece entity)
+    private void PlaySelectCombatActionSound(EntityPiece entity, Action.PhaseTypes phase)
     {
         audioSource.PlayOneShot(soundList[13], 2f);
     }
@@ -175,7 +181,7 @@ public class SoundManager : MonoBehaviour
         Debug.Log("played next player sound");
     }
 
-
+    /*
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -243,7 +249,7 @@ public class SoundManager : MonoBehaviour
             PlayNextPlayerTurnSound(stupidFuck);
         }
     }
-
+    */
 
 
     

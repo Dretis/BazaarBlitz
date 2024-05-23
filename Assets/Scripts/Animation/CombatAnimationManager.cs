@@ -13,6 +13,12 @@ public class CombatAnimationManager : MonoBehaviour
     [Header("Broadcast on Event Channels")]
     public VoidEventChannelSO m_AttackImpact;
 
+    // The following 4 events are temporary?
+    public VoidEventChannelSO m_IneffectiveAttack;
+    public VoidEventChannelSO m_EffectiveAttack;
+    public VoidEventChannelSO m_SuperEffectiveAttack;
+    public VoidEventChannelSO m_SomeoneDied;
+
     [Header("Listen on Event Channels")]
     //public PlayerEventChannelSO m_DecidedTurnOrder; // pass in the attacker
     public PlayerEventChannelSO m_SwapPhase; // void event
@@ -136,14 +142,24 @@ public class CombatAnimationManager : MonoBehaviour
         if(entity.health <= 0)
         {
             animator.SetTrigger("Death");
+            m_SomeoneDied.RaiseEvent();
             return;
         }
         else if (damage >= 50)
+        {
             animator.SetInteger("Damage ID", 3); // Effective
+            m_SuperEffectiveAttack.RaiseEvent();
+        }
         else if (damage <= 15)
+        {
             animator.SetInteger("Damage ID", 1); // Ineffective
+            m_IneffectiveAttack.RaiseEvent();
+        }
         else
+        {
             animator.SetInteger("Damage ID", 2); // Regular
+            m_EffectiveAttack.RaiseEvent();
+        }
         animator.SetTrigger("Take Damage");
     }
 
