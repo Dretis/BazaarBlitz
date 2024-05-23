@@ -89,6 +89,10 @@ public class CombatInputSystem : MonoBehaviour
             return;
         } else if (!isPlayer1 && combatManager.player2.isEnemy) {
             return;
+        } else if (combatManager.waitingForSelection == false || combatManager.pausingLock == true) {
+            // Waiting for selection shouldn't matter anyway due to player1/2went, but its here just to be safe.
+            Debug.Log("Turn in progress / combat pausing");
+            return;
         }
 
         Debug.Log(combatManager.combatSceneIndex);

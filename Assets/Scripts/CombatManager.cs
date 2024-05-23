@@ -27,7 +27,8 @@ public class CombatManager : MonoBehaviour
     private Action attackerAction; // Temporarily stores either fighter's action until the phase can progress
     private Action defenderAction; // We receive this from the listener to combatInputManager and reset it next turn (when it corresponds to swapped players)
 
-    private bool waitingForSelection; // If true, players need to select their actions still. If not, combat's running and the input listener is ignored.
+    public bool waitingForSelection = false; // If true, players need to select their actions still. If not, combat's running and the input listener is ignored.
+    public bool pausingLock = false; // Like the above, if true input is ignored. Is enabled in the waiting period while combat ends / is paused, disabled last frame.
     private bool isFirstPhase; // If true, is true, then false for every combat. Mostly for convenience.
     private bool onePlayerSelected = false; // Set to true when someone chooses an action. Next time an animation finishes, progress combat till next phase
 
@@ -178,11 +179,6 @@ public class CombatManager : MonoBehaviour
 
     // Called when m_ActionSelected is raised with 
     public void ActionSelected(EntityPiece player, Action action) {
-        if (waitingForSelection == false) {
-            Debug.Log("Turn in progress");
-            return;
-        }
-
         Debug.Log(action);
 
         if (action.phase == Action.PhaseTypes.Attack) {
@@ -390,6 +386,7 @@ public class CombatManager : MonoBehaviour
         waitingForSelection = true;
         if (player1.health <= 0 || player2.health <= 0) // before we even swap, see if someone died.
         {
+            pausingLock = true;
             StartCoroutine(EndCombatDelay(1.5f)); // These aren't based on animations so they're constants.
             return;
         }
@@ -416,6 +413,7 @@ public class CombatManager : MonoBehaviour
             isFirstPhase = false;
         } else { // but pause combat if we looped twice
             isFirstPhase = true;
+            pausingLock = true;
             StartCoroutine(PauseCombatDelay(1f));
         }
         
@@ -436,7 +434,7 @@ public class CombatManager : MonoBehaviour
     // Suspends and resets the combat scene so that the next player can take a turn. Returns when its either fighter's turn.
     public void pauseCombat() 
     {
-
+        pausingLock = false;
         // Mostly scene management stuff here
 
         // Pause combat scene and re-enable overworld scene
