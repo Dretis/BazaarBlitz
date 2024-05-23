@@ -213,7 +213,7 @@ public class CombatManager : MonoBehaviour
 
         // float animationLength = some constant probably;
 
-        StartCoroutine(ShowChoiceAnimation(0.75f));
+        StartCoroutine(ShowChoiceAnimation(0.25f));
 
     }
     

@@ -26,7 +26,7 @@ public class CombatUIManager : MonoBehaviour
     public Animator player1Animator;
     public Animator player2Animator;
 
-    private void OnEnable()
+    private void Awake()
     {
         player1Renderer.color = CombatManager.Instance.player1.playerColor;
         player2Renderer.color = CombatManager.Instance.player2.playerColor;

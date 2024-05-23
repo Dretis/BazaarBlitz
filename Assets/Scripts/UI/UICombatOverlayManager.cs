@@ -300,12 +300,12 @@ public class UICombatOverlayManager : MonoBehaviour
 
         if (entity.fightingPosition == CombatUIManager.FightingPosition.Left)
         {
-            ShowInputPrompt(sideSelectedAction, 0.25f);
+            ShowInputPrompt(sideSelectedAction, 0.15f);
             sideSelectedAction.GetComponentInChildren<TextMeshProUGUI>().text = $"<sprite={typeIcon}>  {action.actionName}";
         }
         else
         {
-            ShowInputPrompt(sideSelectedAction, 0.25f);
+            ShowInputPrompt(sideSelectedAction, 0.15f);
             sideSelectedAction.GetComponentInChildren<TextMeshProUGUI>().text = $"<sprite={typeIcon}>  {action.actionName}";
         }
     }
