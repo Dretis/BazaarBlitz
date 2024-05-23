@@ -7151,6 +7151,7 @@ GameObject:
   - component: {fileID: 872686418}
   - component: {fileID: 872686420}
   - component: {fileID: 872686421}
+  - component: {fileID: 872686422}
   m_Layer: 0
   m_Name: Right Fighter
   m_TagString: Untagged
@@ -7270,6 +7271,28 @@ MonoBehaviour:
   - {r: 0.9490196, g: 0.42352942, b: 0.4862745, a: 1}
   - {r: 0.42745098, g: 0.62352943, b: 0.9490196, a: 1}
   - {r: 0.88235295, g: 0.5568628, b: 1, a: 1}
+--- !u!114 &872686422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 872686417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3dce68b526fa09b47a180b5e882507e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fightingPosition: 1
+  m_SwapPhase: {fileID: 11400000, guid: 5fe2f16d1a7ee994d93f14d183b3029b, type: 2}
+  m_ActionSelected: {fileID: 11400000, guid: fc7127886f7f7ed458771b3e118932a0, type: 2}
+  m_BothActionsSelected: {fileID: 11400000, guid: 5e6e7809c5de840469b11fa61d18be8f, type: 2}
+  m_DiceRolled: {fileID: 11400000, guid: ef8018f7217679c479e9e86e849b14c8, type: 2}
+  m_PlayOutCombat: {fileID: 11400000, guid: 92bd6a37ff6a3344cb44842875da70ca, type: 2}
+  m_DamageTaken: {fileID: 11400000, guid: 21e2d2c157c4e564db136dc7709f07b4, type: 2}
+  m_EntityDied: {fileID: 11400000, guid: 8d61128e2ea86d248a5d122114fb8c8e, type: 2}
+  m_Stalemate: {fileID: 11400000, guid: 46592635a96967f4ab8e8dfbf5f7379d, type: 2}
+  m_VictoryAgainstEnemy: {fileID: 11400000, guid: 43ee4be2eb4d26c4ab4d77545214a372, type: 2}
 --- !u!1001 &895032414
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16698,6 +16721,7 @@ GameObject:
   - component: {fileID: 2022358466}
   - component: {fileID: 2022358468}
   - component: {fileID: 2022358469}
+  - component: {fileID: 2022358470}
   m_Layer: 0
   m_Name: Left Fighter
   m_TagString: Untagged
@@ -16817,6 +16841,28 @@ MonoBehaviour:
   - {r: 0.9490196, g: 0.42352942, b: 0.4862745, a: 1}
   - {r: 0.42745098, g: 0.62352943, b: 0.9490196, a: 1}
   - {r: 0.88235295, g: 0.5568628, b: 1, a: 1}
+--- !u!114 &2022358470
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2022358465}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3dce68b526fa09b47a180b5e882507e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fightingPosition: 0
+  m_SwapPhase: {fileID: 11400000, guid: 5fe2f16d1a7ee994d93f14d183b3029b, type: 2}
+  m_ActionSelected: {fileID: 11400000, guid: fc7127886f7f7ed458771b3e118932a0, type: 2}
+  m_BothActionsSelected: {fileID: 11400000, guid: 5e6e7809c5de840469b11fa61d18be8f, type: 2}
+  m_DiceRolled: {fileID: 11400000, guid: ef8018f7217679c479e9e86e849b14c8, type: 2}
+  m_PlayOutCombat: {fileID: 11400000, guid: 92bd6a37ff6a3344cb44842875da70ca, type: 2}
+  m_DamageTaken: {fileID: 11400000, guid: 21e2d2c157c4e564db136dc7709f07b4, type: 2}
+  m_EntityDied: {fileID: 11400000, guid: 8d61128e2ea86d248a5d122114fb8c8e, type: 2}
+  m_Stalemate: {fileID: 11400000, guid: 46592635a96967f4ab8e8dfbf5f7379d, type: 2}
+  m_VictoryAgainstEnemy: {fileID: 11400000, guid: 43ee4be2eb4d26c4ab4d77545214a372, type: 2}
 --- !u!1 &2029721150
 GameObject:
   m_ObjectHideFlags: 0
