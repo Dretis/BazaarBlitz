@@ -55,6 +55,7 @@ public class CombatAnimationManager : MonoBehaviour
 
         animator.SetTrigger("ToIdle");
         animator.SetBool("Action Picked", false);
+        animator.SetBool("IsAttacking", false);
     }
 
     private void OnActionSelected(EntityPiece entity, Action.PhaseTypes type)
@@ -110,7 +111,10 @@ public class CombatAnimationManager : MonoBehaviour
     private void OnDamageTaken(EntityPiece entity, float damage)
     {
         if (entity.fightingPosition != fightingPosition) return;
-        if (damage >= 50)
+
+        if(entity.health <= 0)
+            animator.SetTrigger("Death");
+        else if (damage >= 50)
             animator.SetTrigger("Take Damage Strong");
         else 
             animator.SetTrigger("Take Damage");
