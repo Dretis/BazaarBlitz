@@ -148,7 +148,7 @@ public class CombatManager : MonoBehaviour
         else {
             isFightingAI = false;
             
-            int whosFirst = Random.Range(0, 2); // In the final version of the game this should show a button prompt, which will make this another waiting period
+            int whosFirst = 0; // In the final version of the game this should show a button prompt, which will make this another waiting period
             // This shouldn't be hard to add later, though I'll keep the old functionality for now as we have no animation (also other things are more urgent)
 
             randomlyDecidePlayers(whosFirst); // Add a coroutine / wait call for this when we have an animation.
