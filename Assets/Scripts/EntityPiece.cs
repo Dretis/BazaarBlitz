@@ -12,6 +12,7 @@ public class EntityPiece : MonoBehaviour
     public MapNode occupiedNode; // Node player is currently on
     public MapNode occupiedNodeCopy; // Node player is currently on
     public List<MapNode> traveledNodes = new List<MapNode>(); // Tracks the nodes the player has gone to
+    public ParticleSystem dustCloud;
 
     [Header("Overworld Stats")]
     public int movementTotal;
@@ -43,6 +44,16 @@ public class EntityPiece : MonoBehaviour
     public float ReputationPoints = 0; // For enemies: how much rep they give on kill. For players: they're total exp
 
     public int RenownLevel = 1; // Used to calculate the next level threshold.
+
+    private void OnEnable()
+    {
+        if (!isEnemy && combatSceneIndex > -1)
+        {
+            // In combat, dust cloud around players
+            dustCloud.gameObject.SetActive(true);
+            dustCloud.Play();
+        }
+    }
 
     [Serializable, Inspectable]
     public class ActiveEffect
