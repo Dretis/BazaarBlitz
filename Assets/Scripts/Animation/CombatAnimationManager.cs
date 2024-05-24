@@ -141,6 +141,18 @@ public class CombatAnimationManager : MonoBehaviour
 
         if(entity.health <= 0)
         {
+            if (damage >= 50)
+            {   
+                m_SuperEffectiveAttack.RaiseEvent();
+            }
+            else if (damage <= 15)
+            {
+                m_IneffectiveAttack.RaiseEvent();
+            }
+            else
+            {
+                m_EffectiveAttack.RaiseEvent();
+            }
             animator.SetTrigger("Death");
             m_SomeoneDied.RaiseEvent();
             return;
