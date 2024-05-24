@@ -361,6 +361,7 @@ public class GameplayTest : MonoBehaviour
             p.health += 10;
             p.RenownLevel += 1;
             UpdatePlayerDiceStats(p, diceStats);
+            m_UpdatePlayerScore.RaiseEvent(p.id);
             levelUpScreen.enabled = true;
             remainingSP.text = $"{pointsLeft} SP left.";
             upgradeTooltip.text = "Use [WASD] or [Arrows] to select dice faces.";

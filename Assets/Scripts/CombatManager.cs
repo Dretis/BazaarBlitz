@@ -500,13 +500,6 @@ public class CombatManager : MonoBehaviour
 
             // Remember to throw in that new level up UI in here soon!
         } else {
-            int loot = Random.Range(0, 6);
-            player1.inventory.Add(player2.inventory[loot]); // Enemy inventories are effectively static loot tables (they always have 6 items)
-            loot = Random.Range(0, 6);
-            player1.inventory.Add(player2.inventory[loot]);
-            player1.ReputationPoints += player2.ReputationPoints; // a monster's rep is just its exp yield.
-            Debug.Log("Gained " + player2.ReputationPoints + " reputation points from monster! Now at rep: " + player1.ReputationPoints);
-
             
         }
 
