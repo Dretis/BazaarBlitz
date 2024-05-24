@@ -17,9 +17,9 @@ public class SoundManager : MonoBehaviour
     public IntEventChannelSO m_UpdatePlayerScore;
     public IntEventChannelSO m_ItemUsed;
     public IntEventChannelSO m_ItemBought;
-    public PlayerEventChannelSO m_UsedMeleeAttack;
-    public PlayerEventChannelSO m_UsedMagicAttack;
-    public PlayerEventChannelSO m_UsedGunAttack;
+    public VoidEventChannelSO m_UsedMeleeAttack;
+    public VoidEventChannelSO m_UsedMagicAttack;
+    public VoidEventChannelSO m_UsedGunAttack;
 
     public VoidEventChannelSO m_IneffectiveAttack;
     public VoidEventChannelSO m_EffectiveAttack;
@@ -59,9 +59,9 @@ public class SoundManager : MonoBehaviour
 
         // //Combat Events
         m_ActionSelected.OnEventRaised += PlaySelectCombatActionSound;
-        // m_UsedMeleeAttack += PlayMeleeAttackSound;
-        // m_UsedMagicAttack += PlayMagicAttackSound;
-        // m_UsedGunAttack += PlayGunAttackSound;
+        m_UsedMeleeAttack.OnEventRaised += PlayMeleeAttackSound;
+        m_UsedMagicAttack.OnEventRaised += PlayMagicAttackSound;
+        m_UsedGunAttack.OnEventRaised += PlayGunAttackSound;
         m_IneffectiveAttack.OnEventRaised += PlayNotEffectiveHitSound;
         m_EffectiveAttack.OnEventRaised += PlayEffectiveHitSound;
         m_SuperEffectiveAttack.OnEventRaised += PlaySuperEffectiveHitSound;
@@ -84,9 +84,9 @@ public class SoundManager : MonoBehaviour
 
         // //Combat Events
         m_ActionSelected.OnEventRaised -= PlaySelectCombatActionSound;
-        // m_UsedMeleeAttack -= PlayMeleeAttackSound;
-        // m_UsedMagicAttack -= PlayMagicAttackSound;
-        // m_UsedGunAttack -= PlayGunAttackSound;
+        m_UsedMeleeAttack.OnEventRaised -= PlayMeleeAttackSound;
+        m_UsedMagicAttack.OnEventRaised -= PlayMagicAttackSound;
+        m_UsedGunAttack.OnEventRaised -= PlayGunAttackSound;
         m_IneffectiveAttack.OnEventRaised -= PlayNotEffectiveHitSound;
         m_EffectiveAttack.OnEventRaised -= PlayEffectiveHitSound;
         m_SuperEffectiveAttack.OnEventRaised -= PlaySuperEffectiveHitSound;
@@ -130,17 +130,17 @@ public class SoundManager : MonoBehaviour
         audioSource.PlayOneShot(soundList[5], 1.5f);
     }
 
-    private void PlayMeleeAttackSound(EntityPiece entity)
+    private void PlayMeleeAttackSound()
     {
         audioSource.PlayOneShot(soundList[6], 2f);
     }
 
-    private void PlayMagicAttackSound(EntityPiece entity)
+    private void PlayMagicAttackSound()
     {
         audioSource.PlayOneShot(soundList[7], 1.2f);
     }
 
-    private void PlayGunAttackSound(EntityPiece entity)
+    private void PlayGunAttackSound()
     {
         audioSource.PlayOneShot(soundList[8], 2f);
     }

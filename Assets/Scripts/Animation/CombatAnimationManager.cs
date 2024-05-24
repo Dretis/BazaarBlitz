@@ -5,7 +5,6 @@ using UnityEngine;
 public class CombatAnimationManager : MonoBehaviour
 {
     private Animator animator;
-    private AudioSource audioSource;
     private EntityPiece thisEntity;
 
     [SerializeField] private CombatUIManager.FightingPosition fightingPosition;
@@ -13,12 +12,9 @@ public class CombatAnimationManager : MonoBehaviour
 
     [Header("Broadcast on Event Channels")]
     public VoidEventChannelSO m_AttackImpact;
-
-    //Audio Shit
-    [Header("Audio Clips")]
-    public AudioClip meleeWindup;
-    public AudioClip gunWindup;
-    public AudioClip magicWindup;
+    public VoidEventChannelSO m_MeleeWindup;
+    public VoidEventChannelSO m_GunWindup;
+    public VoidEventChannelSO m_MagicWindup;
 
     // The following 4 events are temporary?
     public VoidEventChannelSO m_IneffectiveAttack;
@@ -63,7 +59,6 @@ public class CombatAnimationManager : MonoBehaviour
     void Start()
     {
         animator = GetComponent<Animator>();
-        audioSource = GameObject.Find("MusicPlayer (1)").GetComponent<AudioSource>();
     }
     
     private void OnSwapPhase(EntityPiece entity)
@@ -191,17 +186,17 @@ public class CombatAnimationManager : MonoBehaviour
 
     private void MeleeWindupSFX(float volume)
     {
-        audioSource.PlayOneShot(meleeWindup, volume);
+        m_MeleeWindup.RaiseEvent();
     }
 
     private void GunWindupSFX(float volume)
     {
-        audioSource.PlayOneShot(gunWindup, volume);
+        m_GunWindup.RaiseEvent();
     }
 
     private void MagicWindupSFX(float volume)
     {
-        audioSource.PlayOneShot(magicWindup, volume);
+        m_MagicWindup.RaiseEvent();
     }
 
 }
