@@ -32,7 +32,6 @@ public class GameplayTest : MonoBehaviour
         StockStore,
         OverturnStore,
         RockPaperScissors,
-        LevelUp,
         CombatTime,
         ConfirmContinue,
         EndTurn,
@@ -73,15 +72,16 @@ public class GameplayTest : MonoBehaviour
     private int oldPoints = 0;
 
     // ui stuff for levelup;
-    private int attSelected = 1;
+    /*private int attSelected = 1;
     private int diceSelected = 1;
-    private int pointsLeft = 0;
+    private int pointsLeft = 0;*/
     //ui to remove for levelup - Nam
-    public Canvas levelUpScreen;
-    public TextMeshProUGUI remainingSP;
-    public TextMeshProUGUI upgradeTooltip;
+    //public Canvas levelUpScreen;
+    //public TextMeshProUGUI remainingSP;
+    //public TextMeshProUGUI upgradeTooltip;
+    //public List<TextMeshProUGUI> playerDiceNumbers = new List<TextMeshProUGUI>();
     public GameObject diceStats;
-    public List<TextMeshProUGUI> playerDiceNumbers = new List<TextMeshProUGUI>();
+
     public TextMeshProUGUI storestockTooltip;
 
     public Canvas howToPlayScreen;
@@ -246,9 +246,6 @@ public class GameplayTest : MonoBehaviour
                 RockPaperScissors(currentPlayer);
                 break;
 
-            case GamePhase.LevelUp:
-                LevelUp(currentPlayer);
-                break;
 
             // Confirmation Phase
             case GamePhase.ConfirmContinue:
@@ -356,16 +353,17 @@ public class GameplayTest : MonoBehaviour
     {
         // For now level up happens right before you roll dice
         if (p.canLevelUp() && p.combatSceneIndex != -1) {
-            pointsLeft = 5;
+            /*pointsLeft = 5;
             p.maxHealth += 10;
             p.health += 10;
             p.RenownLevel += 1;
+            // SomeLevelUpObjectYouInitialize.StartLevelUp(p);
             UpdatePlayerDiceStats(p, diceStats);
             levelUpScreen.enabled = true;
             remainingSP.text = $"{pointsLeft} SP left.";
             upgradeTooltip.text = "Use [WASD] or [Arrows] to select dice faces.";
             phase = GamePhase.LevelUp;
-            Debug.Log("Levelup screen!");
+            Debug.Log("Levelup screen!");*/
         }
         if(p.combatSceneIndex == -1)
         {
@@ -786,117 +784,7 @@ public class GameplayTest : MonoBehaviour
         sceneManager.LoadCombatScene();
     }
 
-    private void printIndex(int row, int col, EntityPiece p) { // Temporary function, delete later.
-        int[] costArray = { -1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 5, 999 };
-        if (row == 1) {
-            int diceValue = (int)(p.strDie.dieFaces[diceSelected-1]);
-            int diceUpgradeCost = costArray[diceValue];
-            Debug.Log("Strength dice face " + col + " selected. Current value: " + diceValue + ". Upgrade cost " + diceUpgradeCost);
-            upgradeTooltip.text = $"<sprite=0> <color=red>[{diceValue}]</color> costs {diceUpgradeCost} SP to upgrade.";
-        } else if (row == 2) {
-            int diceValue = (int)(p.dexDie.dieFaces[diceSelected-1]);
-            int diceUpgradeCost = costArray[diceValue];
-            Debug.Log("Dex dice face " + col + " selected. Current value: " + diceValue + ". Upgrade cost " + diceUpgradeCost);
-            upgradeTooltip.text = $"<sprite=1> <color=blue>[{diceValue}]</color> costs {diceUpgradeCost} SP to upgrade.";
 
-        } else {
-            int diceValue = (int)(p.intDie.dieFaces[diceSelected-1]);
-            int diceUpgradeCost = costArray[diceValue];
-            Debug.Log("Magic dice face " + col + " selected. Current value: " + diceValue + ". Upgrade cost " + diceUpgradeCost);
-            upgradeTooltip.text = $"<sprite=2> <color=purple>[{diceValue}]</color> costs {diceUpgradeCost} SP to upgrade.";
-
-        }
-    }
-
-    private void LevelUp(EntityPiece p)
-    {
-        // current attribute selected is marked by the int attSelected. 1 is attack, 2 is gun, 3 is magic.
-        // diceSelected represents the current dice face. All of these have -1 applied in arrays.
-        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
-        {
-            if (attSelected > 1) {
-                attSelected -= 1;
-            }
-            printIndex(attSelected, diceSelected, p);
-        }
-        if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
-        {
-            if (attSelected < 3) {
-                attSelected += 1;
-            }
-            printIndex(attSelected, diceSelected, p);
-        }
-        if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
-        {
-
-            if (diceSelected < 6) {
-                diceSelected += 1;
-            }
-            printIndex(attSelected, diceSelected, p);
-        }
-        if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
-        {
-
-            if (diceSelected > 1) {
-                diceSelected -= 1;
-            }
-            printIndex(attSelected, diceSelected, p);
-        }
-
-
-        if (pointsLeft <= 0 || Input.GetKeyDown(KeyCode.Escape)) // Esc to leave
-        {
-            Debug.Log("Out of points, level up done");
-            levelUpScreen.enabled = false;
-            phase = GamePhase.RollDice;
-        }
-        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space)) // E to leave till I find a good exit method that doesn't get you stuck.
-        {
-            int[] costArray = { -1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 5, 999 }; // 0-1 (0 indexing issues), 1-2, 2-3, etc. 10-11 isnt possible.
-            if (attSelected == 1) {
-                int diceUpgradeCost = costArray[ (int)(p.strDie.dieFaces[diceSelected-1]) ];
-                if (pointsLeft >= diceUpgradeCost) {
-                    p.strDie.dieFaces[diceSelected-1] += 1;
-                    pointsLeft -= diceUpgradeCost;
-                    Debug.Log ("Strength Die upgraded on face " + diceSelected + " making it " + p.strDie.dieFaces[diceSelected-1]);
-                    Debug.Log (pointsLeft + " points left after paying " + diceUpgradeCost);
-                    remainingSP.text = $"{pointsLeft} SP left.";
-                    UpdatePlayerDiceStats(p, diceStats);
-                } else {
-                    upgradeTooltip.text = "Not enough points. Costs " + diceUpgradeCost + " SP but you have only " + pointsLeft;
-                    Debug.Log("Not enough points. Costs " + diceUpgradeCost + ", but you have only " + pointsLeft);
-                }
-            } else if (attSelected == 2) {
-                int diceUpgradeCost = costArray[ (int)(p.dexDie.dieFaces[diceSelected-1]) ];
-                if (pointsLeft >= diceUpgradeCost) {
-                    p.dexDie.dieFaces[diceSelected-1] += 1;
-                    pointsLeft -= diceUpgradeCost;
-                    Debug.Log ("Dex Die upgraded on face " + diceSelected + " making it " + p.dexDie.dieFaces[diceSelected-1]);
-                    Debug.Log (pointsLeft + " points left after paying " + diceUpgradeCost);
-                    remainingSP.text = $"{pointsLeft} SP left.";
-                    UpdatePlayerDiceStats(p, diceStats);
-                } else {
-                    upgradeTooltip.text = "Not enough points. Costs " + diceUpgradeCost + " SP but you have only " + pointsLeft;
-                    Debug.Log("Not enough points. Costs " + diceUpgradeCost + ", but you have only " + pointsLeft);
-                }
-            } else if (attSelected == 3) {
-                int diceUpgradeCost = costArray[ (int)(p.intDie.dieFaces[diceSelected-1]) ];
-                if (pointsLeft >= diceUpgradeCost) {
-                    p.intDie.dieFaces[diceSelected-1] += 1;
-                    pointsLeft -= diceUpgradeCost;
-                    Debug.Log ("Magic Die upgraded on face " + diceSelected + " making it " + p.intDie.dieFaces[diceSelected-1]);
-                    Debug.Log (pointsLeft + " points left after paying " + diceUpgradeCost);
-                    remainingSP.text = $"{pointsLeft} SP left.";
-                    UpdatePlayerDiceStats(p, diceStats);
-                } else {
-                    upgradeTooltip.text = "Not enough points. Costs " + diceUpgradeCost + " SP but you have only " + pointsLeft;
-                    Debug.Log("Not enough points. Costs " + diceUpgradeCost + ", but you have only " + pointsLeft);
-                }
-            } else {
-                Debug.Log("Uh oh, you just tried to upgrade a dice you dont have.");
-            }
-        }
-    }
 
     void ConfirmContinue(EntityPiece p)
     {
@@ -1064,44 +952,6 @@ public class GameplayTest : MonoBehaviour
         }
     }
 
-    // I ripped this from another script, delete this later
-    public void UpdatePlayerDiceStats(EntityPiece entity, GameObject diceStats)
-    {
-        // Visually updates the dice stats ui based on the entity and side
-        playerDiceNumbers.Clear();
-
-        // Goes through the diceStats UI List and finds the text components
-        foreach (Transform child in diceStats.transform)
-        {
-            playerDiceNumbers.Add(child.GetComponentInChildren<TextMeshProUGUI>());
-        }
-
-        // Updates each individual dice from the text list based on the type
-        // the following code is ABSOLUTELY DISGUSTING
-        var faceIndex = 0;
-
-        for (int i = 0; i < 6; i++)
-        {
-            playerDiceNumbers[i].text = $"{entity.strDie[faceIndex]}";
-            faceIndex++;
-        }
-
-        faceIndex = 0;
-
-        for (int i = 6; i < 12; i++)
-        {
-            playerDiceNumbers[i].text = $"{entity.dexDie[faceIndex]}";
-            faceIndex++;
-        }
-
-        faceIndex = 0;
-
-        for (int i = 12; i < 18; i++)
-        {
-            playerDiceNumbers[i].text = $"{entity.intDie[faceIndex]}";
-            faceIndex++;
-        }
-    }
 
     public void DisableFreeview()
     {
