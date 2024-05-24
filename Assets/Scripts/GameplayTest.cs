@@ -355,7 +355,7 @@ public class GameplayTest : MonoBehaviour
     void RollDice(EntityPiece p)
     {
         // For now level up happens right before you roll dice
-        if (p.canLevelUp()) {
+        if (p.canLevelUp() && p.combatSceneIndex != -1) {
             pointsLeft = 5;
             p.maxHealth += 10;
             p.health += 10;
