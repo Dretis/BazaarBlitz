@@ -437,6 +437,11 @@ public class CombatManager : MonoBehaviour
         pausingLock = false;
         // Mostly scene management stuff here
 
+        sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(player1.id);
+        if (!player2.isEnemy) {
+            sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(player2.id);
+        }
+
         // Pause combat scene and re-enable overworld scene
         // This does not remove the scene but makes all the game objects under the combat scene inactive.
         // Similarly, all game objects in the overworld scene are re-enabled.
