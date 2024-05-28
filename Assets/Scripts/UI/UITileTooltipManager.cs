@@ -6,7 +6,6 @@ using TMPro;
 using DG.Tweening;
 using Unity.VisualScripting;
 using Cinemachine;
-using UnityEditor.Experimental.GraphView;
 
 public class UITileTooltipManager : MonoBehaviour
 {
@@ -102,11 +101,8 @@ public class UITileTooltipManager : MonoBehaviour
 
     public void HideTileInformation()
     {
-        vcam.Follow = GameplayTest.instance.currentPlayer.transform; //wow this line is dogshit
-
         FadeTo(tileInfoGroup, 0, 0.25f);
-        FadeTo(storestockGroup, 0, 0.25f);
-        
+        FadeTo(storestockGroup, 0, 0.25f);      
     }
 
     public void DisplayStoreStock(StoreManager store)

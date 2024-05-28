@@ -17,15 +17,22 @@ public class SoundManager : MonoBehaviour
     public IntEventChannelSO m_UpdatePlayerScore;
     public IntEventChannelSO m_ItemUsed;
     public IntEventChannelSO m_ItemBought;
-    public PlayerEventChannelSO m_UsedMeleeAttack;
-    public PlayerEventChannelSO m_UsedMagicAttack;
-    public PlayerEventChannelSO m_UsedGunAttack;
-    public PlayerEventChannelSO m_ReceivedNotEffectiveAttack;
-    public PlayerEventChannelSO m_EffectiveAttack;
-    public PlayerEventChannelSO m_SuperEffectiveAttack;
-    public PlayerEventChannelSO m_EntityDied;
-    public PlayerEventChannelSO m_ActionSelected;
+    public VoidEventChannelSO m_UsedMeleeAttack;
+    public VoidEventChannelSO m_UsedMagicAttack;
+    public VoidEventChannelSO m_UsedGunAttack;
+
+    public VoidEventChannelSO m_IneffectiveAttack;
+    public VoidEventChannelSO m_EffectiveAttack;
+    public VoidEventChannelSO m_SuperEffectiveAttack;
+    public VoidEventChannelSO m_SomeoneDied;
+
+    public VoidEventChannelSO m_AttackImpact;
+
+    public EntityItemEventChannelSO m_EntityDied;
+    public EntityActionPhaseEventChannelSO m_ActionSelected;
+    public DamageEventChannelSO m_DamageTaken;
     public PlayerEventChannelSO m_ShowCombatBanner;
+    public PlayerEventChannelSO m_NextPlayerTurn;
 
 
 
@@ -46,18 +53,19 @@ public class SoundManager : MonoBehaviour
         m_ItemUsed.OnEventRaised += PlayUseItemSound;
         m_UpdatePlayerScore.OnEventRaised += PlayCurrencyChangeSound;
         m_ItemBought.OnEventRaised += PlayItemBoughtSound;
+        m_NextPlayerTurn.OnEventRaised += PlayNextPlayerTurnSound;
         //m_ShowCombatBanner.OnEventRaised += PlayEnterBattleSound;
 
 
         // //Combat Events
-        // m_ActionSelected += PlaySelectCombatActionSound;
-        // m_UsedMeleeAttack += PlayMeleeAttackSound;
-        // m_UsedMagicAttack += PlayMagicAttackSound;
-        // m_UsedGunAttack += PlayGunAttackSound;
-        // m_ReceivedNotEffectiveAttack += PlayNotEffectiveHitSound;
-        // m_ReceivedEffectiveAttack += PlayEffectiveHitSound;
-        // m_ReceivedSuperEffectiveAttack += PlaySuperEffectiveHitSound;
-        // m_EntityDied += PlayDeathSound;
+        m_ActionSelected.OnEventRaised += PlaySelectCombatActionSound;
+        m_UsedMeleeAttack.OnEventRaised += PlayMeleeAttackSound;
+        m_UsedMagicAttack.OnEventRaised += PlayMagicAttackSound;
+        m_UsedGunAttack.OnEventRaised += PlayGunAttackSound;
+        m_IneffectiveAttack.OnEventRaised += PlayNotEffectiveHitSound;
+        m_EffectiveAttack.OnEventRaised += PlayEffectiveHitSound;
+        m_SuperEffectiveAttack.OnEventRaised += PlaySuperEffectiveHitSound;
+        m_SomeoneDied.OnEventRaised += PlayDeathSound;
 
 
     }
@@ -70,18 +78,19 @@ public class SoundManager : MonoBehaviour
         m_RollForMovement.OnEventRaised -= PlayDiceHitSound;
         m_ItemUsed.OnEventRaised -= PlayUseItemSound;
         m_UpdatePlayerScore.OnEventRaised -= PlayCurrencyChangeSound;
+        m_NextPlayerTurn.OnEventRaised -= PlayNextPlayerTurnSound;
         //m_ShowCombatBanner.OnEventRaised -= PlayEnterBattleSound;
 
 
         // //Combat Events
-        // m_ActionSelected -= PlaySelectCombatActionSound;
-        // m_UsedMeleeAttack -= PlayMeleeAttackSound;
-        // m_UsedMagicAttack -= PlayMagicAttackSound;
-        // m_UsedGunAttack -= PlayGunAttackSound;
-        // m_ReceivedNotEffectiveAttack -= PlayNotEffectiveHitSound;
-        // m_ReceivedEffectiveAttack -= PlayEffectiveHitSound;
-        // m_ReceivedSuperEffectiveAttack -= PlaySuperEffectiveHitSound;
-        // m_EntityDied -= PlayDeathSound;
+        m_ActionSelected.OnEventRaised -= PlaySelectCombatActionSound;
+        m_UsedMeleeAttack.OnEventRaised -= PlayMeleeAttackSound;
+        m_UsedMagicAttack.OnEventRaised -= PlayMagicAttackSound;
+        m_UsedGunAttack.OnEventRaised -= PlayGunAttackSound;
+        m_IneffectiveAttack.OnEventRaised -= PlayNotEffectiveHitSound;
+        m_EffectiveAttack.OnEventRaised -= PlayEffectiveHitSound;
+        m_SuperEffectiveAttack.OnEventRaised -= PlaySuperEffectiveHitSound;
+        m_SomeoneDied.OnEventRaised -= PlayDeathSound;
     }
 
     private void PlayStampSound(EntityPiece entity)
@@ -121,44 +130,44 @@ public class SoundManager : MonoBehaviour
         audioSource.PlayOneShot(soundList[5], 1.5f);
     }
 
-    private void PlayMeleeAttackSound(EntityPiece entity)
+    private void PlayMeleeAttackSound()
     {
         audioSource.PlayOneShot(soundList[6], 2f);
     }
 
-    private void PlayMagicAttackSound(EntityPiece entity)
+    private void PlayMagicAttackSound()
     {
         audioSource.PlayOneShot(soundList[7], 1.2f);
     }
 
-    private void PlayGunAttackSound(EntityPiece entity)
+    private void PlayGunAttackSound()
     {
         audioSource.PlayOneShot(soundList[8], 2f);
     }
 
-    private void PlayNotEffectiveHitSound(EntityPiece entity)
+    private void PlayNotEffectiveHitSound()
     {
-        audioSource.PlayOneShot(soundList[9], 3f);
+        audioSource.PlayOneShot(soundList[9], 2f);
     }
 
-    private void PlayEffectiveHitSound(EntityPiece entity)
+    private void PlayEffectiveHitSound()
     {
-        audioSource.PlayOneShot(soundList[10], 1.2f);
+        audioSource.PlayOneShot(soundList[10], 2f);
     }
 
-    private void PlaySuperEffectiveHitSound(EntityPiece entity)
+    private void PlaySuperEffectiveHitSound()
     {
-        audioSource.PlayOneShot(soundList[11], 1.5f);
+        audioSource.PlayOneShot(soundList[11], 2.5f);
     }
 
-    private void PlayDeathSound(EntityPiece entity)
+    private void PlayDeathSound()
     {
         audioSource.PlayOneShot(soundList[12], 2f);
     }
 
-    private void PlaySelectCombatActionSound(EntityPiece entity)
+    private void PlaySelectCombatActionSound(EntityPiece entity, Action.PhaseTypes phase)
     {
-        audioSource.PlayOneShot(soundList[13], 2f);
+        audioSource.PlayOneShot(soundList[13], 2.5f);
     }
 
     private void PlayEnterBattleSound(EntityPiece entity)
@@ -166,71 +175,81 @@ public class SoundManager : MonoBehaviour
         audioSource.PlayOneShot(soundList[14], 1.2f);
     }
 
+    private void PlayNextPlayerTurnSound(EntityPiece entity)
+    {
+        audioSource.PlayOneShot(soundList[15], 2.5f);
+        Debug.Log("played next player sound");
+    }
 
-    // private void Update()
-    // {
-    //     if (Input.GetKeyDown(KeyCode.Alpha1))
-    //     {
-    //         PlayStampSound(stupidFuck);
-    //     }
-    //     else if (Input.GetKeyDown(KeyCode.Alpha2))
-    //     {
-    //         PlayDiceRollSound(stupidFuck);
-    //     }
-    //     else if (Input.GetKeyDown(KeyCode.Alpha3))
-    //     {
-    //         PlayDiceHitSound(0);
-    //     }
-    //     else if (Input.GetKeyDown(KeyCode.Alpha4))
-    //     {
-    //         PlayCurrencyChangeSound(1);
-    //     }
-    //     else if (Input.GetKeyDown(KeyCode.Alpha5))
-    //     {
-    //         PlayCurrencyChangeSound(-1);
-    //     }
-    //     else if (Input.GetKeyDown(KeyCode.Alpha6))
-    //     {
-    //         PlayUseItemSound(0);
-    //     }
-    //     else if (Input.GetKeyDown(KeyCode.Alpha7))
-    //     {
-    //         PlayMeleeAttackSound(stupidFuck);
-    //     }
-    //     else if (Input.GetKeyDown(KeyCode.Alpha8))
-    //     {
-    //         PlayMagicAttackSound(stupidFuck);
-    //     }
-    //     else if (Input.GetKeyDown(KeyCode.Alpha9))
-    //     {
-    //         PlayGunAttackSound(stupidFuck);
-    //     }
-    //     else if (Input.GetKeyDown(KeyCode.Alpha0))
-    //     {
-    //         PlayNotEffectiveHitSound(stupidFuck);
-    //     }
-    //     else if (Input.GetKeyDown(KeyCode.Q))
-    //     {
-    //         PlayEffectiveHitSound(stupidFuck);
-    //     }
-    //     else if (Input.GetKeyDown(KeyCode.W))
-    //     {
-    //         PlaySuperEffectiveHitSound(stupidFuck);
-    //     }
-    //     else if (Input.GetKeyDown(KeyCode.E))
-    //     {
-    //         PlaySelectCombatActionSound(stupidFuck);
-    //     }
-    //     else if (Input.GetKeyDown(KeyCode.R))
-    //     {
-    //         PlayEnterBattleSound(stupidFuck);
-    //     }
-    //     else if (Input.GetKeyDown(KeyCode.T))
-    //     {
-    //         PlayDeathSound(stupidFuck);
-    //     }
-    // }
-
+    /*
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            PlayStampSound(stupidFuck);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            PlayDiceRollSound(stupidFuck);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            PlayDiceHitSound(0);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            PlayCurrencyChangeSound(1);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            PlayCurrencyChangeSound(-1);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha6))
+        {
+            PlayUseItemSound(0);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha7))
+        {
+            PlayMeleeAttackSound(stupidFuck);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha8))
+        {
+            PlayMagicAttackSound(stupidFuck);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha9))
+        {
+            PlayGunAttackSound(stupidFuck);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha0))
+        {
+            PlayNotEffectiveHitSound(stupidFuck);
+        }
+        else if (Input.GetKeyDown(KeyCode.Q))
+        {
+            PlayEffectiveHitSound(stupidFuck);
+        }
+        else if (Input.GetKeyDown(KeyCode.W))
+        {
+            PlaySuperEffectiveHitSound(stupidFuck);
+        }
+        else if (Input.GetKeyDown(KeyCode.E))
+        {
+            PlaySelectCombatActionSound(stupidFuck);
+        }
+        else if (Input.GetKeyDown(KeyCode.R))
+        {
+            PlayEnterBattleSound(stupidFuck);
+        }
+        else if (Input.GetKeyDown(KeyCode.T))
+        {
+            PlayDeathSound(stupidFuck);
+        }
+        else if (Input.GetKeyDown(KeyCode.Y))
+        {
+            PlayNextPlayerTurnSound(stupidFuck);
+        }
+    }
+    */
 
 
     

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdd1368eedb123d4db8a885acb84d3a9, type: 3}
+  m_Name: TestEntityWarp
+  m_EditorClassIdentifier: 
+  itemName: TestEntityWarp
+  duration: 1
+  itemSprite: {fileID: 1596463530, guid: 5f02f6ee649bb454e99baacd8cb2304d, type: 3}
+  effectDescription: Allows you to warp to any player on the map. Select a tile with
+    a player in it and press [SPACE] to confirm your selection.
+  flavorText: '"Players warping to each other? Now that''s news to me..." - Russell,
+    the Grand Poo-Bah of Items'
+  basePrice: 400
+  modifiers:
+  - {fileID: 11400000, guid: 3e15cc0d0e233bd44a5da12d749eb4e6, type: 2}

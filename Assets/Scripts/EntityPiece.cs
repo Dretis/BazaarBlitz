@@ -12,6 +12,7 @@ public class EntityPiece : MonoBehaviour
     public MapNode occupiedNode; // Node player is currently on
     public MapNode occupiedNodeCopy; // Node player is currently on
     public List<MapNode> traveledNodes = new List<MapNode>(); // Tracks the nodes the player has gone to
+    public ParticleSystem dustCloud;
 
     [Header("Overworld Stats")]
     public int movementTotal;
@@ -44,10 +45,20 @@ public class EntityPiece : MonoBehaviour
 
     public int RenownLevel = 1; // Used to calculate the next level threshold.
 
+    private void OnEnable()
+    {
+        if (!isEnemy && combatSceneIndex > -1)
+        {
+            // In combat, dust cloud around players
+            dustCloud.gameObject.SetActive(true);
+            dustCloud.Play();
+        }
+    }
+
     [Serializable, Inspectable]
     public class ActiveEffect
     {
-        public IStatModifierChanger statMod;
+        public ItemStats originalItem;
         public int turnsRemaining;
     }
 
@@ -56,7 +67,7 @@ public class EntityPiece : MonoBehaviour
     public List<ItemStats> inventory = new();
 
     [SerializeField]
-    private List<ActiveEffect> activeEffects = new();
+    public List<ActiveEffect> activeEffects = new();
 
     /// <summary>
     /// Add a specified item to this player's list of active stat modifier effects
@@ -66,7 +77,7 @@ public class EntityPiece : MonoBehaviour
     public void AddItemToActiveEffects(int duration, ItemStats item)
     {
 
-        var sameEffect = activeEffects.Find(activeEffect => (UnityEngine.Object) activeEffect.statMod == item);
+        var sameEffect = activeEffects.Find(activeEffect => (UnityEngine.Object) activeEffect.originalItem == item);
 
         // Refresh effect if same item has been used before. Otherwise, add new effect.
         if (sameEffect != null)
@@ -77,7 +88,7 @@ public class EntityPiece : MonoBehaviour
         {
             activeEffects.Add(new ActiveEffect
             {
-                statMod = item,
+                originalItem = item,
                 turnsRemaining = duration
             });
         }
@@ -89,12 +100,22 @@ public class EntityPiece : MonoBehaviour
     public void UpdateStatModifiers()
     {
         TickDownActiveEffects();
+        RefreshStatModifiers();
+    }
 
+    public void UpdateStatModifier(ActiveEffect effect)
+    {
+        TickDownActiveEffect(effect);
+        RefreshStatModifiers();
+    }
+
+    public void RefreshStatModifiers()
+    {
         currentStatsModifier = new EntityStatsModifiers();
 
         foreach (var item in activeEffects)
         {
-            currentStatsModifier = item.statMod.ApplyStatModChanges(currentStatsModifier, item.statMod.Duration-item.turnsRemaining);
+            currentStatsModifier = item.originalItem.ApplyStatModChanges(currentStatsModifier, item.originalItem.Duration - item.turnsRemaining);
         }
     }
 
@@ -111,7 +132,42 @@ public class EntityPiece : MonoBehaviour
             }
         }
     }
-    
+
+    private void TickDownActiveEffect(ActiveEffect effect)
+    {
+        var effectIndex = activeEffects.FindIndex(activeEffect => activeEffect.originalItem == effect.originalItem);
+        if (effectIndex != -1)
+        {
+            activeEffects[effectIndex].turnsRemaining--;
+
+            if (activeEffects[effectIndex].turnsRemaining < 0)
+            {
+                activeEffects.RemoveAt(effectIndex);
+            }
+        }
+        else
+        {
+            Debug.Log("Effect not found");
+        }
+    }
+
+    public void RemoveItemEffectOnUse(HashSet<string> itemNames)
+    {
+        List<EntityPiece.ActiveEffect> effectsToRemove = new List<EntityPiece.ActiveEffect>();
+
+        foreach (var effect in activeEffects)
+        {
+            if (itemNames.Contains(effect.originalItem.name))
+            {
+                Debug.Log(effect.originalItem.name + "'s effect is removed!");
+                effectsToRemove.Add(effect);
+            }
+        }
+
+        activeEffects.RemoveAll(effect => effectsToRemove.Contains(effect));
+        RefreshStatModifiers();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
