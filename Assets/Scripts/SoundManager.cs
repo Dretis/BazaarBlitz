@@ -14,9 +14,12 @@ public class SoundManager : MonoBehaviour
     public PlayerEventChannelSO m_PassByStamp;
     public PlayerEventChannelSO m_DiceRollPrep;
     public IntEventChannelSO m_RollForMovement;
-    public IntEventChannelSO m_UpdatePlayerScore;
+
+    public IntEventChannelSO m_PlayerScoreIncreased;
+    public IntEventChannelSO m_PlayerScoreDecreased;
     public IntEventChannelSO m_ItemUsed;
     public IntEventChannelSO m_ItemBought;
+
     public VoidEventChannelSO m_UsedMeleeAttack;
     public VoidEventChannelSO m_UsedMagicAttack;
     public VoidEventChannelSO m_UsedGunAttack;
@@ -51,7 +54,8 @@ public class SoundManager : MonoBehaviour
         m_DiceRollPrep.OnEventRaised += PlayDiceRollSound;
         m_RollForMovement.OnEventRaised += PlayDiceHitSound;
         m_ItemUsed.OnEventRaised += PlayUseItemSound;
-        m_UpdatePlayerScore.OnEventRaised += PlayCurrencyChangeSound;
+        m_PlayerScoreDecreased.OnEventRaised += PlayCurrencyDecreasedSound;
+        m_PlayerScoreIncreased.OnEventRaised += PlayCurrencyIncreasedSound;
         m_ItemBought.OnEventRaised += PlayItemBoughtSound;
         m_NextPlayerTurn.OnEventRaised += PlayNextPlayerTurnSound;
         //m_ShowCombatBanner.OnEventRaised += PlayEnterBattleSound;
@@ -77,7 +81,8 @@ public class SoundManager : MonoBehaviour
         m_DiceRollPrep.OnEventRaised -= PlayDiceRollSound;
         m_RollForMovement.OnEventRaised -= PlayDiceHitSound;
         m_ItemUsed.OnEventRaised -= PlayUseItemSound;
-        m_UpdatePlayerScore.OnEventRaised -= PlayCurrencyChangeSound;
+        m_PlayerScoreDecreased.OnEventRaised -= PlayCurrencyDecreasedSound;
+        m_PlayerScoreIncreased.OnEventRaised -= PlayCurrencyIncreasedSound;
         m_NextPlayerTurn.OnEventRaised -= PlayNextPlayerTurnSound;
         //m_ShowCombatBanner.OnEventRaised -= PlayEnterBattleSound;
 
@@ -112,12 +117,15 @@ public class SoundManager : MonoBehaviour
         audioSource.PlayOneShot(soundList[2], 2f);
     }
 
-    private void PlayCurrencyChangeSound(int scoreDifference)
+    private void PlayCurrencyDecreasedSound(int scoreDifference)
     {
-        if (scoreDifference > 0)
-            audioSource.PlayOneShot(soundList[3], 3f);
-        else
-            audioSource.PlayOneShot(soundList[4], 3f);
+        Debug.Log("This is the score difference " + scoreDifference);
+        audioSource.PlayOneShot(soundList[4], 3f);
+    }
+
+    private void PlayCurrencyIncreasedSound(int scoreDifference)
+    {
+        audioSource.PlayOneShot(soundList[3], 3f);
     }
 
     private void PlayItemBoughtSound(int itemValue)

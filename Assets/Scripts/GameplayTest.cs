@@ -94,6 +94,9 @@ public class GameplayTest : MonoBehaviour
     public PlayerEventChannelSO m_DiceRollPrep;
     public IntEventChannelSO m_RollForMovement;
     public IntEventChannelSO m_UpdatePlayerScore;
+    public IntEventChannelSO m_PlayerScoreDecreased;
+    public IntEventChannelSO m_PlayerScoreIncreased;
+
 
     public PlayerEventChannelSO m_PassByStamp;
     public StampEventChannelSO m_UndoPassByStamp;
@@ -515,6 +518,7 @@ public class GameplayTest : MonoBehaviour
                 p.ReputationPoints += (75 * Mathf.Pow(1.5f, p.stamps.Count-1));
                 p.heldPoints += (int)(150 * Mathf.Pow(2, p.stamps.Count-1));
                 m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
+                m_PlayerScoreIncreased.RaiseEvent((int)(150 * Mathf.Pow(2, p.stamps.Count-1)));
                 m_PassByPawnShop.RaiseEvent(); // change this later
             }
             p.stamps.Clear();
@@ -706,6 +710,8 @@ public class GameplayTest : MonoBehaviour
                     p.heldPoints -= 200;
 
                     m_UpdatePlayerScore.RaiseEvent(p.id);
+                    //TEMPORARY, later put in build store event and sound
+                    m_PlayerScoreDecreased.RaiseEvent(-200);
                     // Raise an eventchannel for BuildAStore to replace the code in here, replace ALOT OF THE CODE EHRE PLEASE
                     Debug.Log("I am a store");
                     GameObject tile = m.gameObject;
@@ -752,6 +758,9 @@ public class GameplayTest : MonoBehaviour
                 p.heldPoints -= 600;
 
                 m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
+                //TEMPORARY, later replace with overturn store event and sound
+                m_PlayerScoreDecreased.RaiseEvent(-600);
+
 
                 isStockingStore = true;
 

@@ -24,6 +24,7 @@ public class UIManager : MonoBehaviour
     [Header("Broadcast on Event Channels")]
     public ItemEventChannelSO m_itemSold;
     public IntEventChannelSO m_UpdatePlayerScore;
+    public IntEventChannelSO m_PlayerScoreDecreased;
 
     [Header("Listen on Event Channels")]
     public NodeEventChannelSO m_LandOnStorefront;
@@ -184,6 +185,9 @@ public class UIManager : MonoBehaviour
 
             // Update store owner's score.
             m_UpdatePlayerScore.RaiseEvent(currentStore.playerOwner.id);
+
+            //Broadcast the player's score difference for the sound effect
+            m_PlayerScoreDecreased.RaiseEvent(currentPlayer.heldPoints - itemInventory[i].basePrice);
 
             itemInventory[i] = null;
             currentStore.storeInventory[i] = null;
