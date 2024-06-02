@@ -451,10 +451,10 @@ MonoBehaviour:
   m_Name: FMODStudioSettings
   m_EditorClassIdentifier: 
   switchSettingsMigration: 1
-  HasSourceProject: 1
-  HasPlatforms: 1
+  HasSourceProject: 0
+  HasPlatforms: 0
   sourceProjectPath: 
-  sourceBankPath: 
+  sourceBankPath: Assets/FMODAssets/Desktop
   sourceBankPathUnformatted: 
   BankRefreshCooldown: 5
   ShowBankRefreshWindow: 1
@@ -475,7 +475,8 @@ MonoBehaviour:
   VirtualChannelSettings: []
   RealChannelSettings: []
   Plugins: []
-  MasterBanks: []
+  MasterBanks:
+  - Master
   Banks: []
   BanksToLoad: []
   LiveUpdatePort: 9264
@@ -489,21 +490,21 @@ MonoBehaviour:
   SharedLibraryUpdateStage: 0
   SharedLibraryTimeSinceStart: 0
   CurrentVersion: 131618
-  HideSetupWizard: 0
+  HideSetupWizard: 1
   LastEventReferenceScanVersion: 131618
   Platforms:
-  - {fileID: -3752459597007046975}
-  - {fileID: -7112408595672157706}
-  - {fileID: -7049828933581077940}
-  - {fileID: 2641100021988450435}
-  - {fileID: -4203536461841379430}
-  - {fileID: 7692789273263892208}
-  - {fileID: -2972137923551996761}
-  - {fileID: 5399358974531846166}
-  - {fileID: -7589925611440115139}
-  - {fileID: 3619177589997926504}
-  - {fileID: 1297637835469740962}
   - {fileID: 9165167877871358193}
+  - {fileID: 1297637835469740962}
+  - {fileID: 3619177589997926504}
+  - {fileID: -7589925611440115139}
+  - {fileID: 5399358974531846166}
+  - {fileID: -2972137923551996761}
+  - {fileID: 7692789273263892208}
+  - {fileID: -4203536461841379430}
+  - {fileID: 2641100021988450435}
+  - {fileID: -7049828933581077940}
+  - {fileID: -7112408595672157706}
+  - {fileID: -3752459597007046975}
   MigratedPlatforms: 0c000000150000000b0000000a0000000900000012000000000000000800000005000000060000000200000001000000
 --- !u!114 &1297637835469740962
 MonoBehaviour:
@@ -575,16 +576,16 @@ MonoBehaviour:
     HasValue: 0
   displaySortOrder: 0
   childIdentifiers:
-  - 2fea114e74ecf3c4f920e1d5cc1c4c40
-  - 46fbfdf3fc43db0458918377fd40293e
-  - 0f8eb3f400726694eb47beb1a9f94ce8
-  - b7716510a1f36934c87976f3a81dbf3d
-  - 52eb9df5db46521439908db3a29a1bbb
-  - e7a046c753c3c3d4aacc91f6597f310d
-  - de700ef3f37a49b58a57ae3addf01ad9
-  - 2c5177b11d81d824dbb064f9ac8527da
-  - fd7c55dab0fce234b8c25f6ffca523c1
   - c88d16e5272a4e241b0ef0ac2e53b73d
+  - fd7c55dab0fce234b8c25f6ffca523c1
+  - 2c5177b11d81d824dbb064f9ac8527da
+  - de700ef3f37a49b58a57ae3addf01ad9
+  - e7a046c753c3c3d4aacc91f6597f310d
+  - 52eb9df5db46521439908db3a29a1bbb
+  - b7716510a1f36934c87976f3a81dbf3d
+  - 0f8eb3f400726694eb47beb1a9f94ce8
+  - 46fbfdf3fc43db0458918377fd40293e
+  - 2fea114e74ecf3c4f920e1d5cc1c4c40
   codecChannels:
     Value: []
     HasValue: 0

@@ -100,7 +100,7 @@ public class SoundManager : MonoBehaviour
 
     private void PlayStampSound(EntityPiece entity)
     {
-        audioSource.PlayOneShot(soundList[0], 2f);
+        FMODUnity.RuntimeManager.PlayOneShot("event:/");
     }
 
     private void PlayDiceRollSound(EntityPiece entity)
@@ -114,79 +114,83 @@ public class SoundManager : MonoBehaviour
     {
         audioSource.Stop();
         audioSource.clip = null;
-        audioSource.PlayOneShot(soundList[2], 2f);
+        FMODUnity.RuntimeManager.PlayOneShot("event:/");
     }
 
     private void PlayCurrencyDecreasedSound(int scoreDifference)
     {
         Debug.Log("This is the score difference " + scoreDifference);
-        audioSource.PlayOneShot(soundList[4], 3f);
+        FMODUnity.RuntimeManager.PlayOneShot("event:/");
     }
 
     private void PlayCurrencyIncreasedSound(int scoreDifference)
     {
-        audioSource.PlayOneShot(soundList[3], 3f);
+        FMODUnity.RuntimeManager.PlayOneShot("event:/");
     }
 
     private void PlayItemBoughtSound(int itemValue)
     {
-        audioSource.PlayOneShot(soundList[4], 3f);
+        FMODUnity.RuntimeManager.PlayOneShot("event:/");
     }
 
     private void PlayUseItemSound(int item)
     {
-        audioSource.PlayOneShot(soundList[5], 1.5f);
+        FMODUnity.RuntimeManager.PlayOneShot("event:/");
     }
 
     private void PlayMeleeAttackSound()
     {
-        audioSource.PlayOneShot(soundList[6], 2f);
+        FMODUnity.RuntimeManager.PlayOneShot("event:/");
     }
 
     private void PlayMagicAttackSound()
     {
-        audioSource.PlayOneShot(soundList[7], 1.2f);
+        FMODUnity.RuntimeManager.PlayOneShot("event:/");
     }
 
     private void PlayGunAttackSound()
     {
-        audioSource.PlayOneShot(soundList[8], 2f);
+        FMODUnity.RuntimeManager.PlayOneShot("event:/");
     }
 
     private void PlayNotEffectiveHitSound()
     {
-        audioSource.PlayOneShot(soundList[9], 2f);
+        FMODUnity.RuntimeManager.PlayOneShot("event:/");
     }
 
     private void PlayEffectiveHitSound()
     {
-        audioSource.PlayOneShot(soundList[10], 2f);
+        FMODUnity.RuntimeManager.PlayOneShot("event:/");
     }
 
     private void PlaySuperEffectiveHitSound()
     {
-        audioSource.PlayOneShot(soundList[11], 2.5f);
+        FMODUnity.RuntimeManager.PlayOneShot("event:/");
     }
 
     private void PlayDeathSound()
     {
-        audioSource.PlayOneShot(soundList[12], 2f);
+        FMODUnity.RuntimeManager.PlayOneShot("event:/");
     }
 
     private void PlaySelectCombatActionSound(EntityPiece entity, Action.PhaseTypes phase)
     {
-        audioSource.PlayOneShot(soundList[13], 2.5f);
+        FMODUnity.RuntimeManager.PlayOneShot("event:/");
     }
 
     private void PlayEnterBattleSound(EntityPiece entity)
     {
-        audioSource.PlayOneShot(soundList[14], 1.2f);
+        FMODUnity.RuntimeManager.PlayOneShot("event:/");
     }
 
     private void PlayNextPlayerTurnSound(EntityPiece entity)
     {
-        audioSource.PlayOneShot(soundList[15], 2.5f);
-        Debug.Log("played next player sound");
+        FMODUnity.RuntimeManager.PlayOneShot("event:/");
+    }
+
+    private void PlayMoveSound()
+    {
+        FMODUnity.RuntimeManager.PlayOneShot("event:/Move");
     }
 
     /*
