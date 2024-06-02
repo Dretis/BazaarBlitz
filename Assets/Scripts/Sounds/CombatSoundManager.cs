@@ -25,7 +25,7 @@ public class CombatSoundManager : MonoBehaviour
     
     private void OnEnable()
     {
-        // //Combat Events
+        //Combat Events
         m_ActionSelected.OnEventRaised += PlaySelectCombatActionSound;
         m_UsedMeleeAttack.OnEventRaised += PlayMeleeAttackSound;
         m_UsedMagicAttack.OnEventRaised += PlayMagicAttackSound;

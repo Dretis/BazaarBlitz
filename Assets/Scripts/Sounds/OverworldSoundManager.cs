@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class OverworldSoundManager : MonoBehaviour
 {
+    //FMOD stuff
+    private FMOD.Studio.EventInstance diceRollInstance;
+
+
+
     private EntityPiece stupidFuck;
 
     [Header("Listen on Event Channels")]
@@ -22,6 +27,11 @@ public class OverworldSoundManager : MonoBehaviour
     public PlayerEventChannelSO m_NextPlayerTurn;
 
     
+    private void Start()
+    {
+        diceRollInstance = FMODUnity.RuntimeManager.CreateInstance("event:/RollDice");
+    }
+
     private void OnEnable()
     {
         //World Events
@@ -36,10 +46,6 @@ public class OverworldSoundManager : MonoBehaviour
         m_ItemBought.OnEventRaised += PlayItemBoughtSound;
         m_NextPlayerTurn.OnEventRaised += PlayNextPlayerTurnSound;
         //m_ShowCombatBanner.OnEventRaised += PlayEnterBattleSound;
-
-
-
-
     }
 
     private void OnDisable()
@@ -55,8 +61,6 @@ public class OverworldSoundManager : MonoBehaviour
         m_PlayerScoreIncreased.OnEventRaised -= PlayCurrencyIncreasedSound;
         m_NextPlayerTurn.OnEventRaised -= PlayNextPlayerTurnSound;
         //m_ShowCombatBanner.OnEventRaised -= PlayEnterBattleSound;
-
-
     }
 
     private void PlayStampSound(EntityPiece entity)
@@ -66,21 +70,18 @@ public class OverworldSoundManager : MonoBehaviour
 
     private void PlayDiceRollSound(EntityPiece entity)
     {
-        // audioSource.clip = soundList[1];
-        // audioSource.Play();
-        // currentClip = soundList[1];
+        diceRollInstance.start();
     }
 
     private void PlayDiceHitSound(int diceValue)
     {
-        // audioSource.Stop();
-        // audioSource.clip = null;
-        // FMODUnity.RuntimeManager.PlayOneShot("event:/");
+        diceRollInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+        diceRollInstance.release();
+        FMODUnity.RuntimeManager.PlayOneShot("event:/HitDice");
     }
 
     private void PlayCurrencyDecreasedSound(int scoreDifference)
     {
-        Debug.Log("This is the score difference " + scoreDifference);
         FMODUnity.RuntimeManager.PlayOneShot("event:/LoseMoney");
     }
 
