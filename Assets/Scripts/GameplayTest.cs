@@ -103,6 +103,7 @@ public class GameplayTest : MonoBehaviour
 
     public PlayerEventChannelSO m_NextPlayerTurn;
     public PlayerEventChannelSO m_EncounterDecision;
+    public VoidEventChannelSO m_EnteredCombatScene;
 
     public PlayerEventChannelSO m_OpenInventory; // JASPER OR RUSSELL PLEASE USE THIS EVENT TO ACCESS THE INVENTORY
     public NodeEventChannelSO m_RestockStore;
@@ -773,6 +774,8 @@ public class GameplayTest : MonoBehaviour
 
     void RockPaperScissors(EntityPiece p)
     {
+        //Raise event for moving to combat scene
+        m_EnteredCombatScene.RaiseEvent();
         encounterStarted = true;
 
         // Set IDs of players entering combat.
@@ -788,8 +791,9 @@ public class GameplayTest : MonoBehaviour
             if (enemy.combatSceneIndex == -1)
                 lookingForTarget = false;
         }
-
+        
         sceneManager.LoadCombatScene();
+        
     }
 
     private void printIndex(int row, int col, EntityPiece p) { // Temporary function, delete later.

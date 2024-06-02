@@ -36,15 +36,6 @@ public class CombatManager : MonoBehaviour
 
 
 
-
-
-    //SOUND SHIT
-    public AudioClip smackSFX;
-    public AudioClip clankSFX;
-    public AudioClip explosionSFX;
-    public AudioClip shootSFX;
-    AudioSource audioSource;
-
     // Scene stuff
     public int combatSceneIndex;
     public CombatUIManager combatUIManager;
@@ -54,6 +45,7 @@ public class CombatManager : MonoBehaviour
     [Header("Broadcast on Event Channels")]
     public PlayerEventChannelSO m_DecidedTurnOrder; // pass in the attacker
     public PlayerEventChannelSO m_SwapPhase; // void event
+    public VoidEventChannelSO m_EnteredOverworldScene; 
     public EntityActionPhaseEventChannelSO m_ActionSelected; // Entity, check side and phase | Either the attacker or defender picked an action
     public EntityActionEventChannelSO m_BothActionsSelected; // prep time to show what they picked, follow with the dice roll too
     public DamageEventChannelSO m_DiceRolled; // 2 floats
@@ -82,8 +74,6 @@ public class CombatManager : MonoBehaviour
     private void Awake()
     {
         combatUIManager = GetComponent<CombatUIManager>();
-
-        audioSource = GetComponent<AudioSource>();
 
         sceneManager = GameObject.FindWithTag("SceneManager").GetComponent<SceneGameManager>();
 
@@ -434,6 +424,8 @@ public class CombatManager : MonoBehaviour
     // Suspends and resets the combat scene so that the next player can take a turn. Returns when its either fighter's turn.
     public void pauseCombat() 
     {
+        //Raise event when moving back to overworld scene
+        m_EnteredOverworldScene.RaiseEvent();
         pausingLock = false;
         // Mostly scene management stuff here
 
@@ -441,6 +433,7 @@ public class CombatManager : MonoBehaviour
         if (!player2.isEnemy) {
             sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(player2.id);
         }
+
 
         // Pause combat scene and re-enable overworld scene
         // This does not remove the scene but makes all the game objects under the combat scene inactive.
@@ -457,6 +450,9 @@ public class CombatManager : MonoBehaviour
     {
         EntityPiece winner;
         EntityPiece loser;
+
+        //Raise event when moving back to overworld scene
+        m_EnteredOverworldScene.RaiseEvent();
 
         bool player1Wins;
         if (player2.health <= 0) { // Player 1 wins
@@ -525,10 +521,11 @@ public class CombatManager : MonoBehaviour
 
         // Players exit combat. A combatSceneIndex of -1 indicates they are out of combat. Otherwise, the scene index
         //  variable takes the current sceneIndex of the scene.
+        
         player1.combatSceneIndex = -1;
         player2.combatSceneIndex = -1;
 
-        audioSource.PlayOneShot(explosionSFX, 2f);
+        
             
         // Deletes the current combat scene.
         sceneManager.UnloadCombatScene(SceneManager.GetSceneAt(combatSceneIndex), combatSceneIndex);

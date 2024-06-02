@@ -3753,15 +3753,12 @@ MonoBehaviour:
   player2Attacking: 0
   waitingForSelection: 0
   pausingLock: 0
-  smackSFX: {fileID: 8300000, guid: c8e9a2f1d06062c4f81b10d5c437a921, type: 3}
-  clankSFX: {fileID: 8300000, guid: 7332912025e28204db328991cab83e6e, type: 3}
-  explosionSFX: {fileID: 8300000, guid: fd978366f596652498b8e9dc04ce3c94, type: 3}
-  shootSFX: {fileID: 8300000, guid: 4e15311842829014796a86f5a3d713c5, type: 3}
   combatSceneIndex: 1
   combatUIManager: {fileID: 373411699}
   sceneManager: {fileID: 1529809403}
   m_DecidedTurnOrder: {fileID: 11400000, guid: 92bd6a37ff6a3344cb44842875da70ca, type: 2}
   m_SwapPhase: {fileID: 11400000, guid: 5fe2f16d1a7ee994d93f14d183b3029b, type: 2}
+  m_EnteredOverworldScene: {fileID: 11400000, guid: 56c6da0795bbaa44bbf1fe3b8e42122d, type: 2}
   m_ActionSelected: {fileID: 11400000, guid: fc7127886f7f7ed458771b3e118932a0, type: 2}
   m_BothActionsSelected: {fileID: 11400000, guid: 5e6e7809c5de840469b11fa61d18be8f, type: 2}
   m_DiceRolled: {fileID: 11400000, guid: ef8018f7217679c479e9e86e849b14c8, type: 2}
@@ -13905,93 +13902,6 @@ MonoBehaviour:
   m_Spacing: {x: 0, y: -9}
   m_Constraint: 0
   m_ConstraintCount: 2
---- !u!1 &1105193354
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1105193358}
-  - component: {fileID: 1105193355}
-  - component: {fileID: 1105193359}
-  m_Layer: 0
-  m_Name: CombatMusicPlayer
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1105193355
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1105193354}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ccf8ade82d540c41876bd8e07d946f9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_UsedMeleeAttack: {fileID: 11400000, guid: 4a9e110c43a818e4da1524690e454b0d, type: 2}
-  m_UsedMagicAttack: {fileID: 11400000, guid: a945228fe4f52684b8dff726d6454056, type: 2}
-  m_UsedGunAttack: {fileID: 11400000, guid: afe9a285444f0614aae7d0df6d043102, type: 2}
-  m_IneffectiveAttack: {fileID: 11400000, guid: 2d9c9bb3a579dcd41aa67d1ca2a91f03, type: 2}
-  m_EffectiveAttack: {fileID: 11400000, guid: 64dd882548e55284893bf4d05af78ff4, type: 2}
-  m_SuperEffectiveAttack: {fileID: 11400000, guid: 61786714ebaf2eb44b2f5cef9104c8e5, type: 2}
-  m_SomeoneDied: {fileID: 11400000, guid: 317dacf486ae5ee4db2594dc0f7ac959, type: 2}
-  m_AttackImpact: {fileID: 11400000, guid: 9e5c549844a53f2479ba5224defc75a9, type: 2}
-  m_EntityDied: {fileID: 11400000, guid: 8d61128e2ea86d248a5d122114fb8c8e, type: 2}
-  m_ActionSelected: {fileID: 11400000, guid: fc7127886f7f7ed458771b3e118932a0, type: 2}
-  m_DamageTaken: {fileID: 11400000, guid: 21e2d2c157c4e564db136dc7709f07b4, type: 2}
---- !u!4 &1105193358
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1105193354}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 16
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1105193359
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1105193354}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CollisionTag: 
-  EventReference:
-    Guid:
-      Data1: -1498601898
-      Data2: 1088102382
-      Data3: 1017702276
-      Data4: 1608213676
-    Path: event:/BattleTheme
-  Event: 
-  PlayEvent: 11
-  StopEvent: 12
-  AllowFadeout: 1
-  TriggerOnce: 0
-  Preload: 0
-  AllowNonRigidbodyDoppler: 0
-  Params: []
-  OverrideAttenuation: 0
-  OverrideMinDistance: 1
-  OverrideMaxDistance: 20
 --- !u!1001 &1108400746
 PrefabInstance:
   m_ObjectHideFlags: 0
