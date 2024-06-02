@@ -15692,7 +15692,19 @@ MonoBehaviour:
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 841476317}
+        m_TargetAssemblyTypeName: SoundSettingsManager, Assembly-CSharp
+        m_MethodName: SFXSlider
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &476971518 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7291270089867236918, guid: 252343393b47fc046904980624cfb6b9, type: 3}
@@ -19497,6 +19509,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd520d5adee195648b768c9c10fe5059, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  musicVolume: 0
+  SFXVolume: 0.8
   m_EnteredOverworldScene: {fileID: 11400000, guid: 56c6da0795bbaa44bbf1fe3b8e42122d, type: 2}
   m_EnteredCombatScene: {fileID: 11400000, guid: b06b734815e5e434087c29d416ff002e, type: 2}
   m_PlayerMovedOnBoard: {fileID: 11400000, guid: 3e053258b5caff14898c85eb40602276, type: 2}
@@ -19534,11 +19548,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isPaused: 0
+  soundManager: {fileID: 841476315}
   pauseMenu: {fileID: 674749168}
   musicSlider: {fileID: 909200442}
   sfxSlider: {fileID: 473888686}
-  musicVolume: 0.8
-  SFXVolume: 0.8
 --- !u!1 &844000267
 GameObject:
   m_ObjectHideFlags: 0
@@ -29929,7 +29942,19 @@ MonoBehaviour:
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 841476317}
+        m_TargetAssemblyTypeName: SoundSettingsManager, Assembly-CSharp
+        m_MethodName: MusicSlider
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0.01
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 1
 --- !u!1 &917248990
 GameObject:
   m_ObjectHideFlags: 0
