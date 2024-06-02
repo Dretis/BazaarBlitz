@@ -64,11 +64,6 @@ public class GameplayTest : MonoBehaviour
     private bool playerUsedItem = false; // please change these down the line
     public bool isStockingStore = false;
 
-    //SOUND SHIT
-    public AudioClip moveSFX;
-    public AudioClip reverseSFX;
-    public AudioSource audioSource;
-
     [SerializeField] private List<Stamp.StampType> oldStamps = new List<Stamp.StampType>();
     private int oldPoints = 0;
 
@@ -93,6 +88,8 @@ public class GameplayTest : MonoBehaviour
     public PlayerEventChannelSO m_DiceRollUndo;
     public PlayerEventChannelSO m_DiceRollPrep;
     public IntEventChannelSO m_RollForMovement;
+    public VoidEventChannelSO m_PlayerMovedOnBoard;
+    public VoidEventChannelSO m_PlayerUndidSomething;
     public IntEventChannelSO m_UpdatePlayerScore;
     public IntEventChannelSO m_PlayerScoreDecreased;
     public IntEventChannelSO m_PlayerScoreIncreased;
@@ -161,7 +158,6 @@ public class GameplayTest : MonoBehaviour
     void Awake()
     {
         instance = this;
-        audioSource = GetComponent<AudioSource>();
         sceneManager = GameObject.FindGameObjectWithTag("SceneManager").GetComponent<SceneGameManager>();
         //playerUnits.AddRange(FindObjectsOfType<EntityPiece>());
         //nextPlayers = playerUnits;
@@ -311,7 +307,7 @@ public class GameplayTest : MonoBehaviour
 
             // Put these in their own listener script
 
-            audioSource.PlayOneShot(moveSFX, 2f);
+            m_PlayerMovedOnBoard.RaiseEvent();
 
             // End of listener code
 
@@ -326,7 +322,7 @@ public class GameplayTest : MonoBehaviour
 
             // Put these in their own listener script
 
-            audioSource.PlayOneShot(moveSFX, 2f);
+            m_PlayerMovedOnBoard.RaiseEvent();
 
             // End of listener code
 
@@ -349,7 +345,7 @@ public class GameplayTest : MonoBehaviour
             // Undo rolling, back to menu
             m_ExitInventory.RaiseEvent();
 
-            audioSource.PlayOneShot(reverseSFX, 2f);
+            m_PlayerUndidSomething.RaiseEvent();
 
             phase = GamePhase.InitialTurnMenu;
         }
@@ -396,7 +392,7 @@ public class GameplayTest : MonoBehaviour
                 rollText.text = "" + diceRoll;
                 p.movementTotal = p.movementLeft = diceRoll;
 
-                audioSource.PlayOneShot(moveSFX, 2f);
+                m_PlayerMovedOnBoard.RaiseEvent();
 
                 // End of listener code
 
@@ -407,7 +403,7 @@ public class GameplayTest : MonoBehaviour
                 // Undo rolling, back to menu
                 m_DiceRollUndo.RaiseEvent(p);
 
-                audioSource.PlayOneShot(reverseSFX, 2f);
+                m_PlayerUndidSomething.RaiseEvent();
 
                 phase = GamePhase.InitialTurnMenu;
             }
@@ -483,7 +479,7 @@ public class GameplayTest : MonoBehaviour
                 .SetEase(Ease.OutQuint);
 
             wantedNode = null;
-            audioSource.PlayOneShot(reverseSFX, 1.2f);
+            m_PlayerUndidSomething.RaiseEvent();
 
             phase = GamePhase.PickDirection; // Go back to picking direction
         }
@@ -498,7 +494,7 @@ public class GameplayTest : MonoBehaviour
                 .SetEase(Ease.OutQuint);
 
             wantedNode = null;
-            audioSource.PlayOneShot(moveSFX, 1.2f);
+            m_PlayerMovedOnBoard.RaiseEvent();
 
             phase = GamePhase.PassBy;
         }
@@ -1068,7 +1064,7 @@ public class GameplayTest : MonoBehaviour
             // Exit store restocking.
             m_ExitInventory.RaiseEvent(); // REMOVE STOCKING STORE UI FROM SCREEN TOO
             storestockTooltip.enabled = false; // DO THIS IN THE UI
-            audioSource.PlayOneShot(reverseSFX, 2f);
+            m_PlayerUndidSomething.RaiseEvent();
 
             phase = GamePhase.EndTurn;
         }
