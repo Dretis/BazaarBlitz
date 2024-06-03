@@ -51,6 +51,7 @@ MonoBehaviour:
   occupiedNode: {fileID: 0}
   occupiedNodeCopy: {fileID: 0}
   previousNode: {fileID: 0}
+  unspentLevelUpPoints: 0
   traveledNodes: []
   dustCloud: {fileID: 0}
   movementTotal: 0
@@ -103,12 +104,11 @@ MonoBehaviour:
     canStopOnStoreOnPassBy: 0
   inventory:
   - {fileID: 11400000, guid: 18732e8251b999348a145ed6f51e8eab, type: 2}
-  - {fileID: 11400000, guid: 18732e8251b999348a145ed6f51e8eab, type: 2}
-  - {fileID: 11400000, guid: 538c3ea9b77a52049adb54f819957e9b, type: 2}
   - {fileID: 11400000, guid: 538c3ea9b77a52049adb54f819957e9b, type: 2}
   - {fileID: 11400000, guid: cb32be18794ec944bac7e2c8c0a9ffd2, type: 2}
   - {fileID: 11400000, guid: 3af8bef16b55ad7469446ad1e27fc370, type: 2}
   - {fileID: 11400000, guid: eb28f5dcbddd3514eb903201f798e52c, type: 2}
+  lootOdds: 19000000190000000f000000140000000f000000
   activeEffects:
   - originalItem: {fileID: 11400000, guid: 538c3ea9b77a52049adb54f819957e9b, type: 2}
     turnsRemaining: 99

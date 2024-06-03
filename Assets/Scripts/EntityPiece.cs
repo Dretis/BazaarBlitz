@@ -67,6 +67,7 @@ public class EntityPiece : MonoBehaviour
     public EntityStatsModifiers currentStatsModifier;
 
     public List<ItemStats> inventory = new();
+    public List<int> lootOdds;
 
     [SerializeField]
     public List<ActiveEffect> activeEffects = new();
