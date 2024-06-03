@@ -389,6 +389,9 @@ public class GameplayTest : MonoBehaviour
                 diceRoll *= currentPlayer.currentStatsModifier.movementMultModifier;
                 diceRoll += currentPlayer.currentStatsModifier.movementFlatModifier;    
 
+                
+                //diceRoll += 10;   
+
                 // We just rolled for movement, tell listeners about it
                 m_RollForMovement.RaiseEvent(diceRoll);
 
@@ -433,7 +436,7 @@ public class GameplayTest : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
             wantedNode = p.occupiedNode.west;
 
-        if (wantedNode != null)
+        if (wantedNode != null && !(wantedNode == p.previousNode && p.traveledNodes.Count <= 1) )
         {
             phase = GamePhase.MoveAround;
         }
@@ -490,8 +493,10 @@ public class GameplayTest : MonoBehaviour
         else if(wantedNode != null) // Go to that new node and occupy it
         {
             if (wantedNode.modifier == MapNode.Modifier.Rafflesia) {
+                wantedNode.modifier = MapNode.Modifier.None;
                 p.movementLeft = 0;
                 rollText.text = "" + p.movementLeft;
+                p.previousNode = null;
                 wantedNode = null;
                 audioSource.PlayOneShot(moveSFX, 1.2f);
 
@@ -589,12 +594,14 @@ public class GameplayTest : MonoBehaviour
         }
         if (m.CompareTag("Store") && p.currentStatsModifier.canStopOnStoreOnPassBy)
         {
+            p.previousNode = p.traveledNodes[p.traveledNodes.Count - 1];
             m_StopOnStoreOnPassBy.RaiseEvent();
 
             // Deactivate all active effects of items that end on store.
             p.RemoveItemEffectOnUse(ItemLists.StopOnStoreOnPassBy);
         }  
         else if (m.CompareTag("Store") && (m.modifier == MapNode.Modifier.Marigold && m.modifierOwner != p) ) {
+            p.previousNode = p.traveledNodes[p.traveledNodes.Count - 1];
             m_StopOnStoreOnPassBy.RaiseEvent();
 
             m.modifier = MapNode.Modifier.None;
@@ -604,6 +611,7 @@ public class GameplayTest : MonoBehaviour
         
         else if (p.movementLeft <= 0)
         {
+            p.previousNode = p.traveledNodes[p.traveledNodes.Count - 1];
             p.traveledNodes.Clear(); 
             p.traveledNodes.Add(p.occupiedNode); 
 
@@ -1195,6 +1203,10 @@ public class GameplayTest : MonoBehaviour
                 if (RaycastTiles.tileSelected.CompareTag("Store")
                 && RaycastTiles.tileSelected.modifier == MapNode.Modifier.None)
                     PlantConfirmed(p, MapNode.Modifier.Marigold);
+                else {
+                    m_ExitRaycastTargetSelection.RaiseEvent(); // prevents getting stuck, but we should probably add a warning
+                    phase = GamePhase.InitialTurnMenu;
+                }
             }
             else if (p.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Rafflesia)
             {
