@@ -414,6 +414,22 @@ public class CombatManager : MonoBehaviour
         } else { // but pause combat if we looped twice
             isFirstPhase = true;
             pausingLock = true;
+
+            // to be fair to the 2nd place guy, they can go first next turn
+            tempDefender = defender;
+            defender = attacker;
+            attacker = tempDefender;
+
+            if (player1Attacking) {
+                player1Attacking = false;
+                player2Attacking = true;
+            } else {
+                player1Attacking = true;
+                player2Attacking = false;
+            }
+            
+            m_SwapPhase.RaiseEvent(attacker);
+
             StartCoroutine(PauseCombatDelay(1f));
         }
         
@@ -664,9 +680,10 @@ public class CombatManager : MonoBehaviour
 
         if (isFightingAI && player2.health <= 0)
         {
-            int loot1 = Random.Range(0, 6);
+            int lootSize = player2.inventory.Count;
+            int loot1 = Random.Range(0, lootSize);
             player1.inventory.Add(player2.inventory[loot1]); // Enemy inventories are effectively static loot tables (they always have 6 items)
-            int loot2 = Random.Range(0, 6);
+            int loot2 = Random.Range(0, lootSize);
             player1.inventory.Add(player2.inventory[loot2]);
 
             List<ItemStats> newlyGainedItems = new List<ItemStats>();

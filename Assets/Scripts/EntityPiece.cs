@@ -12,6 +12,7 @@ public class EntityPiece : MonoBehaviour
     public MapNode occupiedNode; // Node player is currently on
     public MapNode occupiedNodeCopy; // Node player is currently on
     public MapNode previousNode = null; // Node player just walked on last turn. They can't go back this way.
+    public int unspentLevelUpPoints = 0;
     public List<MapNode> traveledNodes = new List<MapNode>(); // Tracks the nodes the player has gone to
     public ParticleSystem dustCloud;
 

@@ -360,6 +360,7 @@ public class GameplayTest : MonoBehaviour
         // For now level up happens right before you roll dice
         if (p.canLevelUp() && p.combatSceneIndex == -1) {
             pointsLeft = 5;
+            pointsLeft += p.unspentLevelUpPoints;
             p.maxHealth += 10;
             p.health += 10;
             p.RenownLevel += 1;
@@ -720,7 +721,7 @@ public class GameplayTest : MonoBehaviour
             else if (m.CompareTag("Encounter")) // Regular Encounter
             {
                 // If unable to buy a store, skip the prompt and immediately enter combat.
-                if (p.heldPoints < 200 || p.storeCount >= 4)
+                if (p.storeCount >= 4)
                 {
                     Debug.Log("You got no money to build a store, dipshit!");
                     phase = GamePhase.RockPaperScissors;
@@ -738,11 +739,11 @@ public class GameplayTest : MonoBehaviour
                 else if (Input.GetKeyDown(KeyCode.Mouse1) || Input.GetKeyDown(KeyCode.RightShift) || Input.GetKeyDown(KeyCode.LeftShift))
                 {
                     p.storeCount++;
-                    p.heldPoints -= 200;
+                    //p.heldPoints -= 200;
 
                     m_UpdatePlayerScore.RaiseEvent(p.id);
                     //TEMPORARY, later put in build store event and sound
-                    m_PlayerScoreDecreased.RaiseEvent(-200);
+                    //m_PlayerScoreDecreased.RaiseEvent(-200);
                     // Raise an eventchannel for BuildAStore to replace the code in here, replace ALOT OF THE CODE EHRE PLEASE
                     Debug.Log("I am a store");
                     GameObject tile = m.gameObject;
@@ -889,6 +890,7 @@ public class GameplayTest : MonoBehaviour
         {
             Debug.Log("Out of points, level up done");
             levelUpScreen.enabled = false;
+            p.unspentLevelUpPoints = pointsLeft;
             phase = GamePhase.RollDice;
         }
         if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space)) // E to leave till I find a good exit method that doesn't get you stuck.
