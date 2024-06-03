@@ -415,20 +415,22 @@ public class CombatManager : MonoBehaviour
             isFirstPhase = true;
             pausingLock = true;
 
-            // to be fair to the 2nd place guy, they can go first next turn
-            tempDefender = defender;
-            defender = attacker;
-            attacker = tempDefender;
+            if (!isFightingAI) {
+                // to be fair to the 2nd place guy, they can go first next turn
+                tempDefender = defender;
+                defender = attacker;
+                attacker = tempDefender;
 
-            if (player1Attacking) {
-                player1Attacking = false;
-                player2Attacking = true;
-            } else {
-                player1Attacking = true;
-                player2Attacking = false;
+                if (player1Attacking) {
+                    player1Attacking = false;
+                    player2Attacking = true;
+                } else {
+                    player1Attacking = true;
+                    player2Attacking = false;
+                }
+                
+                m_SwapPhase.RaiseEvent(attacker);
             }
-            
-            m_SwapPhase.RaiseEvent(attacker);
 
             StartCoroutine(PauseCombatDelay(1f));
         }
