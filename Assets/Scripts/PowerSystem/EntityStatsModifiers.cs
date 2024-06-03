@@ -18,7 +18,8 @@ public class EntityStatsModifiers
         None,
         Tiles,
         Players,
-        Marigold
+        Marigold,
+        Rafflesia
     }
 
     // List of all stats

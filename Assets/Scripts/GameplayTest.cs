@@ -489,6 +489,20 @@ public class GameplayTest : MonoBehaviour
         }
         else if(wantedNode != null) // Go to that new node and occupy it
         {
+            if (wantedNode.modifier == MapNode.Modifier.Rafflesia) {
+                p.movementLeft = 0;
+                rollText.text = "" + p.movementLeft;
+                wantedNode = null;
+                audioSource.PlayOneShot(moveSFX, 1.2f);
+
+                
+                p.traveledNodes.Clear(); 
+                p.traveledNodes.Add(p.occupiedNode); 
+
+                phase = GamePhase.EncounterTime; // next phase
+                return;
+
+            }
             p.traveledNodes.Add(p.occupiedNode);
             p.occupiedNode = wantedNode;
 
@@ -1158,6 +1172,7 @@ public class GameplayTest : MonoBehaviour
     {
         Debug.Log("StopOnStore");
         currentPlayer.movementLeft = 0;
+        rollText.text = "" + currentPlayer.movementLeft;
     }  
 
     public void SelectRaycastTarget(EntityPiece p)
@@ -1180,6 +1195,11 @@ public class GameplayTest : MonoBehaviour
                 if (RaycastTiles.tileSelected.CompareTag("Store")
                 && RaycastTiles.tileSelected.modifier == MapNode.Modifier.None)
                     PlantConfirmed(p, MapNode.Modifier.Marigold);
+            }
+            else if (p.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Rafflesia)
+            {
+                if (RaycastTiles.tileSelected.modifier == MapNode.Modifier.None)
+                    PlantConfirmed(p, MapNode.Modifier.Rafflesia);
             }
         }
     }
