@@ -570,14 +570,21 @@ public class GameplayTest : MonoBehaviour
                     return;
                 }
             }
+
+
         }
-        else if (m.CompareTag("Store") && p.currentStatsModifier.canStopOnStoreOnPassBy)
+        if (m.CompareTag("Store") && p.currentStatsModifier.canStopOnStoreOnPassBy)
         {
             m_StopOnStoreOnPassBy.RaiseEvent();
 
             // Deactivate all active effects of items that end on store.
             p.RemoveItemEffectOnUse(ItemLists.StopOnStoreOnPassBy);
-        }       
+        }  
+        else if (m.CompareTag("Store") && (m.modifier == MapNode.Modifier.Marigold && m.modifierOwner != p) ) {
+            m_StopOnStoreOnPassBy.RaiseEvent();
+
+            m.modifier = MapNode.Modifier.None;
+        }
         
         // Change phase.
         
