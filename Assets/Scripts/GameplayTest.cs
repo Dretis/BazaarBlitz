@@ -580,10 +580,7 @@ public class GameplayTest : MonoBehaviour
         }       
         
         // Change phase.
-        if (p.heldPoints >= 4000)
-        {
-            phase = GamePhase.EndGame;
-        }
+        
         else if (p.movementLeft <= 0)
         {
             p.traveledNodes.Clear(); 
@@ -647,6 +644,11 @@ public class GameplayTest : MonoBehaviour
                 p1fight.text = "";
                 p2fight.text = "";
                 resultInfo.text = "<size=45>[PAWN SHOP]</size>\nLanded on pawn shop. All held stamps have been converted to points.\n<size=30> [SPACE] to continue.</size>";
+
+                if (p.heldPoints >= 4000)
+                {
+                    phase = GamePhase.EndGame;
+                }
 
                 encounterOver = true;
                 phase = GamePhase.ConfirmContinue;
@@ -1166,6 +1168,12 @@ public class GameplayTest : MonoBehaviour
                 && RaycastTiles.tileSelected.playerOccupied != p)
                     WarpConfirmed(p);
             }
+            else if (p.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Marigold)
+            {
+                if (RaycastTiles.tileSelected.CompareTag("Store")
+                && RaycastTiles.tileSelected.modifier == MapNode.Modifier.None)
+                    PlantConfirmed(p, MapNode.Modifier.Marigold);
+            }
         }
     }
 
@@ -1178,5 +1186,26 @@ public class GameplayTest : MonoBehaviour
         p.currentStatsModifier.warpDestination = RaycastTiles.tileSelected;
         ApplyItemEffectsOnTargetSelection(p);
         phase = GamePhase.InitialTurnMenu;
+    }
+
+    private void PlantConfirmed(EntityPiece p, MapNode.Modifier modifier)
+    {
+        m_DisableFreeview.RaiseEvent();
+
+        // FOR NAM: USE THIS EVENT TO HIDE SELECT TILE/PLAYER UI
+        m_ExitRaycastTargetSelection.RaiseEvent();
+        p.currentStatsModifier.warpDestination = RaycastTiles.tileSelected;
+        PlantItemOnSpaceSelection(p, modifier);
+        phase = GamePhase.InitialTurnMenu;
+    }
+
+    private void PlantItemOnSpaceSelection(EntityPiece p, MapNode.Modifier modifier) 
+    {
+        // Warp player to specified destination.
+        if (p.currentStatsModifier.warpDestination != null)
+        {
+            p.currentStatsModifier.warpDestination.modifier = modifier;
+            p.currentStatsModifier.warpDestination.modifierOwner = p;
+        }
     }
 }

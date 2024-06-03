@@ -9,6 +9,16 @@ public class MapNode : MonoBehaviour
     public MapNode east;
     public MapNode south;
     public MapNode west;
+    public Modifier modifier = Modifier.None;
+    public EntityPiece modifierOwner;
+
+    public enum Modifier
+    {
+        None,
+        Marigold,
+        Rafflesia,
+        Bomb
+    }
 
     private void OnDrawGizmos()
     {
