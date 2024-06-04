@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdd1368eedb123d4db8a885acb84d3a9, type: 3}
+  m_Name: TestCombat
+  m_EditorClassIdentifier: 
+  itemName: TestCombat
+  duration: 1
+  itemSprite: {fileID: 0}
+  effectDescription: When you pass by a player who is not already in combat, immediately
+    enters combat.
+  flavorText: '"Someone''s gotta test things around here..." - Russell, the Grand
+    Poo-Bah of Items'
+  basePrice: 0
+  modifiers:
+  - {fileID: 11400000, guid: 3bbd700230f323b4db3a86a639f77aa5, type: 2}

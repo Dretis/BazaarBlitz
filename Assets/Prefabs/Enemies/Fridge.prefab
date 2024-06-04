@@ -50,14 +50,16 @@ MonoBehaviour:
   playerSprite: {fileID: 0}
   occupiedNode: {fileID: 0}
   occupiedNodeCopy: {fileID: 0}
+  previousNode: {fileID: 0}
+  unspentLevelUpPoints: 0
   traveledNodes: []
+  dustCloud: {fileID: 0}
   movementTotal: 0
   movementLeft: 0
-  finalPoints: 1
   heldPoints: 0
   storeCount: 0
   stamps: 
-  isTurnSkipped: 0
+  isInDeathsRow: 0
   health: 40
   maxHealth: 40
   combatSceneIndex: -1
@@ -65,27 +67,9 @@ MonoBehaviour:
   favoredAttack: 3
   entityStats:
     dieConfigs:
-    - dieFaces:
-      - 1
-      - 1
-      - 2
-      - 2
-      - 2
-      - 3
-    - dieFaces:
-      - 1
-      - 1
-      - 2
-      - 2
-      - 3
-      - 4
-    - dieFaces:
-      - 2
-      - 3
-      - 4
-      - 4
-      - 5
-      - 6
+    - dieFaces: 010000000100000002000000020000000200000003000000
+    - dieFaces: 010000000100000002000000020000000300000004000000
+    - dieFaces: 020000000300000004000000040000000500000006000000
   attackActions:
   - {fileID: 11400000, guid: 092cf3b3af66061478bc3530f1af01f9, type: 2}
   - {fileID: 11400000, guid: 6ca9e4123ea095d4fb087a3cc7c9a44d, type: 2}
@@ -107,11 +91,21 @@ MonoBehaviour:
       finalResultMultModifier: 1
     defenseModifier: 0
     lifestealMult: 0
+    healthRegen: 0
     rollModifier: 0
+    maxHealthFlatModifier: 0
+    maxHealthMultModifier: 1
+    movementFlatModifier: 0
+    movementMultModifier: 1
+    warpDestination: {fileID: 0}
+    warpMode: 0
+    canStealOnPassBy: 0
+    canInitiateCombatOnPassBy: 0
+    canStopOnStoreOnPassBy: 0
   inventory:
   - {fileID: 11400000, guid: 4fd59672f461ffa4bb6c75f0339fc93d, type: 2}
   - {fileID: 11400000, guid: f26fa68957c44394997221a74fdb9939, type: 2}
-  - {fileID: 11400000, guid: 538c3ea9b77a52049adb54f819957e9b, type: 2}
-  - {fileID: 11400000, guid: 8089e0e474c4f144f8164f37535a2cc3, type: 2}
   - {fileID: 11400000, guid: 8089e0e474c4f144f8164f37535a2cc3, type: 2}
   - {fileID: 11400000, guid: 538c3ea9b77a52049adb54f819957e9b, type: 2}
+  lootOdds: 0f000000230000001900000019000000
+  activeEffects: []

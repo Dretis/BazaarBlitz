@@ -7,6 +7,8 @@ using DG.Tweening;
 
 public class UICombatOverlayManager : MonoBehaviour
 {
+    [SerializeField] private ParticleSystem hitParticle;
+
     [Header("Colors")]
     [SerializeField] private Color32 attackColor;
     [SerializeField] private Color32 defendColor;
@@ -20,6 +22,8 @@ public class UICombatOverlayManager : MonoBehaviour
     [SerializeField] private CanvasGroup leftDiceRoll;
     [SerializeField] private CanvasGroup rightDiceRoll;
 
+
+
     [Header("Dice Information")]
     [SerializeField] private RectTransform diceInfo;
 
@@ -31,9 +35,12 @@ public class UICombatOverlayManager : MonoBehaviour
     [Header("UI Inputs")]
     [SerializeField] private CanvasGroup leftAttackPrompt;
     [SerializeField] private CanvasGroup leftDefendPrompt;
+    [SerializeField] private CanvasGroup leftSelectedAction;
 
     [SerializeField] private CanvasGroup rightAttackPrompt;
     [SerializeField] private CanvasGroup rightDefendPrompt;
+    [SerializeField] private CanvasGroup rightSelectedAction;
+
 
     [Header("Text")]
     [SerializeField] private TextMeshProUGUI leftHealthPoints;
@@ -57,11 +64,11 @@ public class UICombatOverlayManager : MonoBehaviour
     // private RectTransform vsHeaderRectTransform;
 
     [Header("Listen on Event Channels")]
-    public PlayerEventChannelSO m_DecidedTurnOrder; // pass in the attacker
+    //public PlayerEventChannelSO m_DecidedTurnOrder; // pass in the attacker
     public PlayerEventChannelSO m_SwapPhase; // void event
 
     public EntityActionPhaseEventChannelSO m_ActionSelected; // Entity, check side and phase | Either the attacker or defender picked an action
-    //public ActionSelectEventChannelSO m_BothActionsSelected; // prep time to show what they picked, follow with the dice roll too
+    public EntityActionEventChannelSO m_BothActionsSelected; // prep time to show what they picked, follow with the dice roll too
     public DamageEventChannelSO m_DiceRolled; // 2 floats
 
     public PlayerEventChannelSO m_PlayOutCombat; // play attack anim and defend anim
@@ -69,6 +76,7 @@ public class UICombatOverlayManager : MonoBehaviour
     public DamageEventChannelSO m_DamageTaken; //upon attack anim finishing, show floating dmg ontop of defender, play hurt anim
 
     public EntityItemEventChannelSO m_EntityDied; // someone's HP dropped to 0, Victory, show rewards
+    public ItemListEventChannelSO m_VictoryAgainstEnemy;
     public VoidEventChannelSO m_Stalemate; // Combat is suspended, no one died this stime
 
     private void OnEnable()
@@ -76,36 +84,39 @@ public class UICombatOverlayManager : MonoBehaviour
         resultTestText.text = "";
         leftDiceRoll.GetComponent<TextMeshProUGUI>().text = "";
         rightDiceRoll.GetComponent<TextMeshProUGUI>().text = "";
+        resultsScreen.alpha = 0;
 
 
-        m_DecidedTurnOrder.OnEventRaised += UpdateInputPrompts;
+        //m_DecidedTurnOrder.OnEventRaised += UpdateInputPrompts;
         m_SwapPhase.OnEventRaised += SwapPhaseTransitions;
 
         m_ActionSelected.OnEventRaised += UpdatePhaseTextPrompt;
+        m_BothActionsSelected.OnEventRaised += ShowSelectedAction;
         m_DiceRolled.OnEventRaised += SetDiceActionRoll;
 
         //m_PlayOutCombat.OnEventRaised += HideHeaderInfo;
 
         m_DamageTaken.OnEventRaised += ShowFloatingDamageNumber;
 
-        m_EntityDied.OnEventRaised += VictoryResults;
+        m_VictoryAgainstEnemy.OnEventRaised += VictoryResults;
         m_Stalemate.OnEventRaised += StalemateResults;
 
     }
 
     private void OnDisable()
     {
-        m_DecidedTurnOrder.OnEventRaised -= UpdateInputPrompts;
+        //m_DecidedTurnOrder.OnEventRaised -= UpdateInputPrompts;
         m_SwapPhase.OnEventRaised -= SwapPhaseTransitions;
 
         m_ActionSelected.OnEventRaised -= UpdatePhaseTextPrompt;
+        m_BothActionsSelected.OnEventRaised -= ShowSelectedAction;
         m_DiceRolled.OnEventRaised -= SetDiceActionRoll;
 
         //m_PlayOutCombat.OnEventRaised += HideHeaderInfo;
 
         m_DamageTaken.OnEventRaised -= ShowFloatingDamageNumber;
 
-        m_EntityDied.OnEventRaised -= VictoryResults;
+        m_VictoryAgainstEnemy.OnEventRaised -= VictoryResults;
         m_Stalemate.OnEventRaised -= StalemateResults;
 
     }
@@ -128,6 +139,8 @@ public class UICombatOverlayManager : MonoBehaviour
 
         ShowVSHeader();
         ShowDiceInfo();
+
+
     }
 
     private void Update()
@@ -178,7 +191,7 @@ public class UICombatOverlayManager : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.Alpha8))
         {
-            VictoryResults(CombatManager.Instance.player2, null);
+            //VictoryResults(CombatManager.Instance.player2, null);
         }
         if (Input.GetKeyDown(KeyCode.Alpha9))
         {
@@ -252,6 +265,51 @@ public class UICombatOverlayManager : MonoBehaviour
             phaseTestPrompt.text = $"{entity.entityName}, choose an action.";
     }
 
+    public void ShowSelectedAction(EntityPiece entity, Action action)
+    {
+        HideHeaderInfo();
+        //HideBothInutPrompts();
+
+        CanvasGroup sideSelectedAction;
+        if (entity.fightingPosition == CombatUIManager.FightingPosition.Left)
+        {
+            sideSelectedAction = leftSelectedAction;
+        }
+        else
+        {
+            sideSelectedAction = rightSelectedAction;
+        }
+            int typeIcon = 0;
+        switch (action.type)
+        {
+            case Action.WeaponTypes.Melee: typeIcon = 0; break;
+            case Action.WeaponTypes.Gun: typeIcon = 1; break;
+            case Action.WeaponTypes.Magic: typeIcon = 2; break;
+        }
+
+        if(action.phase == Action.PhaseTypes.Attack)
+        {
+            Debug.Log($"{entity.entityName} is attacking");
+            sideSelectedAction.GetComponent<Image>().color = attackColor;
+        }
+        else
+        {
+            Debug.Log($"{entity.entityName} is defending");
+            sideSelectedAction.GetComponent<Image>().color = defendColor;
+        }
+
+        if (entity.fightingPosition == CombatUIManager.FightingPosition.Left)
+        {
+            ShowInputPrompt(sideSelectedAction, 0.15f);
+            sideSelectedAction.GetComponentInChildren<TextMeshProUGUI>().text = $"<sprite={typeIcon}>  {action.actionName}";
+        }
+        else
+        {
+            ShowInputPrompt(sideSelectedAction, 0.15f);
+            sideSelectedAction.GetComponentInChildren<TextMeshProUGUI>().text = $"<sprite={typeIcon}>  {action.actionName}";
+        }
+    }
+
     public void DisplayResultsScreen()
     {
         DOTween.To(() => resultsScreen.alpha, x => resultsScreen.alpha = x, 1, 0.25f).SetEase(Ease.InFlash);
@@ -318,10 +376,23 @@ public class UICombatOverlayManager : MonoBehaviour
         }
     }
 
+    public void HideBothInutPrompts()
+    {
+        HideInputPrompt(leftDefendPrompt, 0.15f);
+        HideInputPrompt(rightAttackPrompt, 0.15f);
+
+        HideInputPrompt(rightDefendPrompt, 0.15f);
+        HideInputPrompt(leftAttackPrompt, 0.15f);
+    }
+
     public void StalemateResults()
     {
-        resultTestText.color = new Color32(118, 118, 118, 255);
-        resultTestText.text = "To Be Continued...";
+        Debug.Log("stalemate.");
+        DisplayResultsScreen();
+        //resultsScreen.alpha = 1;
+        var result = resultsScreen.GetComponentInChildren<TextMeshProUGUI>();
+        result.color = new Color32(118, 118, 118, 255);
+        result.text = "To Be Continued...";
         /*
         var resultsText = resultsScreen.GetComponentInChildren<TextMeshProUGUI>();
         resultsText.color = new Color32(118, 118, 118, 255);
@@ -331,8 +402,21 @@ public class UICombatOverlayManager : MonoBehaviour
         */
     }
 
-    public void VictoryResults(EntityPiece loser, ItemStats item)
+    public void VictoryResults(List<ItemStats> items)
     {
+        Debug.Log("victory!");
+        DisplayResultsScreen();
+        //resultsScreen.alpha = 1;
+        var result = resultsScreen.GetComponentInChildren<TextMeshProUGUI>();
+        result.color = new Color32(240, 250, 0, 255);
+        result.text = $"Victory!\n";
+
+        result.text += "Obtained:\n";
+        foreach(var item in items)
+        {
+            result.text += $"<color=white>{item.itemName}</color>\n";
+        }
+            /*
         resultTestText.color = new Color32(240, 250, 0, 255);
         resultTestText.text = $"Victory!\n";
         if (loser.isEnemy)
@@ -342,7 +426,7 @@ public class UICombatOverlayManager : MonoBehaviour
         }
         else
             resultTestText.text += $"Stole loser's @!\n";
-
+            */
         /*
         var resultsText = resultsScreen.GetComponentInChildren<TextMeshProUGUI>();
         resultsText.color = new Color32(240, 250, 0, 255);
@@ -364,17 +448,21 @@ public class UICombatOverlayManager : MonoBehaviour
         {
             initPos = floatingDmgRightInitPosition;
             goToPos = floatingDmgRightPosition;
+            hitParticle.transform.position = new Vector3(4.5f, .5f, 0);
         }
         else
         {
             // Defender is on the left
             initPos = floatingDmgLeftInitPosition;
             goToPos = floatingDmgLeftPosition;
+            hitParticle.transform.position = new Vector3(-4.5f, .5f,0);
         }
         dmgPos.anchoredPosition = initPos;
 
         ShowInputPrompt(floatingDamage, 0.05f);
         floatingDamage.GetComponent<TextMeshProUGUI>().text = $"{(int)damage}";
+
+        hitParticle.Play();
 
         dmgPos.DOAnchorPos(goToPos, 0.25f, false).SetEase(Ease.OutBounce);
 
@@ -393,9 +481,13 @@ public class UICombatOverlayManager : MonoBehaviour
         UpdateInputPrompts(attacker);
         ShowVSHeader();
         ShowDiceInfo();
+        HideInputPrompt(leftSelectedAction, 0.25f);
+        HideInputPrompt(rightSelectedAction, 0.25f);
+        leftDiceRoll.GetComponent<TextMeshProUGUI>().text = "";
+        rightDiceRoll.GetComponent<TextMeshProUGUI>().text = "";
     }
 
-    public void HideHeaderInfo(EntityPiece entity)
+    public void HideHeaderInfo()
     {
         phaseTestPrompt.text = "";
 

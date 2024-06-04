@@ -29,6 +29,7 @@ public class UIPromptManager : MonoBehaviour
     public IntEventChannelSO m_ItemUsed;
 
     public VoidEventChannelSO m_EnableFreeview;
+    public VoidEventChannelSO m_DisableFreeview;
     public VoidEventChannelSO m_ExitRaycastedTile;
 
     private void Start()
@@ -59,7 +60,7 @@ public class UIPromptManager : MonoBehaviour
 
         m_EnableFreeview.OnEventRaised += DisplayFreeviewPrompt;
         m_EnableFreeview.OnEventRaised += HideInitialMenu;
-        m_ExitRaycastedTile.OnEventRaised += DisplayInitialMenu;
+        m_DisableFreeview.OnEventRaised += DisplayInitialMenu;
     }
 
     private void OnDisable()
@@ -84,7 +85,7 @@ public class UIPromptManager : MonoBehaviour
         m_ItemUsed.OnEventRaised -= StrikethroughInventoryPrompt;
 
         m_EnableFreeview.OnEventRaised -= HideInitialMenu;
-        m_ExitRaycastedTile.OnEventRaised -= DisplayInitialMenu;
+        m_DisableFreeview.OnEventRaised -= DisplayInitialMenu;
     }
 
     private void RolledDice(int diceRoll)
@@ -158,7 +159,7 @@ public class UIPromptManager : MonoBehaviour
     private void DisplayEncounterChoices(EntityPiece ps)
     {
         inputPrompt.text = "<color=white>[LMB]/[SPACE]</color> to encounter an enemy.";
-        inputPrompt.text += "\n<color=white>[RMB]/[SHIFT]</color> to build a store. <color=white>Costs</color> <color=yellow>@</color>200";
+        inputPrompt.text += "\n<color=white>[RMB]/[SHIFT]</color> to build a store.";
         inputPrompt.text += $"\nYou can build {4 - ps.storeCount} more stores.";
     }
 

@@ -26,10 +26,13 @@ public class CombatUIManager : MonoBehaviour
     public Animator player1Animator;
     public Animator player2Animator;
 
-    private void Start()
+    private void Awake()
     {
-        player1Renderer.color = CombatManager.Instance.player1.playerColor;
-        player2Renderer.color = CombatManager.Instance.player2.playerColor;
+        player1Renderer.color = FindObjectOfType<CombatManager>().player1.playerColor;
+        player2Renderer.color = FindObjectOfType<CombatManager>().player2.playerColor;
+
+        //player1Renderer.color = CombatManager.Instance.player1.playerColor;
+        //player2Renderer.color = CombatManager.Instance.player2.playerColor;
     }
 
     public void UpdateActionText(EntityPiece ps, Action.PhaseTypes phase)

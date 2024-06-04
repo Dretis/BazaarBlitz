@@ -22,6 +22,7 @@ public class GameplayTest : MonoBehaviour
     {
         InitialTurnMenu,
         ItemSelection,
+        RaycastTargetSelection,
         Inventory,
         RollDice,
         PickDirection,
@@ -65,11 +66,6 @@ public class GameplayTest : MonoBehaviour
     public bool playerUsedItem = false; // please change these down the line
     public bool isStockingStore = false;
 
-    //SOUND SHIT
-    public AudioClip moveSFX;
-    public AudioClip reverseSFX;
-    public AudioSource audioSource;
-
     [SerializeField] private List<Stamp.StampType> oldStamps = new List<Stamp.StampType>();
     private int oldPoints = 0;
 
@@ -94,7 +90,12 @@ public class GameplayTest : MonoBehaviour
     public PlayerEventChannelSO m_DiceRollUndo;
     public PlayerEventChannelSO m_DiceRollPrep;
     public IntEventChannelSO m_RollForMovement;
+    public VoidEventChannelSO m_PlayerMovedOnBoard;
+    public VoidEventChannelSO m_PlayerUndidSomething;
     public IntEventChannelSO m_UpdatePlayerScore;
+    public IntEventChannelSO m_PlayerScoreDecreased;
+    public IntEventChannelSO m_PlayerScoreIncreased;
+
 
     public PlayerEventChannelSO m_PassByStamp;
     public StampEventChannelSO m_UndoPassByStamp;
@@ -104,6 +105,7 @@ public class GameplayTest : MonoBehaviour
 
     public PlayerEventChannelSO m_NextPlayerTurn;
     public PlayerEventChannelSO m_EncounterDecision;
+    public VoidEventChannelSO m_EnteredCombatScene;
 
     public PlayerEventChannelSO m_OpenInventory; // JASPER OR RUSSELL PLEASE USE THIS EVENT TO ACCESS THE INVENTORY
     public PlayerEventChannelSO m_RefreshInventory;
@@ -117,6 +119,14 @@ public class GameplayTest : MonoBehaviour
     public NodeEventChannelSO m_LandOnStorefront;
     public VoidEventChannelSO m_ExitStorefront;
 
+    // Pass-by Event Channels
+    public PlayerEventChannelSO m_StealOnPassBy;
+    public PlayerEventChannelSO m_InitiateCombatOnPassBy;
+    public VoidEventChannelSO m_StopOnStoreOnPassBy;
+
+    public VoidEventChannelSO m_EnterRaycastTargetSelection;
+    public VoidEventChannelSO m_ExitRaycastTargetSelection;
+
     [Header("Listen on Event Channels")]
     public ItemEventChannelSO m_ItemBought; //Listening to this one
     public IntEventChannelSO m_ItemUsed; //Listening to this one
@@ -124,6 +134,10 @@ public class GameplayTest : MonoBehaviour
     public VoidEventChannelSO m_ExitRaycastedTile; //Listening to this one
     public PlayerEventChannelSO m_BuildStore; //Listening to this one
     public PlayerEventChannelSO m_FinishStockingStore;
+    public VoidEventChannelSO m_DisableFreeview;
+
+    // Placeholder code, basis items for storefront
+    public List<ItemStats> tempItems;
 
     private void OnEnable()
     {
@@ -134,6 +148,11 @@ public class GameplayTest : MonoBehaviour
         m_BuildStore.OnEventRaised += BuildStore;
         m_FinishStockingStore.OnEventRaised += AddRecentStockIntoStore;
         m_ItemStocked.OnEventRaised += TrackItemFromPlayerInventory;
+        m_DisableFreeview.OnEventRaised += DisableFreeview;
+
+        m_StealOnPassBy.OnEventRaised += StealFromPlayer;
+        m_InitiateCombatOnPassBy.OnEventRaised += InitiateCombatOnPlayer;
+        m_StopOnStoreOnPassBy.OnEventRaised += StopOnStore;
     }
 
     private void OnDisable()
@@ -145,13 +164,17 @@ public class GameplayTest : MonoBehaviour
         m_BuildStore.OnEventRaised -= BuildStore;
         m_FinishStockingStore.OnEventRaised -= AddRecentStockIntoStore;
         m_ItemStocked.OnEventRaised -= TrackItemFromPlayerInventory;
+        m_DisableFreeview.OnEventRaised -= DisableFreeview;
+
+        m_StealOnPassBy.OnEventRaised -= StealFromPlayer;
+        m_InitiateCombatOnPassBy.OnEventRaised -= InitiateCombatOnPlayer;
+        m_StopOnStoreOnPassBy.OnEventRaised -= StopOnStore;
     }
 
     // Start is called before the first frame update
     void Awake()
     {
         instance = this;
-        audioSource = GetComponent<AudioSource>();
         sceneManager = GameObject.FindGameObjectWithTag("SceneManager").GetComponent<SceneGameManager>();
         //playerUnits.AddRange(FindObjectsOfType<EntityPiece>());
         //nextPlayers = playerUnits;
@@ -188,6 +211,10 @@ public class GameplayTest : MonoBehaviour
             // Checks item effects on player
             case GamePhase.ItemSelection:
                 SelectItem(currentPlayer);
+                break;
+
+            case GamePhase.RaycastTargetSelection:
+                SelectRaycastTarget(currentPlayer);
                 break;
 
             // Pick choices
@@ -297,7 +324,7 @@ public class GameplayTest : MonoBehaviour
 
             // Put these in their own listener script
 
-            audioSource.PlayOneShot(moveSFX, 2f);
+            m_PlayerMovedOnBoard.RaiseEvent();
 
             // End of listener code
 
@@ -339,7 +366,7 @@ public class GameplayTest : MonoBehaviour
 
             // Put these in their own listener script
 
-            audioSource.PlayOneShot(moveSFX, 2f);
+            m_PlayerMovedOnBoard.RaiseEvent();
 
             // End of listener code
 
@@ -365,7 +392,7 @@ public class GameplayTest : MonoBehaviour
             // Undo rolling, back to menu
             m_ExitInventory.RaiseEvent();
 
-            audioSource.PlayOneShot(reverseSFX, 2f);
+            m_PlayerUndidSomething.RaiseEvent();
 
             phase = GamePhase.InitialTurnMenu;
         }
@@ -375,12 +402,14 @@ public class GameplayTest : MonoBehaviour
     void RollDice(EntityPiece p)
     {
         // For now level up happens right before you roll dice
-        if (p.canLevelUp()) {
+        if (p.canLevelUp() && p.combatSceneIndex == -1) {
             pointsLeft = 5;
+            pointsLeft += p.unspentLevelUpPoints;
             p.maxHealth += 10;
             p.health += 10;
             p.RenownLevel += 1;
             UpdatePlayerDiceStats(p, diceStats);
+            m_UpdatePlayerScore.RaiseEvent(p.id);
             levelUpScreen.enabled = true;
             remainingSP.text = $"{pointsLeft} SP left.";
             upgradeTooltip.text = "Use [WASD] or [Arrows] to select dice faces.";
@@ -405,6 +434,9 @@ public class GameplayTest : MonoBehaviour
                 diceRoll *= currentPlayer.currentStatsModifier.movementMultModifier;
                 diceRoll += currentPlayer.currentStatsModifier.movementFlatModifier;    
 
+                
+                //diceRoll += 10;   
+
                 // We just rolled for movement, tell listeners about it
                 m_RollForMovement.RaiseEvent(diceRoll);
 
@@ -412,7 +444,7 @@ public class GameplayTest : MonoBehaviour
                 rollText.text = "" + diceRoll;
                 p.movementTotal = p.movementLeft = diceRoll;
 
-                audioSource.PlayOneShot(moveSFX, 2f);
+                m_PlayerMovedOnBoard.RaiseEvent();
 
                 // End of listener code
 
@@ -423,13 +455,17 @@ public class GameplayTest : MonoBehaviour
                 // Undo rolling, back to menu
                 m_DiceRollUndo.RaiseEvent(p);
 
-                audioSource.PlayOneShot(reverseSFX, 2f);
+                m_PlayerUndidSomething.RaiseEvent();
 
                 phase = GamePhase.InitialTurnMenu;
             }
         }
         else
         {
+
+            //TEMPORARY, REMOVE THIS LATER
+            m_DiceRollUndo.RaiseEvent(p);
+
             // In Combat
             phase = GamePhase.EncounterTime;
         }
@@ -449,7 +485,7 @@ public class GameplayTest : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
             wantedNode = p.occupiedNode.west;
 
-        if (wantedNode != null)
+        if (wantedNode != null && !(wantedNode == p.previousNode && p.traveledNodes.Count <= 1) )
         {
             phase = GamePhase.MoveAround;
         }
@@ -499,12 +535,28 @@ public class GameplayTest : MonoBehaviour
                 .SetEase(Ease.OutQuint);
 
             wantedNode = null;
-            audioSource.PlayOneShot(reverseSFX, 1.2f);
+            m_PlayerUndidSomething.RaiseEvent();
 
             phase = GamePhase.PickDirection; // Go back to picking direction
         }
         else if(wantedNode != null) // Go to that new node and occupy it
         {
+            if (wantedNode.modifier == MapNode.Modifier.Rafflesia) {
+                wantedNode.modifier = MapNode.Modifier.None;
+                p.movementLeft = 0;
+                rollText.text = "" + p.movementLeft;
+                p.previousNode = null;
+                wantedNode = null;
+                //audioSource.PlayOneShot(moveSFX, 1.2f);
+
+                
+                p.traveledNodes.Clear(); 
+                p.traveledNodes.Add(p.occupiedNode); 
+
+                phase = GamePhase.EncounterTime; // next phase
+                return;
+
+            }
             p.traveledNodes.Add(p.occupiedNode);
             p.occupiedNode = wantedNode;
 
@@ -514,7 +566,7 @@ public class GameplayTest : MonoBehaviour
                 .SetEase(Ease.OutQuint);
 
             wantedNode = null;
-            audioSource.PlayOneShot(moveSFX, 1.2f);
+            m_PlayerMovedOnBoard.RaiseEvent();
 
             phase = GamePhase.PassBy;
         }
@@ -522,7 +574,7 @@ public class GameplayTest : MonoBehaviour
     }
 
     void PassBy(EntityPiece p, MapNode m)
-    {
+    {       
         // Cash in Stamps
         if (m.CompareTag("Castle"))
         {
@@ -534,6 +586,7 @@ public class GameplayTest : MonoBehaviour
                 p.ReputationPoints += (75 * Mathf.Pow(1.5f, p.stamps.Count-1));
                 p.heldPoints += (int)(150 * Mathf.Pow(2, p.stamps.Count-1));
                 m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
+                m_PlayerScoreIncreased.RaiseEvent((int)(150 * Mathf.Pow(2, p.stamps.Count-1)));
                 m_PassByPawnShop.RaiseEvent(); // change this later
             }
             p.stamps.Clear();
@@ -551,15 +604,65 @@ public class GameplayTest : MonoBehaviour
             }
         }
 
-        // Change phase.
-        if (p.heldPoints >= 4000)
+        if (m.playerOccupied != null && m.playerOccupied != p)
         {
-            phase = GamePhase.EndGame;
+            EntityPiece otherPlayer = m.playerOccupied;
+            Debug.Log("hello");
+            // Check if can steal item from player.
+            if (p.currentStatsModifier.canStealOnPassBy && otherPlayer.inventory.Count > 0)
+            {
+                Debug.Log("Steal");
+                m_StealOnPassBy.RaiseEvent(otherPlayer);
+
+                // Deactivate all active effects of items that end on stealing.
+                p.RemoveItemEffectOnUse(ItemLists.StealOnPassByItemNames);
+            }
+
+            // Check if can initiate combat.
+            if (p.currentStatsModifier.canInitiateCombatOnPassBy)
+            {
+                Debug.Log("Combat");
+                p.RemoveItemEffectOnUse(ItemLists.CombatOnPassByItemNames);
+
+                if (otherPlayer.combatSceneIndex == -1)
+                {
+                    phase = GamePhase.CombatTime;
+
+                    m_InitiateCombatOnPassBy.RaiseEvent(otherPlayer);
+
+                    p.traveledNodes.Clear();
+                    p.traveledNodes.Add(p.occupiedNode);
+
+                    // Need NAM to disable input prompt (the number that shows up on top of the screen on roll).
+                    // If enter combat before it fades, it persists on next player's turn.
+                    return;
+                }
+            }
+
+
         }
+        if (m.CompareTag("Store") && p.currentStatsModifier.canStopOnStoreOnPassBy)
+        {
+            p.previousNode = p.traveledNodes[p.traveledNodes.Count - 1];
+            m_StopOnStoreOnPassBy.RaiseEvent();
+
+            // Deactivate all active effects of items that end on store.
+            p.RemoveItemEffectOnUse(ItemLists.StopOnStoreOnPassBy);
+        }  
+        else if (m.CompareTag("Store") && (m.modifier == MapNode.Modifier.Marigold && m.modifierOwner != p) ) {
+            p.previousNode = p.traveledNodes[p.traveledNodes.Count - 1];
+            m_StopOnStoreOnPassBy.RaiseEvent();
+
+            m.modifier = MapNode.Modifier.None;
+        }
+        
+        // Change phase.
+        
         else if (p.movementLeft <= 0)
         {
-            p.traveledNodes.Clear(); // Forget all the nodes traveled to
-            p.traveledNodes.Add(p.occupiedNode); //i need this i guess
+            p.previousNode = p.traveledNodes[p.traveledNodes.Count - 1];
+            p.traveledNodes.Clear(); 
+            p.traveledNodes.Add(p.occupiedNode); 
 
             phase = GamePhase.EncounterTime; // next phase
         }
@@ -573,6 +676,7 @@ public class GameplayTest : MonoBehaviour
         if (p.combatSceneIndex != -1)
         {
             phase = GamePhase.CombatTime;
+            m_EnteredCombatScene.RaiseEvent();
             sceneManager.DisableScene(0);
             sceneManager.EnableScene(p.combatSceneIndex);
         }
@@ -620,6 +724,11 @@ public class GameplayTest : MonoBehaviour
                 p2fight.text = "";
                 resultInfo.text = "<size=45>[PAWN SHOP]</size>\nLanded on pawn shop. All held stamps have been converted to points.\n<size=30> [SPACE] to continue.</size>";
 
+                if (p.heldPoints >= 4000)
+                {
+                    phase = GamePhase.EndGame;
+                }
+
                 encounterOver = true;
                 phase = GamePhase.ConfirmContinue;
             }
@@ -646,6 +755,7 @@ public class GameplayTest : MonoBehaviour
 
                     //Debug.Log("Your Player: " + currentPlayer.nickname);
                     //Debug.Log("Other Player: " + otherPlayer.nickname);
+                    m_EnteredCombatScene.RaiseEvent();
                     encounterStarted = true;
 
                     // Set IDs of players entering combat.
@@ -662,7 +772,7 @@ public class GameplayTest : MonoBehaviour
             {
                 /*
                 // If unable to buy a store, skip the prompt and immediately enter combat.
-                if (p.heldPoints < 200 || p.storeCount >= 4)
+                if (p.storeCount >= 4)
                 {
                     Debug.Log("You got no money to build a store, dipshit!");
                     phase = GamePhase.RockPaperScissors;
@@ -680,9 +790,11 @@ public class GameplayTest : MonoBehaviour
                 else if (Input.GetKeyDown(KeyCode.Mouse1) || Input.GetKeyDown(KeyCode.RightShift) || Input.GetKeyDown(KeyCode.LeftShift))
                 {
                     p.storeCount++;
-                    p.heldPoints -= 200;
+                    //p.heldPoints -= 200;
 
                     m_UpdatePlayerScore.RaiseEvent(p.id);
+                    //TEMPORARY, later put in build store event and sound
+                    //m_PlayerScoreDecreased.RaiseEvent(-200);
                     // Raise an eventchannel for BuildAStore to replace the code in here, replace ALOT OF THE CODE EHRE PLEASE
                     Debug.Log("I am a store");
                     GameObject tile = m.gameObject;
@@ -732,6 +844,9 @@ public class GameplayTest : MonoBehaviour
                 p.heldPoints -= 600;
 
                 m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
+                //TEMPORARY, later replace with overturn store event and sound
+                m_PlayerScoreDecreased.RaiseEvent(-600);
+
 
                 isStockingStore = true;
 
@@ -748,6 +863,8 @@ public class GameplayTest : MonoBehaviour
 
     void RockPaperScissors(EntityPiece p)
     {
+        //Raise event for moving to combat scene
+        m_EnteredCombatScene.RaiseEvent();
         encounterStarted = true;
 
         // Set IDs of players entering combat.
@@ -755,7 +872,7 @@ public class GameplayTest : MonoBehaviour
 
         bool lookingForTarget = true;
         while (lookingForTarget) {
-            var monsterType = Random.Range(-6, 0); // int from -6 to -1
+            var monsterType = Random.Range(-13, 0); // int from -6 to -1
 
             sceneManager.player2ID = monsterType;
 
@@ -763,8 +880,9 @@ public class GameplayTest : MonoBehaviour
             if (enemy.combatSceneIndex == -1)
                 lookingForTarget = false;
         }
-
+        
         sceneManager.LoadCombatScene();
+        
     }
 
     private void printIndex(int row, int col, EntityPiece p) { // Temporary function, delete later.
@@ -829,6 +947,7 @@ public class GameplayTest : MonoBehaviour
         {
             Debug.Log("Out of points, level up done");
             levelUpScreen.enabled = false;
+            p.unspentLevelUpPoints = pointsLeft;
             phase = GamePhase.RollDice;
         }
         if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space)) // E to leave till I find a good exit method that doesn't get you stuck.
@@ -989,11 +1108,28 @@ public class GameplayTest : MonoBehaviour
         {
             currentPlayer.AddItemToActiveEffects(currentPlayer.inventory[index].Duration, currentPlayer.inventory[index]);
 
-            currentPlayer.UpdateStatModifiers();
+            currentPlayer.UpdateStatModifier(new EntityPiece.ActiveEffect
+            {
+                originalItem = currentPlayer.inventory[index],
+                turnsRemaining = currentPlayer.inventory[index].Duration - 1
+            });
+
             ApplyItemEffectsOnTurnStart(currentPlayer);
 
             currentPlayer.inventory.RemoveAt(index);
             playerUsedItem = true;
+
+            if (currentPlayer.currentStatsModifier.warpMode != EntityStatsModifiers.WarpMode.None) 
+            {
+                m_ExitInventory.RaiseEvent();
+                // Raise free view event I guess?
+                m_EnableFreeview.RaiseEvent();
+                // FOR NAM: USE THIS EVENT TO SHOW SELECT TILE/PLAYER UI.
+                m_EnterRaycastTargetSelection.RaiseEvent();
+                freeviewEnabled = true;
+
+                phase = GamePhase.RaycastTargetSelection;
+            }
         }        
     }
 
@@ -1024,21 +1160,29 @@ public class GameplayTest : MonoBehaviour
         }
     }
 
+    private void ApplyItemEffectsOnTargetSelection(EntityPiece p) 
+    {
+        // Warp player to specified destination.
+        if (p.currentStatsModifier.warpDestination != null)
+        {
+            p.occupiedNode = p.currentStatsModifier.warpDestination;
+            p.transform.position = p.occupiedNode.transform.position;
+            p.occupiedNodeCopy = p.occupiedNode;
+            p.traveledNodes.Clear();
+            p.traveledNodes.Add(p.occupiedNode);
+        }
+    }
+
     private void RemoveDeathsRow(int id)
     {
-        if (playerUnits[id].heldPoints >= 0)
+        if (id > -1 && playerUnits[id].heldPoints >= 0 && playerUnits[id].isInDeathsRow)
         {
             Debug.Log(playerUnits[id].entityName + " is no longer in Death's Row");
             playerUnits[id].isInDeathsRow = false;
         }
     }
 
-    public void PlayAudio(AudioClip clip)
-    {
-        audioSource.PlayOneShot(clip, 2f);
-    }
-
-    private void StockStore(EntityPiece p)
+    private void StockStore(EntityPiece p, MapNode m)
     {
         /*
         StoreManager store = p.occupiedNode.GetComponent<StoreManager>();
@@ -1048,7 +1192,7 @@ public class GameplayTest : MonoBehaviour
             // Exit store restocking.
             m_ExitInventory.RaiseEvent(); // REMOVE STOCKING STORE UI FROM SCREEN TOO
             storestockTooltip.enabled = false; // DO THIS IN THE UI
-            audioSource.PlayOneShot(reverseSFX, 2f);
+            m_PlayerUndidSomething.RaiseEvent();
 
             phase = GamePhase.EndTurn;
         }
@@ -1142,5 +1286,102 @@ public class GameplayTest : MonoBehaviour
 
         recentStockedItems.Clear();
         m_ExitInventory.RaiseEvent();
+    public void StealFromPlayer(EntityPiece otherPlayer)
+    {
+        Debug.Log("StealFromPlayer");
+        int indexToSteal = Random.Range(0, otherPlayer.inventory.Count);
+        currentPlayer.inventory.Add(otherPlayer.inventory[indexToSteal]);
+
+        if (currentPlayer.inventory.Count > 6)
+        {
+            // Raise event to drop items.
+        }
+
+        otherPlayer.inventory.RemoveAt(indexToSteal);
+
+        // Raise event to show UI of item stolen. Not sure what to do if other player has no items to steal.
+    }
+
+    public void InitiateCombatOnPlayer(EntityPiece otherPlayer)
+    {
+        Debug.Log("InitiateCombatOnPlayer");
+        encounterStarted = true;
+
+        // Set IDs of players entering combat.
+        sceneManager.player1ID = currentPlayer.id;
+        sceneManager.player2ID = otherPlayer.id;
+        sceneManager.LoadCombatScene();
+    }
+
+    public void StopOnStore()
+    {
+        Debug.Log("StopOnStore");
+        currentPlayer.movementLeft = 0;
+        rollText.text = "" + currentPlayer.movementLeft;
+    }  
+
+    public void SelectRaycastTarget(EntityPiece p)
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (p.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Tiles)
+            {
+                if (RaycastTiles.tileSelected != null)
+                    WarpConfirmed(p);
+            }
+            else if (p.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Players)
+            {
+                if (RaycastTiles.tileSelected.playerOccupied != null
+                && RaycastTiles.tileSelected.playerOccupied != p)
+                    WarpConfirmed(p);
+            }
+            else if (p.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Marigold)
+            {
+                if (RaycastTiles.tileSelected.CompareTag("Store")
+                && RaycastTiles.tileSelected.modifier == MapNode.Modifier.None)
+                    PlantConfirmed(p, MapNode.Modifier.Marigold);
+                else {
+                    m_ExitRaycastTargetSelection.RaiseEvent(); // prevents getting stuck, but we should probably add a warning
+                    phase = GamePhase.InitialTurnMenu;
+                }
+            }
+            else if (p.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Rafflesia)
+            {
+                if (RaycastTiles.tileSelected.modifier == MapNode.Modifier.None)
+                    PlantConfirmed(p, MapNode.Modifier.Rafflesia);
+            }
+        }
+    }
+
+    private void WarpConfirmed(EntityPiece p)
+    {
+        m_DisableFreeview.RaiseEvent();
+
+        // FOR NAM: USE THIS EVENT TO HIDE SELECT TILE/PLAYER UI
+        m_ExitRaycastTargetSelection.RaiseEvent();
+        p.currentStatsModifier.warpDestination = RaycastTiles.tileSelected;
+        ApplyItemEffectsOnTargetSelection(p);
+        phase = GamePhase.InitialTurnMenu;
+    }
+
+    private void PlantConfirmed(EntityPiece p, MapNode.Modifier modifier)
+    {
+        m_DisableFreeview.RaiseEvent();
+
+        // FOR NAM: USE THIS EVENT TO HIDE SELECT TILE/PLAYER UI
+        m_ExitRaycastTargetSelection.RaiseEvent();
+        p.currentStatsModifier.warpDestination = RaycastTiles.tileSelected;
+        PlantItemOnSpaceSelection(p, modifier);
+        phase = GamePhase.InitialTurnMenu;
+    }
+
+    private void PlantItemOnSpaceSelection(EntityPiece p, MapNode.Modifier modifier) 
+    {
+        // Warp player to specified destination.
+        if (p.currentStatsModifier.warpDestination != null)
+        {
+            p.currentStatsModifier.warpDestination.modifier = modifier;
+            p.currentStatsModifier.warpDestination.modifierOwner = p;
+        }
     }
 }
