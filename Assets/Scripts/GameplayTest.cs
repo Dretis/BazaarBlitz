@@ -360,6 +360,7 @@ public class GameplayTest : MonoBehaviour
         // For now level up happens right before you roll dice
         if (p.canLevelUp() && p.combatSceneIndex == -1) {
             pointsLeft = 5;
+            pointsLeft += p.unspentLevelUpPoints;
             p.maxHealth += 10;
             p.health += 10;
             p.RenownLevel += 1;
@@ -388,6 +389,9 @@ public class GameplayTest : MonoBehaviour
                 // Apply movement item effects.
                 diceRoll *= currentPlayer.currentStatsModifier.movementMultModifier;
                 diceRoll += currentPlayer.currentStatsModifier.movementFlatModifier;    
+
+                
+                //diceRoll += 10;   
 
                 // We just rolled for movement, tell listeners about it
                 m_RollForMovement.RaiseEvent(diceRoll);
@@ -433,7 +437,7 @@ public class GameplayTest : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
             wantedNode = p.occupiedNode.west;
 
-        if (wantedNode != null)
+        if (wantedNode != null && !(wantedNode == p.previousNode && p.traveledNodes.Count <= 1) )
         {
             phase = GamePhase.MoveAround;
         }
@@ -489,6 +493,22 @@ public class GameplayTest : MonoBehaviour
         }
         else if(wantedNode != null) // Go to that new node and occupy it
         {
+            if (wantedNode.modifier == MapNode.Modifier.Rafflesia) {
+                wantedNode.modifier = MapNode.Modifier.None;
+                p.movementLeft = 0;
+                rollText.text = "" + p.movementLeft;
+                p.previousNode = null;
+                wantedNode = null;
+                audioSource.PlayOneShot(moveSFX, 1.2f);
+
+                
+                p.traveledNodes.Clear(); 
+                p.traveledNodes.Add(p.occupiedNode); 
+
+                phase = GamePhase.EncounterTime; // next phase
+                return;
+
+            }
             p.traveledNodes.Add(p.occupiedNode);
             p.occupiedNode = wantedNode;
 
@@ -570,22 +590,29 @@ public class GameplayTest : MonoBehaviour
                     return;
                 }
             }
+
+
         }
-        else if (m.CompareTag("Store") && p.currentStatsModifier.canStopOnStoreOnPassBy)
+        if (m.CompareTag("Store") && p.currentStatsModifier.canStopOnStoreOnPassBy)
         {
+            p.previousNode = p.traveledNodes[p.traveledNodes.Count - 1];
             m_StopOnStoreOnPassBy.RaiseEvent();
 
             // Deactivate all active effects of items that end on store.
             p.RemoveItemEffectOnUse(ItemLists.StopOnStoreOnPassBy);
-        }       
+        }  
+        else if (m.CompareTag("Store") && (m.modifier == MapNode.Modifier.Marigold && m.modifierOwner != p) ) {
+            p.previousNode = p.traveledNodes[p.traveledNodes.Count - 1];
+            m_StopOnStoreOnPassBy.RaiseEvent();
+
+            m.modifier = MapNode.Modifier.None;
+        }
         
         // Change phase.
-        if (p.heldPoints >= 4000)
-        {
-            phase = GamePhase.EndGame;
-        }
+        
         else if (p.movementLeft <= 0)
         {
+            p.previousNode = p.traveledNodes[p.traveledNodes.Count - 1];
             p.traveledNodes.Clear(); 
             p.traveledNodes.Add(p.occupiedNode); 
 
@@ -648,6 +675,11 @@ public class GameplayTest : MonoBehaviour
                 p2fight.text = "";
                 resultInfo.text = "<size=45>[PAWN SHOP]</size>\nLanded on pawn shop. All held stamps have been converted to points.\n<size=30> [SPACE] to continue.</size>";
 
+                if (p.heldPoints >= 4000)
+                {
+                    phase = GamePhase.EndGame;
+                }
+
                 encounterOver = true;
                 phase = GamePhase.ConfirmContinue;
             }
@@ -689,7 +721,7 @@ public class GameplayTest : MonoBehaviour
             else if (m.CompareTag("Encounter")) // Regular Encounter
             {
                 // If unable to buy a store, skip the prompt and immediately enter combat.
-                if (p.heldPoints < 200 || p.storeCount >= 4)
+                if (p.storeCount >= 4)
                 {
                     Debug.Log("You got no money to build a store, dipshit!");
                     phase = GamePhase.RockPaperScissors;
@@ -707,11 +739,11 @@ public class GameplayTest : MonoBehaviour
                 else if (Input.GetKeyDown(KeyCode.Mouse1) || Input.GetKeyDown(KeyCode.RightShift) || Input.GetKeyDown(KeyCode.LeftShift))
                 {
                     p.storeCount++;
-                    p.heldPoints -= 200;
+                    //p.heldPoints -= 200;
 
                     m_UpdatePlayerScore.RaiseEvent(p.id);
                     //TEMPORARY, later put in build store event and sound
-                    m_PlayerScoreDecreased.RaiseEvent(-200);
+                    //m_PlayerScoreDecreased.RaiseEvent(-200);
                     // Raise an eventchannel for BuildAStore to replace the code in here, replace ALOT OF THE CODE EHRE PLEASE
                     Debug.Log("I am a store");
                     GameObject tile = m.gameObject;
@@ -858,6 +890,7 @@ public class GameplayTest : MonoBehaviour
         {
             Debug.Log("Out of points, level up done");
             levelUpScreen.enabled = false;
+            p.unspentLevelUpPoints = pointsLeft;
             phase = GamePhase.RollDice;
         }
         if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space)) // E to leave till I find a good exit method that doesn't get you stuck.
@@ -1149,6 +1182,7 @@ public class GameplayTest : MonoBehaviour
     {
         Debug.Log("StopOnStore");
         currentPlayer.movementLeft = 0;
+        rollText.text = "" + currentPlayer.movementLeft;
     }  
 
     public void SelectRaycastTarget(EntityPiece p)
@@ -1166,6 +1200,21 @@ public class GameplayTest : MonoBehaviour
                 && RaycastTiles.tileSelected.playerOccupied != p)
                     WarpConfirmed(p);
             }
+            else if (p.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Marigold)
+            {
+                if (RaycastTiles.tileSelected.CompareTag("Store")
+                && RaycastTiles.tileSelected.modifier == MapNode.Modifier.None)
+                    PlantConfirmed(p, MapNode.Modifier.Marigold);
+                else {
+                    m_ExitRaycastTargetSelection.RaiseEvent(); // prevents getting stuck, but we should probably add a warning
+                    phase = GamePhase.InitialTurnMenu;
+                }
+            }
+            else if (p.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Rafflesia)
+            {
+                if (RaycastTiles.tileSelected.modifier == MapNode.Modifier.None)
+                    PlantConfirmed(p, MapNode.Modifier.Rafflesia);
+            }
         }
     }
 
@@ -1178,5 +1227,26 @@ public class GameplayTest : MonoBehaviour
         p.currentStatsModifier.warpDestination = RaycastTiles.tileSelected;
         ApplyItemEffectsOnTargetSelection(p);
         phase = GamePhase.InitialTurnMenu;
+    }
+
+    private void PlantConfirmed(EntityPiece p, MapNode.Modifier modifier)
+    {
+        m_DisableFreeview.RaiseEvent();
+
+        // FOR NAM: USE THIS EVENT TO HIDE SELECT TILE/PLAYER UI
+        m_ExitRaycastTargetSelection.RaiseEvent();
+        p.currentStatsModifier.warpDestination = RaycastTiles.tileSelected;
+        PlantItemOnSpaceSelection(p, modifier);
+        phase = GamePhase.InitialTurnMenu;
+    }
+
+    private void PlantItemOnSpaceSelection(EntityPiece p, MapNode.Modifier modifier) 
+    {
+        // Warp player to specified destination.
+        if (p.currentStatsModifier.warpDestination != null)
+        {
+            p.currentStatsModifier.warpDestination.modifier = modifier;
+            p.currentStatsModifier.warpDestination.modifierOwner = p;
+        }
     }
 }

@@ -414,6 +414,24 @@ public class CombatManager : MonoBehaviour
         } else { // but pause combat if we looped twice
             isFirstPhase = true;
             pausingLock = true;
+
+            if (!isFightingAI) {
+                // to be fair to the 2nd place guy, they can go first next turn
+                tempDefender = defender;
+                defender = attacker;
+                attacker = tempDefender;
+
+                if (player1Attacking) {
+                    player1Attacking = false;
+                    player2Attacking = true;
+                } else {
+                    player1Attacking = true;
+                    player2Attacking = false;
+                }
+                
+                m_SwapPhase.RaiseEvent(attacker);
+            }
+
             StartCoroutine(PauseCombatDelay(1f));
         }
         
@@ -664,14 +682,26 @@ public class CombatManager : MonoBehaviour
 
         if (isFightingAI && player2.health <= 0)
         {
-            int loot1 = Random.Range(0, 6);
-            player1.inventory.Add(player2.inventory[loot1]); // Enemy inventories are effectively static loot tables (they always have 6 items)
-            int loot2 = Random.Range(0, 6);
-            player1.inventory.Add(player2.inventory[loot2]);
-
             List<ItemStats> newlyGainedItems = new List<ItemStats>();
-            newlyGainedItems.Add(player2.inventory[loot1]); 
-            newlyGainedItems.Add(player2.inventory[loot2]);
+            for (int i = 0; i < 2; i++) {
+                int loot = Random.Range(0, 100);
+
+                int itemDropIndex = 0;
+                while (itemDropIndex < player2.inventory.Count-1) { // to ensure we dont go out of bounds from a bad loot table
+                    if (loot > player2.lootOdds[itemDropIndex]) {
+                        loot -= player2.lootOdds[itemDropIndex];
+                        itemDropIndex++;
+                    } else {
+                        break;
+                    }
+                }
+
+                Debug.Log(itemDropIndex);
+
+                player1.inventory.Add(player2.inventory[itemDropIndex]); // Enemy inventories are effectively static loot tables (they always have 6 items)
+                newlyGainedItems.Add(player2.inventory[itemDropIndex]); 
+            }
+            
 
             player1.ReputationPoints += player2.ReputationPoints; // a monster's rep is just its exp yield.
 

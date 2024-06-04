@@ -50,7 +50,10 @@ MonoBehaviour:
   playerSprite: {fileID: 0}
   occupiedNode: {fileID: 0}
   occupiedNodeCopy: {fileID: 0}
+  previousNode: {fileID: 0}
+  unspentLevelUpPoints: 0
   traveledNodes: []
+  dustCloud: {fileID: 0}
   movementTotal: 0
   movementLeft: 0
   heldPoints: 0
@@ -102,8 +105,7 @@ MonoBehaviour:
   inventory:
   - {fileID: 11400000, guid: 4fd59672f461ffa4bb6c75f0339fc93d, type: 2}
   - {fileID: 11400000, guid: f26fa68957c44394997221a74fdb9939, type: 2}
-  - {fileID: 11400000, guid: f26fa68957c44394997221a74fdb9939, type: 2}
-  - {fileID: 11400000, guid: 8089e0e474c4f144f8164f37535a2cc3, type: 2}
   - {fileID: 11400000, guid: 8089e0e474c4f144f8164f37535a2cc3, type: 2}
   - {fileID: 11400000, guid: 538c3ea9b77a52049adb54f819957e9b, type: 2}
+  lootOdds: 0f000000230000001900000019000000
   activeEffects: []

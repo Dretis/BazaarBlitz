@@ -159,7 +159,7 @@ public class UIPromptManager : MonoBehaviour
     private void DisplayEncounterChoices(EntityPiece ps)
     {
         inputPrompt.text = "<color=white>[LMB]/[SPACE]</color> to encounter an enemy.";
-        inputPrompt.text += "\n<color=white>[RMB]/[SHIFT]</color> to build a store. <color=white>Costs</color> <color=yellow>@</color>200";
+        inputPrompt.text += "\n<color=white>[RMB]/[SHIFT]</color> to build a store.";
         inputPrompt.text += $"\nYou can build {4 - ps.storeCount} more stores.";
     }
 

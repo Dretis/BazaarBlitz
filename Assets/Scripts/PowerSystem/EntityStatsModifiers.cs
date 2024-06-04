@@ -11,11 +11,15 @@ public class EntityStatsModifiers
         }
     }
 
+    // I know marigold isnt warping but it lets us not bloat gameplaytest even more.
+    // considering this is the main way to select tiles, it should probably be renamed.
     public enum WarpMode
     {
         None,
         Tiles,
-        Players
+        Players,
+        Marigold,
+        Rafflesia
     }
 
     // List of all stats
