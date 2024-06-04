@@ -251,7 +251,7 @@ public class GameplayTest : MonoBehaviour
                 break;
 
             case GamePhase.StockStore:
-                StockStore(currentPlayer);
+                StockStore(currentPlayer, currentPlayer.occupiedNode);
                 break;
 
             case GamePhase.OverturnStore:
@@ -1279,13 +1279,15 @@ public class GameplayTest : MonoBehaviour
     public void AddRecentStockIntoStore(EntityPiece player)
     {
         StoreManager store = player.occupiedNode.GetComponent<StoreManager>();
-        foreach(ItemStats item in recentStockedItems)
+        foreach (ItemStats item in recentStockedItems)
         {
             store.AddItem(item);
         }
 
         recentStockedItems.Clear();
         m_ExitInventory.RaiseEvent();
+    }
+
     public void StealFromPlayer(EntityPiece otherPlayer)
     {
         Debug.Log("StealFromPlayer");
