@@ -61,6 +61,11 @@ public class SoundManager : MonoBehaviour
         overworldThemeInstance.start();
     }
 
+    private void Update()
+    {
+        Debug.Log(musicVolume + " is the music volume");
+    }
+
     private void OnEnable()
     {
         //World Events
