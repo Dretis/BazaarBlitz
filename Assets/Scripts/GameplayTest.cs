@@ -676,6 +676,7 @@ public class GameplayTest : MonoBehaviour
 
                     //Debug.Log("Your Player: " + currentPlayer.nickname);
                     //Debug.Log("Other Player: " + otherPlayer.nickname);
+                    m_EnteredCombatScene.RaiseEvent();
                     encounterStarted = true;
 
                     // Set IDs of players entering combat.
