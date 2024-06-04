@@ -500,7 +500,7 @@ public class GameplayTest : MonoBehaviour
                 rollText.text = "" + p.movementLeft;
                 p.previousNode = null;
                 wantedNode = null;
-                audioSource.PlayOneShot(moveSFX, 1.2f);
+                //audioSource.PlayOneShot(moveSFX, 1.2f);
 
                 
                 p.traveledNodes.Clear(); 
