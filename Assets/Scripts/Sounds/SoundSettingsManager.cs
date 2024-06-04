@@ -54,7 +54,6 @@ public class SoundSettingsManager : MonoBehaviour
 
     public void SFXSlider(float volume)
     {
-        FMODinstance.setParameterByName("SoundVolume", volume);
         FMODinstance3.setParameterByName("SoundVolume", volume);
         soundManager.SFXVolume = volume;
     }

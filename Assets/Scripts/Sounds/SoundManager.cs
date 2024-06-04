@@ -50,7 +50,8 @@ public class SoundManager : MonoBehaviour
     public DamageEventChannelSO m_DamageTaken;
 
     
-    private void Start()
+
+    private void Awake()
     {
         DontDestroyOnLoad(this.gameObject);
         overworldThemeInstance = FMODUnity.RuntimeManager.CreateInstance("event:/KatamariTheme");
@@ -59,11 +60,6 @@ public class SoundManager : MonoBehaviour
         SFXVolume = 0.8f;
         overworldThemeInstance.setParameterByName("MusicVolume", musicVolume);
         overworldThemeInstance.start();
-    }
-
-    private void Update()
-    {
-        Debug.Log(musicVolume + " is the music volume");
     }
 
     private void OnEnable()
@@ -127,6 +123,7 @@ public class SoundManager : MonoBehaviour
 
     private void PlayOverworldMusic()
     {
+        overworldThemeInstance.setParameterByName("MusicVolume", musicVolume);
         overworldThemeInstance.start();
     }
 

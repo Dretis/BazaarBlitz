@@ -115,7 +115,9 @@ public class CombatManager : MonoBehaviour
         combatUIManager.UpdateActionText(defender, Action.PhaseTypes.Defend);
 
         m_DecidedTurnOrder.RaiseEvent(attacker);
-        m_ActionSelected.RaiseEvent(attacker, Action.PhaseTypes.Attack);
+
+        //Why is this here???
+        // m_ActionSelected.RaiseEvent(attacker, Action.PhaseTypes.Attack);
 
         
     }
