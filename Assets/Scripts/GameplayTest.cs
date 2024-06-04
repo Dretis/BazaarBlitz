@@ -411,6 +411,10 @@ public class GameplayTest : MonoBehaviour
         }
         else
         {
+
+            //TEMPORARY, REMOVE THIS LATER
+            m_DiceRollUndo.RaiseEvent(p);
+
             // In Combat
             phase = GamePhase.EncounterTime;
         }
@@ -598,6 +602,7 @@ public class GameplayTest : MonoBehaviour
         if (p.combatSceneIndex != -1)
         {
             phase = GamePhase.CombatTime;
+            m_EnteredCombatScene.RaiseEvent();
             sceneManager.DisableScene(0);
             sceneManager.EnableScene(p.combatSceneIndex);
         }
