@@ -17,7 +17,7 @@ public class UIInventoryManager : MonoBehaviour
         DropItem
     }
     //[SerializeField] private List<ItemStats> playerInventory; //effectively copy of player's inv
-    [SerializeField] private EntityPiece currentPlayer; //reference of player
+    //[SerializeField] private EntityPiece currentPlayer; //reference of player
 
     [Header("Main Inventory")]
     [SerializeField] private Canvas inventoryCanvas;

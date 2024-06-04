@@ -728,6 +728,8 @@ MonoBehaviour:
   east: {fileID: 1135932820}
   south: {fileID: 0}
   west: {fileID: 794685460}
+  modifier: 0
+  modifierOwner: {fileID: 0}
 --- !u!114 &68935970
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11639,6 +11641,8 @@ MonoBehaviour:
   east: {fileID: 1888144212}
   south: {fileID: 0}
   west: {fileID: 1842361608}
+  modifier: 0
+  modifierOwner: {fileID: 0}
 --- !u!212 &513793209
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -19101,9 +19105,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3abb963e3f717e42a957c3a1697e507, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerInventory: []
+  currentPlayer: {fileID: 0}
   inventoryCanvas: {fileID: 1951649247}
   inventoryGroup: {fileID: 2020969580}
+  inventoryGridContainer: {fileID: 0}
   itemIcons:
   - {fileID: 1354923136}
   - {fileID: 1040222032}
@@ -19145,10 +19150,23 @@ MonoBehaviour:
   - {fileID: 2080129354}
   - {fileID: 210437154}
   storeInv: []
+  storestockTooltip: {fileID: 0}
+  extraGroup: {fileID: 0}
+  extraIcons: []
+  extraNames: []
+  extraPrices: []
+  extraInv: []
+  currentState: 0
+  currentItemCount: 0
+  heldItemPrefab: {fileID: 0}
+  heldItemHolders: []
   m_ItemUsed: {fileID: 11400000, guid: 848f52d6f0e789e4ab1731d31de0ae96, type: 2}
   m_OpenInventory: {fileID: 11400000, guid: 91caeb767faff934e81ba8e6ff774d38, type: 2}
   m_ExitInventory: {fileID: 11400000, guid: 4992d66997435ac41b90fcee905517ec, type: 2}
+  m_RefreshInventory: {fileID: 11400000, guid: 2fe2b0b5820338047bc3ac8cff1272ab, type: 2}
   m_RestockStore: {fileID: 11400000, guid: 45d6b055127905e4cb2609426a521e19, type: 2}
+  m_ItemStocked: {fileID: 11400000, guid: 677672fced788ca4ba7cecd9f14887dc, type: 2}
+  m_ItemSelected: {fileID: 11400000, guid: 49087bd72a461bd46b0fb8d2f16c4d6e, type: 2}
 --- !u!1 &774440254
 GameObject:
   m_ObjectHideFlags: 0
@@ -20133,6 +20151,8 @@ MonoBehaviour:
   east: {fileID: 0}
   south: {fileID: 638905226}
   west: {fileID: 0}
+  modifier: 0
+  modifierOwner: {fileID: 0}
 --- !u!212 &844000271
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -41025,6 +41045,8 @@ MonoBehaviour:
   east: {fileID: 36691529}
   south: {fileID: 0}
   west: {fileID: 1899041034}
+  modifier: 0
+  modifierOwner: {fileID: 0}
 --- !u!114 &954811502
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -48139,6 +48161,7 @@ GameObject:
   - component: {fileID: 1124466744}
   - component: {fileID: 1124466746}
   - component: {fileID: 1124466747}
+  - component: {fileID: 1124466748}
   m_Layer: 0
   m_Name: Input Manager
   m_TagString: Untagged
@@ -48200,6 +48223,7 @@ MonoBehaviour:
   turn: 1
   phase: 0
   diceRoll: 0
+  recentStockedItems: []
   rollText: {fileID: 1903034394}
   turnText: {fileID: 1673688514}
   encounterScreen: {fileID: 140310053}
@@ -48212,6 +48236,7 @@ MonoBehaviour:
   storeListingsLabel: {fileID: 646577240}
   wantedNode: {fileID: 0}
   encounterStarted: 0
+  playerUsedItem: 0
   isStockingStore: 0
   oldStamps: 
   levelUpScreen: {fileID: 1748653422}
@@ -48238,8 +48263,10 @@ MonoBehaviour:
   m_EncounterDecision: {fileID: 11400000, guid: 8718b783fa7492048bcffd162050642b, type: 2}
   m_EnteredCombatScene: {fileID: 11400000, guid: b06b734815e5e434087c29d416ff002e, type: 2}
   m_OpenInventory: {fileID: 11400000, guid: 91caeb767faff934e81ba8e6ff774d38, type: 2}
+  m_RefreshInventory: {fileID: 11400000, guid: 2fe2b0b5820338047bc3ac8cff1272ab, type: 2}
   m_RestockStore: {fileID: 11400000, guid: 45d6b055127905e4cb2609426a521e19, type: 2}
   m_ExitInventory: {fileID: 11400000, guid: 4992d66997435ac41b90fcee905517ec, type: 2}
+  m_DropItems: {fileID: 11400000, guid: b4f9a64d3851af44ab619f47801f3147, type: 2}
   m_OverturnOpportunity: {fileID: 11400000, guid: b97cd2f064ff0934db3edfa396c94215, type: 2}
   m_LandOnStorefront: {fileID: 11400000, guid: f648c693d8451764f96f063b6b3da44b, type: 2}
   m_ExitStorefront: {fileID: 11400000, guid: 410e906b10aa4ae49ab7395fffa23d79, type: 2}
@@ -48250,6 +48277,10 @@ MonoBehaviour:
   m_ExitRaycastTargetSelection: {fileID: 11400000, guid: 772ef068b81dce340bf549ac7425179c, type: 2}
   m_ItemBought: {fileID: 11400000, guid: ace0aa03bf09d91469d5914ce815154e, type: 2}
   m_ItemUsed: {fileID: 11400000, guid: 848f52d6f0e789e4ab1731d31de0ae96, type: 2}
+  m_ItemStocked: {fileID: 11400000, guid: 677672fced788ca4ba7cecd9f14887dc, type: 2}
+  m_ExitRaycastedTile: {fileID: 11400000, guid: bb03629fcd15efc49a85071214823911, type: 2}
+  m_BuildStore: {fileID: 11400000, guid: 9d5f0aa79aca10040958b1cad28bafa1, type: 2}
+  m_FinishStockingStore: {fileID: 11400000, guid: f02cee4c939241841aa967904d4db75e, type: 2}
   m_DisableFreeview: {fileID: 11400000, guid: 9dfdcd33a17daa44088bf0e8fe4c1898, type: 2}
   tempItems:
   - {fileID: 11400000, guid: 4fd59672f461ffa4bb6c75f0339fc93d, type: 2}
@@ -48273,7 +48304,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: 37a850325181c034c80dddaf460e8363, type: 3}
+  m_Actions: {fileID: -944628639613478452, guid: 26bb27642ad641c4691ff8463cbc2a11, type: 3}
   m_NotificationBehavior: 0
   m_UIInputModule: {fileID: 0}
   m_DeviceLostEvent:
@@ -48288,9 +48319,33 @@ MonoBehaviour:
   m_ActionEvents: []
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
-  m_DefaultActionMap: Player
+  m_DefaultActionMap: Initial Turn Menu
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 1632428436}
+--- !u!114 &1124466748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1124466743}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8978cbcb9a4430a478e1d0d86c497c5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentPlayer: {fileID: 0}
+  playerInput: {fileID: 1124466747}
+  m_EnableFreeview: {fileID: 11400000, guid: d7e81995233eb6340bf998043ae2294f, type: 2}
+  m_DiceRollUndo: {fileID: 11400000, guid: c893b6f1be9cffb4b87d121e14d423c7, type: 2}
+  m_DiceRollPrep: {fileID: 11400000, guid: 9e449a1e468efff46b833c09542c6b5f, type: 2}
+  m_RollForMovement: {fileID: 11400000, guid: d015287f1c859dc49a75cff91e2028a9, type: 2}
+  m_OpenInventory: {fileID: 11400000, guid: 91caeb767faff934e81ba8e6ff774d38, type: 2}
+  m_BuildStore: {fileID: 11400000, guid: 9d5f0aa79aca10040958b1cad28bafa1, type: 2}
+  m_FinishStockingStore: {fileID: 11400000, guid: f02cee4c939241841aa967904d4db75e, type: 2}
+  m_RestockStore: {fileID: 11400000, guid: 45d6b055127905e4cb2609426a521e19, type: 2}
+  m_ExitInventory: {fileID: 11400000, guid: 4992d66997435ac41b90fcee905517ec, type: 2}
+  m_NextPlayerTurn: {fileID: 11400000, guid: 45e13c3cd9283b74989c51218c39f6c2, type: 2}
 --- !u!1 &1132819355
 GameObject:
   m_ObjectHideFlags: 0
@@ -51948,6 +52003,8 @@ MonoBehaviour:
   playerSprite: {fileID: 990241279}
   occupiedNode: {fileID: 513793208}
   occupiedNodeCopy: {fileID: 0}
+  previousNode: {fileID: 0}
+  unspentLevelUpPoints: 0
   traveledNodes: []
   dustCloud: {fileID: 625845505}
   movementTotal: 0
@@ -51999,6 +52056,7 @@ MonoBehaviour:
     canInitiateCombatOnPassBy: 0
     canStopOnStoreOnPassBy: 0
   inventory: []
+  lootOdds: 
   activeEffects: []
 --- !u!114 &1273892901
 MonoBehaviour:
@@ -53900,6 +53958,8 @@ MonoBehaviour:
   playerSprite: {fileID: 453942726}
   occupiedNode: {fileID: 513793208}
   occupiedNodeCopy: {fileID: 0}
+  previousNode: {fileID: 0}
+  unspentLevelUpPoints: 0
   traveledNodes: []
   dustCloud: {fileID: 1010162204}
   movementTotal: 0
@@ -53951,6 +54011,7 @@ MonoBehaviour:
     canInitiateCombatOnPassBy: 0
     canStopOnStoreOnPassBy: 0
   inventory: []
+  lootOdds: 
   activeEffects: []
 --- !u!114 &1419713628
 MonoBehaviour:
@@ -63512,6 +63573,8 @@ MonoBehaviour:
   playerSprite: {fileID: 1707007756}
   occupiedNode: {fileID: 513793208}
   occupiedNodeCopy: {fileID: 0}
+  previousNode: {fileID: 0}
+  unspentLevelUpPoints: 0
   traveledNodes: []
   dustCloud: {fileID: 152882269}
   movementTotal: 0
@@ -63563,6 +63626,7 @@ MonoBehaviour:
     canInitiateCombatOnPassBy: 0
     canStopOnStoreOnPassBy: 0
   inventory: []
+  lootOdds: 
   activeEffects: []
 --- !u!114 &1751578438
 MonoBehaviour:
@@ -63797,6 +63861,8 @@ MonoBehaviour:
   east: {fileID: 76138813}
   south: {fileID: 0}
   west: {fileID: 736036596}
+  modifier: 0
+  modifierOwner: {fileID: 0}
 --- !u!212 &1770488574
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -64039,6 +64105,8 @@ MonoBehaviour:
   playerSprite: {fileID: 1981033896}
   occupiedNode: {fileID: 513793208}
   occupiedNodeCopy: {fileID: 0}
+  previousNode: {fileID: 0}
+  unspentLevelUpPoints: 0
   traveledNodes: []
   dustCloud: {fileID: 1491230379}
   movementTotal: 0
@@ -64090,6 +64158,7 @@ MonoBehaviour:
     canInitiateCombatOnPassBy: 0
     canStopOnStoreOnPassBy: 0
   inventory: []
+  lootOdds: 
   activeEffects: []
 --- !u!4 &1784744903 stripped
 Transform:
