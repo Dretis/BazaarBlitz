@@ -504,8 +504,8 @@ public class GameplayTest : MonoBehaviour
 
                 
                 p.traveledNodes.Clear(); 
-                p.traveledNodes.Add(p.occupiedNode); 
-
+                p.traveledNodes.Add(p.occupiedNode);
+                RaycastTiles.tileSelected.flowerTrapVisual.color = new Color32(0,0,0,0);
                 phase = GamePhase.EncounterTime; // next phase
                 return;
 
@@ -603,6 +603,7 @@ public class GameplayTest : MonoBehaviour
             p.RemoveItemEffectOnUse(ItemLists.StopOnStoreOnPassBy);
         }  
         else if (m.CompareTag("Store") && (m.modifier == MapNode.Modifier.Marigold && m.modifierOwner != p) ) {
+            RaycastTiles.tileSelected.flowerTrapVisual.color = new Color32(0, 0, 0, 0);
             p.previousNode = p.traveledNodes[p.traveledNodes.Count - 1];
             m_StopOnStoreOnPassBy.RaiseEvent();
 
@@ -1208,10 +1209,13 @@ public class GameplayTest : MonoBehaviour
             }
             else if (p.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Marigold)
             {
-                if (RaycastTiles.tileSelected.CompareTag("Store")
-                && RaycastTiles.tileSelected.modifier == MapNode.Modifier.None)
+                if (RaycastTiles.tileSelected.CompareTag("Store") && RaycastTiles.tileSelected.modifier == MapNode.Modifier.None)
+                {
                     PlantConfirmed(p, MapNode.Modifier.Marigold);
-                else {
+                    RaycastTiles.tileSelected.flowerTrapVisual.color = currentPlayer.playerColor;
+                }
+                else 
+                {
                     m_ExitRaycastTargetSelection.RaiseEvent(); // prevents getting stuck, but we should probably add a warning
                     phase = GamePhase.InitialTurnMenu;
                 }
@@ -1219,7 +1223,10 @@ public class GameplayTest : MonoBehaviour
             else if (p.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Rafflesia)
             {
                 if (RaycastTiles.tileSelected.modifier == MapNode.Modifier.None)
+                {
+                    RaycastTiles.tileSelected.flowerTrapVisual.color = currentPlayer.playerColor;
                     PlantConfirmed(p, MapNode.Modifier.Rafflesia);
+                }
             }
         }
     }

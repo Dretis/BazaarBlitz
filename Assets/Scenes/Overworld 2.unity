@@ -724,10 +724,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerOccupied: {fileID: 0}
+  flowerTrapVisual: {fileID: 0}
   north: {fileID: 0}
   east: {fileID: 1135932820}
   south: {fileID: 0}
   west: {fileID: 794685460}
+  modifier: 0
+  modifierOwner: {fileID: 0}
 --- !u!114 &68935970
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11635,10 +11638,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerOccupied: {fileID: 0}
+  flowerTrapVisual: {fileID: 0}
   north: {fileID: 0}
   east: {fileID: 1888144212}
   south: {fileID: 0}
   west: {fileID: 1842361608}
+  modifier: 0
+  modifierOwner: {fileID: 0}
 --- !u!212 &513793209
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -20129,10 +20135,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerOccupied: {fileID: 0}
+  flowerTrapVisual: {fileID: 0}
   north: {fileID: 1334903569}
   east: {fileID: 0}
   south: {fileID: 638905226}
   west: {fileID: 0}
+  modifier: 0
+  modifierOwner: {fileID: 0}
 --- !u!212 &844000271
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -41021,10 +41030,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerOccupied: {fileID: 0}
+  flowerTrapVisual: {fileID: 0}
   north: {fileID: 0}
   east: {fileID: 36691529}
   south: {fileID: 0}
   west: {fileID: 1899041034}
+  modifier: 0
+  modifierOwner: {fileID: 0}
 --- !u!114 &954811502
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -51948,6 +51960,8 @@ MonoBehaviour:
   playerSprite: {fileID: 990241279}
   occupiedNode: {fileID: 513793208}
   occupiedNodeCopy: {fileID: 0}
+  previousNode: {fileID: 0}
+  unspentLevelUpPoints: 0
   traveledNodes: []
   dustCloud: {fileID: 625845505}
   movementTotal: 0
@@ -51999,6 +52013,7 @@ MonoBehaviour:
     canInitiateCombatOnPassBy: 0
     canStopOnStoreOnPassBy: 0
   inventory: []
+  lootOdds: 
   activeEffects: []
 --- !u!114 &1273892901
 MonoBehaviour:
@@ -53900,6 +53915,8 @@ MonoBehaviour:
   playerSprite: {fileID: 453942726}
   occupiedNode: {fileID: 513793208}
   occupiedNodeCopy: {fileID: 0}
+  previousNode: {fileID: 0}
+  unspentLevelUpPoints: 0
   traveledNodes: []
   dustCloud: {fileID: 1010162204}
   movementTotal: 0
@@ -53951,6 +53968,7 @@ MonoBehaviour:
     canInitiateCombatOnPassBy: 0
     canStopOnStoreOnPassBy: 0
   inventory: []
+  lootOdds: 
   activeEffects: []
 --- !u!114 &1419713628
 MonoBehaviour:
@@ -63512,6 +63530,8 @@ MonoBehaviour:
   playerSprite: {fileID: 1707007756}
   occupiedNode: {fileID: 513793208}
   occupiedNodeCopy: {fileID: 0}
+  previousNode: {fileID: 0}
+  unspentLevelUpPoints: 0
   traveledNodes: []
   dustCloud: {fileID: 152882269}
   movementTotal: 0
@@ -63563,6 +63583,7 @@ MonoBehaviour:
     canInitiateCombatOnPassBy: 0
     canStopOnStoreOnPassBy: 0
   inventory: []
+  lootOdds: 
   activeEffects: []
 --- !u!114 &1751578438
 MonoBehaviour:
@@ -63793,10 +63814,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerOccupied: {fileID: 0}
+  flowerTrapVisual: {fileID: 0}
   north: {fileID: 736036596}
   east: {fileID: 76138813}
   south: {fileID: 0}
   west: {fileID: 736036596}
+  modifier: 0
+  modifierOwner: {fileID: 0}
 --- !u!212 &1770488574
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -64039,6 +64063,8 @@ MonoBehaviour:
   playerSprite: {fileID: 1981033896}
   occupiedNode: {fileID: 513793208}
   occupiedNodeCopy: {fileID: 0}
+  previousNode: {fileID: 0}
+  unspentLevelUpPoints: 0
   traveledNodes: []
   dustCloud: {fileID: 1491230379}
   movementTotal: 0
@@ -64090,6 +64116,7 @@ MonoBehaviour:
     canInitiateCombatOnPassBy: 0
     canStopOnStoreOnPassBy: 0
   inventory: []
+  lootOdds: 
   activeEffects: []
 --- !u!4 &1784744903 stripped
 Transform:
