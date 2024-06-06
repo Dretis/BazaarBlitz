@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using TMPro;
+using System.Drawing;
 
 public class UIPromptManager : MonoBehaviour
 {
@@ -211,11 +212,15 @@ public class UIPromptManager : MonoBehaviour
         var buildCount = 4 - ps.storeCount;
 
         if(buildCount <= 0 || !ps.occupiedNode.CompareTag("Encounter"))
-            inventoryPromptText.text = "<color=grey>Build</color>";
-        else 
+        {
+            buildPromptText.text = "<color=grey>Build</color>";
+            buildLimitText.text = "<color=grey>Cant</color>";
+        }
+        else
+        {
             buildPromptText.text = "Build";
-
-        buildLimitText.text = $"{4 - ps.storeCount} Left";
+            buildLimitText.text = $"{4 - ps.storeCount} Left";
+        }
     }
 
     private void StrikethroughBuildPrompt(int index)
