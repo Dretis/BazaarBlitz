@@ -50,6 +50,7 @@ public class SoundManager : MonoBehaviour
     public EntityActionPhaseEventChannelSO m_ActionSelected;
     public DamageEventChannelSO m_DamageTaken;
 
+    private bool startedBattleMusic = false;
     
 
     private void Awake()
@@ -57,6 +58,7 @@ public class SoundManager : MonoBehaviour
         DontDestroyOnLoad(this.gameObject);
         overworldThemeInstance = FMODUnity.RuntimeManager.CreateInstance("event:/KatamariTheme");
         diceRollInstance = FMODUnity.RuntimeManager.CreateInstance("event:/RollDice");
+        battleThemeInstance = FMODUnity.RuntimeManager.CreateInstance("event:/BattleTheme");
         musicVolume = 0.8f;
         SFXVolume = 0.8f;
         overworldThemeInstance.setParameterByName("MusicVolume", musicVolume);
@@ -126,27 +128,32 @@ public class SoundManager : MonoBehaviour
 
     private void PlayOverworldMusic()
     {
-        overworldThemeInstance.setParameterByName("MusicVolume", musicVolume);
-        overworldThemeInstance.start();
+        overworldThemeInstance.setPaused(false);
     }
 
     private void StopOverworldMusic()
     {
-        overworldThemeInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
-        diceRollInstance.release();
+        overworldThemeInstance.setPaused(true);
     }
 
     private void PlayCombatMusic()
     {
-        battleThemeInstance = FMODUnity.RuntimeManager.CreateInstance("event:/BattleTheme");
-        battleThemeInstance.setParameterByName("MusicVolume", musicVolume);
-        battleThemeInstance.start();
+        if (startedBattleMusic)
+        {
+            battleThemeInstance.setPaused(false);
+        }
+        else
+        {
+            battleThemeInstance.setParameterByName("MusicVolume", musicVolume);
+            battleThemeInstance.start();
+            startedBattleMusic = true;
+        }
+
     }
 
     private void StopCombatMusic()
     {
-        battleThemeInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
-        diceRollInstance.release();
+        battleThemeInstance.setPaused(true);
     }
 
     private void PlayStampSound(EntityPiece entity)
