@@ -23,6 +23,7 @@ public class GameplayTest : MonoBehaviour
         InitialTurnMenu,
         ItemSelection,
         RaycastTargetSelection,
+        Freeview, // for new input system
         Inventory,
         RollDice,
         PickDirection,
@@ -128,6 +129,7 @@ public class GameplayTest : MonoBehaviour
     public VoidEventChannelSO m_ExitRaycastTargetSelection;
 
     [Header("Listen on Event Channels")]
+    public VoidEventChannelSO m_DiceRolled;
     public ItemEventChannelSO m_ItemBought; //Listening to this one
     public IntEventChannelSO m_ItemUsed; //Listening to this one
     public IntItemEventChannelSO m_ItemStocked;
@@ -141,6 +143,7 @@ public class GameplayTest : MonoBehaviour
 
     private void OnEnable()
     {
+        m_DiceRolled.OnEventRaised += CalculateDiceRoll;
         m_ItemBought.OnEventRaised += ConfirmPurchase;
         m_ItemUsed.OnEventRaised += RemoveItemInPlayerInventory;
         m_UpdatePlayerScore.OnEventRaised += RemoveDeathsRow;
@@ -157,6 +160,7 @@ public class GameplayTest : MonoBehaviour
 
     private void OnDisable()
     {
+        m_DiceRolled.OnEventRaised -= CalculateDiceRoll;
         m_ItemBought.OnEventRaised -= ConfirmPurchase;
         m_ItemUsed.OnEventRaised -= RemoveItemInPlayerInventory;
         m_UpdatePlayerScore.OnEventRaised -= RemoveDeathsRow;
@@ -471,6 +475,27 @@ public class GameplayTest : MonoBehaviour
         }
     }
 
+    void CalculateDiceRoll()
+    {
+        diceRoll = Random.Range(1, 7); // Roll from 1 to 6
+
+        var rollsRemaining = currentPlayer.currentStatsModifier.rollModifier;
+        while (rollsRemaining > 0)
+        {
+            Debug.Log($"Rolls Left{rollsRemaining}");
+            diceRoll += Random.Range(1, 7); // roll again until there's no more
+            rollsRemaining--;
+        }
+
+        // Apply movement item effects.
+        diceRoll *= currentPlayer.currentStatsModifier.movementMultModifier;
+        diceRoll += currentPlayer.currentStatsModifier.movementFlatModifier;
+
+        currentPlayer.movementTotal = currentPlayer.movementLeft = diceRoll;
+        m_RollForMovement.RaiseEvent(diceRoll);
+        m_PlayerMovedOnBoard.RaiseEvent(); // idk why this has to be a seperate event
+    }
+
     void PickDirection(EntityPiece p)
     {
         if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
@@ -578,6 +603,11 @@ public class GameplayTest : MonoBehaviour
         // Cash in Stamps
         if (m.CompareTag("Castle"))
         {
+            if (p.heldPoints >= 4000)
+            {
+                phase = GamePhase.EndGame; // Finish game if player w/ enough points passes by Pawn Shop
+            }
+
             oldPoints = p.heldPoints;
             oldStamps = new List<Stamp.StampType>(p.stamps);
 
@@ -719,22 +749,22 @@ public class GameplayTest : MonoBehaviour
             }
             else if (m.CompareTag("Castle")) //Stash your points
             {
+                /*
                 encounterScreen.SetActive(true);
                 p1fight.text = "";
                 p2fight.text = "";
                 resultInfo.text = "<size=45>[PAWN SHOP]</size>\nLanded on pawn shop. All held stamps have been converted to points.\n<size=30> [SPACE] to continue.</size>";
 
-                if (p.heldPoints >= 4000)
-                {
-                    phase = GamePhase.EndGame;
-                }
-
                 encounterOver = true;
                 phase = GamePhase.ConfirmContinue;
+                */
+
+                encounterOver = true;
+                phase = GamePhase.EndTurn;
             }
             else if (m.CompareTag("Stamp"))
             {
-                // Placeholder visual for clarity
+                /*
                 encounterScreen.SetActive(true);
                 p1fight.text = "";
                 p2fight.text = "";
@@ -743,6 +773,10 @@ public class GameplayTest : MonoBehaviour
 
                 encounterOver = true;
                 phase = GamePhase.ConfirmContinue;
+                */
+
+                encounterOver = true;
+                phase = GamePhase.EndTurn;
             }
             else if (m.CompareTag("Encounter") && otherPlayer != null && otherPlayer != currentPlayer) // Player Fight
             {

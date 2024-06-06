@@ -213,15 +213,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""Look"",
-                    ""type"": ""Value"",
-                    ""id"": ""4657de21-fbe7-4d43-b976-c058cc589d3b"",
-                    ""expectedControlType"": ""Vector2"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
-                },
-                {
                     ""name"": ""ToggleFreeview"",
                     ""type"": ""Button"",
                     ""id"": ""62c0726e-b283-42d1-ba92-55b65bdca438"",
@@ -386,39 +377,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""5f5f16d9-dd4f-48ff-8119-b21faf10bd5b"",
-                    ""path"": ""<Gamepad>/rightStick"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Gamepad"",
-                    ""action"": ""Look"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""498e6ce8-b7f7-4d74-8c72-c49a7bfa00cd"",
-                    ""path"": ""<Pointer>/delta"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse;Touch"",
-                    ""action"": ""Look"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""480dedb0-f6f7-4f58-be96-2d3ef95bde93"",
-                    ""path"": ""<Joystick>/{Hatswitch}"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Joystick"",
-                    ""action"": ""Look"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""28bf83c3-05b3-4426-93e4-73256e625b01"",
                     ""path"": ""<Gamepad>/buttonNorth"",
                     ""interactions"": """",
@@ -475,6 +433,228 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             ]
         },
         {
+            ""name"": ""Freeview"",
+            ""id"": ""0abe4d66-4985-497c-b965-d2e04a8e7250"",
+            ""actions"": [
+                {
+                    ""name"": ""FreeviewMove"",
+                    ""type"": ""Value"",
+                    ""id"": ""c6cb74ca-357f-4141-8462-c4e5e7e1aede"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""FreeviewExamine"",
+                    ""type"": ""Button"",
+                    ""id"": ""0fb8cab9-530e-4a86-b401-7190caa3a604"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""FreeviewExit"",
+                    ""type"": ""Button"",
+                    ""id"": ""7aad7542-090f-45cb-9bf3-3ab9abde8842"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""883d30d8-0543-40ca-9ae3-fdb006768b0d"",
+                    ""path"": ""<Gamepad>/leftStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""FreeviewMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7f1387ab-59c0-4305-8844-d7442f7fe737"",
+                    ""path"": ""<Gamepad>/dpad"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""FreeviewMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""WASD"",
+                    ""id"": ""3804af3d-4ea7-464e-b954-ae06ef8f691b"",
+                    ""path"": ""Dpad"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""FreeviewMove"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""09c8bc73-f92d-4d76-aec7-3e62453853e1"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""FreeviewMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""8897aba8-2f10-44b1-a302-9a2487d5ce73"",
+                    ""path"": ""<Keyboard>/upArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""FreeviewMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""154ad89f-bbdf-4f27-8409-ec9ee49320fa"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""FreeviewMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""9f682374-428c-4f2f-99eb-91b352b7eb61"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""FreeviewMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""3b2c6d26-e361-4964-bf3b-b29f44c6c077"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""FreeviewMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""0146f503-94f4-454f-a4cd-82972a8a4a14"",
+                    ""path"": ""<Keyboard>/leftArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""FreeviewMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""091356a5-ff36-42d9-bbca-97d80f3ccc42"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""FreeviewMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""cfca0d57-280e-4b6b-a4e0-43775a21386d"",
+                    ""path"": ""<Keyboard>/rightArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""FreeviewMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4ab293a6-4bb4-4856-af47-a6ad5f686c8c"",
+                    ""path"": ""<XRController>/{Primary2DAxis}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""XR"",
+                    ""action"": ""FreeviewMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ff488571-660f-46cf-aebd-42b3d5cc99dc"",
+                    ""path"": ""<Joystick>/stick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Joystick"",
+                    ""action"": ""FreeviewMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""574445bb-b7cd-45c5-b75c-452a2f4dd992"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""FreeviewExamine"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a0695cb8-cecb-4937-ad2b-f83d45c7f5db"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""FreeviewExamine"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b5ccc6f9-a59d-41aa-a6ae-29fb5181798a"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""FreeviewExit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bd1f8781-36e8-4ce8-ab79-3e317471577e"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""FreeviewExit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
             ""name"": ""Confirmation"",
             ""id"": ""ac85fb0e-9ce8-43d4-b78c-1934228a3b80"",
             ""actions"": [
@@ -511,30 +691,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""ac990a2f-caf8-4726-a628-b25797acba7f"",
-                    ""path"": ""<SwitchProControllerHID>/buttonEast"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Gamepad"",
-                    ""action"": ""Yes"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""c0899556-8341-44ce-841a-79968a4dc188"",
                     ""path"": ""<Gamepad>/buttonEast"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Gamepad"",
-                    ""action"": ""No"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""64d98e7c-a8f6-4f32-92e5-917dc0945c24"",
-                    ""path"": ""<SwitchProControllerHID>/buttonSouth"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
@@ -1126,11 +1284,33 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""a84fb956-6393-41f2-994e-7045331ff97a"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Submit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""418a977b-eb6c-4fea-a18c-7995233004bc"",
                     ""path"": ""<Mouse>/rightButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Cancel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""aa27e2b2-a8a3-4adb-9112-87e51f04579e"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
                     ""action"": ""Cancel"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -1210,9 +1390,13 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         // Moving
         m_Moving = asset.FindActionMap("Moving", throwIfNotFound: true);
         m_Moving_Move = m_Moving.FindAction("Move", throwIfNotFound: true);
-        m_Moving_Look = m_Moving.FindAction("Look", throwIfNotFound: true);
         m_Moving_ToggleFreeview = m_Moving.FindAction("ToggleFreeview", throwIfNotFound: true);
         m_Moving_Confirm = m_Moving.FindAction("Confirm", throwIfNotFound: true);
+        // Freeview
+        m_Freeview = asset.FindActionMap("Freeview", throwIfNotFound: true);
+        m_Freeview_FreeviewMove = m_Freeview.FindAction("FreeviewMove", throwIfNotFound: true);
+        m_Freeview_FreeviewExamine = m_Freeview.FindAction("FreeviewExamine", throwIfNotFound: true);
+        m_Freeview_FreeviewExit = m_Freeview.FindAction("FreeviewExit", throwIfNotFound: true);
         // Confirmation
         m_Confirmation = asset.FindActionMap("Confirmation", throwIfNotFound: true);
         m_Confirmation_Yes = m_Confirmation.FindAction("Yes", throwIfNotFound: true);
@@ -1361,7 +1545,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Moving;
     private List<IMovingActions> m_MovingActionsCallbackInterfaces = new List<IMovingActions>();
     private readonly InputAction m_Moving_Move;
-    private readonly InputAction m_Moving_Look;
     private readonly InputAction m_Moving_ToggleFreeview;
     private readonly InputAction m_Moving_Confirm;
     public struct MovingActions
@@ -1369,7 +1552,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         private @PlayerInputActions m_Wrapper;
         public MovingActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
         public InputAction @Move => m_Wrapper.m_Moving_Move;
-        public InputAction @Look => m_Wrapper.m_Moving_Look;
         public InputAction @ToggleFreeview => m_Wrapper.m_Moving_ToggleFreeview;
         public InputAction @Confirm => m_Wrapper.m_Moving_Confirm;
         public InputActionMap Get() { return m_Wrapper.m_Moving; }
@@ -1384,9 +1566,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Move.started += instance.OnMove;
             @Move.performed += instance.OnMove;
             @Move.canceled += instance.OnMove;
-            @Look.started += instance.OnLook;
-            @Look.performed += instance.OnLook;
-            @Look.canceled += instance.OnLook;
             @ToggleFreeview.started += instance.OnToggleFreeview;
             @ToggleFreeview.performed += instance.OnToggleFreeview;
             @ToggleFreeview.canceled += instance.OnToggleFreeview;
@@ -1400,9 +1579,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Move.started -= instance.OnMove;
             @Move.performed -= instance.OnMove;
             @Move.canceled -= instance.OnMove;
-            @Look.started -= instance.OnLook;
-            @Look.performed -= instance.OnLook;
-            @Look.canceled -= instance.OnLook;
             @ToggleFreeview.started -= instance.OnToggleFreeview;
             @ToggleFreeview.performed -= instance.OnToggleFreeview;
             @ToggleFreeview.canceled -= instance.OnToggleFreeview;
@@ -1426,6 +1602,68 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         }
     }
     public MovingActions @Moving => new MovingActions(this);
+
+    // Freeview
+    private readonly InputActionMap m_Freeview;
+    private List<IFreeviewActions> m_FreeviewActionsCallbackInterfaces = new List<IFreeviewActions>();
+    private readonly InputAction m_Freeview_FreeviewMove;
+    private readonly InputAction m_Freeview_FreeviewExamine;
+    private readonly InputAction m_Freeview_FreeviewExit;
+    public struct FreeviewActions
+    {
+        private @PlayerInputActions m_Wrapper;
+        public FreeviewActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @FreeviewMove => m_Wrapper.m_Freeview_FreeviewMove;
+        public InputAction @FreeviewExamine => m_Wrapper.m_Freeview_FreeviewExamine;
+        public InputAction @FreeviewExit => m_Wrapper.m_Freeview_FreeviewExit;
+        public InputActionMap Get() { return m_Wrapper.m_Freeview; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(FreeviewActions set) { return set.Get(); }
+        public void AddCallbacks(IFreeviewActions instance)
+        {
+            if (instance == null || m_Wrapper.m_FreeviewActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_FreeviewActionsCallbackInterfaces.Add(instance);
+            @FreeviewMove.started += instance.OnFreeviewMove;
+            @FreeviewMove.performed += instance.OnFreeviewMove;
+            @FreeviewMove.canceled += instance.OnFreeviewMove;
+            @FreeviewExamine.started += instance.OnFreeviewExamine;
+            @FreeviewExamine.performed += instance.OnFreeviewExamine;
+            @FreeviewExamine.canceled += instance.OnFreeviewExamine;
+            @FreeviewExit.started += instance.OnFreeviewExit;
+            @FreeviewExit.performed += instance.OnFreeviewExit;
+            @FreeviewExit.canceled += instance.OnFreeviewExit;
+        }
+
+        private void UnregisterCallbacks(IFreeviewActions instance)
+        {
+            @FreeviewMove.started -= instance.OnFreeviewMove;
+            @FreeviewMove.performed -= instance.OnFreeviewMove;
+            @FreeviewMove.canceled -= instance.OnFreeviewMove;
+            @FreeviewExamine.started -= instance.OnFreeviewExamine;
+            @FreeviewExamine.performed -= instance.OnFreeviewExamine;
+            @FreeviewExamine.canceled -= instance.OnFreeviewExamine;
+            @FreeviewExit.started -= instance.OnFreeviewExit;
+            @FreeviewExit.performed -= instance.OnFreeviewExit;
+            @FreeviewExit.canceled -= instance.OnFreeviewExit;
+        }
+
+        public void RemoveCallbacks(IFreeviewActions instance)
+        {
+            if (m_Wrapper.m_FreeviewActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IFreeviewActions instance)
+        {
+            foreach (var item in m_Wrapper.m_FreeviewActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_FreeviewActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public FreeviewActions @Freeview => new FreeviewActions(this);
 
     // Confirmation
     private readonly InputActionMap m_Confirmation;
@@ -1653,9 +1891,14 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     public interface IMovingActions
     {
         void OnMove(InputAction.CallbackContext context);
-        void OnLook(InputAction.CallbackContext context);
         void OnToggleFreeview(InputAction.CallbackContext context);
         void OnConfirm(InputAction.CallbackContext context);
+    }
+    public interface IFreeviewActions
+    {
+        void OnFreeviewMove(InputAction.CallbackContext context);
+        void OnFreeviewExamine(InputAction.CallbackContext context);
+        void OnFreeviewExit(InputAction.CallbackContext context);
     }
     public interface IConfirmationActions
     {
