@@ -15,9 +15,10 @@ public class StoreSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClic
     [SerializeField] private TextMeshProUGUI itemPrice;
 
     [Header("Broadcast On Event")]
-    public IntEventChannelSO m_ItemUsed;
-    public IntItemEventChannelSO m_ItemStocked;
-    public ItemEventChannelSO m_ItemSelected; // basically hovering on item in inv
+    public ItemEventChannelSO m_HightlightItem; // basically hovering on item in inv
+
+    public IntEventChannelSO m_BuyItemAt;
+    public ItemEventChannelSO m_ItemBought;
 
     public ItemStats HeldItem
     {
@@ -64,7 +65,13 @@ public class StoreSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClic
         if (heldItem == null) return;
 
         // Attempt to buy item event
+        Debug.Log($"{heldItem.name} bought");
+        itemIcon.sprite = null;
+        itemIcon.enabled = false;
+        itemPrice.text = "<color=red>SOLD!</color>";
 
+        GetComponent<Button>().interactable = false;
+        m_BuyItemAt.RaiseEvent(itemIndex);
     }
     public void OnPointerClick(PointerEventData eventData)
     {
