@@ -55,6 +55,7 @@ public class PlayerInputController : MonoBehaviour
         m_EnableFreeview.OnEventRaised += FreeviewEnabled;
         m_NextPlayerTurn.OnEventRaised += SetCurrentPlayer;
         m_RestockStore.OnEventRaised += OnRestockStore;
+        m_FinishStockingStore.OnEventRaised += OnFinishStockingStore;
     }
 
     private void OnDisable()
@@ -62,6 +63,7 @@ public class PlayerInputController : MonoBehaviour
         m_EnableFreeview.OnEventRaised -= FreeviewEnabled;
         m_NextPlayerTurn.OnEventRaised -= SetCurrentPlayer;
         m_RestockStore.OnEventRaised -= OnRestockStore;
+        m_FinishStockingStore.OnEventRaised -= OnFinishStockingStore;
     }
 
     private void FixedUpdate()
@@ -104,8 +106,9 @@ public class PlayerInputController : MonoBehaviour
     {
         var p = currentPlayer;
         if (p.occupiedNode.tag == "Encounter"
-            && p.heldPoints >= 200 && p.storeCount < 4)
+            && p.storeCount < 4)
         {
+            previousGamePhase = GamePhase.InitialTurnMenu;
             Debug.Log("Built a store");
             // Build a store in the current tile
             m_BuildStore.RaiseEvent(currentPlayer);
@@ -134,7 +137,7 @@ public class PlayerInputController : MonoBehaviour
                 m_ExitInventory.RaiseEvent();
                 break;
         }
-        SwitchActionMap(GamePhase.InitialTurnMenu);
+        //SwitchActionMap(previousGamePhase);
     }
 
     #endregion
@@ -192,8 +195,8 @@ public class PlayerInputController : MonoBehaviour
     private void OnFreeviewExit()
     {
         freeviewReticle.SetActive(false);
-        m_DisableFreeview.RaiseEvent();
         SwitchActionMap(previousGamePhase); // Should be whatever the one it was before
+        m_DisableFreeview.RaiseEvent();
         //SwitchActionMap(GamePhase.InitialTurnMenu); // Should be whatever the one it was before
     }
     #endregion
@@ -204,9 +207,9 @@ public class PlayerInputController : MonoBehaviour
         switch (GameplayTest.instance.phase)
         {
             case GamePhase.RollDice:
-                m_DiceRolled.RaiseEvent(); // Player proceeds with rolling the dice to move
-                //m_RollForMovement.RaiseEvent(9);
-                //currentPlayer.movementTotal = currentPlayer.movementLeft = 9;
+                //m_DiceRolled.RaiseEvent(); // Player proceeds with rolling the dice to move
+                m_RollForMovement.RaiseEvent(1);
+                currentPlayer.movementTotal = currentPlayer.movementLeft = 1;
                 SwitchActionMap(GamePhase.PickDirection);
                 break;
             case GamePhase.ConfirmContinue:
@@ -302,6 +305,19 @@ public class PlayerInputController : MonoBehaviour
 
     private void OnRestockStore(MapNode node)
     {
+        previousGamePhase = instance.phase;
+        Debug.Log("prev phase = "+previousGamePhase);
         SwitchActionMap(GamePhase.StockStore);
+    }
+
+    private void OnFinishStockingStore(EntityPiece ps)
+    {
+        if(previousGamePhase == GamePhase.EncounterTime)
+        {
+            Debug.Log("What the fc");
+            instance.phase = GamePhase.EndTurn;
+            return;
+        }
+        SwitchActionMap(previousGamePhase);
     }
 }

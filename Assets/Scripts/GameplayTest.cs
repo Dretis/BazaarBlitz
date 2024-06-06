@@ -45,6 +45,7 @@ public class GameplayTest : MonoBehaviour
     public GamePhase phase = GamePhase.RollDice;
     public int diceRoll;
     public List<ItemStats> recentStockedItems;
+    public int emptyStockCount = 0;
 
     public TextMeshProUGUI rollText;
     public TextMeshProUGUI turnText;
@@ -138,9 +139,6 @@ public class GameplayTest : MonoBehaviour
     public PlayerEventChannelSO m_FinishStockingStore;
     public VoidEventChannelSO m_DisableFreeview;
 
-    // Placeholder code, basis items for storefront
-    public List<ItemStats> tempItems;
-
     private void OnEnable()
     {
         m_DiceRolled.OnEventRaised += CalculateDiceRoll;
@@ -148,9 +146,12 @@ public class GameplayTest : MonoBehaviour
         m_ItemUsed.OnEventRaised += RemoveItemInPlayerInventory;
         m_UpdatePlayerScore.OnEventRaised += RemoveDeathsRow;
         m_ExitRaycastedTile.OnEventRaised += DisableFreeview;
+
         m_BuildStore.OnEventRaised += BuildStore;
+        m_RestockStore.OnEventRaised += OnRestockStore;
         m_FinishStockingStore.OnEventRaised += AddRecentStockIntoStore;
         m_ItemStocked.OnEventRaised += TrackItemFromPlayerInventory;
+
         m_DisableFreeview.OnEventRaised += DisableFreeview;
 
         m_StealOnPassBy.OnEventRaised += StealFromPlayer;
@@ -165,9 +166,12 @@ public class GameplayTest : MonoBehaviour
         m_ItemUsed.OnEventRaised -= RemoveItemInPlayerInventory;
         m_UpdatePlayerScore.OnEventRaised -= RemoveDeathsRow;
         m_ExitRaycastedTile.OnEventRaised -= DisableFreeview;
+
         m_BuildStore.OnEventRaised -= BuildStore;
+        m_RestockStore.OnEventRaised -= OnRestockStore;
         m_FinishStockingStore.OnEventRaised -= AddRecentStockIntoStore;
         m_ItemStocked.OnEventRaised -= TrackItemFromPlayerInventory;
+
         m_DisableFreeview.OnEventRaised -= DisableFreeview;
 
         m_StealOnPassBy.OnEventRaised -= StealFromPlayer;
@@ -742,6 +746,7 @@ public class GameplayTest : MonoBehaviour
                 }
                 else
                 {
+                    Debug.Log("Restock the store on landing on it plaz");
                     isStockingStore = true;
                     m_RestockStore.RaiseEvent(m);
                     //m_OpenInventory.RaiseEvent(p); // COMMENT THIS OUT WHEN RAISING THE RESTOCK EVENT
@@ -874,6 +879,7 @@ public class GameplayTest : MonoBehaviour
                
                 // Ownership changes.
                 store.playerOwner.storeCount--;
+                store.playerOwner.heldPoints += 600;
                 store.playerOwner = currentPlayer;
                 p.storeCount++;
 
@@ -1302,14 +1308,29 @@ public class GameplayTest : MonoBehaviour
         storestockTooltip.enabled = true;
     }
 
+    public void OnRestockStore(MapNode node)
+    {
+        emptyStockCount = 0;
+        var storeInventory = node.GetComponent<StoreManager>().storeInventory;
+        foreach (ItemStats item in storeInventory)
+        {
+            if (item == null)
+                emptyStockCount++;
+        }
+    }
+
     public void TrackItemFromPlayerInventory(int index, ItemStats itemStats)
     {
         // Keep track of items stocked
         // this is to make sure if player cancels their selection you can give back the items
         recentStockedItems.Add(itemStats);
+        emptyStockCount--;
 
         currentPlayer.inventory.RemoveAt(index);
         m_RefreshInventory.RaiseEvent(currentPlayer);
+
+        if(emptyStockCount <= 0)
+            m_FinishStockingStore.RaiseEvent(currentPlayer);
     }
 
     public void AddRecentStockIntoStore(EntityPiece player)

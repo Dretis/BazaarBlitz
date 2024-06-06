@@ -1170,7 +1170,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!114 &6674750566716788959
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1205,6 +1205,8 @@ MonoBehaviour:
   movementRoll: {fileID: 0}
   menuPrompt: {fileID: 6674750567146331986}
   inventoryPromptText: {fileID: 6674750567548088527}
+  buildPromptText: {fileID: 6674750567582777890}
+  buildLimitText: {fileID: 6674750567684030187}
   m_RollForMovement: {fileID: 11400000, guid: d015287f1c859dc49a75cff91e2028a9, type: 2}
   m_DiceRollPrep: {fileID: 11400000, guid: 9e449a1e468efff46b833c09542c6b5f, type: 2}
   m_DiceRollUndo: {fileID: 11400000, guid: c893b6f1be9cffb4b87d121e14d423c7, type: 2}
@@ -2082,7 +2084,7 @@ GameObject:
   - component: {fileID: 6674750567548088560}
   - component: {fileID: 6674750567548088527}
   m_Layer: 5
-  m_Name: Menu Text (Left)
+  m_Name: Menu Text (Down)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2406,7 +2408,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Cost @200
+  m_text: 4 Left
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: f14f4be18184b9d40943768620494e2d, type: 2}
   m_sharedMaterial: {fileID: 2674762156599226005, guid: f14f4be18184b9d40943768620494e2d, type: 2}
@@ -2433,8 +2435,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 16
-  m_fontSizeBase: 16
+  m_fontSize: 24
+  m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -2487,7 +2489,7 @@ GameObject:
   - component: {fileID: 6674750567808578514}
   - component: {fileID: 6674750567808578513}
   m_Layer: 5
-  m_Name: Menu Text (Left)
+  m_Name: Menu Text (Right)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

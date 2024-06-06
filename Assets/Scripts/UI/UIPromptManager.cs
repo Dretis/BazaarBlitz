@@ -11,6 +11,8 @@ public class UIPromptManager : MonoBehaviour
 
     [SerializeField] private GameObject menuPrompt;
     [SerializeField] private TextMeshProUGUI inventoryPromptText;
+    [SerializeField] private TextMeshProUGUI buildPromptText;
+    [SerializeField] private TextMeshProUGUI buildLimitText;
 
     [Header("Listen on Event Channels")]
     public IntEventChannelSO m_RollForMovement;
@@ -137,12 +139,19 @@ public class UIPromptManager : MonoBehaviour
     private void DisplayInitialMenu(EntityPiece ps)
     {
         ClearInputText();
+        if (GameplayTest.instance.phase == GameplayTest.GamePhase.PickDirection)
+            return; 
+        NormalizeBuildPrompt(ps);
         menuPrompt.SetActive(true);
     }
 
     private void DisplayInitialMenu()
     {
         ClearInputText();
+
+        if (GameplayTest.instance.phase == GameplayTest.GamePhase.PickDirection) //fuck ass way for ITM to not show while exiting freeview during pickdirection
+            return;
+
         menuPrompt.SetActive(true);
     }
 
@@ -199,7 +208,14 @@ public class UIPromptManager : MonoBehaviour
 
     private void NormalizeBuildPrompt(EntityPiece ps)
     {
-        inventoryPromptText.text = "Build";
+        var buildCount = 4 - ps.storeCount;
+
+        if(buildCount <= 0)
+            inventoryPromptText.text = "<color=grey>Build</color>";
+        else 
+            buildPromptText.text = "Build";
+
+        buildLimitText.text = $"{4 - ps.storeCount} Left";
     }
 
     private void StrikethroughBuildPrompt(int index)
