@@ -426,6 +426,7 @@ public class GameplayTest : MonoBehaviour
         }
         if(p.combatSceneIndex == -1)
         {
+            /*
             if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Mouse0))
             {
                 diceRoll = Random.Range(1, 7); // Roll from 1 to 6
@@ -467,6 +468,7 @@ public class GameplayTest : MonoBehaviour
 
                 phase = GamePhase.InitialTurnMenu;
             }
+            */
         }
         else
         {
@@ -741,7 +743,7 @@ public class GameplayTest : MonoBehaviour
                     else
                     {
                         m_LandOnStorefront.RaiseEvent(m);
-                        phase = GamePhase.ConfirmContinue;
+                        phase = GamePhase.InStore;
                     }
                 }
                 else

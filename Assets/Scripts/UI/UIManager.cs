@@ -4,11 +4,12 @@ using UnityEngine.UI;
 using TMPro;
 using System.Linq;
 using UnityEngine.EventSystems;
+using UnityEditor.Experimental.GraphView;
 
 public class UIManager : MonoBehaviour
 {
     // CHANGE THIS SCRIPTS NAME, THIS ONE IS ONLY HANDLING STOREFRONT UI
-    [Header("UI Elements")]
+    [Header("UI Visual Elements")]
     [SerializeField] private Canvas storefrontCanvas;
     [SerializeField] private List<Button> itemButtons;
     [SerializeField] private List<ItemSelectionHandler> itemSelectionHandlers;
@@ -21,8 +22,13 @@ public class UIManager : MonoBehaviour
     [SerializeField] private List<Image> itemInventoryImages;
     [SerializeField] private List<ItemStats> itemInventory;
 
+    [SerializeField] private RectTransform storeItemGridContainer;
+    [SerializeField] private GameObject storeItemPrefab;
+    [SerializeField] private List<GameObject> storeItemHolders;
+
+
     [Header("Broadcast on Event Channels")]
-    public ItemEventChannelSO m_itemSold;
+    public ItemEventChannelSO m_ItemBought;
     public IntEventChannelSO m_UpdatePlayerScore;
     public IntEventChannelSO m_PlayerScoreDecreased;
 
@@ -47,7 +53,7 @@ public class UIManager : MonoBehaviour
         m_RemoveItem.OnEventRaised += RemoveItemStockAt;
 
         // Can you even listen to your own event?
-        m_itemSold.OnEventRaised += FinishShopping;
+        m_ItemBought.OnEventRaised += FinishShopping;
     }
 
     // Unsubscribe to event(s) to avoid errors
@@ -59,13 +65,67 @@ public class UIManager : MonoBehaviour
         m_StockItems.OnEventRaised -= StockItems;
         m_RemoveItem.OnEventRaised -= RemoveItemStockAt;
 
-        m_itemSold.OnEventRaised -= FinishShopping;
+        m_ItemBought.OnEventRaised -= FinishShopping;
     }
 
     // Set dependencies here and in Inspector (if needed)
     private void Start()
     {
         
+    }
+
+    private void SpawnItemsInStore(MapNode node)
+    {
+        var store = node.GetComponent<StoreManager>();
+
+        Debug.Log("spawning");
+        storeItemHolders.Clear();
+        var storeItemParentTransform = storeItemGridContainer.transform;
+        List<ItemStats> stockedItems = new List<ItemStats>();
+
+        foreach(ItemStats item in store.storeInventory)
+        {
+            stockedItems.Add(item);
+        }
+        //if (itemsToSpawn <= INVENTORY_LIMIT)
+        //{
+        //    itemsToSpawn = INVENTORY_LIMIT;
+        //}
+
+        for (int i = 0; i < stockedItems.Count; i++)
+        {
+            var item = Instantiate(storeItemPrefab, storeItemParentTransform);
+            //item.transform.localScale = Vector3.one;
+            var storeHandler = item.GetComponent<StoreSelectionHandler>();
+            storeHandler.UpdateItemInfo(stockedItems[i]);
+            storeHandler.itemIndex = i;
+
+            storeItemHolders.Add(item);
+
+            if (storeHandler.HeldItem != null &&
+                currentPlayer.heldPoints < storeHandler.HeldItem.basePrice) // Disable player from buying if too expensive
+            {
+                storeHandler.GetComponent<Button>().enabled = false;
+                //DisableItemSelection(i);
+            }
+
+            if (i == 0)
+            {
+                Debug.Log($"ID: {storeHandler.itemIndex} | {storeHandler.HeldItem}");
+                EventSystem.current.SetSelectedGameObject(item);
+            }
+        }
+    }
+
+    private void DestroyAllStoreItems()
+    {
+        // Clear all the items upon leaving the store
+        var storeItemParentTransform = storeItemGridContainer.transform;
+
+        for (int i = storeItemParentTransform.childCount - 1; i >= 0; i--)
+        {
+            Destroy(storeItemParentTransform.GetChild(i).gameObject);
+        }
     }
 
     private void EnterStorefront(MapNode mapNode)
@@ -75,11 +135,15 @@ public class UIManager : MonoBehaviour
         // storefrontCanvas.enabled = !storefrontCanvas.enabled;
         currentStore = mapNode.GetComponent<StoreManager>();
         currentPlayer = mapNode.playerOccupied;
-        
+
+        SpawnItemsInStore(mapNode);
+
+        /*
         for (int i = 0; i < itemInventory.Count; i++)
         {
             itemInventory[i] = currentStore.storeInventory[i];
         }
+        */
 
         storeChatBubble.text = "\"Greetings, customer! Welcome to " + currentStore.playerOwner.entityName + "'s wonderful store! \nPlease purchase something.\"";
         storekeeperImage.color = currentStore.playerOwner.playerColor;
@@ -103,7 +167,7 @@ public class UIManager : MonoBehaviour
     {
         // Enable selection of items upon finishing a shopping sesh.
         EnableItemSelections();
-
+        DestroyAllStoreItems();
         storefrontCanvas.enabled = false;
         storefrontCanvas.gameObject.SetActive(false);
     }
@@ -163,39 +227,38 @@ public class UIManager : MonoBehaviour
 
     private void RemoveItemStockAt(int i)
     {
-        if (currentPlayer.isInDeathsRow || currentPlayer.heldPoints >= itemInventory[i].basePrice)
+        var selectedStoreItem = storeItemHolders[i].GetComponent<StoreSelectionHandler>().HeldItem;
+        if (currentPlayer.isInDeathsRow || currentPlayer.heldPoints >= selectedStoreItem.basePrice)
         {
-            // Visually remove the item from the list of items in the store
-            var itemImage = itemInventoryImages[i];
+            // Item is buyable, buy it and remove the item from the store
+            //var itemImage = itemInventoryImages[i];
 
-            itemImage.sprite = null;
-            itemImage.color = new Color(itemImage.color.r, itemImage.color.g, itemImage.color.b, 0);
-
-            Debug.Log("Removed the " + itemImage + " sprite from the store.");
+            //itemImage.sprite = null;
+            //itemImage.color = new Color(itemImage.color.r, itemImage.color.g, itemImage.color.b, 0);
 
             // May need to move the rest of the following code to another script
 
             // Signal that this item was sold.
             // Likely for the PlayerManager to subtract currency based off item's price.
 
-            m_itemSold.RaiseEvent(itemInventory[i]);
+            m_ItemBought.RaiseEvent(selectedStoreItem);
 
             //currentPlayer.inventory.Add(itemInventory[i]);
-            currentStore.playerOwner.heldPoints += itemInventory[i].basePrice;
+            currentStore.playerOwner.heldPoints += selectedStoreItem.basePrice;
 
             // Update store owner's score.
             m_UpdatePlayerScore.RaiseEvent(currentStore.playerOwner.id);
 
             //Broadcast the player's score difference for the sound effect
-            m_PlayerScoreDecreased.RaiseEvent(currentPlayer.heldPoints - itemInventory[i].basePrice);
+            m_PlayerScoreDecreased.RaiseEvent(currentPlayer.heldPoints - selectedStoreItem.basePrice);
 
-            itemInventory[i] = null;
+            selectedStoreItem = null;
             currentStore.storeInventory[i] = null;
         }
         else
         {
-            Debug.Log("Not enough money to buy " + itemInventory[i] + " from the store.");
-            m_itemSold.RaiseEvent(null);
+            Debug.Log("Not enough money to buy " + selectedStoreItem + " from the store.");
+            m_ItemBought.RaiseEvent(null);
         }
         
     }

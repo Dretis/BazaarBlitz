@@ -35,6 +35,7 @@ public class StoreSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClic
 
     private void Start()
     {
+        transform.localScale = Vector3.one;
         startPos = transform.position;
         startScale = transform.localScale;
     }
@@ -46,7 +47,7 @@ public class StoreSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClic
         {
             itemIcon.sprite = null;
             itemIcon.enabled = false;
-            itemPrice.text = "";
+            itemPrice.text = "<color=red>SOLD!</color>";
 
             GetComponent<Button>().interactable = false;
         }
@@ -102,12 +103,13 @@ public class StoreSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClic
 
     public void OnSelect(BaseEventData eventData)
     {
-        StartCoroutine(MoveItem(true));
+        m_HightlightItem.RaiseEvent(heldItem);
+        //StartCoroutine(MoveItem(true));
     }
 
     public void OnDeselect(BaseEventData eventData)
     {
-        StartCoroutine(MoveItem(false));
+        //StartCoroutine(MoveItem(false));
     }
 
     private IEnumerator MoveItem(bool startingAnimation)

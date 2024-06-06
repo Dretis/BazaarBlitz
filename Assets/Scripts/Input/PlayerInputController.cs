@@ -39,6 +39,7 @@ public class PlayerInputController : MonoBehaviour
     // Store-based Event Channels
     public NodeEventChannelSO m_LandOnStorefront;
     public VoidEventChannelSO m_ExitStorefront;
+    public ItemEventChannelSO m_ItemBought;
 
     // Start is called before the first frame update
     private void Start()
@@ -62,7 +63,7 @@ public class PlayerInputController : MonoBehaviour
 
         m_LandOnStorefront.OnEventRaised += OnLandOnStorefront;
         m_ExitStorefront.OnEventRaised += OnExitStorefront;
-
+        m_ItemBought.OnEventRaised += OnItemBought;
     }
 
     private void OnDisable()
@@ -74,6 +75,7 @@ public class PlayerInputController : MonoBehaviour
 
         m_LandOnStorefront.OnEventRaised -= OnLandOnStorefront;
         m_ExitStorefront.OnEventRaised -= OnExitStorefront;
+        m_ItemBought.OnEventRaised -= OnItemBought;
     }
 
     private void FixedUpdate()
@@ -342,9 +344,9 @@ public class PlayerInputController : MonoBehaviour
         SwitchActionMap(GamePhase.InStore);
     }
 
-    private void OnItemBought()
+    private void OnItemBought(ItemStats item)
     {
-
+        SwitchActionMap(GamePhase.ConfirmContinue);
     }
 
     private void OnExitStorefront()
