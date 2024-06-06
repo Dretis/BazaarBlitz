@@ -242,8 +242,7 @@ public class UIManager : MonoBehaviour
             // Likely for the PlayerManager to subtract currency based off item's price.
 
             m_ItemBought.RaiseEvent(selectedStoreItem);
-
-            //currentPlayer.inventory.Add(itemInventory[i]);
+            currentPlayer.inventory.Add(selectedStoreItem);
             currentStore.playerOwner.heldPoints += selectedStoreItem.basePrice;
 
             // Update store owner's score.
