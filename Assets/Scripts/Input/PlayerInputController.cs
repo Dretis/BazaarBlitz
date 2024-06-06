@@ -36,6 +36,9 @@ public class PlayerInputController : MonoBehaviour
 
     [Header("Listen on Event Channels")]
     public PlayerEventChannelSO m_NextPlayerTurn;
+    // Store-based Event Channels
+    public NodeEventChannelSO m_LandOnStorefront;
+    public VoidEventChannelSO m_ExitStorefront;
 
     // Start is called before the first frame update
     private void Start()
@@ -56,6 +59,10 @@ public class PlayerInputController : MonoBehaviour
         m_NextPlayerTurn.OnEventRaised += SetCurrentPlayer;
         m_RestockStore.OnEventRaised += OnRestockStore;
         m_FinishStockingStore.OnEventRaised += OnFinishStockingStore;
+
+        m_LandOnStorefront.OnEventRaised += OnLandOnStorefront;
+        m_ExitStorefront.OnEventRaised += OnExitStorefront;
+
     }
 
     private void OnDisable()
@@ -64,6 +71,9 @@ public class PlayerInputController : MonoBehaviour
         m_NextPlayerTurn.OnEventRaised -= SetCurrentPlayer;
         m_RestockStore.OnEventRaised -= OnRestockStore;
         m_FinishStockingStore.OnEventRaised -= OnFinishStockingStore;
+
+        m_LandOnStorefront.OnEventRaised -= OnLandOnStorefront;
+        m_ExitStorefront.OnEventRaised -= OnExitStorefront;
     }
 
     private void FixedUpdate()
@@ -93,6 +103,7 @@ public class PlayerInputController : MonoBehaviour
         Debug.Log("menu item pressed as message");
         if (!GameplayTest.instance.playerUsedItem)
         {
+            previousGamePhase = GamePhase.InitialTurnMenu;
             m_OpenInventory.RaiseEvent(currentPlayer);
             SwitchActionMap(GamePhase.Inventory);
         }
@@ -135,6 +146,7 @@ public class PlayerInputController : MonoBehaviour
                 break;
             case GamePhase.Inventory:
                 m_ExitInventory.RaiseEvent();
+                SwitchActionMap(previousGamePhase);
                 break;
         }
         //SwitchActionMap(previousGamePhase);
@@ -264,6 +276,10 @@ public class PlayerInputController : MonoBehaviour
                 playerInput.SwitchCurrentActionMap("Moving");
                 break;
 
+            case GamePhase.InStore:
+                playerInput.SwitchCurrentActionMap("UI");
+                break;
+
             case GamePhase.StockStore:
                 playerInput.SwitchCurrentActionMap("UI");
                 break;
@@ -319,5 +335,20 @@ public class PlayerInputController : MonoBehaviour
             return;
         }
         SwitchActionMap(previousGamePhase);
+    }
+
+    private void OnLandOnStorefront(MapNode node)
+    {
+        SwitchActionMap(GamePhase.InStore);
+    }
+
+    private void OnItemBought()
+    {
+
+    }
+
+    private void OnExitStorefront()
+    {
+
     }
 }

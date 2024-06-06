@@ -139,9 +139,9 @@ public class UIPromptManager : MonoBehaviour
     private void DisplayInitialMenu(EntityPiece ps)
     {
         ClearInputText();
+        NormalizeBuildPrompt(ps);
         if (GameplayTest.instance.phase == GameplayTest.GamePhase.PickDirection)
             return; 
-        NormalizeBuildPrompt(ps);
         menuPrompt.SetActive(true);
     }
 
@@ -210,7 +210,7 @@ public class UIPromptManager : MonoBehaviour
     {
         var buildCount = 4 - ps.storeCount;
 
-        if(buildCount <= 0)
+        if(buildCount <= 0 || !ps.occupiedNode.CompareTag("Encounter"))
             inventoryPromptText.text = "<color=grey>Build</color>";
         else 
             buildPromptText.text = "Build";
