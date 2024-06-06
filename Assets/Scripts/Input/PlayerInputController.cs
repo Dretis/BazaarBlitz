@@ -50,6 +50,7 @@ public class PlayerInputController : MonoBehaviour
         playerInput.SwitchCurrentActionMap("Initial Turn Menu");
         playerInput.currentActionMap.Enable();
 
+        //freeviewReticle = GameObject.FindWithTag("FreeviewReticle");
         freeviewRb = freeviewReticle.GetComponent<Rigidbody2D>();
     }
 
@@ -57,6 +58,7 @@ public class PlayerInputController : MonoBehaviour
     {
         freeviewReticle.SetActive(false);
         m_EnableFreeview.OnEventRaised += FreeviewEnabled;
+        m_DisableFreeview.OnEventRaised += FreeviewDisabled;
         m_NextPlayerTurn.OnEventRaised += SetCurrentPlayer;
         m_RestockStore.OnEventRaised += OnRestockStore;
         m_FinishStockingStore.OnEventRaised += OnFinishStockingStore;
@@ -69,6 +71,7 @@ public class PlayerInputController : MonoBehaviour
     private void OnDisable()
     {
         m_EnableFreeview.OnEventRaised -= FreeviewEnabled;
+        m_DisableFreeview.OnEventRaised -= FreeviewDisabled;
         m_NextPlayerTurn.OnEventRaised -= SetCurrentPlayer;
         m_RestockStore.OnEventRaised -= OnRestockStore;
         m_FinishStockingStore.OnEventRaised -= OnFinishStockingStore;
@@ -208,8 +211,6 @@ public class PlayerInputController : MonoBehaviour
 
     private void OnFreeviewExit()
     {
-        freeviewReticle.SetActive(false);
-        SwitchActionMap(previousGamePhase); // Should be whatever the one it was before
         m_DisableFreeview.RaiseEvent();
         //SwitchActionMap(GamePhase.InitialTurnMenu); // Should be whatever the one it was before
     }
@@ -319,6 +320,12 @@ public class PlayerInputController : MonoBehaviour
         freeviewReticle.SetActive(true);
         freeviewReticle.transform.position = currentPlayer.transform.position + new Vector3(0, 0.5f,0);
         SwitchActionMap(GamePhase.Freeview);
+    }
+
+    private void FreeviewDisabled()
+    {
+        freeviewReticle.SetActive(false);
+        SwitchActionMap(previousGamePhase); // Should be whatever the one it was before
     }
 
     private void OnRestockStore(MapNode node)

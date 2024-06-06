@@ -901,7 +901,7 @@ RectTransform:
   m_Children:
   - {fileID: 1114053931}
   m_Father: {fileID: 366433268}
-  m_RootOrder: 15
+  m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -3447,11 +3447,11 @@ RectTransform:
   - {fileID: 1748653419}
   - {fileID: 2015473008}
   - {fileID: 140310054}
-  - {fileID: 1220289114}
   - {fileID: 505704938}
   - {fileID: 1948604654}
   - {fileID: 1564375433}
   - {fileID: 98789388}
+  - {fileID: 1220289114}
   - {fileID: 1887520599}
   - {fileID: 1057355746}
   m_Father: {fileID: 0}
@@ -5157,6 +5157,39 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 8453308787985061511, guid: 4f05c76bcbfd0414e82098ec35d1a88c, type: 3}
+      propertyPath: m_text
+      value: <color=white><sprite=0>[ENTER]</color> Use Item \t\t<color=white><sprite=1>[ESC]</color>
+        Exit
+      objectReference: {fileID: 0}
+    - target: {fileID: 8453308787985061511, guid: 4f05c76bcbfd0414e82098ec35d1a88c, type: 3}
+      propertyPath: m_fontSize
+      value: 48
+      objectReference: {fileID: 0}
+    - target: {fileID: 8453308787985061511, guid: 4f05c76bcbfd0414e82098ec35d1a88c, type: 3}
+      propertyPath: m_spriteAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: df91dcfd3a20d2f46b9153cf1dd4b52b, type: 2}
+    - target: {fileID: 8453308787985061511, guid: 4f05c76bcbfd0414e82098ec35d1a88c, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 48
+      objectReference: {fileID: 0}
+    - target: {fileID: 8453308787985061528, guid: 4f05c76bcbfd0414e82098ec35d1a88c, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 1325.116
+      objectReference: {fileID: 0}
+    - target: {fileID: 8453308787985061528, guid: 4f05c76bcbfd0414e82098ec35d1a88c, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 93.5891
+      objectReference: {fileID: 0}
+    - target: {fileID: 8453308787985061528, guid: 4f05c76bcbfd0414e82098ec35d1a88c, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -87.70801
+      objectReference: {fileID: 0}
+    - target: {fileID: 8453308787985061528, guid: 4f05c76bcbfd0414e82098ec35d1a88c, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -439.4
+      objectReference: {fileID: 0}
     - target: {fileID: 8453308788226417785, guid: 4f05c76bcbfd0414e82098ec35d1a88c, type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
@@ -5175,7 +5208,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8453308788934714827, guid: 4f05c76bcbfd0414e82098ec35d1a88c, type: 3}
       propertyPath: m_RootOrder
-      value: 13
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 8453308788934714827, guid: 4f05c76bcbfd0414e82098ec35d1a88c, type: 3}
       propertyPath: m_AnchorMax.x
@@ -5271,7 +5304,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8453308788999611515, guid: 4f05c76bcbfd0414e82098ec35d1a88c, type: 3}
       propertyPath: m_Alpha
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4f05c76bcbfd0414e82098ec35d1a88c, type: 3}
@@ -6085,7 +6118,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 13.340332, y: 0}
+  m_AnchoredPosition: {x: 13.340332, y: -14.51}
   m_SizeDelta: {x: 1000, y: 100}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &613214490
@@ -6108,11 +6141,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "[WASD] or [Arrow Keys] to move\nCOLLECT<color=yellow>@4000</color> AND
-    \nGO BACK TO THE PAWN SHOP TO WIN!\n"
+  m_text: "COLLECT<color=yellow>@4000</color> AND \nGO BACK TO THE PAWN SHOP TO WIN!\n"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 1fb807301344d164797d565fdea727d0, type: 2}
+  m_sharedMaterial: {fileID: 2674762156599226005, guid: 1fb807301344d164797d565fdea727d0, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -6142,7 +6174,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
   m_textAlignment: 65535
@@ -6219,7 +6251,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6674750566716788958, guid: 8a1a5fbb0514249448257c8a7f20f1e4, type: 3}
       propertyPath: m_RootOrder
-      value: 12
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 6674750566716788958, guid: 8a1a5fbb0514249448257c8a7f20f1e4, type: 3}
       propertyPath: m_AnchorMax.x
@@ -12911,7 +12943,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 841476312}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe69cc6135328834aa7b3d87c0c23262, type: 3}
   m_Name: 
@@ -41713,7 +41745,7 @@ RectTransform:
   m_Children:
   - {fileID: 1456020792}
   m_Father: {fileID: 366433268}
-  m_RootOrder: 11
+  m_RootOrder: 15
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -44305,11 +44337,11 @@ MonoBehaviour:
   m_text: "Players traverse around the board trying to collect <color=yellow>@4000</color>
     through any means possible.\n\nThe means in question:\n <indent=5%> -Build stores
     and force players \n<indent=12%> to buy your items and get <color=yellow>@</color>!</indent>\n\n<indent=5%>
-    -Collect stamps around the board \n<indent=12%>and cash them at the Castle for
-    <color=yellow>@</color>!\n<indent=12%><color=grey>More stamps at once = Big @!!!</color>\n\n<indent=5%>
-    -Defeat players in combat \n<indent=12%>and steal their <color=yellow>@</color>!
-    \n\n <indent=5%> -Get items from defeating monsters \n<indent=12%>in combat.
-    Be sure to check what you got after!\n\n\n\n"
+    -Collect stamps around the board \n<indent=12%>and cash them at the Pawn Shop
+    for <color=yellow>@</color>!\n<indent=12%><color=grey>More stamps at once = Big
+    @!!!</color>\n\n<indent=5%> -Defeat players in combat \n<indent=12%>and steal
+    their <color=yellow>@</color>! \n\n <indent=5%> -Get items from defeating monsters
+    \n<indent=12%>in combat. Be sure to check what you got after!\n\n\n\n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: f14f4be18184b9d40943768620494e2d, type: 2}
   m_sharedMaterial: {fileID: 2674762156599226005, guid: f14f4be18184b9d40943768620494e2d, type: 2}
@@ -51629,7 +51661,7 @@ RectTransform:
   m_Children:
   - {fileID: 1798668933}
   m_Father: {fileID: 366433268}
-  m_RootOrder: 14
+  m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
