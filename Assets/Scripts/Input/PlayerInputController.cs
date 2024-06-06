@@ -21,7 +21,7 @@ public class PlayerInputController : MonoBehaviour
     private Vector2 freeviewMoveInput;
 
     [Header("Broadcast on Event Channels")]
-    public VoidEventChannelSO m_EnableFreeview;
+    public VoidEventChannelSO m_EnableFreeview; // also listening
     public VoidEventChannelSO m_DisableFreeview;
     public Vector2EventChannelSO m_TryExamineTile;
     public PlayerEventChannelSO m_DiceRollUndo;
@@ -51,12 +51,15 @@ public class PlayerInputController : MonoBehaviour
 
     private void OnEnable()
     {
+        freeviewReticle.SetActive(false);
+        m_EnableFreeview.OnEventRaised += FreeviewEnabled;
         m_NextPlayerTurn.OnEventRaised += SetCurrentPlayer;
         m_RestockStore.OnEventRaised += OnRestockStore;
     }
 
     private void OnDisable()
     {
+        m_EnableFreeview.OnEventRaised -= FreeviewEnabled;
         m_NextPlayerTurn.OnEventRaised -= SetCurrentPlayer;
         m_RestockStore.OnEventRaised -= OnRestockStore;
     }
@@ -70,7 +73,9 @@ public class PlayerInputController : MonoBehaviour
     private void OnView()
     {
         //Debug.Log("menu item pressed as message");
-        FreeviewEnabled(GamePhase.InitialTurnMenu);
+        previousGamePhase = GamePhase.InitialTurnMenu;
+        m_EnableFreeview.RaiseEvent();
+        //FreeviewEnabled(GamePhase.InitialTurnMenu);
     }
 
     private void OnRoll()
@@ -168,19 +173,15 @@ public class PlayerInputController : MonoBehaviour
 
     private void OnToggleFreeview()
     {
-        FreeviewEnabled(GamePhase.PickDirection);
+        previousGamePhase = GamePhase.PickDirection;
+        m_EnableFreeview.RaiseEvent();
     }
     #endregion
 
     #region 'Freeview' Action Map
     private void OnFreeviewMove(InputValue value)
     {
-        //freeviewReticle
         freeviewMoveInput = value.Get<Vector2>();
-        //Debug.Log($"Freeview Input: { freeviewMoveInput}");
-
-        //freeviewReticle.transform.position += new Vector3(freeviewMoveInput.x, freeviewMoveInput.y, 0);
-
     }
 
     private void OnFreeviewExamine()
@@ -230,55 +231,6 @@ public class PlayerInputController : MonoBehaviour
         }
     }
     #endregion
-    /*
-    private void EnableFreeview(InputAction.CallbackContext context)
-    {
-        m_EnableFreeview.RaiseEvent();
-    }
-    
-    public void OpenInventory(InputAction.CallbackContext context)
-    {
-        //SwitchActionMap(GameplayTest.GamePhase.Inventory);
-        Debug.Log("menu item pressed as event");
-        m_OpenInventory.RaiseEvent(currentPlayer);
-        SwitchActionMap(GamePhase.Inventory);
-    }
-
-    public void ExitInventory(InputAction.CallbackContext context)
-    {
-        Debug.Log("exit inv pressed");
-        //if (playerInput.currentActionMap.name == "UI")
-        //{
-            m_ExitInventory.RaiseEvent();
-            SwitchActionMap(GamePhase.InitialTurnMenu);
-        //}
-    }
-
-    public void PrepRoll(InputAction.CallbackContext context)
-    {
-        Debug.Log("prep roll pressed");
-        m_DiceRollPrep.RaiseEvent(currentPlayer);
-        SwitchActionMap(GamePhase.RollDice);
-    }
-
-    public void UndoPrepRoll(InputAction.CallbackContext context)
-    {
-        Debug.Log("undo confirm pressed");
-        m_DiceRollUndo.RaiseEvent(currentPlayer);
-        SwitchActionMap(GamePhase.InitialTurnMenu);
-    }
-    public void RollDice(InputAction.CallbackContext context)
-    {
-        Debug.Log("Dice rolled!");
-        m_RollForMovement.RaiseEvent(10);
-        SwitchActionMap(GamePhase.PickDirection);
-    }
-
-    public void Moving(InputAction.CallbackContext context)
-    {
-        //Debug.Log($"{context.ReadValue<Vector2>()}");
-    }
-    */
 
     public void SwitchActionMap(GameplayTest.GamePhase phase)
     {
@@ -341,12 +293,10 @@ public class PlayerInputController : MonoBehaviour
         playerInput.currentActionMap.Enable();
     }
 
-    private void FreeviewEnabled(GamePhase phase)
+    private void FreeviewEnabled()
     {
         freeviewReticle.SetActive(true);
-        freeviewReticle.transform.position = currentPlayer.transform.position;
-        previousGamePhase = phase;
-        m_EnableFreeview.RaiseEvent();
+        freeviewReticle.transform.position = currentPlayer.transform.position + new Vector3(0, 0.5f,0);
         SwitchActionMap(GamePhase.Freeview);
     }
 

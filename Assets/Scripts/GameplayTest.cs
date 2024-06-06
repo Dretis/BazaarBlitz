@@ -605,7 +605,9 @@ public class GameplayTest : MonoBehaviour
         {
             if (p.heldPoints >= 4000)
             {
+                Debug.Log("BRO HE WON");
                 phase = GamePhase.EndGame; // Finish game if player w/ enough points passes by Pawn Shop
+                return;
             }
 
             oldPoints = p.heldPoints;
@@ -1096,7 +1098,7 @@ public class GameplayTest : MonoBehaviour
         // UPDATE WITH ACTUAL END GAME UI, AND MAKE IN DIFFERENT SCRIPT WITH EVENT RAISED HERE.
         Debug.Log(winningPlayer.entityName + " is the KING OF THE MARKET!");
         encounterScreen.SetActive(true);
-        resultInfo.text = $"{winningPlayer.entityName} WINS!!!";
+        resultInfo.text = $"{winningPlayer.entityName} is the \nBLITZIONAIRE!!!";
     }
 
     private void ConfirmPurchase(ItemStats item)
