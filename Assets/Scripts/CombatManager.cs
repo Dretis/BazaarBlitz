@@ -492,7 +492,7 @@ public class CombatManager : MonoBehaviour
             winner = player2;
         }
 
-        if ( (isFightingAI && player1Wins) == false ) {
+        if ( (isFightingAI && player1Wins) == false ) { // player 1 winning against an ai is handled in the coroutine to get here
             loser.occupiedNode = sceneManager.spawnPoint;
             loser.transform.position = loser.occupiedNode.transform.position;
             loser.occupiedNodeCopy = loser.occupiedNode;
@@ -514,6 +514,9 @@ public class CombatManager : MonoBehaviour
             
             if (player2.isEnemy) { // Enemies dont increase the amount of xp they give
                 reputationGain = 0;
+                // But they instead level up...
+                player2.raiseAllStats();
+                player2.RenownLevel += 1;
             }
 
             winner.ReputationPoints += reputationGain;
@@ -700,9 +703,19 @@ public class CombatManager : MonoBehaviour
                 player1.inventory.Add(player2.inventory[itemDropIndex]); // Enemy inventories are effectively static loot tables (they always have 6 items)
                 newlyGainedItems.Add(player2.inventory[itemDropIndex]); 
             }
-            
 
-            player1.ReputationPoints += player2.ReputationPoints; // a monster's rep is just its exp yield.
+            if (player2.heldPoints > 0) {
+                player1.heldPoints += player2.heldPoints;
+                player2.heldPoints = 0;
+            }
+
+            player1.ReputationPoints += player2.ReputationPoints * Mathf.Pow(2, player2.RenownLevel); // a monster's rep is just its exp yield * 2^(how many players it killed)
+
+            if (player2.RenownLevel > 1) {
+                player2.resetStats(); // sets renown to 1 and all dies to their originals.
+            }
+
+            
 
             m_VictoryAgainstEnemy.RaiseEvent(newlyGainedItems);
         }
