@@ -27,6 +27,11 @@ public class SoundManager : MonoBehaviour
     public IntEventChannelSO m_RollForMovement;
     public PlayerEventChannelSO m_DiceRollUndo;
 
+    public VoidEventChannelSO m_EnableFreeview;
+    public VoidEventChannelSO m_DisableFreeview;
+    public PlayerEventChannelSO m_OpenInventory;
+    public VoidEventChannelSO m_ExitInventory;
+    public Vector2EventChannelSO m_TryExamineTile;
     public IntEventChannelSO m_PlayerScoreIncreased;
     public IntEventChannelSO m_PlayerScoreDecreased;
     public IntEventChannelSO m_ItemUsed;
@@ -82,6 +87,11 @@ public class SoundManager : MonoBehaviour
         m_ItemBought.OnEventRaised += PlayItemBoughtSound;
         m_NextPlayerTurn.OnEventRaised += PlayNextPlayerTurnSound;
         //m_ShowCombatBanner.OnEventRaised += PlayEnterBattleSound;
+        m_EnableFreeview.OnEventRaised += PlayMoveSound;
+        m_DisableFreeview.OnEventRaised += PlayUndoSound;
+        m_OpenInventory.OnEventRaised += PlayMoveSoundWithDude;
+        m_ExitInventory.OnEventRaised += PlayUndoSound;
+        m_TryExamineTile.OnEventRaised += PlayMoveSoundWithVector2;
 
         //Combat Events
         m_EnteredCombatScene.OnEventRaised += PlayCombatMusic;
@@ -112,6 +122,11 @@ public class SoundManager : MonoBehaviour
         m_PlayerScoreIncreased.OnEventRaised -= PlayCurrencyIncreasedSound;
         m_NextPlayerTurn.OnEventRaised -= PlayNextPlayerTurnSound;
         //m_ShowCombatBanner.OnEventRaised -= PlayEnterBattleSound;
+        m_EnableFreeview.OnEventRaised -= PlayMoveSound;
+        m_DisableFreeview.OnEventRaised -= PlayUndoSound;
+        m_OpenInventory.OnEventRaised -= PlayMoveSoundWithDude;
+        m_ExitInventory.OnEventRaised -= PlayUndoSound;
+        m_TryExamineTile.OnEventRaised -= PlayMoveSoundWithVector2;
 
         //Combat Events
         m_EnteredCombatScene.OnEventRaised -= PlayCombatMusic;
@@ -215,6 +230,16 @@ public class SoundManager : MonoBehaviour
     }
 
     private void PlayMoveSound()
+    {
+        AudioHelper.PlayOneShotWithParameters("event:/Move", this.transform.position, ("SoundVolume", SFXVolume));
+    }
+
+    private void PlayMoveSoundWithDude(EntityPiece entity)
+    {
+        AudioHelper.PlayOneShotWithParameters("event:/Move", this.transform.position, ("SoundVolume", SFXVolume));
+    }
+
+    private void PlayMoveSoundWithVector2(Vector2 vector2)
     {
         AudioHelper.PlayOneShotWithParameters("event:/Move", this.transform.position, ("SoundVolume", SFXVolume));
     }
