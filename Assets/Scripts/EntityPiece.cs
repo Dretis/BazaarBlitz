@@ -195,4 +195,39 @@ public class EntityPiece : MonoBehaviour
             return false;
         }
     }
+
+    // for use on enemies
+    public void resetStats() {
+
+        for (int l = RenownLevel; l > 1; l--) {
+            for (int i = 0; i < 6; i++) {
+                strDie.dieFaces[i] -= 1;
+            }
+            for (int i = 0; i < 6; i++) {
+                dexDie.dieFaces[i] -= 1;
+            }
+            for (int i = 0; i < 6; i++) {
+                intDie.dieFaces[i] -= 1;
+            }
+        }
+        
+        RenownLevel = 1;
+
+    }
+
+    public void raiseAllStats() {
+
+
+
+        for (int i = 0; i < 6; i++) {
+            strDie.dieFaces[i] += 1;
+        }
+        for (int i = 0; i < 6; i++) {
+            dexDie.dieFaces[i] += 1;
+        }
+        for (int i = 0; i < 6; i++) {
+            intDie.dieFaces[i] += 1;
+        }
+        
+    }
 }
