@@ -515,6 +515,7 @@ public class CombatManager : MonoBehaviour
             if (player2.isEnemy) { // Enemies dont increase the amount of xp they give
                 reputationGain = 0;
                 // But they instead level up...
+                player2.health = player2.health + (player2.maxHealth - player2.health) / 2;
                 player2.raiseAllStats();
                 player2.RenownLevel += 1;
             }
