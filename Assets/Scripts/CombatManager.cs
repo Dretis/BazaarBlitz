@@ -709,7 +709,7 @@ public class CombatManager : MonoBehaviour
                 player2.heldPoints = 0;
             }
 
-            player1.ReputationPoints += player2.ReputationPoints * Mathf.Pow(2, player2.RenownLevel); // a monster's rep is just its exp yield * 2^(how many players it killed)
+            player1.ReputationPoints += player2.ReputationPoints * Mathf.Pow(2, player2.RenownLevel - 1); // a monster's rep is just its exp yield * 2^(how many players it killed-1)
 
             if (player2.RenownLevel > 1) {
                 player2.resetStats(); // sets renown to 1 and all dies to their originals.
