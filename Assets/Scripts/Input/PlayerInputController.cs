@@ -222,9 +222,9 @@ public class PlayerInputController : MonoBehaviour
         switch (GameplayTest.instance.phase)
         {
             case GamePhase.RollDice:
-                m_DiceRolled.RaiseEvent(); // Player proceeds with rolling the dice to move
-                //m_RollForMovement.RaiseEvent(1);
-                //currentPlayer.movementTotal = currentPlayer.movementLeft = 1;
+                //m_DiceRolled.RaiseEvent(); // Player proceeds with rolling the dice to move
+                m_RollForMovement.RaiseEvent(1);
+                currentPlayer.movementTotal = currentPlayer.movementLeft = 1;
                 SwitchActionMap(GamePhase.PickDirection);
                 break;
             case GamePhase.ConfirmContinue:

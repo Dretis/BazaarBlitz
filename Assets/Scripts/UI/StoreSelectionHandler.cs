@@ -13,11 +13,13 @@ public class StoreSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClic
     [SerializeField] private ItemStats heldItem;
     [SerializeField] private Image itemIcon;
     [SerializeField] private TextMeshProUGUI itemPrice;
+    private Button button;
 
     [Header("Broadcast On Event")]
     public ItemEventChannelSO m_HightlightItem; // basically hovering on item in inv
 
-    public IntEventChannelSO m_BuyItemAt;
+    public IntEventChannelSO m_TryBuyItemAt;
+    public IntEventChannelSO m_RemoveItemAt;
     public ItemEventChannelSO m_ItemBought;
 
     public ItemStats HeldItem
@@ -32,12 +34,22 @@ public class StoreSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClic
 
     private Vector3 startPos;
     private Vector3 startScale;
+    private void OnEnable()
+    {
+        m_ItemBought.OnEventRaised += OnItemBought;
+    }
 
-    private void Start()
+    private void OnDisable()
+    {
+        m_ItemBought.OnEventRaised -= OnItemBought;
+    }
+
+    private void Awake()
     {
         transform.localScale = Vector3.one;
         startPos = transform.position;
         startScale = transform.localScale;
+        button = GetComponent<Button>();
     }
 
     public void UpdateItemInfo(ItemStats item)
@@ -49,7 +61,7 @@ public class StoreSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClic
             itemIcon.enabled = false;
             itemPrice.text = "<color=red>SOLD!</color>";
 
-            GetComponent<Button>().interactable = false;
+            button.interactable = true;
         }
         else
         {
@@ -57,22 +69,18 @@ public class StoreSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClic
             itemIcon.enabled = true;
             itemPrice.text = $"<color=#FFC900>@</color>{item.basePrice}";
 
-            GetComponent<Button>().interactable = true;
+            button.interactable = true;
         }
     }
 
     public void OnSubmit(BaseEventData eventData)
     {
         if (heldItem == null) return;
+        Debug.Log($"Trying to buy {heldItem.name}");
 
         // Attempt to buy item event
-        Debug.Log($"{heldItem.name} bought");
-        itemIcon.sprite = null;
-        itemIcon.enabled = false;
-        itemPrice.text = "<color=red>SOLD!</color>";
-
-        GetComponent<Button>().interactable = false;
-        m_BuyItemAt.RaiseEvent(itemIndex);
+        //m_TryBuyItemAt.RaiseEvent(itemIndex);
+        m_RemoveItemAt.RaiseEvent(itemIndex);
     }
     public void OnPointerClick(PointerEventData eventData)
     {
@@ -110,6 +118,14 @@ public class StoreSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClic
     public void OnDeselect(BaseEventData eventData)
     {
         //StartCoroutine(MoveItem(false));
+    }
+
+    private void OnItemBought(ItemStats item)
+    {
+        itemIcon.sprite = null;
+        itemIcon.enabled = false;
+        itemPrice.text = "<color=red>SOLD!</color>";
+        button.interactable = false;
     }
 
     private IEnumerator MoveItem(bool startingAnimation)

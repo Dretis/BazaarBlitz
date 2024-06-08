@@ -1045,7 +1045,8 @@ public class GameplayTest : MonoBehaviour
 
     void ConfirmContinue(EntityPiece p)
     {
-        if (encounterOver && Input.GetKeyDown(KeyCode.Space))
+        /*
+        if (encounterOver && Input.GetKeyDown(KeyCode.Alpha9))
         {
             phase = GamePhase.EndTurn;
             encounterOver = false;
@@ -1054,6 +1055,7 @@ public class GameplayTest : MonoBehaviour
             m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
             m_ExitStorefront.RaiseEvent();
         }
+        */
     }
 
     public void ConfirmContinue()
