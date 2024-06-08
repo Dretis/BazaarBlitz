@@ -8,6 +8,7 @@ public class MaxHealthStatMultValueMod : StatModifierChangerSO
     public override EntityStatsModifiers ApplyStatModChanges(EntityStatsModifiers currentStats, int currentTurn)
     {
         currentStats.maxHealthMultModifier *= maxHealthMultModifier;
+        currentStats.maxHealthShouldHeal = true;
 
         return currentStats;
     }

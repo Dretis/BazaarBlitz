@@ -15,6 +15,7 @@ public class EntityPiece : MonoBehaviour
     public int unspentLevelUpPoints = 0;
     public List<MapNode> traveledNodes = new List<MapNode>(); // Tracks the nodes the player has gone to
     public ParticleSystem dustCloud;
+    public bool ginsengHealed = false;
 
     [Header("Overworld Stats")]
     public int movementTotal;

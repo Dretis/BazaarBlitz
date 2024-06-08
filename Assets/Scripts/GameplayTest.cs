@@ -1059,9 +1059,22 @@ public class GameplayTest : MonoBehaviour
     private void ApplyItemEffectsOnTurnStart(EntityPiece p)
     {
         // Regenerate health from active effects.
-        p.health = Mathf.Min(p.maxHealth * p.currentStatsModifier.maxHealthMultModifier 
-            + p.currentStatsModifier.maxHealthFlatModifier, 
-            p.health + p.currentStatsModifier.healthRegen);
+        if (p.currentStatsModifier.maxHealthShouldHeal && p.ginsengHealed == false) {
+            p.health = Mathf.Min(p.maxHealth * p.currentStatsModifier.maxHealthMultModifier 
+                + p.currentStatsModifier.maxHealthFlatModifier, 
+                p.health * p.currentStatsModifier.maxHealthMultModifier + p.currentStatsModifier.healthRegen);
+            p.currentStatsModifier.maxHealthShouldHeal = false;
+            p.ginsengHealed = true;
+        } else {
+            p.health = Mathf.Min(p.maxHealth * p.currentStatsModifier.maxHealthMultModifier 
+                + p.currentStatsModifier.maxHealthFlatModifier, 
+                p.health + p.currentStatsModifier.healthRegen);
+
+            if (!p.currentStatsModifier.maxHealthShouldHeal) {
+                p.ginsengHealed = false;
+            }
+        }
+
         m_UpdatePlayerScore.RaiseEvent(p.id);
 
         // Warp player to specified destination.

@@ -31,6 +31,7 @@ public class EntityStatsModifiers
     public int rollModifier;
     public int maxHealthFlatModifier = 0;
     public int maxHealthMultModifier = 1;
+    public bool maxHealthShouldHeal = false;
     public int movementFlatModifier = 0;
     public int movementMultModifier = 1;
     public MapNode warpDestination = null;
