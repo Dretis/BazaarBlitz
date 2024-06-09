@@ -3,7 +3,9 @@ using UnityEngine;
 public class MapNode : MonoBehaviour
 {
     public EntityPiece playerOccupied;
+    [Header("Visual Variables")]
     public SpriteRenderer flowerTrapVisual;
+    public SpriteRenderer storefrontVisual;
 
     [Header("Nearby Nodes")] 
     public MapNode north;

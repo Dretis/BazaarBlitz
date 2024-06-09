@@ -122,6 +122,10 @@ public class StoreSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClic
 
     private void OnItemBought(ItemStats item)
     {
+        // This function will currently cause a visual bug
+        // if there are multiple of the same item in a shop
+        if(item != heldItem) return;
+
         itemIcon.sprite = null;
         itemIcon.enabled = false;
         itemPrice.text = "<color=red>SOLD!</color>";

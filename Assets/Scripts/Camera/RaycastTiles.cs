@@ -119,6 +119,8 @@ public class RaycastTiles : MonoBehaviour
     {
         m_ExitRaycastedTile.RaiseEvent();
         freeviewEnabled = false;
+        isTileSelected = false;
+        tileSelected = null;
     }
 
     public void EnableMustSelectTarget()

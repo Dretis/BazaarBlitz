@@ -1293,18 +1293,23 @@ public class GameplayTest : MonoBehaviour
     public void BuildStore(EntityPiece p)
     {
         p.storeCount++;
-        p.heldPoints -= 200;
+        //p.heldPoints -= 200;
 
         m_UpdatePlayerScore.RaiseEvent(p.id);
         // Raise an eventchannel for BuildAStore to replace the code in here, replace ALOT OF THE CODE EHRE PLEASE
         Debug.Log("I am a store");
-        GameObject tile = p.occupiedNode.gameObject;
-        tile.tag = "Store";
+        GameObject tileObject = p.occupiedNode.gameObject;
+        tileObject.tag = "Store";
 
-        tile.GetComponent<SpriteRenderer>().color = p.playerColor;
+        tileObject.GetComponent<SpriteRenderer>().color = p.playerColor;
+        var node = tileObject.GetComponent<MapNode>();
 
-        StoreManager store = tile.AddComponent<StoreManager>();
+        StoreManager store = tileObject.AddComponent<StoreManager>();
         store.playerOwner = p;
+
+        //Show store boat now
+        node.storefrontVisual.enabled = true;
+        node.storefrontVisual.GetComponent<SpriteRenderer>().color = p.playerColor;
 
         isStockingStore = true;
 
@@ -1425,23 +1430,23 @@ public class GameplayTest : MonoBehaviour
 
     private void WarpConfirmed(EntityPiece p)
     {
-        m_DisableFreeview.RaiseEvent();
-
         // FOR NAM: USE THIS EVENT TO HIDE SELECT TILE/PLAYER UI
         m_ExitRaycastTargetSelection.RaiseEvent();
         p.currentStatsModifier.warpDestination = RaycastTiles.tileSelected;
         ApplyItemEffectsOnTargetSelection(p);
+
+        m_DisableFreeview.RaiseEvent();
         phase = GamePhase.InitialTurnMenu;
     }
 
     private void PlantConfirmed(EntityPiece p, MapNode.Modifier modifier)
     {
-        m_DisableFreeview.RaiseEvent();
-
         // FOR NAM: USE THIS EVENT TO HIDE SELECT TILE/PLAYER UI
         m_ExitRaycastTargetSelection.RaiseEvent();
         p.currentStatsModifier.warpDestination = RaycastTiles.tileSelected;
         PlantItemOnSpaceSelection(p, modifier);
+
+        m_DisableFreeview.RaiseEvent();
         phase = GamePhase.InitialTurnMenu;
     }
 

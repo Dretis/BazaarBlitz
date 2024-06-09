@@ -563,6 +563,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerOccupied: {fileID: 0}
   flowerTrapVisual: {fileID: 0}
+  storefrontVisual: {fileID: 0}
   north: {fileID: 0}
   east: {fileID: 1135932820}
   south: {fileID: 0}
@@ -5675,6 +5676,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerOccupied: {fileID: 0}
   flowerTrapVisual: {fileID: 0}
+  storefrontVisual: {fileID: 0}
   north: {fileID: 0}
   east: {fileID: 1888144212}
   south: {fileID: 0}
@@ -13399,6 +13401,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerOccupied: {fileID: 0}
   flowerTrapVisual: {fileID: 0}
+  storefrontVisual: {fileID: 0}
   north: {fileID: 1334903569}
   east: {fileID: 0}
   south: {fileID: 638905226}
@@ -34196,6 +34199,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerOccupied: {fileID: 0}
   flowerTrapVisual: {fileID: 0}
+  storefrontVisual: {fileID: 0}
   north: {fileID: 0}
   east: {fileID: 36691529}
   south: {fileID: 0}
@@ -41365,7 +41369,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_Sprite: {fileID: 21300000, guid: 5daf35be2c295244da8fe2f967910eef, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -43957,7 +43961,7 @@ MonoBehaviour:
   id: 1
   playerColor: {r: 0.68328077, g: 0.55612904, b: 0.9716981, a: 1}
   playerSprite: {fileID: 990241279}
-  occupiedNode: {fileID: 513793208}
+  occupiedNode: {fileID: 2084649054}
   occupiedNodeCopy: {fileID: 0}
   previousNode: {fileID: 0}
   unspentLevelUpPoints: 0
@@ -43965,7 +43969,7 @@ MonoBehaviour:
   dustCloud: {fileID: 625845505}
   movementTotal: 0
   movementLeft: 0
-  heldPoints: 475
+  heldPoints: 1000
   storeCount: 0
   stamps: 
   isInDeathsRow: 0
@@ -44011,7 +44015,8 @@ MonoBehaviour:
     canStealOnPassBy: 0
     canInitiateCombatOnPassBy: 0
     canStopOnStoreOnPassBy: 0
-  inventory: []
+  inventory:
+  - {fileID: 11400000, guid: f678bd587785a29459a91ba38885eef5, type: 2}
   lootOdds: 
   activeEffects: []
 --- !u!114 &1273892901
@@ -54607,6 +54612,7 @@ MonoBehaviour:
   m_NextPlayerTurn: {fileID: 11400000, guid: 45e13c3cd9283b74989c51218c39f6c2, type: 2}
   m_EnableFreeview: {fileID: 11400000, guid: d7e81995233eb6340bf998043ae2294f, type: 2}
   m_DisableFreeview: {fileID: 11400000, guid: 9dfdcd33a17daa44088bf0e8fe4c1898, type: 2}
+  m_ExitRaycastedTile: {fileID: 11400000, guid: bb03629fcd15efc49a85071214823911, type: 2}
 --- !u!114 &1763117830
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -54637,6 +54643,7 @@ MonoBehaviour:
   - {fileID: 1363888916}
   m_EnterRaycastedTile: {fileID: 11400000, guid: afbe9acd002146a46991e60f337ba054, type: 2}
   m_ExitRaycastedTile: {fileID: 11400000, guid: bb03629fcd15efc49a85071214823911, type: 2}
+  m_DisableFreeview: {fileID: 11400000, guid: 9dfdcd33a17daa44088bf0e8fe4c1898, type: 2}
 --- !u!114 &1763117831
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -54731,6 +54738,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerOccupied: {fileID: 0}
   flowerTrapVisual: {fileID: 0}
+  storefrontVisual: {fileID: 0}
   north: {fileID: 736036596}
   east: {fileID: 76138813}
   south: {fileID: 0}
@@ -59204,7 +59212,7 @@ PrefabInstance:
       objectReference: {fileID: 1888144212}
     - target: {fileID: 2191971066474418514, guid: 3fcba7553498039488b031e4f5ba7c15, type: 3}
       propertyPath: inventory.Array.size
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 2191971066474418514, guid: 3fcba7553498039488b031e4f5ba7c15, type: 3}
       propertyPath: inventory.Array.data[0]
@@ -59217,11 +59225,15 @@ PrefabInstance:
     - target: {fileID: 2191971066474418514, guid: 3fcba7553498039488b031e4f5ba7c15, type: 3}
       propertyPath: inventory.Array.data[2]
       value: 
-      objectReference: {fileID: 11400000, guid: dbbe8d699b09bfd4b8fb2ccdd3d1bbd1, type: 2}
+      objectReference: {fileID: 11400000, guid: eb28f5dcbddd3514eb903201f798e52c, type: 2}
     - target: {fileID: 2191971066474418514, guid: 3fcba7553498039488b031e4f5ba7c15, type: 3}
       propertyPath: inventory.Array.data[3]
       value: 
       objectReference: {fileID: 11400000, guid: 17f44431f77d4774cbc29d11b9c5d2e9, type: 2}
+    - target: {fileID: 2191971066474418514, guid: 3fcba7553498039488b031e4f5ba7c15, type: 3}
+      propertyPath: inventory.Array.data[4]
+      value: 
+      objectReference: {fileID: 11400000, guid: eb28f5dcbddd3514eb903201f798e52c, type: 2}
     - target: {fileID: 2191971066474418514, guid: 3fcba7553498039488b031e4f5ba7c15, type: 3}
       propertyPath: entityStats.dieConfigs.Array.data[0].dieFaces.Array.data[0]
       value: 1

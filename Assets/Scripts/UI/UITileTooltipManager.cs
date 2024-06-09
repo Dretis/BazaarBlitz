@@ -27,17 +27,20 @@ public class UITileTooltipManager : MonoBehaviour
     [Header("Listen on Event Channels")]
     public NodeEventChannelSO m_EnterRaycastedTile;
     public VoidEventChannelSO m_ExitRaycastedTile;
+    public VoidEventChannelSO m_DisableFreeview;
 
     private void OnEnable()
     {
         m_EnterRaycastedTile.OnEventRaised += DisplayTileInformation;
         m_ExitRaycastedTile.OnEventRaised += HideTileInformation;
+        m_DisableFreeview.OnEventRaised += HideTileInformation;
     }
 
     private void OnDisable()
     {
         m_EnterRaycastedTile.OnEventRaised -= DisplayTileInformation;
         m_ExitRaycastedTile.OnEventRaised -= HideTileInformation;
+        m_DisableFreeview.OnEventRaised -= HideTileInformation;
     }
 
     private void Start()

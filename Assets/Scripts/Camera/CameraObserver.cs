@@ -15,13 +15,14 @@ public class CameraObserver : MonoBehaviour
     public PlayerEventChannelSO m_NextPlayerTurn;
     public VoidEventChannelSO m_EnableFreeview;
     public VoidEventChannelSO m_DisableFreeview;
-    // public PlayerEventChannelSO m_FreeLook; // For when the player wants to look around the map via the menu option
+    public VoidEventChannelSO m_ExitRaycastedTile;
 
     private void OnEnable()
     {
         m_NextPlayerTurn.OnEventRaised += SwitchTargetFocus;
         m_EnableFreeview.OnEventRaised += SwitchFocusToReticle;
         m_DisableFreeview.OnEventRaised += ReturnTargetFocusToCurrentPlayer;
+        m_ExitRaycastedTile.OnEventRaised += SwitchFocusToReticle;
     }
 
     private void OnDisable()
@@ -29,6 +30,7 @@ public class CameraObserver : MonoBehaviour
         m_NextPlayerTurn.OnEventRaised -= SwitchTargetFocus;
         m_EnableFreeview.OnEventRaised -= SwitchFocusToReticle;
         m_DisableFreeview.OnEventRaised -= ReturnTargetFocusToCurrentPlayer;
+        m_ExitRaycastedTile.OnEventRaised -= SwitchFocusToReticle;
     }
 
     // Start is called before the first frame update
