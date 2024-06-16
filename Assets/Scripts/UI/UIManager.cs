@@ -4,7 +4,6 @@ using UnityEngine.UI;
 using TMPro;
 using System.Linq;
 using UnityEngine.EventSystems;
-using static UnityEditor.Progress;
 
 public class UIManager : MonoBehaviour
 {

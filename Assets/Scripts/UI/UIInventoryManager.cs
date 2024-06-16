@@ -47,7 +47,7 @@ public class UIInventoryManager : MonoBehaviour
     [Header("Inventory Stats")]
     [SerializeField] private InventoryState currentState;
     [SerializeField] private int currentItemCount;
-    [SerializeField] private const int INVENTORY_LIMIT = 6;
+    [SerializeField] private const int INVENTORY_LIMIT = 8;
     [SerializeField] private GameObject heldItemPrefab;
     [SerializeField] private List<GameObject> heldItemHolders;
 
@@ -340,6 +340,7 @@ public class UIInventoryManager : MonoBehaviour
 
     public void FadeTo(CanvasGroup group, float alphaValue, float duration)
     {
+        DOTween.Kill(group.gameObject);
         DOTween.To(() => group.alpha, x => group.alpha = x, alphaValue, duration);
     }
 }

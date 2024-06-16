@@ -54,7 +54,7 @@ public class UITileTooltipManager : MonoBehaviour
     {
         vcam.Follow = node.transform;
 
-        FadeTo(tileInfoGroup, 1, 0.5f);
+        FadeTo(tileInfoGroup, 1, 0.25f);
         Debug.Log(node.gameObject);
 
         // Storefront Tile
@@ -146,6 +146,7 @@ public class UITileTooltipManager : MonoBehaviour
 
     public void FadeTo(CanvasGroup group, float alphaValue, float duration)
     {
+        DOTween.Kill(group.gameObject);
         DOTween.To(() => group.alpha, x => group.alpha = x, alphaValue, duration);
     }
 }

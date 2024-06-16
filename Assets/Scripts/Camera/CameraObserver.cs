@@ -22,7 +22,7 @@ public class CameraObserver : MonoBehaviour
         m_NextPlayerTurn.OnEventRaised += SwitchTargetFocus;
         m_EnableFreeview.OnEventRaised += SwitchFocusToReticle;
         m_DisableFreeview.OnEventRaised += ReturnTargetFocusToCurrentPlayer;
-        m_ExitRaycastedTile.OnEventRaised += SwitchFocusToReticle;
+        //m_ExitRaycastedTile.OnEventRaised += SwitchFocusToReticle;
     }
 
     private void OnDisable()
@@ -30,7 +30,7 @@ public class CameraObserver : MonoBehaviour
         m_NextPlayerTurn.OnEventRaised -= SwitchTargetFocus;
         m_EnableFreeview.OnEventRaised -= SwitchFocusToReticle;
         m_DisableFreeview.OnEventRaised -= ReturnTargetFocusToCurrentPlayer;
-        m_ExitRaycastedTile.OnEventRaised -= SwitchFocusToReticle;
+        //m_ExitRaycastedTile.OnEventRaised -= SwitchFocusToReticle;
     }
 
     // Start is called before the first frame update
@@ -51,6 +51,7 @@ public class CameraObserver : MonoBehaviour
 
     void SwitchFocusToReticle()
     {
+        Debug.Log("focus on reticle");
         vcam.Follow = freeviewReticle.transform;
         //var composer = vcam.GetCinemachineComponent<CinemachineComposer>();
         //composer.m_TrackedObjectOffset = Vector3.zero;
@@ -58,6 +59,7 @@ public class CameraObserver : MonoBehaviour
 
     void ReturnTargetFocusToCurrentPlayer()
     {
+        Debug.Log("Back to player focus");
         vcam.Follow = GameplayTest.instance.currentPlayer.transform;
     }
 

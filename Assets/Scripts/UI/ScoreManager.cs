@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Unity.VisualScripting;
 
 public class ScoreManager : MonoBehaviour
 {
@@ -93,6 +92,7 @@ public class ScoreManager : MonoBehaviour
         else
         {
             playerScores[id].text = $"<color=yellow>@</color>{players[id].heldPoints}";
+            
         }
         playerHPs[id].text = "<color=red>HP</color> " + players[id].health + "/" + 
             (players[id].maxHealth * players[id].currentStatsModifier.maxHealthMultModifier + 

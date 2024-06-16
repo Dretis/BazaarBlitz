@@ -211,6 +211,7 @@ public class PlayerInputController : MonoBehaviour
 
     private void OnFreeviewExit()
     {
+        SwitchActionMap(previousGamePhase);
         m_DisableFreeview.RaiseEvent();
         //SwitchActionMap(GamePhase.InitialTurnMenu); // Should be whatever the one it was before
     }
@@ -222,9 +223,9 @@ public class PlayerInputController : MonoBehaviour
         switch (GameplayTest.instance.phase)
         {
             case GamePhase.RollDice:
-                //m_DiceRolled.RaiseEvent(); // Player proceeds with rolling the dice to move
-                m_RollForMovement.RaiseEvent(1);
-                currentPlayer.movementTotal = currentPlayer.movementLeft = 1;
+                m_DiceRolled.RaiseEvent(); // Player proceeds with rolling the dice to move
+                //m_RollForMovement.RaiseEvent(33);
+                //currentPlayer.movementTotal = currentPlayer.movementLeft = 33;
                 SwitchActionMap(GamePhase.PickDirection);
                 break;
             case GamePhase.ConfirmContinue:
