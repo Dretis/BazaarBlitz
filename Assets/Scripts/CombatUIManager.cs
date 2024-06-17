@@ -127,12 +127,4 @@ public class CombatUIManager : MonoBehaviour
 
         animator.SetInteger("ActionState", actionID);
     }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        }
-    }
 }

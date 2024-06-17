@@ -63,6 +63,8 @@ public class CombatManager : MonoBehaviour
 
     private void OnEnable()
     {
+        combatUIManager.UpdateActionText(attacker, Action.PhaseTypes.Attack);
+        combatUIManager.UpdateActionText(defender, Action.PhaseTypes.Defend);
         m_AttackImpact.OnEventRaised += OnAttackImpact;
     }
 

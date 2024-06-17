@@ -577,13 +577,14 @@ public class GameplayTest : MonoBehaviour
                 p.movementLeft = 0;
                 rollText.text = "" + p.movementLeft;
                 p.previousNode = null;
+
+                wantedNode.flowerTrapVisual.color = new Color32(0, 0, 0, 0);
                 wantedNode = null;
                 //audioSource.PlayOneShot(moveSFX, 1.2f);
 
                 
                 p.traveledNodes.Clear(); 
                 p.traveledNodes.Add(p.occupiedNode);
-                RaycastTiles.tileSelected.flowerTrapVisual.color = new Color32(0,0,0,0);
                 phase = GamePhase.EncounterTime; // next phase
                 return;
 
@@ -688,7 +689,7 @@ public class GameplayTest : MonoBehaviour
             p.RemoveItemEffectOnUse(ItemLists.StopOnStoreOnPassBy);
         }  
         else if (m.CompareTag("Store") && (m.modifier == MapNode.Modifier.Marigold && m.modifierOwner != p) ) {
-            RaycastTiles.tileSelected.flowerTrapVisual.color = new Color32(0, 0, 0, 0);
+            m.flowerTrapVisual.color = new Color32(0, 0, 0, 0);
             p.previousNode = p.traveledNodes[p.traveledNodes.Count - 1];
             m_StopOnStoreOnPassBy.RaiseEvent();
 
@@ -866,6 +867,9 @@ public class GameplayTest : MonoBehaviour
 
     void OverturnStore(EntityPiece p, MapNode m)
     {
+        phase = GamePhase.EndTurn; //TEMPORARY UNTIL I FIX THIS
+        
+        /*
         // No money to overturn or at store cap.
         if (p.heldPoints < 600 || p.storeCount >= 4)
         {
@@ -904,6 +908,7 @@ public class GameplayTest : MonoBehaviour
                 phase = GamePhase.EndTurn;
             }
         }
+        */
     }
 
     void RockPaperScissors(EntityPiece p)
@@ -917,7 +922,7 @@ public class GameplayTest : MonoBehaviour
 
         bool lookingForTarget = true;
         while (lookingForTarget) {
-            var monsterType = Random.Range(-13, 0); // int from -6 to -1
+            var monsterType = Random.Range(-8, 0); // int from -6 to -1
 
             sceneManager.player2ID = monsterType;
 
@@ -1391,6 +1396,7 @@ public class GameplayTest : MonoBehaviour
 
     public void SelectRaycastTarget(EntityPiece p)
     {
+        /*
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (p.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Tiles)
@@ -1424,6 +1430,43 @@ public class GameplayTest : MonoBehaviour
                     RaycastTiles.tileSelected.flowerTrapVisual.color = currentPlayer.playerColor;
                     PlantConfirmed(p, MapNode.Modifier.Rafflesia);
                 }
+            }
+        }
+        */
+    }
+
+    public void OnSelectRaycastTarget()
+    {
+        if (currentPlayer.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Tiles)
+        {
+            if (RaycastTiles.tileSelected != null)
+                WarpConfirmed(currentPlayer);
+        }
+        else if (currentPlayer.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Players)
+        {
+            if (RaycastTiles.tileSelected.playerOccupied != null
+            && RaycastTiles.tileSelected.playerOccupied != currentPlayer)
+                WarpConfirmed(currentPlayer);
+        }
+        else if (currentPlayer.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Marigold)
+        {
+            if (RaycastTiles.tileSelected.CompareTag("Store") && RaycastTiles.tileSelected.modifier == MapNode.Modifier.None)
+            {
+                PlantConfirmed(currentPlayer, MapNode.Modifier.Marigold);
+                RaycastTiles.tileSelected.flowerTrapVisual.color = currentPlayer.playerColor;
+            }
+            else
+            {
+                m_ExitRaycastTargetSelection.RaiseEvent(); // prevents getting stuck, but we should probably add a warning
+                phase = GamePhase.InitialTurnMenu;
+            }
+        }
+        else if (currentPlayer.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Rafflesia)
+        {
+            if (RaycastTiles.tileSelected.modifier == MapNode.Modifier.None)
+            {
+                RaycastTiles.tileSelected.flowerTrapVisual.color = currentPlayer.playerColor;
+                PlantConfirmed(currentPlayer, MapNode.Modifier.Rafflesia);
             }
         }
     }

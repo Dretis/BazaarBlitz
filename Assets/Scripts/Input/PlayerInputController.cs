@@ -206,7 +206,11 @@ public class PlayerInputController : MonoBehaviour
 
     private void OnFreeviewExamine()
     {
-        m_TryExamineTile.RaiseEvent((Vector2) freeviewReticle.transform.position);
+        m_TryExamineTile.RaiseEvent((Vector2)freeviewReticle.transform.position);
+        if (GameplayTest.instance.phase == GamePhase.RaycastTargetSelection)
+        {
+            GameplayTest.instance.OnSelectRaycastTarget();
+        }
     }
 
     private void OnFreeviewExit()
@@ -260,6 +264,10 @@ public class PlayerInputController : MonoBehaviour
             // Pick choices
             case GamePhase.InitialTurnMenu:
                 playerInput.SwitchCurrentActionMap("Initial Turn Menu");
+                break;
+
+            case GamePhase.RaycastTargetSelection:
+                playerInput.SwitchCurrentActionMap("Freeview");
                 break;
 
             case GamePhase.Freeview:
