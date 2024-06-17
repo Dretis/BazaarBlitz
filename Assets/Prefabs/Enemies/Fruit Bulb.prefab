@@ -44,10 +44,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1808e3f336b706a4ab70ba156bb2c2cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entityName: Fruit Bulb
+  entityName: Fruit Leechie
   id: 0
-  playerColor: {r: 0.8113208, g: 0.26533756, b: 0.681293, a: 1}
+  playerColor: {r: 0.8679245, g: 0.5854396, b: 0.61112005, a: 1}
   playerSprite: {fileID: 0}
+  combatAnimatorController: {fileID: 9100000, guid: bf9173e719ddf5249a286fef31571bd9, type: 2}
   occupiedNode: {fileID: 0}
   occupiedNodeCopy: {fileID: 0}
   previousNode: {fileID: 0}
@@ -80,6 +81,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 5b8f525effb08414abb503dfc27d55f6, type: 2}
   fightingPosition: 1
   ReputationPoints: 60
+  levelThreshold: 100
   RenownLevel: 1
   currentStatsModifier:
     dieModifiers:
@@ -105,9 +107,9 @@ MonoBehaviour:
   inventory:
   - {fileID: 11400000, guid: 18732e8251b999348a145ed6f51e8eab, type: 2}
   - {fileID: 11400000, guid: 538c3ea9b77a52049adb54f819957e9b, type: 2}
-  - {fileID: 11400000, guid: cb32be18794ec944bac7e2c8c0a9ffd2, type: 2}
   - {fileID: 11400000, guid: 3af8bef16b55ad7469446ad1e27fc370, type: 2}
   - {fileID: 11400000, guid: eb28f5dcbddd3514eb903201f798e52c, type: 2}
+  - {fileID: 11400000, guid: cd6cb9c8e56cf654d818564fdb16c174, type: 2}
   lootOdds: 19000000190000000f000000140000000f000000
   activeEffects:
   - originalItem: {fileID: 11400000, guid: 538c3ea9b77a52049adb54f819957e9b, type: 2}

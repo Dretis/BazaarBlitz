@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor.Animations;
 using UnityEngine;
+using UnityEngine.Animations;
 
 public class EntityPiece : MonoBehaviour
 {
@@ -9,6 +11,7 @@ public class EntityPiece : MonoBehaviour
     public int id;
     public Color playerColor; // idk man
     public SpriteRenderer playerSprite; // idk man
+    public AnimatorController combatAnimatorController; // to use and send in combat
     public MapNode occupiedNode; // Node player is currently on
     public MapNode occupiedNodeCopy; // Node player is currently on
     public MapNode previousNode = null; // Node player just walked on last turn. They can't go back this way.
@@ -44,7 +47,7 @@ public class EntityPiece : MonoBehaviour
     public CombatUIManager.FightingPosition fightingPosition; // Just for the combat, will change
 
     public float ReputationPoints = 0; // For enemies: how much rep they give on kill. For players: they're total exp
-
+    public float levelThreshold = 100;
     public int RenownLevel = 1; // Used to calculate the next level threshold.
 
     private void OnEnable()
@@ -186,10 +189,11 @@ public class EntityPiece : MonoBehaviour
     }
 
     public bool canLevelUp() {
-        float threshold = ( RenownLevel * 100 ) * ( Mathf.Pow(1.15f, RenownLevel-1) );
+        levelThreshold = ( RenownLevel * 100 ) * ( Mathf.Pow(1.15f, RenownLevel-1) );
         // 100, 230, 396, 608, 874... Every level costs around 30% more (should be tuned in testing).
-        if (ReputationPoints >= threshold) {
-            Debug.Log("Passed threshold of " + threshold);
+        if (ReputationPoints >= levelThreshold) {
+            Debug.Log("Passed threshold of " + levelThreshold);
+            levelThreshold = (RenownLevel * 100) * (Mathf.Pow(1.15f, RenownLevel - 1)); // update the new threshold again
             return true; // Allows the level up screen when ready on the player's turn.
         } else {
             return false;

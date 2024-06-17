@@ -4405,6 +4405,7 @@ GameObject:
   m_Component:
   - component: {fileID: 470341060}
   - component: {fileID: 470341061}
+  - component: {fileID: 470341062}
   m_Layer: 0
   m_Name: Input System
   m_TagString: Untagged
@@ -4439,8 +4440,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 153c8a8c155007c47942019780c78404, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  combatInput: {fileID: 470341062}
   howToPlayScreen: {fileID: 1530692743}
   m_SwapPhase: {fileID: 11400000, guid: 5fe2f16d1a7ee994d93f14d183b3029b, type: 2}
+  m_EnteredOverworldScene: {fileID: 11400000, guid: 56c6da0795bbaa44bbf1fe3b8e42122d, type: 2}
+--- !u!114 &470341062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 470341059}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: -944628639613478452, guid: 173089e4b258da441858051eede8b764, type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: Combat
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
 --- !u!224 &470383604 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6051684997082574127, guid: c8e4d3328645e3446ad7ed36310951ab, type: 3}
@@ -11671,7 +11704,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: <color=white>[A]</color> How to Fight?
+  m_text: <color=white>[TAB]</color> How to Fight?
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: f14f4be18184b9d40943768620494e2d, type: 2}
   m_sharedMaterial: {fileID: 2674762156599226005, guid: f14f4be18184b9d40943768620494e2d, type: 2}
@@ -11698,7 +11731,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 58.2
+  m_fontSize: 51.35
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -12241,7 +12274,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: -1
-  m_Sprite: {fileID: -144622663, guid: 824a647dc186dbf41a9aedf8d08530d9, type: 3}
+  m_Sprite: {fileID: 93317521, guid: 23ad5e997eb9c624287896ff9fed68d3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -12277,7 +12310,7 @@ Animator:
   m_GameObject: {fileID: 872686417}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: f5b11b07172c2934b96ced515fcbbaab, type: 2}
+  m_Controller: {fileID: 9100000, guid: d5d7071bb14e7d24b815ad4b8b632fbb, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -21742,7 +21775,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: -1
-  m_Sprite: {fileID: -621653181, guid: d6244105ba5d1d141bd28c7314437587, type: 3}
+  m_Sprite: {fileID: -1260475257, guid: 46a848bff9085d24eb42022db36cb372, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -21778,7 +21811,7 @@ Animator:
   m_GameObject: {fileID: 2022358465}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: f5b11b07172c2934b96ced515fcbbaab, type: 2}
+  m_Controller: {fileID: 9100000, guid: 6252bc6470226f64a82a911c2b6b6117, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

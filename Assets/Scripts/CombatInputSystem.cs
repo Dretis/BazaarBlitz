@@ -1,7 +1,10 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class CombatInputSystem : MonoBehaviour
 {
+    public PlayerInput combatInput;
+    private bool howToPlayOn = false;
     public Canvas howToPlayScreen;
 
     // Seems the on press stuff is something I'll have to do in person :(
@@ -21,20 +24,32 @@ public class CombatInputSystem : MonoBehaviour
     //public ????? m_ActionSelected;
 
     public PlayerEventChannelSO m_SwapPhase; // Will be used to notify combatinputsystem when a turn is finished and new input is needed
+    public VoidEventChannelSO m_EnteredOverworldScene;
 
-    void OnEnable() {
+    void OnEnable() 
+    {
+        combatInput.enabled = true;
         m_SwapPhase.OnEventRaised += PhasePassed;
+        m_EnteredOverworldScene.OnEventRaised += DisableCombatInput;
     }
     void OnDisable()
     {
+        combatInput.enabled = false;
         m_SwapPhase.OnEventRaised -= PhasePassed;
+        m_EnteredOverworldScene.OnEventRaised -= DisableCombatInput;
     }
 
     void Awake() {
         combatManager = FindObjectOfType<CombatManager>();
     }
 
+    private void DisableCombatInput()
+    {
+        combatInput.enabled = false;
+        // i need this scritp atm so controller input doesnt just disappear randomly after combat
+    }
 
+    /*
     void Update()
     {
 
@@ -47,7 +62,7 @@ public class CombatInputSystem : MonoBehaviour
             howToPlayScreen.enabled = false;
         }
 
-
+        
         // ALL THESE WILL BE REPLACED WITH ON KEY PRESS FUNCTIONS (Once the input system is implemented)
         if (Input.GetKeyDown(KeyCode.W))
         {
@@ -75,8 +90,51 @@ public class CombatInputSystem : MonoBehaviour
         {
             sendAction(false, 2); // Player 2 first element (magic)
         }
+        
+    }
+    */
+    private void OnHowToCombat()
+    {
+        if (howToPlayOn)
+        {
+            howToPlayScreen.enabled = false;
+            howToPlayOn = false;
+        }
+        else
+        {
+            howToPlayScreen.enabled = true;
+            howToPlayOn = true;
+        }
+    }
 
+    private void OnUpAction()
+    {
+        sendAction(true, 1); // Player 1 second element (melee)
+    }
 
+    private void OnRightAction()
+    {
+        sendAction(true, 0); // Player 1 first element (gun)
+    }
+
+    private void OnDownAction()
+    {
+        sendAction(true, 2); // Player 1 first element (magic)
+    }
+
+    private void OnUpActionP2()
+    {
+        sendAction(false, 1); // Player  second element (melee)
+    }
+
+    private void OnRightActionP2()
+    {
+        sendAction(false, 0); // Player 2 first element (gun)
+    }
+
+    private void OnDownActionP2()
+    {
+        sendAction(false, 2); // Player 2 first element (magic)
     }
 
     void sendAction(bool isPlayer1, int actionID) {

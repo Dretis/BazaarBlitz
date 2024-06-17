@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
+using UnityEditor.Animations;
 
 public class CombatUIManager : MonoBehaviour
 {
@@ -26,10 +27,22 @@ public class CombatUIManager : MonoBehaviour
     public Animator player1Animator;
     public Animator player2Animator;
 
+    public AnimatorOverrideController player1OverrideController;
+    public AnimatorOverrideController player2OverrideController;
+
     private void Awake()
     {
         player1Renderer.color = FindObjectOfType<CombatManager>().player1.playerColor;
         player2Renderer.color = FindObjectOfType<CombatManager>().player2.playerColor;
+
+        player1OverrideController = new AnimatorOverrideController(FindObjectOfType<CombatManager>().player1.combatAnimatorController);
+        player1Animator.runtimeAnimatorController = player1OverrideController;
+
+        player2OverrideController = new AnimatorOverrideController(FindObjectOfType<CombatManager>().player2.combatAnimatorController);
+        player2Animator.runtimeAnimatorController = player2OverrideController;
+
+        //player1Animator.runtimeAnimatorController = FindObjectOfType<CombatManager>().player1.combatAnimatorController;
+        //player2Animator.runtimeAnimatorController = FindObjectOfType<CombatManager>().player2.combatAnimatorController;
 
         //player1Renderer.color = CombatManager.Instance.player1.playerColor;
         //player2Renderer.color = CombatManager.Instance.player2.playerColor;

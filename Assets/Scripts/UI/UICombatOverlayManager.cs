@@ -142,7 +142,7 @@ public class UICombatOverlayManager : MonoBehaviour
 
 
     }
-
+    /*
     private void Update()
     {
         // Testing functions
@@ -202,7 +202,7 @@ public class UICombatOverlayManager : MonoBehaviour
             ShowFloatingDamageNumber(CombatManager.Instance.player1, 34);
         }
     }
-
+    */
     public void ShowVSHeader()
     {
         vsHeader.DOAnchorPos(vsInitialPosition, 0.5f, false).SetEase(Ease.OutSine);
