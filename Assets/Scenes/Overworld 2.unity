@@ -46792,7 +46792,7 @@ MonoBehaviour:
   playerColor: {r: 0.68328077, g: 0.55612904, b: 0.9716981, a: 1}
   playerSprite: {fileID: 990241279}
   combatAnimatorController: {fileID: 9100000, guid: f5b11b07172c2934b96ced515fcbbaab, type: 2}
-  occupiedNode: {fileID: 2084649054}
+  occupiedNode: {fileID: 513793208}
   occupiedNodeCopy: {fileID: 0}
   previousNode: {fileID: 0}
   unspentLevelUpPoints: 0
@@ -46848,8 +46848,7 @@ MonoBehaviour:
     canStealOnPassBy: 0
     canInitiateCombatOnPassBy: 0
     canStopOnStoreOnPassBy: 0
-  inventory:
-  - {fileID: 11400000, guid: f678bd587785a29459a91ba38885eef5, type: 2}
+  inventory: []
   lootOdds: 
   activeEffects: []
 --- !u!114 &1273892901
@@ -59494,18 +59493,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4581765840797956285, guid: 593d54cc189a0544a8760b3a73027f89, type: 3}
   m_PrefabInstance: {fileID: 844007356}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1784744905
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1784744900}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aced3dd383528c245acc609f064b0501, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1784744907
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -64940,10 +64927,10 @@ PrefabInstance:
     - target: {fileID: 2191971066474418514, guid: 3fcba7553498039488b031e4f5ba7c15, type: 3}
       propertyPath: occupiedNode
       value: 
-      objectReference: {fileID: 2054876662}
+      objectReference: {fileID: 513793208}
     - target: {fileID: 2191971066474418514, guid: 3fcba7553498039488b031e4f5ba7c15, type: 3}
       propertyPath: inventory.Array.size
-      value: 6
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2191971066474418514, guid: 3fcba7553498039488b031e4f5ba7c15, type: 3}
       propertyPath: inventory.Array.data[0]
