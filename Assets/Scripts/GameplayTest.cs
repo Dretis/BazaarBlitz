@@ -1458,8 +1458,8 @@ public class GameplayTest : MonoBehaviour
         {
             if (RaycastTiles.tileSelected.CompareTag("Store") && RaycastTiles.tileSelected.modifier == MapNode.Modifier.None)
             {
-                PlantConfirmed(currentPlayer, MapNode.Modifier.Marigold);
                 RaycastTiles.tileSelected.flowerTrapVisual.color = currentPlayer.playerColor;
+                PlantConfirmed(currentPlayer, MapNode.Modifier.Marigold);
             }
             else
             {
