@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Unity.VisualScripting;
 
 public class ScoreManager : MonoBehaviour
 {
@@ -17,7 +16,8 @@ public class ScoreManager : MonoBehaviour
     [Header("UI Elements")]
     [SerializeField] private Canvas scoreCanvas;
     [SerializeField] private List<TextMeshProUGUI> playerNames;
-    [SerializeField] private List<TextMeshProUGUI> playerPlacements;
+    [SerializeField] private List<TextMeshProUGUI> playerLevels;
+    [SerializeField] private List<TextMeshProUGUI> playerExps;
     [SerializeField] private List<TextMeshProUGUI> playerScores;
     [SerializeField] private List<TextMeshProUGUI> playerHPs;
     [SerializeField] private List<Image> playerImages;
@@ -84,6 +84,8 @@ public class ScoreManager : MonoBehaviour
 
         // playerNames[id].text = "" + players[id].nickname;
         playerNames[id].text = "" + players[id].entityName;
+        playerLevels[id].text = "*\n" + players[id].RenownLevel;
+        playerExps[id].text = "[" + (int)players[id].ReputationPoints + "/" + (int)players[id].levelThreshold + "]";
 
         if(players[id].heldPoints < 0)
         {
@@ -93,14 +95,12 @@ public class ScoreManager : MonoBehaviour
         else
         {
             playerScores[id].text = $"<color=yellow>@</color>{players[id].heldPoints}";
+            
         }
         playerHPs[id].text = "<color=red>HP</color> " + players[id].health + "/" + 
             (players[id].maxHealth * players[id].currentStatsModifier.maxHealthMultModifier + 
             players[id].currentStatsModifier.maxHealthFlatModifier);
         playerImages[id].color = players[id].playerColor - new Color32(0, 0, 0, 125);
-
-        // Placeholder for now
-        playerPlacements[id].text = "";
     }
 
     private void ChangeCurrentPlayer(EntityPiece ps)

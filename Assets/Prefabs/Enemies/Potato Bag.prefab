@@ -44,10 +44,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1808e3f336b706a4ab70ba156bb2c2cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entityName: Potato Bag
+  entityName: Potatosac
   id: 0
-  playerColor: {r: 0.5660378, g: 0.4417929, b: 0.39871842, a: 1}
+  playerColor: {r: 0.74509805, g: 0.6156863, b: 0.4784314, a: 1}
   playerSprite: {fileID: 0}
+  combatAnimatorController: {fileID: 9100000, guid: 340caa1de0ee6684aaf8f0c24ba79a87, type: 2}
   occupiedNode: {fileID: 0}
   occupiedNodeCopy: {fileID: 0}
   previousNode: {fileID: 0}
@@ -80,6 +81,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 5b8f525effb08414abb503dfc27d55f6, type: 2}
   fightingPosition: 1
   ReputationPoints: 50
+  levelThreshold: 100
   RenownLevel: 1
   currentStatsModifier:
     dieModifiers:

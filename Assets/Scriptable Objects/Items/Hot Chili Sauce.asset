@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdd1368eedb123d4db8a885acb84d3a9, type: 3}
+  m_Name: Hot Chili Sauce
+  m_EditorClassIdentifier: 
+  itemName: HOT Chili Sauce
+  duration: 2
+  itemSprite: {fileID: 21300000, guid: cc09c627de8b8f74fa1ccc637bf0d2c4, type: 3}
+  effectDescription: Adds 5 to your <sprite=0> attack roll for 2 turns, but take
+    35 self-damage on use.
+  flavorText: '"How much can ya handle? More like, how much can ''they'' handle!
+    HA HA HA! -famous last words"'
+  basePrice: 505
+  modifiers:
+  - {fileID: 11400000, guid: 4d17a2b5125c2dc4e9c448677d224bbe, type: 2}
+  - {fileID: 11400000, guid: dabc22dd472f7024f85c0dc8335ac1dd, type: 2}

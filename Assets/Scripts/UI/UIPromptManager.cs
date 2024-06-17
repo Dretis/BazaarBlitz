@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using TMPro;
+using System.Drawing;
 
 public class UIPromptManager : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class UIPromptManager : MonoBehaviour
 
     [SerializeField] private GameObject menuPrompt;
     [SerializeField] private TextMeshProUGUI inventoryPromptText;
+    [SerializeField] private TextMeshProUGUI buildPromptText;
+    [SerializeField] private TextMeshProUGUI buildLimitText;
 
     [Header("Listen on Event Channels")]
     public IntEventChannelSO m_RollForMovement;
@@ -121,28 +124,36 @@ public class UIPromptManager : MonoBehaviour
     private void DisplayRollPrompt(EntityPiece ps)
     {
         // This will get swapped out with a menu selection
-        inputPrompt.text = "<color=white>[LMB]/[SPACE]</color> to roll!";
-        inputPrompt.text += "\n<color=white>[RMB]/[SHIFT]</color> to go back.";
+        inputPrompt.text = "<sprite=0><color=white>[SPACE]</color> to roll!";
+        inputPrompt.text += "\n<sprite=1><color=white>[SHIFT]</color> to go back.";
 
         HideInitialMenu();
     }
 
     private void DisplayFreeviewPrompt()
     {
-        inputPrompt.text = "<color=white>[LMB]</color> View Selected Tile";
-        inputPrompt.text += "\n<color=white>[RMB]</color> Back";
-        inputPrompt.text += "\n<color=white>[Scroll Wheel]</color> Zoom In/Out";
+        inputPrompt.text = "<color=white>Freeview Mode</color>";
+        inputPrompt.text += "\n<sprite=0><color=white>[SPACE]</color> Select Tile";
+        inputPrompt.text += "\n<sprite=1><color=white>[LSHIFT]</color> Back";
+        //inputPrompt.text += "\n<color=white>[Scroll Wheel]</color> Zoom In/Out";
     }
 
     private void DisplayInitialMenu(EntityPiece ps)
     {
         ClearInputText();
+        NormalizeBuildPrompt(ps);
+        if (GameplayTest.instance.phase == GameplayTest.GamePhase.PickDirection)
+            return; 
         menuPrompt.SetActive(true);
     }
 
     private void DisplayInitialMenu()
     {
         ClearInputText();
+
+        if (GameplayTest.instance.phase == GameplayTest.GamePhase.PickDirection) //fuck ass way for ITM to not show while exiting freeview during pickdirection
+            return;
+
         menuPrompt.SetActive(true);
     }
 
@@ -189,12 +200,33 @@ public class UIPromptManager : MonoBehaviour
 
     private void NormalizeInventoryPrompt(EntityPiece ps)
     {
-        inventoryPromptText.text = "<color=white>[S]</color> Item";
+        inventoryPromptText.text = "Item";
     }
 
     private void StrikethroughInventoryPrompt(int index)
     {
-        inventoryPromptText.text = "<color=grey>[S] Item</color>";
+        inventoryPromptText.text = "<color=grey>Item</color>";
+    }
+
+    private void NormalizeBuildPrompt(EntityPiece ps)
+    {
+        var buildCount = 4 - ps.storeCount;
+
+        if(buildCount <= 0 || !ps.occupiedNode.CompareTag("Encounter"))
+        {
+            buildPromptText.text = "<color=grey>Build</color>";
+            buildLimitText.text = "<color=grey>Cant</color>";
+        }
+        else
+        {
+            buildPromptText.text = "Build";
+            buildLimitText.text = $"{4 - ps.storeCount} Left";
+        }
+    }
+
+    private void StrikethroughBuildPrompt(int index)
+    {
+        inventoryPromptText.text = "<color=grey>Build</color>";
     }
 
     private void DisplayOverturnChoices(EntityPiece storeOwner)

@@ -27,6 +27,11 @@ public class SoundManager : MonoBehaviour
     public IntEventChannelSO m_RollForMovement;
     public PlayerEventChannelSO m_DiceRollUndo;
 
+    public VoidEventChannelSO m_EnableFreeview;
+    public VoidEventChannelSO m_DisableFreeview;
+    public PlayerEventChannelSO m_OpenInventory;
+    public VoidEventChannelSO m_ExitInventory;
+    public Vector2EventChannelSO m_TryExamineTile;
     public IntEventChannelSO m_PlayerScoreIncreased;
     public IntEventChannelSO m_PlayerScoreDecreased;
     public IntEventChannelSO m_ItemUsed;
@@ -50,6 +55,7 @@ public class SoundManager : MonoBehaviour
     public EntityActionPhaseEventChannelSO m_ActionSelected;
     public DamageEventChannelSO m_DamageTaken;
 
+    private bool startedBattleMusic = false;
     
 
     private void Awake()
@@ -57,6 +63,7 @@ public class SoundManager : MonoBehaviour
         DontDestroyOnLoad(this.gameObject);
         overworldThemeInstance = FMODUnity.RuntimeManager.CreateInstance("event:/KatamariTheme");
         diceRollInstance = FMODUnity.RuntimeManager.CreateInstance("event:/RollDice");
+        battleThemeInstance = FMODUnity.RuntimeManager.CreateInstance("event:/BattleTheme");
         musicVolume = 0.8f;
         SFXVolume = 0.8f;
         overworldThemeInstance.setParameterByName("MusicVolume", musicVolume);
@@ -80,6 +87,11 @@ public class SoundManager : MonoBehaviour
         m_ItemBought.OnEventRaised += PlayItemBoughtSound;
         m_NextPlayerTurn.OnEventRaised += PlayNextPlayerTurnSound;
         //m_ShowCombatBanner.OnEventRaised += PlayEnterBattleSound;
+        m_EnableFreeview.OnEventRaised += PlayMoveSound;
+        m_DisableFreeview.OnEventRaised += PlayUndoSound;
+        m_OpenInventory.OnEventRaised += PlayMoveSoundWithDude;
+        m_ExitInventory.OnEventRaised += PlayUndoSound;
+        m_TryExamineTile.OnEventRaised += PlayMoveSoundWithVector2;
 
         //Combat Events
         m_EnteredCombatScene.OnEventRaised += PlayCombatMusic;
@@ -110,6 +122,11 @@ public class SoundManager : MonoBehaviour
         m_PlayerScoreIncreased.OnEventRaised -= PlayCurrencyIncreasedSound;
         m_NextPlayerTurn.OnEventRaised -= PlayNextPlayerTurnSound;
         //m_ShowCombatBanner.OnEventRaised -= PlayEnterBattleSound;
+        m_EnableFreeview.OnEventRaised -= PlayMoveSound;
+        m_DisableFreeview.OnEventRaised -= PlayUndoSound;
+        m_OpenInventory.OnEventRaised -= PlayMoveSoundWithDude;
+        m_ExitInventory.OnEventRaised -= PlayUndoSound;
+        m_TryExamineTile.OnEventRaised -= PlayMoveSoundWithVector2;
 
         //Combat Events
         m_EnteredCombatScene.OnEventRaised -= PlayCombatMusic;
@@ -126,27 +143,32 @@ public class SoundManager : MonoBehaviour
 
     private void PlayOverworldMusic()
     {
-        overworldThemeInstance.setParameterByName("MusicVolume", musicVolume);
-        overworldThemeInstance.start();
+        overworldThemeInstance.setPaused(false);
     }
 
     private void StopOverworldMusic()
     {
-        overworldThemeInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
-        diceRollInstance.release();
+        overworldThemeInstance.setPaused(true);
     }
 
     private void PlayCombatMusic()
     {
-        battleThemeInstance = FMODUnity.RuntimeManager.CreateInstance("event:/BattleTheme");
-        battleThemeInstance.setParameterByName("MusicVolume", musicVolume);
-        battleThemeInstance.start();
+        if (startedBattleMusic)
+        {
+            battleThemeInstance.setPaused(false);
+        }
+        else
+        {
+            battleThemeInstance.setParameterByName("MusicVolume", musicVolume);
+            battleThemeInstance.start();
+            startedBattleMusic = true;
+        }
+
     }
 
     private void StopCombatMusic()
     {
-        battleThemeInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
-        diceRollInstance.release();
+        battleThemeInstance.setPaused(true);
     }
 
     private void PlayStampSound(EntityPiece entity)
@@ -208,6 +230,16 @@ public class SoundManager : MonoBehaviour
     }
 
     private void PlayMoveSound()
+    {
+        AudioHelper.PlayOneShotWithParameters("event:/Move", this.transform.position, ("SoundVolume", SFXVolume));
+    }
+
+    private void PlayMoveSoundWithDude(EntityPiece entity)
+    {
+        AudioHelper.PlayOneShotWithParameters("event:/Move", this.transform.position, ("SoundVolume", SFXVolume));
+    }
+
+    private void PlayMoveSoundWithVector2(Vector2 vector2)
     {
         AudioHelper.PlayOneShotWithParameters("event:/Move", this.transform.position, ("SoundVolume", SFXVolume));
     }

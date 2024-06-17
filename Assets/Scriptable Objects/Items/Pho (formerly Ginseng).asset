@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdd1368eedb123d4db8a885acb84d3a9, type: 3}
+  m_Name: Pho (formerly Ginseng)
+  m_EditorClassIdentifier: 
+  itemName: Pho
+  duration: 3
+  itemSprite: {fileID: 21300000, guid: 0e2a8cca0cf867a408ed0c5e960e9334, type: 3}
+  effectDescription: Double your max HP for 3 turns.
+  flavorText: '"Proportions too much? Just get it to-go, it''ll last you awhile!
+    But mind the tummy-ache."'
+  basePrice: 450
+  modifiers:
+  - {fileID: 11400000, guid: 50fcc29f6df14e241a3d1ad29f287010, type: 2}
