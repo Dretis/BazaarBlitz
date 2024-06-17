@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6833292416934179405}
   - component: {fileID: 9070606831204597818}
   m_Layer: 0
-  m_Name: Fruit Bulb
+  m_Name: Tea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,11 +44,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1808e3f336b706a4ab70ba156bb2c2cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entityName: Fruit Leechie
+  entityName: Ol Tea Bag
   id: 0
-  playerColor: {r: 0.8679245, g: 0.5854396, b: 0.61112005, a: 1}
+  playerColor: {r: 0.8773585, g: 0.8011389, b: 0.5504183, a: 1}
   playerSprite: {fileID: 0}
-  combatAnimatorController: {fileID: 9100000, guid: bf9173e719ddf5249a286fef31571bd9, type: 2}
+  combatAnimatorController: {fileID: 9100000, guid: e6ac74d177e78a6408847b16722bf26c, type: 2}
   occupiedNode: {fileID: 0}
   occupiedNodeCopy: {fileID: 0}
   previousNode: {fileID: 0}
@@ -61,16 +61,16 @@ MonoBehaviour:
   storeCount: 0
   stamps: 
   isInDeathsRow: 0
-  health: 80
-  maxHealth: 80
+  health: 45
+  maxHealth: 45
   combatSceneIndex: -1
   isEnemy: 1
-  favoredAttack: 1
+  favoredAttack: 3
   entityStats:
     dieConfigs:
-    - dieFaces: 010000000100000001000000020000000200000002000000
-    - dieFaces: 010000000100000001000000020000000200000002000000
-    - dieFaces: 010000000100000002000000030000000300000003000000
+    - dieFaces: 010000000200000002000000020000000300000003000000
+    - dieFaces: 010000000200000002000000020000000300000003000000
+    - dieFaces: 010000000200000003000000030000000400000004000000
   attackActions:
   - {fileID: 11400000, guid: 092cf3b3af66061478bc3530f1af01f9, type: 2}
   - {fileID: 11400000, guid: 6ca9e4123ea095d4fb087a3cc7c9a44d, type: 2}
@@ -105,12 +105,9 @@ MonoBehaviour:
     canInitiateCombatOnPassBy: 0
     canStopOnStoreOnPassBy: 0
   inventory:
-  - {fileID: 11400000, guid: 18732e8251b999348a145ed6f51e8eab, type: 2}
-  - {fileID: 11400000, guid: 538c3ea9b77a52049adb54f819957e9b, type: 2}
-  - {fileID: 11400000, guid: 3af8bef16b55ad7469446ad1e27fc370, type: 2}
-  - {fileID: 11400000, guid: eb28f5dcbddd3514eb903201f798e52c, type: 2}
-  - {fileID: 11400000, guid: cd6cb9c8e56cf654d818564fdb16c174, type: 2}
-  lootOdds: 19000000190000000f000000140000000f000000
-  activeEffects:
-  - originalItem: {fileID: 11400000, guid: 538c3ea9b77a52049adb54f819957e9b, type: 2}
-    turnsRemaining: 99
+  - {fileID: 11400000, guid: fcd4e2d545c541544802d8ade7f75dc1, type: 2}
+  - {fileID: 11400000, guid: dbbe8d699b09bfd4b8fb2ccdd3d1bbd1, type: 2}
+  - {fileID: 11400000, guid: 945f3cd5c424b8f4092aa07e1cc5251b, type: 2}
+  - {fileID: 11400000, guid: f678bd587785a29459a91ba38885eef5, type: 2}
+  lootOdds: 1e00000028000000140000000a000000
+  activeEffects: []

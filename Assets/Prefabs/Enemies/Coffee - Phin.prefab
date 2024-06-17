@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3090161012776482757
+--- !u!1 &66979176998032266
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,22 +8,22 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8420388914520790530}
-  - component: {fileID: 8548948199964194723}
+  - component: {fileID: 6833292416934179405}
+  - component: {fileID: 9070606831204597818}
   m_Layer: 0
-  m_Name: Lamp
+  m_Name: Coffee - Phin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &8420388914520790530
+--- !u!4 &6833292416934179405
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3090161012776482757}
+  m_GameObject: {fileID: 66979176998032266}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -32,22 +32,23 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8548948199964194723
+--- !u!114 &9070606831204597818
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3090161012776482757}
+  m_GameObject: {fileID: 66979176998032266}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1808e3f336b706a4ab70ba156bb2c2cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entityName: Street Lamp
-  id: -6
-  playerColor: {r: 0.4245283, g: 0.4245283, b: 0.4245283, a: 1}
+  entityName: Caphiend
+  id: 0
+  playerColor: {r: 0.38679248, g: 0.29146272, b: 0.24630654, a: 1}
   playerSprite: {fileID: 0}
+  combatAnimatorController: {fileID: 9100000, guid: d5d7071bb14e7d24b815ad4b8b632fbb, type: 2}
   occupiedNode: {fileID: 0}
   occupiedNodeCopy: {fileID: 0}
   previousNode: {fileID: 0}
@@ -60,16 +61,16 @@ MonoBehaviour:
   storeCount: 0
   stamps: 
   isInDeathsRow: 0
-  health: 55
-  maxHealth: 55
+  health: 50
+  maxHealth: 50
   combatSceneIndex: -1
   isEnemy: 1
-  favoredAttack: 1
+  favoredAttack: 3
   entityStats:
     dieConfigs:
-    - dieFaces: 020000000300000004000000050000000600000007000000
-    - dieFaces: 010000000200000002000000020000000300000003000000
-    - dieFaces: 020000000300000004000000040000000500000000000000
+    - dieFaces: 010000000100000002000000030000000500000005000000
+    - dieFaces: 010000000100000002000000020000000300000004000000
+    - dieFaces: 010000000100000002000000030000000500000005000000
   attackActions:
   - {fileID: 11400000, guid: 092cf3b3af66061478bc3530f1af01f9, type: 2}
   - {fileID: 11400000, guid: 6ca9e4123ea095d4fb087a3cc7c9a44d, type: 2}
@@ -79,7 +80,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 704ee6dbca2f62140ad5caf58846a975, type: 2}
   - {fileID: 11400000, guid: 5b8f525effb08414abb503dfc27d55f6, type: 2}
   fightingPosition: 1
-  ReputationPoints: 100
+  ReputationPoints: 75
+  levelThreshold: 100
   RenownLevel: 1
   currentStatsModifier:
     dieModifiers:
@@ -103,10 +105,10 @@ MonoBehaviour:
     canInitiateCombatOnPassBy: 0
     canStopOnStoreOnPassBy: 0
   inventory:
-  - {fileID: 11400000, guid: 1178c93ae11a11e40b1c45d2c62fc845, type: 2}
-  - {fileID: 11400000, guid: ba165bec7fd5ad748b4e3a0ce659a0f1, type: 2}
-  - {fileID: 11400000, guid: 17f44431f77d4774cbc29d11b9c5d2e9, type: 2}
-  - {fileID: 11400000, guid: 4fd59672f461ffa4bb6c75f0339fc93d, type: 2}
-  - {fileID: 11400000, guid: 104cb7ba1879e2b4b8c8b37609f81904, type: 2}
-  lootOdds: 1e00000014000000140000000a00000014000000
+  - {fileID: 11400000, guid: 6b1d9981d4c68bb449fa32f4b096bf76, type: 2}
+  - {fileID: 11400000, guid: fcd4e2d545c541544802d8ade7f75dc1, type: 2}
+  - {fileID: 11400000, guid: 945f3cd5c424b8f4092aa07e1cc5251b, type: 2}
+  - {fileID: 11400000, guid: 38cfb422c459a5246bab8b048c266049, type: 2}
+  - {fileID: 11400000, guid: 6b1d9981d4c68bb449fa32f4b096bf76, type: 2}
+  lootOdds: 280000000f0000001900000014000000
   activeEffects: []

@@ -85,7 +85,7 @@ public class ScoreManager : MonoBehaviour
         // playerNames[id].text = "" + players[id].nickname;
         playerNames[id].text = "" + players[id].entityName;
         playerLevels[id].text = "*\n" + players[id].RenownLevel;
-        playerExps[id].text = "[" + players[id].ReputationPoints + "/" + players[id].levelThreshold + "]";
+        playerExps[id].text = "[" + (int)players[id].ReputationPoints + "/" + (int)players[id].levelThreshold + "]";
 
         if(players[id].heldPoints < 0)
         {

@@ -8081,6 +8081,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1788315945775436899, guid: 685229d93cfb0494e9ccdf56e948eebe, type: 3}
+      propertyPath: m_Name
+      value: Dog - Banhcho
+      objectReference: {fileID: 0}
     - target: {fileID: 5741931491139118725, guid: 685229d93cfb0494e9ccdf56e948eebe, type: 3}
       propertyPath: m_RootOrder
       value: 18
@@ -45811,6 +45815,7 @@ MonoBehaviour:
   id: 1
   playerColor: {r: 0.68328077, g: 0.55612904, b: 0.9716981, a: 1}
   playerSprite: {fileID: 990241279}
+  combatAnimatorController: {fileID: 9100000, guid: f5b11b07172c2934b96ced515fcbbaab, type: 2}
   occupiedNode: {fileID: 2084649054}
   occupiedNodeCopy: {fileID: 0}
   previousNode: {fileID: 0}
@@ -48665,6 +48670,7 @@ MonoBehaviour:
   id: 3
   playerColor: {r: 0.2509804, g: 0.8784314, b: 0.8156863, a: 1}
   playerSprite: {fileID: 453942726}
+  combatAnimatorController: {fileID: 9100000, guid: f5b11b07172c2934b96ced515fcbbaab, type: 2}
   occupiedNode: {fileID: 513793208}
   occupiedNodeCopy: {fileID: 0}
   previousNode: {fileID: 0}
@@ -58204,6 +58210,7 @@ MonoBehaviour:
   id: 2
   playerColor: {r: 0.7582639, g: 1, b: 0.36470592, a: 1}
   playerSprite: {fileID: 1981033896}
+  combatAnimatorController: {fileID: 9100000, guid: f5b11b07172c2934b96ced515fcbbaab, type: 2}
   occupiedNode: {fileID: 513793208}
   occupiedNodeCopy: {fileID: 0}
   previousNode: {fileID: 0}
@@ -63302,7 +63309,7 @@ PrefabInstance:
       objectReference: {fileID: 2054876662}
     - target: {fileID: 2191971066474418514, guid: 3fcba7553498039488b031e4f5ba7c15, type: 3}
       propertyPath: inventory.Array.size
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 2191971066474418514, guid: 3fcba7553498039488b031e4f5ba7c15, type: 3}
       propertyPath: inventory.Array.data[0]
@@ -63327,7 +63334,11 @@ PrefabInstance:
     - target: {fileID: 2191971066474418514, guid: 3fcba7553498039488b031e4f5ba7c15, type: 3}
       propertyPath: inventory.Array.data[5]
       value: 
-      objectReference: {fileID: 11400000, guid: f678bd587785a29459a91ba38885eef5, type: 2}
+      objectReference: {fileID: 11400000, guid: 58d0b4009d557fc4595aa02754729cc4, type: 2}
+    - target: {fileID: 2191971066474418514, guid: 3fcba7553498039488b031e4f5ba7c15, type: 3}
+      propertyPath: combatAnimatorController
+      value: 
+      objectReference: {fileID: 9100000, guid: f5b11b07172c2934b96ced515fcbbaab, type: 2}
     - target: {fileID: 2191971066474418514, guid: 3fcba7553498039488b031e4f5ba7c15, type: 3}
       propertyPath: entityStats.dieConfigs.Array.data[0].dieFaces.Array.data[0]
       value: 1

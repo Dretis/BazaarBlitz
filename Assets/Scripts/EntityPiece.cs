@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor.Animations;
 using UnityEngine;
+using UnityEngine.Animations;
 
 public class EntityPiece : MonoBehaviour
 {
@@ -9,6 +11,7 @@ public class EntityPiece : MonoBehaviour
     public int id;
     public Color playerColor; // idk man
     public SpriteRenderer playerSprite; // idk man
+    public AnimatorController combatAnimatorController; // to use and send in combat
     public MapNode occupiedNode; // Node player is currently on
     public MapNode occupiedNodeCopy; // Node player is currently on
     public MapNode previousNode = null; // Node player just walked on last turn. They can't go back this way.
