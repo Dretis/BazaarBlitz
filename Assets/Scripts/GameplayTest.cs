@@ -927,8 +927,14 @@ public class GameplayTest : MonoBehaviour
             sceneManager.player2ID = monsterType;
 
             var enemy = sceneManager.entities.Find(entity => sceneManager.player2ID == entity.id);
-            if (enemy.combatSceneIndex == -1)
-                lookingForTarget = false;
+            if (enemy.combatSceneIndex == -1) {
+                float spawnChance = Random.Range(0f, 1f);
+
+                if (spawnChance < enemy.spawnRarityModifier) {
+                    lookingForTarget = false;
+                }
+            }
+                
         }
         
         sceneManager.LoadCombatScene();

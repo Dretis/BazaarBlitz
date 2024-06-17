@@ -39,6 +39,8 @@ public class EntityPiece : MonoBehaviour
     public int combatSceneIndex = -1; // -1 indicates player is not in battle
     public bool isEnemy;
     public int favoredAttack;
+    public float spawnRarityModifier = 1; // 1 (full odds) to 0 (never spawns), set to a decimal percent to make the enemy spawn less. 
+    // Ex, 0.33 means the enemy is 3x rarer
 
     public EntityBaseStats entityStats = new();
 
