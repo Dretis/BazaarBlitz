@@ -15,6 +15,7 @@ public class SoundManager : MonoBehaviour
 
 
     private EntityPiece stupidFuck;
+    private MapNode stupidNodeFuck;
 
     [Header("Listen on Event Channels")]
     public VoidEventChannelSO m_EnteredOverworldScene;
@@ -34,6 +35,7 @@ public class SoundManager : MonoBehaviour
     public Vector2EventChannelSO m_TryExamineTile;
     public IntEventChannelSO m_PlayerScoreIncreased;
     public IntEventChannelSO m_PlayerScoreDecreased;
+    public NodeEventChannelSO m_LandOnStorefront;
     public IntEventChannelSO m_ItemUsed;
     public IntEventChannelSO m_ItemBought;
 
@@ -92,6 +94,7 @@ public class SoundManager : MonoBehaviour
         m_OpenInventory.OnEventRaised += PlayMoveSoundWithDude;
         m_ExitInventory.OnEventRaised += PlayUndoSound;
         m_TryExamineTile.OnEventRaised += PlayMoveSoundWithVector2;
+        m_LandOnStorefront.OnEventRaised += PlayEnterStoreSound;
 
         //Combat Events
         m_EnteredCombatScene.OnEventRaised += PlayCombatMusic;
@@ -127,6 +130,7 @@ public class SoundManager : MonoBehaviour
         m_OpenInventory.OnEventRaised -= PlayMoveSoundWithDude;
         m_ExitInventory.OnEventRaised -= PlayUndoSound;
         m_TryExamineTile.OnEventRaised -= PlayMoveSoundWithVector2;
+        m_LandOnStorefront.OnEventRaised -= PlayEnterStoreSound;
 
         //Combat Events
         m_EnteredCombatScene.OnEventRaised -= PlayCombatMusic;
@@ -242,6 +246,11 @@ public class SoundManager : MonoBehaviour
     private void PlayMoveSoundWithVector2(Vector2 vector2)
     {
         AudioHelper.PlayOneShotWithParameters("event:/Move", this.transform.position, ("SoundVolume", SFXVolume));
+    }
+
+    private void PlayEnterStoreSound(MapNode stupidNodeFuck)
+    {
+        AudioHelper.PlayOneShotWithParameters("event:/EnterStore", this.transform.position, ("SoundVolume", SFXVolume));
     }
 
     private void PlayUndoSound()
