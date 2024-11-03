@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Unity.VisualScripting;
 
 public class ScoreManager : MonoBehaviour
 {
@@ -71,10 +72,15 @@ public class ScoreManager : MonoBehaviour
 
         for (int i = 0; i < players.Count; i++)
         {
-            greenStamps[i].enabled = false;
-            redStamps[i].enabled = false;
-            blueStamps[i].enabled = false;
-            orangeStamps[i].enabled = false;
+
+            greenStamps[i].color -= new Color(0, 0, 0, 0.75f);
+            redStamps[i].color -= new Color(0, 0, 0, 0.75f);
+            blueStamps[i].color -= new Color(0, 0, 0, 0.75f);
+            orangeStamps[i].color -= new Color(0, 0, 0, 0.75f);
+            //greenStamps[i].enabled = false;
+            //redStamps[i].enabled = false;
+            //blueStamps[i].enabled = false;
+            //orangeStamps[i].enabled = false;
         }
     }
 
@@ -87,20 +93,19 @@ public class ScoreManager : MonoBehaviour
         playerLevels[id].text = "*\n" + players[id].RenownLevel;
         playerExps[id].text = "[" + (int)players[id].ReputationPoints + "/" + (int)players[id].levelThreshold + "]";
 
-        if(players[id].heldPoints < 0)
+        if (players[id].heldPoints < 0)
         {
             // Red numbers when negative balance
-            playerScores[id].text = $"<color=yellow>@</color> <color=red>{players[id].heldPoints}</color>";
+            playerScores[id].text = $"<color=yellow>@</color> <color=red> {players[id].heldPoints}</color>";
         }
         else
         {
-            playerScores[id].text = $"<color=yellow>@</color>{players[id].heldPoints}";
-            
+            playerScores[id].text = $"<color=yellow>@</color> {players[id].heldPoints}";
+
         }
-        playerHPs[id].text = "<color=red>HP</color> " + players[id].health + "/" + 
-            (players[id].maxHealth * players[id].currentStatsModifier.maxHealthMultModifier + 
-            players[id].currentStatsModifier.maxHealthFlatModifier);
-        playerImages[id].color = players[id].playerColor - new Color32(0, 0, 0, 125);
+        playerHPs[id].text = $"<color=#4DCF56>HP</color> {players[id].health}<size=18>/" +
+            $"{players[id].maxHealth * players[id].currentStatsModifier.maxHealthMultModifier + players[id].currentStatsModifier.maxHealthFlatModifier}</size>";
+        playerImages[id].color = players[id].playerColor - new Color32(0, 0, 0, 0); // minus transparency
     }
 
     private void ChangeCurrentPlayer(EntityPiece ps)
@@ -116,16 +121,20 @@ public class ScoreManager : MonoBehaviour
             switch (s)
             {
                 case Stamp.StampType.Green:
-                    greenStamps[ps.id].enabled = true;
+                    //greenStamps[ps.id].enabled = true;
+                    greenStamps[ps.id].color += new Color(0, 0, 0, 0.75f);
                     break;
                 case Stamp.StampType.Red:
-                    redStamps[ps.id].enabled = true;
+                    //redStamps[ps.id].enabled = true;
+                    redStamps[ps.id].color += new Color(0, 0, 0, 0.75f);
                     break;
                 case Stamp.StampType.Blue:
-                    blueStamps[ps.id].enabled = true;
+                    //blueStamps[ps.id].enabled = true;
+                    blueStamps[ps.id].color += new Color(0, 0, 0, 0.75f);
                     break;
                 case Stamp.StampType.Orange:
-                    orangeStamps[ps.id].enabled = true;
+                    //orangeStamps[ps.id].enabled = true;
+                    orangeStamps[ps.id].color += new Color(0, 0, 0, 0.75f);
                     break;
             }
         }
@@ -136,25 +145,30 @@ public class ScoreManager : MonoBehaviour
         switch (type)
         {
             case Stamp.StampType.Green:
-                greenStamps[currentPlayer.id].enabled = false;
+                //greenStamps[currentPlayer.id].enabled = false;
+                greenStamps[currentPlayer.id].color -= new Color(0, 0, 0, 0.75f);
+
                 break;
             case Stamp.StampType.Red:
-                redStamps[currentPlayer.id].enabled = false;
+                //redStamps[currentPlayer.id].enabled = false;
+                redStamps[currentPlayer.id].color -= new Color(0, 0, 0, 0.75f);
                 break;
             case Stamp.StampType.Blue:
-                blueStamps[currentPlayer.id].enabled = false;
+                //blueStamps[currentPlayer.id].enabled = false;
+                blueStamps[currentPlayer.id].color -= new Color(0, 0, 0, 0.75f);
                 break;
             case Stamp.StampType.Orange:
-                orangeStamps[currentPlayer.id].enabled = false;
+                //orangeStamps[currentPlayer.id].enabled = false;
+                orangeStamps[currentPlayer.id].color -= new Color(0, 0, 0, 0.75f);
                 break;
         }
     }
 
     private void ClearHeldStamps()
     {
-        greenStamps[currentPlayer.id].enabled = false;
-        redStamps[currentPlayer.id].enabled = false;
-        blueStamps[currentPlayer.id].enabled = false;
-        orangeStamps[currentPlayer.id].enabled = false;
+        greenStamps[currentPlayer.id].color -= new Color(0, 0, 0, 0.75f);
+        redStamps[currentPlayer.id].color -= new Color(0, 0, 0, 0.75f);
+        blueStamps[currentPlayer.id].color -= new Color(0, 0, 0, 0.75f);
+        orangeStamps[currentPlayer.id].color -= new Color(0, 0, 0, 0.75f);
     }
 }
