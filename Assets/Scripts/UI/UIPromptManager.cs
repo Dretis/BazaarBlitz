@@ -124,8 +124,8 @@ public class UIPromptManager : MonoBehaviour
     private void DisplayRollPrompt(EntityPiece ps)
     {
         // This will get swapped out with a menu selection
-        inputPrompt.text = "<sprite=0><color=white>[SPACE]</color> to roll!";
-        inputPrompt.text += "\n<sprite=1><color=white>[SHIFT]</color> to go back.";
+        inputPrompt.text = "<sprite=0><color=white>[SPACE]</color> Roll Dice";
+        inputPrompt.text += "\n<sprite=1><color=white>[SHIFT]</color> Back";
 
         HideInitialMenu();
     }
@@ -134,7 +134,7 @@ public class UIPromptManager : MonoBehaviour
     {
         inputPrompt.text = "<color=white>Freeview Mode</color>";
         inputPrompt.text += "\n<sprite=0><color=white>[SPACE]</color> Select Tile";
-        inputPrompt.text += "\n<sprite=1><color=white>[LSHIFT]</color> Back";
+        inputPrompt.text += "\n<sprite=1><color=white>[SHIFT]</color> Back";
         //inputPrompt.text += "\n<color=white>[Scroll Wheel]</color> Zoom In/Out";
     }
 

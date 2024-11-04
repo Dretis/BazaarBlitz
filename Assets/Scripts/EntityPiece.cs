@@ -177,8 +177,10 @@ public class EntityPiece : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (playerSprite != null)
+        if (playerSprite != null && !this.TryGetComponent<PlayerPaletteLoader>(out var paletteLoader))
+        {
             playerSprite.color = playerColor;
+        }
         
         if (occupiedNode != null)
         {
