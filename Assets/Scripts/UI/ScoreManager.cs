@@ -86,6 +86,7 @@ public class ScoreManager : MonoBehaviour
 
     private void UpdateScoreForPlayer(int id)
     {
+        // Debug.Log("updating player {id} score");
         // Update specific player score on the scoreboard based on their ID.
 
         // playerNames[id].text = "" + players[id].nickname;
@@ -166,9 +167,15 @@ public class ScoreManager : MonoBehaviour
 
     private void ClearHeldStamps()
     {
+        foreach(Stamp.StampType s in currentPlayer.stamps)
+        {
+            HideObtainedStamps(s);
+        }
+        /*
         greenStamps[currentPlayer.id].color -= new Color(0, 0, 0, 0.75f);
         redStamps[currentPlayer.id].color -= new Color(0, 0, 0, 0.75f);
         blueStamps[currentPlayer.id].color -= new Color(0, 0, 0, 0.75f);
         orangeStamps[currentPlayer.id].color -= new Color(0, 0, 0, 0.75f);
+        */
     }
 }

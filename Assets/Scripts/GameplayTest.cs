@@ -75,6 +75,8 @@ public class GameplayTest : MonoBehaviour
     private int attSelected = 1;
     private int diceSelected = 1;
     private int pointsLeft = 0;
+    private int currentPlayerInitialHealth = 0; // for pawn shop healing
+
     //ui to remove for levelup - Nam
     public Canvas levelUpScreen;
     public TextMeshProUGUI remainingSP;
@@ -504,6 +506,7 @@ public class GameplayTest : MonoBehaviour
 
     void PickDirection(EntityPiece p)
     {
+        /*
         if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
             wantedNode = p.occupiedNode.north;
 
@@ -520,6 +523,7 @@ public class GameplayTest : MonoBehaviour
         {
             phase = GamePhase.MoveAround;
         }
+        */
     }
 
     void MoveAround(EntityPiece p)
@@ -536,6 +540,7 @@ public class GameplayTest : MonoBehaviour
             {
                 p.stamps = new List<Stamp.StampType>(oldStamps);
                 p.heldPoints = oldPoints;
+                p.health = currentPlayerInitialHealth; // revert healing back
 
                 //oldStamps.Remove(stampCollected.stampType);
                 //oldPoints = 0;
@@ -624,11 +629,19 @@ public class GameplayTest : MonoBehaviour
             {
                 p.ReputationPoints += (75 * Mathf.Pow(1.5f, p.stamps.Count-1));
                 p.heldPoints += (int)(150 * Mathf.Pow(2, p.stamps.Count-1));
-                m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
+                //m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
                 m_PlayerScoreIncreased.RaiseEvent((int)(150 * Mathf.Pow(2, p.stamps.Count-1)));
                 m_PassByPawnShop.RaiseEvent(); // change this later
             }
-            p.stamps.Clear();
+
+            // Heal player by 33%
+            currentPlayerInitialHealth = p.health; // track health before, in case they undo
+            p.health += p.maxHealth / 3; 
+            if (p.health > p.maxHealth)
+            {
+                p.health = p.maxHealth;
+            }
+            m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
         }
         else if (m.CompareTag("Stamp"))
         {

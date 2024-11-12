@@ -175,12 +175,14 @@ public class PlayerInputController : MonoBehaviour
                 break;
             case (1, 0):
                 gp.wantedNode = p.occupiedNode.east;
+                currentPlayer.playerSprite.flipX = true;
                 break;
             case (0, -1):
                 gp.wantedNode = p.occupiedNode.south;
                 break;
             case (-1, 0):
                 gp.wantedNode = p.occupiedNode.west;
+                currentPlayer.playerSprite.flipX = false;
                 break;
 
         }
