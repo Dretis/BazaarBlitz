@@ -673,6 +673,9 @@ public class CombatManager : MonoBehaviour
         // moment of the method represents the start of the attack animation.
         m_Stalemate.RaiseEvent();
         yield return new WaitForSeconds(animationTime);
+
+        m_EnteredOverworldScene.RaiseEvent(); // change this to a fade in transition event or someting idk
+        yield return new WaitForSeconds(1f);
         
         pauseCombat();
 
@@ -722,7 +725,10 @@ public class CombatManager : MonoBehaviour
         }
 
         yield return new WaitForSeconds(animationTime);
-        
+
+        m_EnteredOverworldScene.RaiseEvent(); // change this to a fade in transition event or someting idk
+        yield return new WaitForSeconds(1f);
+
         endCombat();
 
     }

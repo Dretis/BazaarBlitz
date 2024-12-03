@@ -64,8 +64,8 @@ public class SoundManager : MonoBehaviour
         overworldThemeInstance = FMODUnity.RuntimeManager.CreateInstance("event:/KatamariTheme");
         diceRollInstance = FMODUnity.RuntimeManager.CreateInstance("event:/RollDice");
         battleThemeInstance = FMODUnity.RuntimeManager.CreateInstance("event:/BattleTheme");
-        musicVolume = 0.8f;
-        SFXVolume = 0.8f;
+        //musicVolume = 0.8f;
+        //SFXVolume = 0.8f;
         overworldThemeInstance.setParameterByName("MusicVolume", musicVolume);
         overworldThemeInstance.start();
     }

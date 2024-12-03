@@ -88,7 +88,7 @@ public class UITileTooltipManager : MonoBehaviour
             // Pawn Shop
             else if (node.tag == "Castle") //please change this tag
             {
-                tileType.text = "Pawn Shop";
+                tileType.text = "Central Market";
                 tileDescription.text = "Upon passing, exchange all held stamps for <color=yellow>@</color>.";
                 tileDescription.text += "\n\n<color=yellow>@</color> recieved is based on the number of stamps exchanged at once.";
             }
