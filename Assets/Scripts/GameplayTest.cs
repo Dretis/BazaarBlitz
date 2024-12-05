@@ -3,6 +3,7 @@ using UnityEngine;
 using TMPro;
 using DG.Tweening;
 using System.Linq;
+using Febucci.UI.Core;
 
 public class GameplayTest : MonoBehaviour
 {
@@ -47,7 +48,7 @@ public class GameplayTest : MonoBehaviour
     public List<ItemStats> recentStockedItems;
     public int emptyStockCount = 0;
 
-    public TextMeshProUGUI rollText;
+    [SerializeField] private TypewriterCore rollTypewriter;
     public TextMeshProUGUI turnText;
 
     public GameObject encounterScreen;
@@ -204,8 +205,8 @@ public class GameplayTest : MonoBehaviour
         //currentPlayer = nextPlayers[playerUnits.Count - 1];
         currentPlayerInitialNode = currentPlayer.occupiedNode;
 
-        turnText.text = currentPlayer.entityName + "'s Turn!";
-        turnText.color = currentPlayer.playerColor;
+        //turnText.text = currentPlayer.entityName + "'s Turn!";
+        //turnText.color = currentPlayer.playerColor;
     }
 
     private void Start()
@@ -565,7 +566,9 @@ public class GameplayTest : MonoBehaviour
             p.occupiedNode = lastNode;
 
             p.movementLeft++;
-            rollText.text = "" + p.movementLeft;
+
+            string roll = "" + p.movementLeft;
+            rollTypewriter.ShowText(roll);
 
             p.transform.DOMove(lastNode.transform.position, .25f)
                 .SetEase(Ease.OutQuint);
@@ -580,7 +583,9 @@ public class GameplayTest : MonoBehaviour
             if (wantedNode.modifier == MapNode.Modifier.Rafflesia) {
                 wantedNode.modifier = MapNode.Modifier.None;
                 p.movementLeft = 0;
-                rollText.text = "" + p.movementLeft;
+
+                rollTypewriter.ShowText("" + p.movementLeft);
+
                 p.previousNode = null;
 
                 wantedNode.flowerTrapVisual.color = new Color32(0, 0, 0, 0);
@@ -598,7 +603,10 @@ public class GameplayTest : MonoBehaviour
             p.occupiedNode = wantedNode;
 
             p.movementLeft--;
-            rollText.text = "" + p.movementLeft;
+
+            string roll = "" + p.movementLeft;
+            rollTypewriter.ShowText(roll);
+
             p.transform.DOMove(wantedNode.transform.position, .25f)
                 .SetEase(Ease.OutQuint);
 
@@ -1117,8 +1125,10 @@ public class GameplayTest : MonoBehaviour
 
         m_NextPlayerTurn.RaiseEvent(currentPlayer);
 
-        turnText.text = currentPlayer.entityName + "'s Turn!";
-        turnText.color = currentPlayer.playerColor;
+        rollTypewriter.ShowText("");
+
+        //turnText.text = currentPlayer.entityName + "'s Turn!";
+        //turnText.color = currentPlayer.playerColor;
 
         currentPlayerInitialNode = currentPlayer.occupiedNode;
         oldStamps = new List<Stamp.StampType>(currentPlayer.stamps); // keeping track of stamps for next player
@@ -1410,7 +1420,9 @@ public class GameplayTest : MonoBehaviour
     {
         Debug.Log("StopOnStore");
         currentPlayer.movementLeft = 0;
-        rollText.text = "" + currentPlayer.movementLeft;
+
+        string roll = "" + currentPlayer.movementLeft;
+        rollTypewriter.ShowText(roll);
     }  
 
     public void SelectRaycastTarget(EntityPiece p)

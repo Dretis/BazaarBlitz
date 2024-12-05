@@ -1,10 +1,17 @@
 using System.Collections;
 using UnityEngine;
 using TMPro;
-using System.Drawing;
+using Febucci.UI.Core;
 
 public class UIPromptManager : MonoBehaviour
 {
+    private bool NextPlayerGoIsRunning = false;
+    private Coroutine oldNextPlayerGo;
+
+    [SerializeField] private TAnimCore rollTextAnimator;
+    [SerializeField] private TypewriterCore rollTypewriter;
+    [SerializeField] private TypewriterCore turnTypewriter;
+
     [Header("UI Elements")]
     [SerializeField] private TextMeshProUGUI inputPrompt;
     [SerializeField] private TextMeshProUGUI rolledNumber;
@@ -19,6 +26,7 @@ public class UIPromptManager : MonoBehaviour
     public IntEventChannelSO m_RollForMovement;
     public PlayerEventChannelSO m_DiceRollPrep;
     public PlayerEventChannelSO m_DiceRollUndo;
+
     public PlayerEventChannelSO m_NextPlayerTurn;
     public PlayerEventChannelSO m_EncounterDecisions;
     public NodeEventChannelSO m_LandOnStorefront;
@@ -44,10 +52,12 @@ public class UIPromptManager : MonoBehaviour
     private void OnEnable()
     {
         m_RollForMovement.OnEventRaised += RolledDice;
+
         m_DiceRollPrep.OnEventRaised += DisplayRollPrompt;
         m_DiceRollUndo.OnEventRaised += DisplayInitialMenu;
-        m_NextPlayerTurn.OnEventRaised += DisplayInitialMenu;
-        m_NextPlayerTurn.OnEventRaised += NormalizeInventoryPrompt; //temp
+
+        m_NextPlayerTurn.OnEventRaised += OnNextPlayerTurn;
+        //m_NextPlayerTurn.OnEventRaised += NormalizeInventoryPrompt; //temp
         m_EncounterDecisions.OnEventRaised += DisplayEncounterChoices;
         m_LandOnStorefront.OnEventRaised += DisplayStorefrontPrompt;
         m_ItemSold.OnEventRaised += DisplayLeavePrompt;
@@ -69,10 +79,11 @@ public class UIPromptManager : MonoBehaviour
     private void OnDisable()
     {
         m_RollForMovement.OnEventRaised -= RolledDice;
+
         m_DiceRollPrep.OnEventRaised -= DisplayRollPrompt;
         m_DiceRollUndo.OnEventRaised -= DisplayInitialMenu;
-        m_NextPlayerTurn.OnEventRaised -= DisplayInitialMenu;
-        m_NextPlayerTurn.OnEventRaised -= NormalizeInventoryPrompt; //temp
+        m_NextPlayerTurn.OnEventRaised -= OnNextPlayerTurn;
+        //m_NextPlayerTurn.OnEventRaised -= NormalizeInventoryPrompt; //temp
         m_EncounterDecisions.OnEventRaised -= DisplayEncounterChoices;
         m_LandOnStorefront.OnEventRaised -= DisplayStorefrontPrompt;
         m_ItemSold.OnEventRaised -= DisplayLeavePrompt;
@@ -91,6 +102,32 @@ public class UIPromptManager : MonoBehaviour
         m_DisableFreeview.OnEventRaised -= DisplayInitialMenu;
     }
 
+    private void OnNextPlayerTurn(EntityPiece ps)
+    {
+        DisplayInitialMenu(ps);
+        NormalizeInventoryPrompt();
+
+        if (NextPlayerGoIsRunning)
+            StopCoroutine(oldNextPlayerGo);
+        oldNextPlayerGo = StartCoroutine(NotifyNextPlayerGo(ps));
+    }
+
+    private IEnumerator NotifyNextPlayerGo(EntityPiece ps)
+    {
+        NextPlayerGoIsRunning = true;
+        string goLine = "{offset}{size}Go, " + ps.entityName + "!";
+
+        turnTypewriter.GetComponent<TextMeshProUGUI>().color = ps.playerColor;
+        turnTypewriter.ShowText(goLine);
+
+        yield return new WaitForSeconds(2f);
+
+        turnTypewriter.StartDisappearingText();
+
+        NextPlayerGoIsRunning = false;
+        yield return null;
+    }
+
     private void RolledDice(int diceRoll)
     {
         inputPrompt.text = "";
@@ -103,22 +140,19 @@ public class UIPromptManager : MonoBehaviour
     private IEnumerator DisplayDiceRoll(int diceRoll)
     {
         rolledNumber.enabled = true;
-        yield return new WaitForSeconds(0.25f);
+        yield return new WaitForSeconds(0.1f);
 
-        rolledNumber.text = "" + diceRoll;
-
-        yield return new WaitForSeconds(0.75f);
-
-        /*
-        Color lowerAlpha;
-        lowerAlpha = Color.Lerp(Color.white, new Color(rolledNumber.color.r, rolledNumber.color.g, rolledNumber.color.b, 0), Mathf.PingPong(Time.time, 2));
-        rolledNumber.color = lowerAlpha;
-        */
-        rolledNumber.text = "";
-        rolledNumber.enabled = false;
+        string roll = "" + diceRoll;
+        rollTypewriter.ShowText(roll);
 
         yield return null;
         //movementRoll.text = "" + diceRoll;
+    }
+
+    private void UpdateDiceRoll(int diceRoll)
+    {
+        string roll = "" + diceRoll;
+        rollTypewriter.ShowText("{size a=1.1}"+roll);
     }
 
     private void DisplayRollPrompt(EntityPiece ps)
@@ -126,6 +160,8 @@ public class UIPromptManager : MonoBehaviour
         // This will get swapped out with a menu selection
         inputPrompt.text = "<sprite=0><color=white>[SPACE]</color> Roll Dice";
         inputPrompt.text += "\n<sprite=1><color=white>[SHIFT]</color> Back";
+
+        rollTypewriter.ShowText("<size=84><bounce a=.3>Rolling...</>");
 
         HideInitialMenu();
     }
@@ -149,11 +185,12 @@ public class UIPromptManager : MonoBehaviour
 
     private void DisplayInitialMenu()
     {
-        ClearInputText();
+        //ClearInputText();
 
         if (GameplayTest.instance.phase == GameplayTest.GamePhase.PickDirection) //fuck ass way for ITM to not show while exiting freeview during pickdirection
             return;
 
+        ClearInputText();
         menuPrompt.SetActive(true);
     }
 
@@ -178,6 +215,7 @@ public class UIPromptManager : MonoBehaviour
     {
         inputPrompt.text = "";
         movementRoll.text = "";
+        rollTypewriter.StartDisappearingText();
     }
 
     private void ClearInputText(MapNode node)
@@ -198,7 +236,7 @@ public class UIPromptManager : MonoBehaviour
         inputPrompt.text = "<color=white>[SPACE]</color> to leave the store.\n";
     }
 
-    private void NormalizeInventoryPrompt(EntityPiece ps)
+    private void NormalizeInventoryPrompt()
     {
         inventoryPromptText.text = "Item";
     }
