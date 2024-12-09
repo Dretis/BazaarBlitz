@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Unity.VisualScripting;
+using Febucci.UI.Core;
 
 public class ScoreManager : MonoBehaviour
 {
@@ -19,7 +19,10 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private List<TextMeshProUGUI> playerNames;
     [SerializeField] private List<TextMeshProUGUI> playerLevels;
     [SerializeField] private List<TextMeshProUGUI> playerExps;
-    [SerializeField] private List<TextMeshProUGUI> playerScores;
+
+    //[SerializeField] private List<TextMeshProUGUI> playerScores;
+    [SerializeField] private List<TypewriterCore> playerScores;
+
     [SerializeField] private List<TextMeshProUGUI> playerHPs;
     [SerializeField] private List<Image> playerImages;
 
@@ -65,8 +68,15 @@ public class ScoreManager : MonoBehaviour
 
     void Start()
     {
+        // Initial Setup
         for (int i = 0; i < players.Count; i++)
         {
+            // Set name
+            playerNames[i].text = "" + players[i].entityName; 
+
+            // Set Color of Baggie in score
+            playerImages[i].color = players[i].playerColor - new Color32(0, 0, 0, 0); // minus transparency
+
             UpdateScoreForPlayer(i);
         }
 
@@ -88,25 +98,32 @@ public class ScoreManager : MonoBehaviour
     {
         // Debug.Log("updating player {id} score");
         // Update specific player score on the scoreboard based on their ID.
-
-        // playerNames[id].text = "" + players[id].nickname;
-        playerNames[id].text = "" + players[id].entityName;
         playerLevels[id].text = "*\n" + players[id].RenownLevel;
         playerExps[id].text = "[" + (int)players[id].ReputationPoints + "/" + (int)players[id].levelThreshold + "]";
 
+        UpdateMoneyForPlayer(id);
+
+        UpdateHealthForPlayer(id);
+    }
+
+    private void UpdateMoneyForPlayer(int id)
+    {
         if (players[id].heldPoints < 0)
         {
             // Red numbers when negative balance
-            playerScores[id].text = $"<color=yellow>@</color> <color=red> {players[id].heldPoints}</color>";
+            playerScores[id].ShowText($"<color=red> {players[id].heldPoints}</color>");
         }
         else
         {
-            playerScores[id].text = $"<color=yellow>@</color> {players[id].heldPoints}";
+            playerScores[id].ShowText($"{players[id].heldPoints}");
 
         }
+    }
+
+    private void UpdateHealthForPlayer(int id)
+    {
         playerHPs[id].text = $"<color=#4DCF56>HP</color> {players[id].health}<size=18>/" +
             $"{players[id].maxHealth * players[id].currentStatsModifier.maxHealthMultModifier + players[id].currentStatsModifier.maxHealthFlatModifier}</size>";
-        playerImages[id].color = players[id].playerColor - new Color32(0, 0, 0, 0); // minus transparency
     }
 
     private void ChangeCurrentPlayer(EntityPiece ps)
