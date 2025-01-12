@@ -52,6 +52,7 @@ public class UITileTooltipManager : MonoBehaviour
 
     public void DisplayTileInformation(MapNode node)
     {
+        Debug.Log(node.gameObject);
         vcam.Follow = node.transform;
 
         FadeTo(tileInfoGroup, 1, 0.25f);

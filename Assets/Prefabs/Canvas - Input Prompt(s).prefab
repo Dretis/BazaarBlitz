@@ -1170,7 +1170,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 1
+  m_PresetInfoIsWorld: 0
 --- !u!114 &6674750566716788959
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1200,6 +1200,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a8ff616de36ffe40a59e4d4c3176a4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rollTextAnimator: {fileID: 0}
+  rollTypewriter: {fileID: 0}
+  turnTypewriter: {fileID: 0}
   inputPrompt: {fileID: 6674750566376000198}
   rolledNumber: {fileID: 6674750567810470794}
   movementRoll: {fileID: 0}

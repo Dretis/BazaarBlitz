@@ -73,4 +73,14 @@ public class PlayerPaletteLoader : MonoBehaviour
 
         ren.SetPropertyBlock(propBlock);
     }
+
+    public List<Color> GetInspectorPalette()
+    {
+        return inspectorPalette;
+    }
+
+    public void SetInspectorPalette(List<Color> newPalette)
+    {
+        inspectorPalette = newPalette;
+    }
 }

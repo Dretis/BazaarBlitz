@@ -31,8 +31,24 @@ public class CombatUIManager : MonoBehaviour
 
     private void Awake()
     {
-        player1Renderer.color = FindObjectOfType<CombatManager>().player1.playerColor;
-        player2Renderer.color = FindObjectOfType<CombatManager>().player2.playerColor;
+        var player1 = FindObjectOfType<CombatManager>().player1;
+        var player2 = FindObjectOfType<CombatManager>().player2;
+
+        if (player1.isEnemy)
+            player1Renderer.color = player1.playerColor;
+        else
+        {
+            player1Renderer.gameObject.GetComponent<PlayerPaletteLoader>().
+                SetInspectorPalette(player1.GetComponent<PlayerPaletteLoader>().GetInspectorPalette());
+        }
+
+        if (player2.isEnemy)
+            player2Renderer.color = player2.playerColor;
+        else
+        {
+            player2Renderer.gameObject.GetComponent<PlayerPaletteLoader>().
+                SetInspectorPalette(player2.GetComponent<PlayerPaletteLoader>().GetInspectorPalette());
+        }
 
         player1OverrideController = new AnimatorOverrideController(FindObjectOfType<CombatManager>().player1.combatAnimatorController);
         player1Animator.runtimeAnimatorController = player1OverrideController;

@@ -62,7 +62,7 @@ public class CameraObserver : MonoBehaviour
         Debug.Log("Back to player focus");
         vcam.Follow = GameplayTest.instance.currentPlayer.transform;
     }
-
+    /*
     private void LateUpdate()
     {
         if (Input.GetAxis("Mouse ScrollWheel") > 0)
@@ -83,4 +83,5 @@ public class CameraObserver : MonoBehaviour
             }
         }
     }
+    */
 }
