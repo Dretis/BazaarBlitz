@@ -145,11 +145,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 777
-        width: 965
-        height: 777
+        y: 785
+        width: 622
+        height: 752
       alignment: 9
-      pivot: {x: 0.57, y: 0}
+      pivot: {x: 0.35, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -165,12 +165,12 @@ TextureImporter:
       name: BaggyB_AttackGun_1
       rect:
         serializedVersion: 2
-        x: 965
-        y: 777
-        width: 965
-        height: 777
+        x: 646
+        y: 785
+        width: 622
+        height: 669
       alignment: 9
-      pivot: {x: 0.57, y: 0}
+      pivot: {x: 0.35, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -186,12 +186,12 @@ TextureImporter:
       name: BaggyB_AttackGun_2
       rect:
         serializedVersion: 2
-        x: 1930
-        y: 777
-        width: 965
-        height: 777
+        x: 1271
+        y: 785
+        width: 666
+        height: 478
       alignment: 9
-      pivot: {x: 0.57, y: 0}
+      pivot: {x: 0.47, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -207,12 +207,12 @@ TextureImporter:
       name: BaggyB_AttackGun_3
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 965
-        height: 777
+        x: 1968
+        y: 777
+        width: 746
+        height: 480
       alignment: 9
-      pivot: {x: 0.57, y: 0}
+      pivot: {x: 0.7, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -228,12 +228,12 @@ TextureImporter:
       name: BaggyB_AttackGun_4
       rect:
         serializedVersion: 2
-        x: 965
-        y: 0
-        width: 965
-        height: 777
+        x: 27
+        y: 22
+        width: 742
+        height: 428
       alignment: 9
-      pivot: {x: 0.57, y: 0}
+      pivot: {x: 0.7, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -249,12 +249,12 @@ TextureImporter:
       name: BaggyB_AttackGun_5
       rect:
         serializedVersion: 2
-        x: 1930
-        y: 0
-        width: 965
-        height: 777
+        x: 817
+        y: 18
+        width: 846
+        height: 742
       alignment: 9
-      pivot: {x: 0.57, y: 0}
+      pivot: {x: 0.65, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -262,6 +262,27 @@ TextureImporter:
       bones: []
       spriteID: 72e3c63b1fbc9834fbc09b71a7004a1b
       internalID: -598122397
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BaggyB_AttackGun_6
+      rect:
+        serializedVersion: 2
+        x: 1839
+        y: 6
+        width: 552
+        height: 766
+      alignment: 9
+      pivot: {x: 0.42, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 193380b25d7a8404b98f0d09dfe0736f
+      internalID: 52494890
       vertices: []
       indices: 
       edges: []
@@ -275,7 +296,9 @@ TextureImporter:
     indices: 
     edges: []
     weights: []
-    secondaryTextures: []
+    secondaryTextures:
+    - texture: {fileID: 2800000, guid: 37450030dba40714f8bcd6eb85a2954a, type: 3}
+      name: _PaletteMap
     nameFileIdTable:
       BaggyB_AttackGun_0: -374473571
       BaggyB_AttackGun_1: 1357459890
@@ -283,6 +306,7 @@ TextureImporter:
       BaggyB_AttackGun_3: -1798815144
       BaggyB_AttackGun_4: -940898037
       BaggyB_AttackGun_5: -598122397
+      BaggyB_AttackGun_6: 52494890
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0
