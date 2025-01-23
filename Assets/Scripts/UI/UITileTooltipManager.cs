@@ -87,6 +87,7 @@ public class UITileTooltipManager : MonoBehaviour
                 tileType.text = $"<color=#{stampHexColor}>{stamp.stampType} Stamp</color>";
                 tileDescription.text = $"Upon passing, collect the <color=#{stampHexColor}>{stamp.stampType}</color> stamp.";
                 tileDescription.text += "\n\nCan only hold one of this stamp at a time.";
+                tileDescription.text += "\n\nFights cannot happen on this tile.";
             }
             // Pawn Shop
             else if (node.tag == "Castle") //please change this tag
