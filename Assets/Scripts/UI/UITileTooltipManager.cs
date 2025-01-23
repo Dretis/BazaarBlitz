@@ -24,6 +24,8 @@ public class UITileTooltipManager : MonoBehaviour
     [SerializeField] private List<TextMeshProUGUI> storestockNames;
     [SerializeField] private List<TextMeshProUGUI> storestockPrices;
 
+
+
     [Header("Listen on Event Channels")]
     public NodeEventChannelSO m_EnterRaycastedTile;
     public VoidEventChannelSO m_ExitRaycastedTile;

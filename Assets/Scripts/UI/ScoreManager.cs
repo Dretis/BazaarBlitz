@@ -14,6 +14,11 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private Color injuredColor;
     [SerializeField] private Color dangerColor;
 
+    [SerializeField] private Color greenStampColor;
+    [SerializeField] private Color redStampColor;
+    [SerializeField] private Color blueStampColor;
+    [SerializeField] private Color orangeStampColor;
+
     [Header("UI Elements")]
     [SerializeField] private Canvas scoreCanvas;
     [SerializeField] private List<TextMeshProUGUI> playerNames;
@@ -51,7 +56,7 @@ public class ScoreManager : MonoBehaviour
         m_UndoPassByStamp.OnEventRaised += HideObtainedStamps;
 
         m_PassByPawnShop.OnEventRaised += ClearHeldStamps;
-        m_UndoPassByPawnShop.OnEventRaised += UpdateHeldStamps;
+        m_UndoPassByPawnShop.OnEventRaised += OnUndoPassByPawnShop;
     }
 
     private void OnDisable()
@@ -63,7 +68,7 @@ public class ScoreManager : MonoBehaviour
         m_UndoPassByStamp.OnEventRaised -= HideObtainedStamps;
 
         m_PassByPawnShop.OnEventRaised -= ClearHeldStamps;
-        m_UndoPassByPawnShop.OnEventRaised -= UpdateHeldStamps;
+        m_UndoPassByPawnShop.OnEventRaised -= OnUndoPassByPawnShop;
     }
 
     void Start()
@@ -140,19 +145,19 @@ public class ScoreManager : MonoBehaviour
             {
                 case Stamp.StampType.Green:
                     //greenStamps[ps.id].enabled = true;
-                    greenStamps[ps.id].color += new Color(0, 0, 0, 0.75f);
+                    greenStamps[ps.id].color = greenStampColor;
                     break;
                 case Stamp.StampType.Red:
                     //redStamps[ps.id].enabled = true;
-                    redStamps[ps.id].color += new Color(0, 0, 0, 0.75f);
+                    redStamps[ps.id].color = redStampColor;
                     break;
                 case Stamp.StampType.Blue:
                     //blueStamps[ps.id].enabled = true;
-                    blueStamps[ps.id].color += new Color(0, 0, 0, 0.75f);
+                    blueStamps[ps.id].color = blueStampColor;
                     break;
                 case Stamp.StampType.Orange:
                     //orangeStamps[ps.id].enabled = true;
-                    orangeStamps[ps.id].color += new Color(0, 0, 0, 0.75f);
+                    orangeStamps[ps.id].color = orangeStampColor;
                     break;
             }
         }
@@ -194,5 +199,11 @@ public class ScoreManager : MonoBehaviour
         blueStamps[currentPlayer.id].color -= new Color(0, 0, 0, 0.75f);
         orangeStamps[currentPlayer.id].color -= new Color(0, 0, 0, 0.75f);
         */
+    }
+
+    private void OnUndoPassByPawnShop(EntityPiece ps)
+    {
+        ClearHeldStamps();
+        UpdateHeldStamps(ps);
     }
 }

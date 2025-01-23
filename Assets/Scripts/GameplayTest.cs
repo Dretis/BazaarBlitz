@@ -7,6 +7,8 @@ using Febucci.UI.Core;
 
 public class GameplayTest : MonoBehaviour
 {
+    [SerializeField] private bool turnOffMonsterEncounters = false;
+
     public static GameplayTest instance;
     // Tile Data and Shit IGNORE THIS SECTION FOR NOW
     [SerializeField]
@@ -640,6 +642,8 @@ public class GameplayTest : MonoBehaviour
                 //m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
                 m_PlayerScoreIncreased.RaiseEvent((int)(150 * Mathf.Pow(2, p.stamps.Count-1)));
                 m_PassByPawnShop.RaiseEvent(); // change this later
+
+                p.stamps.Clear();
             }
 
             // Heal player by 33%
@@ -723,9 +727,12 @@ public class GameplayTest : MonoBehaviour
         {
             p.previousNode = p.traveledNodes[p.traveledNodes.Count - 1];
             p.traveledNodes.Clear(); 
-            p.traveledNodes.Add(p.occupiedNode); 
+            p.traveledNodes.Add(p.occupiedNode);
 
-            phase = GamePhase.EncounterTime; // next phase
+            if (turnOffMonsterEncounters)
+                phase = GamePhase.EndTurn;
+            else
+                phase = GamePhase.EncounterTime; // next phase
         }
         else
             phase = GamePhase.PickDirection; // Go back to picking direction
@@ -747,6 +754,23 @@ public class GameplayTest : MonoBehaviour
             var otherPlayer = p.occupiedNode.playerOccupied;
             if (m.TryGetComponent<StoreManager>(out StoreManager component)) // Forced to buy item(s)
             {
+                if(otherPlayer != null && otherPlayer != currentPlayer) // temp player fight on store
+                {
+                    if (otherPlayer.combatSceneIndex == -1)
+                    {
+                        phase = GamePhase.CombatTime;
+
+                        //Debug.Log("Your Player: " + currentPlayer.nickname);
+                        //Debug.Log("Other Player: " + otherPlayer.nickname);
+                        m_EnteredCombatScene.RaiseEvent();
+                        encounterStarted = true;
+
+                        // Set IDs of players entering combat.
+                        sceneManager.player1ID = currentPlayer.id;
+                        sceneManager.player2ID = otherPlayer.id;
+                        sceneManager.LoadCombatScene();
+                    }
+                }
                 // Have the node be occupied by the current player.
                 m.playerOccupied = p;
                 // Update portions of this code later
