@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq.Expressions;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static GameplayTest;
@@ -41,17 +41,24 @@ public class PlayerInputController : MonoBehaviour
     public VoidEventChannelSO m_ExitStorefront;
     public ItemEventChannelSO m_ItemBought;
 
+    private void Awake()
+    {
+        freeviewReticle = GameObject.FindWithTag("FreeviewReticle");
+        freeviewRb = freeviewReticle.GetComponent<Rigidbody2D>();
+    }
     // Start is called before the first frame update
     private void Start()
     {
+        playerInput = GetComponent<PlayerInput>();
+        var players = FindObjectsOfType<EntityPiece>();
+        var index = playerInput.playerIndex;
+        currentPlayer = players.FirstOrDefault(m => m.id == index);
+
         // Fuck ass work around to disable the UI action map
         playerInput.SwitchCurrentActionMap("UI"); // FUCK YOU
         playerInput.currentActionMap.Disable();
         playerInput.SwitchCurrentActionMap("Initial Turn Menu");
         playerInput.currentActionMap.Enable();
-
-        //freeviewReticle = GameObject.FindWithTag("FreeviewReticle");
-        freeviewRb = freeviewReticle.GetComponent<Rigidbody2D>();
     }
 
     private void OnEnable()
