@@ -18,8 +18,8 @@ public class GameplayTest : MonoBehaviour
     public EntityPiece currentPlayer;
     public MapNode currentPlayerInitialNode;
 
-    public Dictionary<Vector2Int, GameObject> map = new Dictionary<Vector2Int, GameObject>();
-    public Dictionary<Vector2Int, GameObject> unitPos = new Dictionary<Vector2Int, GameObject>();
+    //public Dictionary<Vector2Int, GameObject> map = new Dictionary<Vector2Int, GameObject>();
+    //public Dictionary<Vector2Int, GameObject> unitPos = new Dictionary<Vector2Int, GameObject>();
 
     public enum GamePhase
     {
@@ -134,6 +134,9 @@ public class GameplayTest : MonoBehaviour
     public VoidEventChannelSO m_EnterRaycastTargetSelection;
     public VoidEventChannelSO m_ExitRaycastTargetSelection;
 
+    // Start of Game Event Channels
+    public PlayerEventChannelSO m_AssignPlayerToController;
+
     [Header("Listen on Event Channels")]
     public VoidEventChannelSO m_DiceRolled;
     public ItemEventChannelSO m_ItemBought; //Listening to this one
@@ -200,6 +203,8 @@ public class GameplayTest : MonoBehaviour
             // Allow starting nodes to detect the player on them.
             var initialNode = player.occupiedNode;
             initialNode.playerOccupied = player;
+
+            m_AssignPlayerToController.RaiseEvent(player);
         }
 
         // Get the player at the start of the list.

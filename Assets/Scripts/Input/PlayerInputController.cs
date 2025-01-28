@@ -5,12 +5,16 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static GameplayTest;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class PlayerInputController : MonoBehaviour
 {
     //private PlayerInputController instance;
+    [SerializeField] private List<PlayerConfiguration> playerConfigs;
+    private PlayerInputActions playerInputActions; 
 
     [SerializeField] private EntityPiece currentPlayer;
+    [SerializeField] private EntityPiece assignedPlayer;
     [SerializeField] private PlayerInput playerInput;
     [SerializeField] private GameplayTest.GamePhase previousGamePhase = GamePhase.InitialTurnMenu;
 
@@ -24,6 +28,7 @@ public class PlayerInputController : MonoBehaviour
     public VoidEventChannelSO m_EnableFreeview; // also listening
     public VoidEventChannelSO m_DisableFreeview;
     public Vector2EventChannelSO m_TryExamineTile;
+    public Vector2EventChannelSO m_FreeviewReticleMove;
     public PlayerEventChannelSO m_DiceRollUndo;
     public PlayerEventChannelSO m_DiceRollPrep;
     public VoidEventChannelSO m_DiceRolled;
@@ -35,35 +40,60 @@ public class PlayerInputController : MonoBehaviour
     public VoidEventChannelSO m_ExitInventory;
 
     [Header("Listen on Event Channels")]
+    public PlayerEventChannelSO m_AssignPlayerToController;
     public PlayerEventChannelSO m_NextPlayerTurn;
     // Store-based Event Channels
     public NodeEventChannelSO m_LandOnStorefront;
     public VoidEventChannelSO m_ExitStorefront;
     public ItemEventChannelSO m_ItemBought;
 
+    public void InitializePlayer(PlayerConfiguration pc)
+    {
+        //playerConfig = pc;
+        // set color palette for player based on player config here
+        //playerConfig.Input.onActionTriggered
+    }
+
     private void Awake()
     {
-        freeviewReticle = GameObject.FindWithTag("FreeviewReticle");
-        freeviewRb = freeviewReticle.GetComponent<Rigidbody2D>();
+        //playerInputActions = new PlayerInputActions();
+        //playerConfigs = PlayerConfigurationManager.instance.GetPlayerConfigs();
+        //Debug.Log("hello"+playerConfigs);
+
+        //var players = FindObjectsOfType<EntityPiece>();
+        //var index = playerInput.playerIndex;
+        //currentPlayer = players.FirstOrDefault(m => m.id == index);
+        //playerInput = playerConfigs.FirstOrDefault(m => m.PlayerIndex == index).Input;
+        //playerInput = playerConfigs[currentPlayer.id].Input;
+
+        //freeviewReticle = GameObject.FindWithTag("FreeviewReticle");
+        //freeviewRb = freeviewReticle.GetComponent<Rigidbody2D>();
     }
     // Start is called before the first frame update
     private void Start()
     {
-        playerInput = GetComponent<PlayerInput>();
+        //Debug.Log("hello" + playerConfigs[0].PlayerIndex);
+        //playerInput = GetComponent<PlayerInput>();
         var players = FindObjectsOfType<EntityPiece>();
-        var index = playerInput.playerIndex;
-        currentPlayer = players.FirstOrDefault(m => m.id == index);
+        //var index = playerInput.playerIndex;
+
+        //currentPlayer = players.FirstOrDefault(m => m.id == index);
+        //playerInput = playerConfigs[0].Input;
+        playerInput = GetComponent<PlayerInput>();
+        Debug.Log("Player Index: " + playerInput.playerIndex);
 
         // Fuck ass work around to disable the UI action map
-        playerInput.SwitchCurrentActionMap("UI"); // FUCK YOU
-        playerInput.currentActionMap.Disable();
-        playerInput.SwitchCurrentActionMap("Initial Turn Menu");
-        playerInput.currentActionMap.Enable();
+        //playerInput.SwitchCurrentActionMap("UI"); // FUCK YOU
+        //playerInput.currentActionMap.Disable();
+        //playerInput.SwitchCurrentActionMap("Initial Turn Menu");
+        //playerInput.currentActionMap.Enable();
+
+        Debug.Log(playerInput.currentActionMap);
     }
 
     private void OnEnable()
     {
-        freeviewReticle.SetActive(false);
+        //freeviewReticle.SetActive(false);
         m_EnableFreeview.OnEventRaised += FreeviewEnabled;
         m_DisableFreeview.OnEventRaised += FreeviewDisabled;
         m_NextPlayerTurn.OnEventRaised += SetCurrentPlayer;
@@ -73,6 +103,8 @@ public class PlayerInputController : MonoBehaviour
         m_LandOnStorefront.OnEventRaised += OnLandOnStorefront;
         m_ExitStorefront.OnEventRaised += OnExitStorefront;
         m_ItemBought.OnEventRaised += OnItemBought;
+
+        m_AssignPlayerToController.OnEventRaised += OnAssignPlayerToController;
     }
 
     private void OnDisable()
@@ -86,17 +118,19 @@ public class PlayerInputController : MonoBehaviour
         m_LandOnStorefront.OnEventRaised -= OnLandOnStorefront;
         m_ExitStorefront.OnEventRaised -= OnExitStorefront;
         m_ItemBought.OnEventRaised -= OnItemBought;
+
+        m_AssignPlayerToController.OnEventRaised -= OnAssignPlayerToController;
     }
 
     private void FixedUpdate()
     {
-        freeviewRb.velocity = freeviewMoveInput * freeviewSpeed; // Moving reticle during Freeview
+        //freeviewRb.velocity = freeviewMoveInput * freeviewSpeed; // Moving reticle during Freeview
     }
 
     #region 'Inital Turn Menu' Action Map
     private void OnView()
     {
-        //Debug.Log("menu item pressed as message");
+        Debug.Log("menu item pressed as message");
         previousGamePhase = GamePhase.InitialTurnMenu;
         m_EnableFreeview.RaiseEvent();
         //FreeviewEnabled(GamePhase.InitialTurnMenu);
@@ -104,7 +138,7 @@ public class PlayerInputController : MonoBehaviour
 
     private void OnRoll()
     {
-        //Debug.Log("menu item pressed as message");
+        Debug.Log("roll pressed as message");
         previousGamePhase = GamePhase.InitialTurnMenu;
         m_DiceRollPrep.RaiseEvent(currentPlayer);
         SwitchActionMap(GamePhase.RollDice);
@@ -112,7 +146,7 @@ public class PlayerInputController : MonoBehaviour
 
     private void OnInv()
     {
-        Debug.Log("menu item pressed as message");
+        Debug.Log("inventorty pressed as message");
         if (!GameplayTest.instance.playerUsedItem)
         {
             previousGamePhase = GamePhase.InitialTurnMenu;
@@ -127,6 +161,7 @@ public class PlayerInputController : MonoBehaviour
 
     private void OnBuild()
     {
+        Debug.Log("Build presed");
         var p = currentPlayer;
         if (p.occupiedNode.tag == "Encounter"
             && p.storeCount < 4)
@@ -211,11 +246,12 @@ public class PlayerInputController : MonoBehaviour
     private void OnFreeviewMove(InputValue value)
     {
         freeviewMoveInput = value.Get<Vector2>();
+        m_FreeviewReticleMove.RaiseEvent(freeviewMoveInput);
     }
 
     private void OnFreeviewExamine()
     {
-        m_TryExamineTile.RaiseEvent((Vector2)freeviewReticle.transform.position);
+        m_TryExamineTile.RaiseEvent(GameObject.Find("Freeview Reticle").transform.position); //change this code later
         if (GameplayTest.instance.phase == GamePhase.RaycastTargetSelection)
         {
             GameplayTest.instance.OnSelectRaycastTarget();
@@ -327,22 +363,33 @@ public class PlayerInputController : MonoBehaviour
     private void SetCurrentPlayer(EntityPiece player)
     {
         currentPlayer = player;
-        playerInput.SwitchCurrentActionMap("UI"); // FUCK YOU
-        playerInput.currentActionMap.Disable();
-        playerInput.SwitchCurrentActionMap("Initial Turn Menu");
-        playerInput.currentActionMap.Enable();
+
+        if(assignedPlayer != currentPlayer)
+        {
+            playerInput.DeactivateInput();
+            Debug.Log($"Player ID: {playerInput.playerIndex} deactivated input.");
+        }
+        else
+        {
+            Debug.Log($"Player ID: {playerInput.playerIndex} activated input!");
+            playerInput.ActivateInput();
+            playerInput.SwitchCurrentActionMap("UI"); // FUCK YOU
+            playerInput.currentActionMap.Disable();
+            playerInput.SwitchCurrentActionMap("Initial Turn Menu");
+            playerInput.currentActionMap.Enable();
+        }
     }
 
     private void FreeviewEnabled()
     {
-        freeviewReticle.SetActive(true);
-        freeviewReticle.transform.position = currentPlayer.transform.position + new Vector3(0, 0.5f,0);
+        //freeviewReticle.SetActive(true);
+        //freeviewReticle.transform.position = currentPlayer.transform.position + new Vector3(0, 0.5f,0);
         SwitchActionMap(GamePhase.Freeview);
     }
 
     private void FreeviewDisabled()
     {
-        freeviewReticle.SetActive(false);
+        //freeviewReticle.SetActive(false);
         SwitchActionMap(previousGamePhase); // Should be whatever the one it was before
     }
 
@@ -361,7 +408,8 @@ public class PlayerInputController : MonoBehaviour
             instance.phase = GamePhase.EndTurn;
             return;
         }
-        SwitchActionMap(previousGamePhase);
+        SwitchActionMap(GamePhase.InitialTurnMenu);
+        //SwitchActionMap(previousGamePhase);
     }
 
     private void OnLandOnStorefront(MapNode node)
@@ -378,4 +426,24 @@ public class PlayerInputController : MonoBehaviour
     {
 
     }
+
+    private void OnAssignPlayerToController(EntityPiece entity)
+    {
+        //assign entitypiece to the controller w/ the same ID
+        if (entity.id == playerInput.playerIndex)
+        {
+            assignedPlayer = entity; // This should never change after this
+
+            // the following should be in its own function in case we need to change the player input mid-game
+            var playerConfig = PlayerConfigurationManager.instance.GetPlayerConfig(playerInput.playerIndex);
+
+            assignedPlayer.entityName = playerConfig.PlayerName;
+            assignedPlayer.playerColor = playerConfig.PlayerColor;
+
+            // Set main color of Baggie body in the palette
+            assignedPlayer.gameObject.GetComponent<PlayerPaletteLoader>().SetInspectorPaletteColor(0, playerConfig.PlayerColor);
+        }
+    }
+
+
 }

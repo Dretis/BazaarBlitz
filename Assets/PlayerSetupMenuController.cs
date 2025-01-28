@@ -14,6 +14,7 @@ public class PlayerSetupMenuController : MonoBehaviour
     [SerializeField] private GameObject menuPanel;
     [SerializeField] private GameObject readyPanel;
     [SerializeField] private Button readyButton;
+    [SerializeField] private TypewriterCore readyText;
 
     private float ignoreInputTime = 1.5f;
     private bool inputEnabled = true;
@@ -46,12 +47,20 @@ public class PlayerSetupMenuController : MonoBehaviour
         menuPanel.SetActive(false);
     }
 
+    public void SetName(string name)
+    {
+        if (!inputEnabled) return;
+
+        PlayerConfigurationManager.instance.SetPlayerName(playerIndex, name);
+    }
+
     public void ReadyPlayer()
     {
         if (!inputEnabled) return;
 
         PlayerConfigurationManager.instance.ReadyPlayer(playerIndex);
         readyButton.gameObject.SetActive(false);
+        readyText.ShowText("Ready!");
     }
 
     public IEnumerator PauseInputTimeFor(float delay)

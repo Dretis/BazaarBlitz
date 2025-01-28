@@ -344,6 +344,100 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 194600679}
   m_CullTransparentMesh: 1
+--- !u!1 &246891290
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 246891293}
+  - component: {fileID: 246891292}
+  - component: {fileID: 246891291}
+  m_Layer: 0
+  m_Name: MusicPlayer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &246891291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 246891290}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe69cc6135328834aa7b3d87c0c23262, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isPaused: 0
+  soundManager: {fileID: 246891292}
+  pauseMenu: {fileID: 0}
+  musicSlider: {fileID: 0}
+  sfxSlider: {fileID: 0}
+--- !u!114 &246891292
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 246891290}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd520d5adee195648b768c9c10fe5059, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  musicVolume: 0
+  SFXVolume: 0.8
+  m_EnteredOverworldScene: {fileID: 11400000, guid: 56c6da0795bbaa44bbf1fe3b8e42122d, type: 2}
+  m_EnteredCombatScene: {fileID: 11400000, guid: b06b734815e5e434087c29d416ff002e, type: 2}
+  m_PlayerMovedOnBoard: {fileID: 11400000, guid: 3e053258b5caff14898c85eb40602276, type: 2}
+  m_PlayerUndidSomething: {fileID: 11400000, guid: 42d98c829d9faf44680a0974c08d3121, type: 2}
+  m_PassByStamp: {fileID: 11400000, guid: 3191c86eefbe7b94caff7661018a4a38, type: 2}
+  m_DiceRollPrep: {fileID: 11400000, guid: 9e449a1e468efff46b833c09542c6b5f, type: 2}
+  m_RollForMovement: {fileID: 11400000, guid: d015287f1c859dc49a75cff91e2028a9, type: 2}
+  m_DiceRollUndo: {fileID: 11400000, guid: c893b6f1be9cffb4b87d121e14d423c7, type: 2}
+  m_EnableFreeview: {fileID: 11400000, guid: d7e81995233eb6340bf998043ae2294f, type: 2}
+  m_DisableFreeview: {fileID: 11400000, guid: 9dfdcd33a17daa44088bf0e8fe4c1898, type: 2}
+  m_OpenInventory: {fileID: 11400000, guid: 91caeb767faff934e81ba8e6ff774d38, type: 2}
+  m_ExitInventory: {fileID: 11400000, guid: 4992d66997435ac41b90fcee905517ec, type: 2}
+  m_TryExamineTile: {fileID: 11400000, guid: d3b3273277242ba4bb44593c190d5142, type: 2}
+  m_PlayerScoreIncreased: {fileID: 11400000, guid: fb23cdded5bf3de459866be92c7a0196, type: 2}
+  m_PlayerScoreDecreased: {fileID: 11400000, guid: a6020ca8600c6e9449a136c742c95f3d, type: 2}
+  m_ItemUsed: {fileID: 11400000, guid: 848f52d6f0e789e4ab1731d31de0ae96, type: 2}
+  m_ItemBought: {fileID: 11400000, guid: 1f1870f6bf259af498309d86d8f595b2, type: 2}
+  m_ShowCombatBanner: {fileID: 0}
+  m_NextPlayerTurn: {fileID: 11400000, guid: 45e13c3cd9283b74989c51218c39f6c2, type: 2}
+  m_UsedMeleeAttack: {fileID: 11400000, guid: 4a9e110c43a818e4da1524690e454b0d, type: 2}
+  m_UsedMagicAttack: {fileID: 11400000, guid: a945228fe4f52684b8dff726d6454056, type: 2}
+  m_UsedGunAttack: {fileID: 11400000, guid: afe9a285444f0614aae7d0df6d043102, type: 2}
+  m_IneffectiveAttack: {fileID: 11400000, guid: 2d9c9bb3a579dcd41aa67d1ca2a91f03, type: 2}
+  m_EffectiveAttack: {fileID: 11400000, guid: 64dd882548e55284893bf4d05af78ff4, type: 2}
+  m_SuperEffectiveAttack: {fileID: 11400000, guid: 61786714ebaf2eb44b2f5cef9104c8e5, type: 2}
+  m_SomeoneDied: {fileID: 11400000, guid: 317dacf486ae5ee4db2594dc0f7ac959, type: 2}
+  m_AttackImpact: {fileID: 11400000, guid: 9e5c549844a53f2479ba5224defc75a9, type: 2}
+  m_EntityDied: {fileID: 11400000, guid: 8d61128e2ea86d248a5d122114fb8c8e, type: 2}
+  m_ActionSelected: {fileID: 11400000, guid: fc7127886f7f7ed458771b3e118932a0, type: 2}
+  m_DamageTaken: {fileID: 11400000, guid: 21e2d2c157c4e564db136dc7709f07b4, type: 2}
+--- !u!4 &246891293
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 246891290}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &578264224
 GameObject:
   m_ObjectHideFlags: 0
@@ -892,7 +986,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d0f51f27fd7c3945b05ed3b3fa92bd9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxPlayers: 4
+  maxPlayers: 2
 --- !u!4 &983315348
 Transform:
   m_ObjectHideFlags: 0

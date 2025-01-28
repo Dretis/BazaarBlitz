@@ -25,9 +25,24 @@ public class PlayerConfigurationManager : MonoBehaviour
         }
     }
 
+    public List<PlayerConfiguration> GetPlayerConfigs()
+    {
+        return playerConfigs;
+    }
+
+    public PlayerConfiguration GetPlayerConfig(int index)
+    {
+        return playerConfigs[index];
+    }
+
     public void SetPlayerColor(int index, Color color)
     {
         playerConfigs[index].PlayerColor = color;
+    }
+
+    public void SetPlayerName(int index, string newName)
+    {
+        playerConfigs[index].PlayerName = newName;
     }
 
     public void ReadyPlayer(int index)
@@ -39,6 +54,21 @@ public class PlayerConfigurationManager : MonoBehaviour
         }
     }
 
+    public void EnablePlayer(int index)
+    {
+        playerConfigs[index].IsReady = true;
+    }
+
+    public void DisablePlayer(int index)
+    {
+        playerConfigs[index].IsReady = false;
+    }
+
+    public PlayerInput GetPlayerInput(int index)
+    {
+        return playerConfigs[index].Input;
+    }
+
     public void HandlePlayerJoin(PlayerInput pi)
     {
         Debug.Log($"Player Joined {pi.playerIndex}");
@@ -48,6 +78,7 @@ public class PlayerConfigurationManager : MonoBehaviour
         {
             pi.transform.SetParent(transform); // Becomes child of the ParentConfigManager to perist across scenes
             playerConfigs.Add(new PlayerConfiguration(pi));
+            pi.gameObject.name = $"PLAYER CONFIG [{pi.playerIndex}]";
         }
     }
 }
@@ -58,12 +89,15 @@ public class PlayerConfiguration
 
     public int PlayerIndex { get; set; }
     public bool IsReady { get; set; }
+    public bool IsDisabled { get; set; }
 
     public Color PlayerColor { get; set; }
+    public string PlayerName { get; set; }
 
     public PlayerConfiguration(PlayerInput pi)
     {
         PlayerIndex = pi.playerIndex;
         Input = pi;
+        PlayerName = $"Baggie_{pi.playerIndex}";
     }
 }

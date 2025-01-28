@@ -113,14 +113,14 @@ GameObject:
   - component: {fileID: 7862349071269940852}
   - component: {fileID: 6374006009878009626}
   - component: {fileID: 7388590781422086112}
-  - component: {fileID: 2685114533343670724}
+  - component: {fileID: 4397707941184767339}
   m_Layer: 5
   m_Name: Baggie Name Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2144862226530359509
 RectTransform:
   m_ObjectHideFlags: 0
@@ -133,8 +133,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 4249173697193741885}
-  m_RootOrder: 1
+  m_Father: {fileID: 4249173696434467315}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
@@ -253,7 +253,7 @@ MonoBehaviour:
   typewriterStartsAutomatically: 0
   animationLoop: 0
   timeScale: 0
-  _text: Player 1
+  _text: SodiumH20
   useDynamicScaling: 1
   referenceFontSize: 10
   isResettingTimeOnNewText: 1
@@ -270,7 +270,7 @@ MonoBehaviour:
   defaultBehaviorsTags:
   - bounce a=.1 w=.8
   defaultTagsMode: 0
---- !u!114 &2685114533343670724
+--- !u!114 &4397707941184767339
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -279,7 +279,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2204084495130583364}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 57a6945b90dcd0c4b81619c0d8b5c283, type: 3}
+  m_Script: {fileID: 11500000, guid: eb821b3a89e0240aa91c53955ccade89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   useTypeWriter: 1
@@ -306,15 +306,9 @@ MonoBehaviour:
   onMessage:
     m_PersistentCalls:
       m_Calls: []
-  waitForNormalChars: 0.03
-  waitLong: 0.6
-  waitMiddle: 0.2
-  avoidMultiplePunctuationWait: 0
-  waitForNewLines: 1
-  waitForLastCharacter: 1
-  useTypewriterWaitForDisappearances: 1
-  disappearanceWaitTime: 0.015
-  disappearanceSpeedMultiplier: 1
+  waitForNormalWord: 0.3
+  waitForWordWithPunctuation: 0.5
+  disappearanceDelay: 0.5
 --- !u!1 &2365045334218020292
 GameObject:
   m_ObjectHideFlags: 0
@@ -592,7 +586,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   setup: {fileID: 4249173696434467314}
   baggieVisual: {fileID: 1091382522168470864}
+  baggieVisualName: {fileID: 4397707941184767339}
   color: {r: 0.227451, g: 0.5529412, b: 0.92549026, a: 1}
+  baggieColorName: Blueberry
 --- !u!1 &4249173695564023036
 GameObject:
   m_ObjectHideFlags: 0
@@ -624,7 +620,7 @@ RectTransform:
   - {fileID: 4249173696440743025}
   - {fileID: 4249173697435067958}
   m_Father: {fileID: 4249173696434467315}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -780,7 +776,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   setup: {fileID: 4249173696434467314}
   baggieVisual: {fileID: 1091382522168470864}
+  baggieVisualName: {fileID: 4397707941184767339}
   color: {r: 1, g: 1, b: 1, a: 1}
+  baggieColorName: Coconut
 --- !u!1 &4249173695730413891
 GameObject:
   m_ObjectHideFlags: 0
@@ -1162,7 +1160,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4249173696434467315}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1277,7 +1275,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.28773582, g: 1, b: 0.47291142, a: 1}
+  m_Color: {r: 0.5568628, g: 1, b: 0.28627452, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1364,7 +1362,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   setup: {fileID: 4249173696434467314}
   baggieVisual: {fileID: 1091382522168470864}
-  color: {r: 0.28627452, g: 1, b: 0.47450984, a: 1}
+  baggieVisualName: {fileID: 4397707941184767339}
+  color: {r: 0.5568628, g: 1, b: 0.28627452, a: 1}
+  baggieColorName: Honeydew
 --- !u!1 &4249173695895110260
 GameObject:
   m_ObjectHideFlags: 0
@@ -1514,7 +1514,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   setup: {fileID: 4249173696434467314}
   baggieVisual: {fileID: 1091382522168470864}
+  baggieVisualName: {fileID: 4397707941184767339}
   color: {r: 0.7372549, g: 0.15686275, b: 0.3254902, a: 1}
+  baggieColorName: Apple
 --- !u!1 &4249173695902620167
 GameObject:
   m_ObjectHideFlags: 0
@@ -1608,7 +1610,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 60.7
+  m_fontSize: 55.3
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1799,7 +1801,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   setup: {fileID: 4249173696434467314}
   baggieVisual: {fileID: 1091382522168470864}
+  baggieVisualName: {fileID: 4397707941184767339}
   color: {r: 1, g: 0.56078434, b: 0.8941177, a: 1}
+  baggieColorName: Peach
 --- !u!1 &4249173696079773051
 GameObject:
   m_ObjectHideFlags: 0
@@ -2084,7 +2088,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   setup: {fileID: 4249173696434467314}
   baggieVisual: {fileID: 1091382522168470864}
+  baggieVisualName: {fileID: 4397707941184767339}
   color: {r: 0.68235296, g: 0.5568628, b: 0.9725491, a: 1}
+  baggieColorName: Lavender
 --- !u!1 &4249173696246699250
 GameObject:
   m_ObjectHideFlags: 0
@@ -2234,7 +2240,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   setup: {fileID: 4249173696434467314}
   baggieVisual: {fileID: 1091382522168470864}
+  baggieVisualName: {fileID: 4397707941184767339}
   color: {r: 0.86666673, g: 0.6431373, b: 0.5294118, a: 1}
+  baggieColorName: Kiwi
 --- !u!1 &4249173696434467316
 GameObject:
   m_ObjectHideFlags: 0
@@ -2270,6 +2278,7 @@ RectTransform:
   - {fileID: 215334489335916337}
   - {fileID: 1412423620537685219}
   - {fileID: 4249173697193741885}
+  - {fileID: 2144862226530359509}
   - {fileID: 4249173695564023035}
   - {fileID: 511166116306631208}
   - {fileID: 4249173695817151668}
@@ -2344,6 +2353,7 @@ MonoBehaviour:
   menuPanel: {fileID: 4249173697193741886}
   readyPanel: {fileID: 4249173695564023036}
   readyButton: {fileID: 4249173697435067961}
+  readyText: {fileID: 985888338715491646}
 --- !u!1 &4249173696440743026
 GameObject:
   m_ObjectHideFlags: 0
@@ -2356,6 +2366,7 @@ GameObject:
   - component: {fileID: 4249173696440743023}
   - component: {fileID: 4249173696440743024}
   - component: {fileID: 8208119628327409937}
+  - component: {fileID: 985888338715491646}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -2411,7 +2422,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Ready!
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7e0983a274ecdce45b5ccfabffca4d1b, type: 2}
   m_sharedMaterial: {fileID: 2674762156599226005, guid: 7e0983a274ecdce45b5ccfabffca4d1b, type: 2}
@@ -2495,7 +2506,7 @@ MonoBehaviour:
   typewriterStartsAutomatically: 0
   animationLoop: 0
   timeScale: 0
-  _text: Ready!
+  _text: Readu!
   useDynamicScaling: 1
   referenceFontSize: 10
   isResettingTimeOnNewText: 1
@@ -2512,6 +2523,51 @@ MonoBehaviour:
   defaultBehaviorsTags:
   - incr w=0
   defaultTagsMode: 0
+--- !u!114 &985888338715491646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4249173696440743026}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57a6945b90dcd0c4b81619c0d8b5c283, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useTypeWriter: 1
+  startTypewriterMode: 3
+  hideAppearancesOnSkip: 0
+  hideDisappearancesOnSkip: 0
+  triggerEventsOnSkip: 0
+  resetTypingSpeedAtStartup: 1
+  disappearanceOrientation: 0
+  triggerShowedAfterEffectsEnd: 0
+  triggerDisappearedAfterEffectsEnd: 0
+  onTextShowed:
+    m_PersistentCalls:
+      m_Calls: []
+  onTypewriterStart:
+    m_PersistentCalls:
+      m_Calls: []
+  onTextDisappeared:
+    m_PersistentCalls:
+      m_Calls: []
+  onCharacterVisible:
+    m_PersistentCalls:
+      m_Calls: []
+  onMessage:
+    m_PersistentCalls:
+      m_Calls: []
+  waitForNormalChars: 0.03
+  waitLong: 0.6
+  waitMiddle: 0.2
+  avoidMultiplePunctuationWait: 0
+  waitForNewLines: 1
+  waitForLastCharacter: 1
+  useTypewriterWaitForDisappearances: 1
+  disappearanceWaitTime: 0.015
+  disappearanceSpeedMultiplier: 1
 --- !u!1 &4249173696567860620
 GameObject:
   m_ObjectHideFlags: 0
@@ -2796,7 +2852,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   setup: {fileID: 4249173696434467314}
   baggieVisual: {fileID: 1091382522168470864}
+  baggieVisualName: {fileID: 4397707941184767339}
   color: {r: 1, g: 0.8980393, b: 0.3254902, a: 1}
+  baggieColorName: Lemon
 --- !u!1 &4249173696681911833
 GameObject:
   m_ObjectHideFlags: 0
@@ -3475,7 +3533,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4249173695800374462}
-  - {fileID: 2144862226530359509}
   m_Father: {fileID: 4249173696434467315}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4150,7 +4207,7 @@ RectTransform:
   - {fileID: 8022615454887637534}
   - {fileID: 1291613562203773500}
   m_Father: {fileID: 4249173696434467315}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}

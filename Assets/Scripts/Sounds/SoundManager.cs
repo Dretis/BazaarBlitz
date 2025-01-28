@@ -219,9 +219,19 @@ public class SoundManager : MonoBehaviour
         AudioHelper.PlayOneShotWithParameters("event:/UseItem(Food)", this.transform.position, ("SoundVolume", SFXVolume));
     }
 
+    public void PlayEnterBattleSound()
+    {
+        AudioHelper.PlayOneShotWithParameters("event:/EnterCombat", this.transform.position, ("SoundVolume", SFXVolume));
+    }
+
     private void PlayEnterBattleSound(EntityPiece entity)
     {
         AudioHelper.PlayOneShotWithParameters("event:/EnterCombat", this.transform.position, ("SoundVolume", SFXVolume));
+    }
+
+    public void PlayNextPlayerTurnSound()
+    {
+        AudioHelper.PlayOneShotWithParameters("event:/NextPlayer", this.transform.position, ("SoundVolume", SFXVolume));
     }
 
     private void PlayNextPlayerTurnSound(EntityPiece entity)
