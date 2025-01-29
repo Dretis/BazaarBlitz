@@ -50,10 +50,11 @@ public class CameraObserver : MonoBehaviour
     void SwitchTargetFocus(EntityPiece entity)
     {
         vcam.Follow = entity.transform;
+        freeviewReticle.SetActive(false);
         //var composer = vcam.GetCinemachineComponent<CinemachineComposer>();
         //composer.m_TrackedObjectOffset = new Vector3(0, 0.5f, 0);
         //composer.m_TrackedObjectOffset = defaultFollowOffset;
-        
+
     }
 
     void SwitchFocusToReticle()
