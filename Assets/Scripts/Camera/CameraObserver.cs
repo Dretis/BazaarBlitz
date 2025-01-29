@@ -22,6 +22,7 @@ public class CameraObserver : MonoBehaviour
 
     private void OnEnable()
     {
+        freeviewReticle.SetActive(false);
         m_NextPlayerTurn.OnEventRaised += SwitchTargetFocus;
         m_EnableFreeview.OnEventRaised += SwitchFocusToReticle;
         m_DisableFreeview.OnEventRaised += ReturnTargetFocusToCurrentPlayer;

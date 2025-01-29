@@ -115,7 +115,7 @@ public class UITileTooltipManager : MonoBehaviour
     public void DisplayStoreStock(StoreManager store)
     {
         storestockDisplayed = true;
-        FadeTo(storestockGroup, 1, 0.5f);
+        FadeTo(storestockGroup, 1, 0.25f);
         var storeInventory = store.storeInventory;
 
         ItemStats storeItem = null;

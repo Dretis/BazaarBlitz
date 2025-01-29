@@ -11,7 +11,19 @@ public class PlayerConfigurationManager : MonoBehaviour
 
     [SerializeField] private int maxPlayers = 4;
 
+    [Header("Broadcast on Event Channels")]
+    public VoidEventChannelSO m_AllPlayersReady;
+
     public static PlayerConfigurationManager instance { get; private set; }
+    private void OnEnable()
+    {
+        m_AllPlayersReady.OnEventRaised += OnAllPlayersReady;
+    }
+
+    private void OnDisable()
+    {
+        m_AllPlayersReady.OnEventRaised -= OnAllPlayersReady;
+    }
 
     private void Awake()
     {
@@ -50,7 +62,9 @@ public class PlayerConfigurationManager : MonoBehaviour
         playerConfigs[index].IsReady = true;
         if(playerConfigs.Count == maxPlayers && playerConfigs.All(p=>p.IsReady ==true))
         {
-            SceneManager.LoadScene("Overworld 2");
+            Debug.Log("All players ready, entering the match!");
+            m_AllPlayersReady.RaiseEvent();
+            //SceneManager.LoadScene("Overworld 2");
         }
     }
 
@@ -80,6 +94,18 @@ public class PlayerConfigurationManager : MonoBehaviour
             playerConfigs.Add(new PlayerConfiguration(pi));
             pi.gameObject.name = $"PLAYER CONFIG [{pi.playerIndex}]";
         }
+    }
+
+    public void OnAllPlayersReady()
+    {
+        StartCoroutine(DelayedEnterMatch(1.5f));
+    }
+
+    public IEnumerator DelayedEnterMatch(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        SceneManager.LoadScene("Overworld 2");
+        yield return null;
     }
 }
 

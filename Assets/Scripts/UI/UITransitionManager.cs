@@ -12,6 +12,7 @@ public class UITransitionManager : MonoBehaviour
     [Header("Listen on Event Channels")]
     public VoidEventChannelSO m_EnteredCombatScene;
     public VoidEventChannelSO m_EnteredOverworldScene;
+    public VoidEventChannelSO m_AllPlayersReady;
 
     void Awake()
     {
@@ -25,12 +26,14 @@ public class UITransitionManager : MonoBehaviour
 
         m_EnteredCombatScene.OnEventRaised += FadeInInkTransition;
         m_EnteredOverworldScene.OnEventRaised += FadeInInkTransition;
+        m_AllPlayersReady.OnEventRaised += FadeInInkTransition;
     }
 
     private void OnDisable()
     {
         m_EnteredCombatScene.OnEventRaised -= FadeInInkTransition;
         m_EnteredOverworldScene.OnEventRaised -= FadeInInkTransition;
+        m_AllPlayersReady.OnEventRaised -= FadeInInkTransition;
     }
 
     public void LoopTween(Material m, float delay, string attribute, float startVal, float endVal)
