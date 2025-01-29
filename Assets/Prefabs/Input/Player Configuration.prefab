@@ -94,6 +94,12 @@ MonoBehaviour:
   assignedPlayer: {fileID: 0}
   playerInput: {fileID: 4572607719132578481}
   previousGamePhase: 0
+  currActionMap:
+    m_Name: Curr
+    m_Id: d19a6b68-b935-4ae6-90d8-700d01530dac
+    m_Asset: {fileID: 0}
+    m_Actions: []
+    m_Bindings: []
   freeviewReticle: {fileID: 0}
   freeviewSpeed: 6
   m_EnableFreeview: {fileID: 11400000, guid: d7e81995233eb6340bf998043ae2294f, type: 2}
@@ -109,8 +115,11 @@ MonoBehaviour:
   m_FinishStockingStore: {fileID: 11400000, guid: f02cee4c939241841aa967904d4db75e, type: 2}
   m_RestockStore: {fileID: 11400000, guid: 45d6b055127905e4cb2609426a521e19, type: 2}
   m_ExitInventory: {fileID: 11400000, guid: 4992d66997435ac41b90fcee905517ec, type: 2}
+  m_PlayerActionSelected: {fileID: 11400000, guid: d7651c1dc2c5cc74d90001e0a479c397, type: 2}
   m_AssignPlayerToController: {fileID: 11400000, guid: ad03087746d19e74292e7dbccb547d32, type: 2}
   m_NextPlayerTurn: {fileID: 11400000, guid: 45e13c3cd9283b74989c51218c39f6c2, type: 2}
   m_LandOnStorefront: {fileID: 11400000, guid: f648c693d8451764f96f063b6b3da44b, type: 2}
   m_ExitStorefront: {fileID: 11400000, guid: 410e906b10aa4ae49ab7395fffa23d79, type: 2}
   m_ItemBought: {fileID: 11400000, guid: ace0aa03bf09d91469d5914ce815154e, type: 2}
+  m_EnteredCombatScene: {fileID: 11400000, guid: b06b734815e5e434087c29d416ff002e, type: 2}
+  m_InitiateCombatOnPassBy: {fileID: 11400000, guid: 738add0769a4e0047bfef96c86d9f906, type: 2}

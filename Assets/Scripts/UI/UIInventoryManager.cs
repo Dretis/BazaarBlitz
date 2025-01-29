@@ -17,6 +17,8 @@ public class UIInventoryManager : MonoBehaviour
     //[SerializeField] private List<ItemStats> playerInventory; //effectively copy of player's inv
     //[SerializeField] private EntityPiece currentPlayer; //reference of player
 
+    private int currentPlayerIndex;
+
     [Header("Main Inventory")]
     [SerializeField] private Canvas inventoryCanvas;
     [SerializeField] private CanvasGroup inventoryGroup;
@@ -139,6 +141,7 @@ public class UIInventoryManager : MonoBehaviour
         HideSelectedItemDetails();
 
         SpawnItemsInInventory(entity.inventory);
+        currentPlayerIndex = entity.id;
         /*
         playerInventory.Clear();
         foreach (ItemStats item in entity.inventory)

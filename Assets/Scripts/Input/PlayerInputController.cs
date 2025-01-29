@@ -2,8 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.UI;
 using static GameplayTest;
 using static UnityEditor.Experimental.GraphView.GraphView;
 
@@ -17,6 +19,8 @@ public class PlayerInputController : MonoBehaviour
     [SerializeField] private EntityPiece assignedPlayer;
     [SerializeField] private PlayerInput playerInput;
     [SerializeField] private GameplayTest.GamePhase previousGamePhase = GamePhase.InitialTurnMenu;
+
+    [SerializeField] private InputActionMap currActionMap;
 
     [Header("Freeview Variables")]
     [SerializeField] private GameObject freeviewReticle;
@@ -39,6 +43,8 @@ public class PlayerInputController : MonoBehaviour
     public NodeEventChannelSO m_RestockStore;
     public VoidEventChannelSO m_ExitInventory;
 
+    public EntityIntEventChannelSO m_PlayerActionSelected;
+
     [Header("Listen on Event Channels")]
     public PlayerEventChannelSO m_AssignPlayerToController;
     public PlayerEventChannelSO m_NextPlayerTurn;
@@ -46,6 +52,9 @@ public class PlayerInputController : MonoBehaviour
     public NodeEventChannelSO m_LandOnStorefront;
     public VoidEventChannelSO m_ExitStorefront;
     public ItemEventChannelSO m_ItemBought;
+
+    public VoidEventChannelSO m_EnteredCombatScene;
+    public PlayerEventChannelSO m_InitiateCombatOnPassBy;
 
     public void InitializePlayer(PlayerConfiguration pc)
     {
@@ -89,6 +98,7 @@ public class PlayerInputController : MonoBehaviour
         //playerInput.currentActionMap.Enable();
 
         Debug.Log(playerInput.currentActionMap);
+        currActionMap = playerInput.currentActionMap;
     }
 
     private void OnEnable()
@@ -104,6 +114,9 @@ public class PlayerInputController : MonoBehaviour
         m_ExitStorefront.OnEventRaised += OnExitStorefront;
         m_ItemBought.OnEventRaised += OnItemBought;
 
+        m_EnteredCombatScene.OnEventRaised += OnEnteredCombatScene;
+        m_InitiateCombatOnPassBy.OnEventRaised += OnInitiateCombatOnPassBy;
+
         m_AssignPlayerToController.OnEventRaised += OnAssignPlayerToController;
     }
 
@@ -118,6 +131,9 @@ public class PlayerInputController : MonoBehaviour
         m_LandOnStorefront.OnEventRaised -= OnLandOnStorefront;
         m_ExitStorefront.OnEventRaised -= OnExitStorefront;
         m_ItemBought.OnEventRaised -= OnItemBought;
+
+        m_EnteredCombatScene.OnEventRaised -= OnEnteredCombatScene;
+        m_InitiateCombatOnPassBy.OnEventRaised -= OnInitiateCombatOnPassBy;
 
         m_AssignPlayerToController.OnEventRaised -= OnAssignPlayerToController;
     }
@@ -149,6 +165,9 @@ public class PlayerInputController : MonoBehaviour
         Debug.Log("inventorty pressed as message");
         if (!GameplayTest.instance.playerUsedItem)
         {
+            playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
+            playerInput.uiInputModule.actionsAsset = playerInput.actions;
+
             previousGamePhase = GamePhase.InitialTurnMenu;
             m_OpenInventory.RaiseEvent(currentPlayer);
             SwitchActionMap(GamePhase.Inventory);
@@ -166,6 +185,9 @@ public class PlayerInputController : MonoBehaviour
         if (p.occupiedNode.tag == "Encounter"
             && p.storeCount < 4)
         {
+            playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
+            playerInput.uiInputModule.actionsAsset = playerInput.actions;
+
             previousGamePhase = GamePhase.InitialTurnMenu;
             Debug.Log("Built a store");
             // Build a store in the current tile
@@ -193,6 +215,7 @@ public class PlayerInputController : MonoBehaviour
                 break;
             case GamePhase.Inventory:
                 m_ExitInventory.RaiseEvent();
+
                 SwitchActionMap(previousGamePhase);
                 break;
         }
@@ -260,7 +283,7 @@ public class PlayerInputController : MonoBehaviour
 
     private void OnFreeviewExit()
     {
-        SwitchActionMap(previousGamePhase);
+        //SwitchActionMap(previousGamePhase);
         m_DisableFreeview.RaiseEvent();
         //SwitchActionMap(GamePhase.InitialTurnMenu); // Should be whatever the one it was before
     }
@@ -300,8 +323,55 @@ public class PlayerInputController : MonoBehaviour
     }
     #endregion
 
+    #region 'Combat' Action Map
+    private void OnUpAction()
+    {
+        //if()
+        Debug.Log("CONFIG[" + playerInput.playerIndex + "] | " + "P1 Up action pressed");
+        m_PlayerActionSelected.RaiseEvent(assignedPlayer, 1);
+        //sendAction(true, 1); // Player 1 second element (melee)
+    }
+
+    private void OnRightAction()
+    {
+        Debug.Log("CONFIG["+ playerInput.playerIndex + "] | "+"P1 Right action pressed");
+        m_PlayerActionSelected.RaiseEvent(assignedPlayer, 0);
+        //sendAction(true, 0); // Player 1 first element (gun)
+    }
+
+    private void OnDownAction()
+    {
+        Debug.Log("CONFIG[" + playerInput.playerIndex + "] | " + "P1 Down action pressed");
+        m_PlayerActionSelected.RaiseEvent(assignedPlayer, 2);
+        //sendAction(true, 2); // Player 1 first element (magic)
+    }
+
+    private void OnUpActionP2()
+    {
+        Debug.Log("CONFIG[" + playerInput.playerIndex + "] | " + "P2 Upppp action pressed");
+        m_PlayerActionSelected.RaiseEvent(assignedPlayer, 1);
+        //sendAction(false, 1); // Player  second element (melee)
+    }
+
+    private void OnRightActionP2()
+    {
+        Debug.Log("CONFIG[" + playerInput.playerIndex + "] | " + "P2 Righto action pressed");
+        m_PlayerActionSelected.RaiseEvent(assignedPlayer, 0);
+        //sendAction(false, 0); // Player 2 first element (gun)
+    }
+
+    private void OnDownActionP2()
+    {
+        Debug.Log("CONFIG[" + playerInput.playerIndex + "] | " + "P2 Downo action pressed");
+        m_PlayerActionSelected.RaiseEvent(assignedPlayer, 2);
+        //sendAction(false, 2); // Player 2 first element (magic)
+    }
+    #endregion
+
     public void SwitchActionMap(GameplayTest.GamePhase phase)
     {
+        if (!playerInput.inputIsActive) return;
+
         playerInput.currentActionMap.Disable();
         GameplayTest.instance.phase = phase;
         switch (phase)
@@ -341,9 +411,9 @@ public class PlayerInputController : MonoBehaviour
                 playerInput.SwitchCurrentActionMap("UI");
                 break;
 
-            case GamePhase.OverturnStore:
-                playerInput.SwitchCurrentActionMap("Confirmation");
-                break;
+            //case GamePhase.OverturnStore:
+            //   playerInput.SwitchCurrentActionMap("Confirmation");
+            //   break;
 
             case GamePhase.LevelUp:
                 //LevelUp(currentPlayer);
@@ -354,10 +424,16 @@ public class PlayerInputController : MonoBehaviour
             case GamePhase.ConfirmContinue:
                 playerInput.SwitchCurrentActionMap("Confirmation");
                 break;
+
+            case GamePhase.CombatTime:
+                playerInput.SwitchCurrentActionMap("Combat");
+                break;
         }
 
         playerInput.currentActionMap.Enable();
-        Debug.Log(playerInput.currentActionMap);
+        currActionMap = playerInput.currentActionMap;
+        Debug.Log($"Player [{playerInput.playerIndex}] | {playerInput.currentActionMap}");
+        Debug.Log($"currActionMap | {currActionMap}");
     }
 
     private void SetCurrentPlayer(EntityPiece player)
@@ -382,6 +458,7 @@ public class PlayerInputController : MonoBehaviour
 
     private void FreeviewEnabled()
     {
+        if (!playerInput.inputIsActive) return;
         //freeviewReticle.SetActive(true);
         //freeviewReticle.transform.position = currentPlayer.transform.position + new Vector3(0, 0.5f,0);
         SwitchActionMap(GamePhase.Freeview);
@@ -389,12 +466,15 @@ public class PlayerInputController : MonoBehaviour
 
     private void FreeviewDisabled()
     {
+        if (!playerInput.inputIsActive) return;
         //freeviewReticle.SetActive(false);
         SwitchActionMap(previousGamePhase); // Should be whatever the one it was before
     }
 
     private void OnRestockStore(MapNode node)
     {
+        if (!playerInput.inputIsActive) return;
+
         previousGamePhase = instance.phase;
         Debug.Log("prev phase = "+previousGamePhase);
         SwitchActionMap(GamePhase.StockStore);
@@ -402,7 +482,9 @@ public class PlayerInputController : MonoBehaviour
 
     private void OnFinishStockingStore(EntityPiece ps)
     {
-        if(previousGamePhase == GamePhase.EncounterTime)
+        if (!playerInput.inputIsActive) return;
+
+        if (previousGamePhase == GamePhase.EncounterTime)
         {
             Debug.Log("What the fc");
             instance.phase = GamePhase.EndTurn;
@@ -414,17 +496,40 @@ public class PlayerInputController : MonoBehaviour
 
     private void OnLandOnStorefront(MapNode node)
     {
+        if (!playerInput.inputIsActive) return;
+
+        //playerInput.uiInputModule.GetComponent<MultiplayerEventSystem>().playerRoot = 
+        playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
+        playerInput.uiInputModule.actionsAsset = playerInput.actions;
         SwitchActionMap(GamePhase.InStore);
     }
 
     private void OnItemBought(ItemStats item)
     {
+        if (!playerInput.inputIsActive) return;
         SwitchActionMap(GamePhase.ConfirmContinue);
     }
 
     private void OnExitStorefront()
     {
 
+    }
+
+    private void OnEnteredCombatScene()
+    {
+        if (!playerInput.inputIsActive) return;
+
+        SwitchActionMap(GamePhase.CombatTime);
+    }
+
+    private void OnInitiateCombatOnPassBy(EntityPiece entity)
+    {
+        // Enable this player's input controls
+        if (entity == assignedPlayer)
+        {
+            playerInput.ActivateInput();
+            SwitchActionMap(GamePhase.CombatTime);
+        }
     }
 
     private void OnAssignPlayerToController(EntityPiece entity)

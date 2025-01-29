@@ -1360,6 +1360,231 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Combat"",
+            ""id"": ""83e8a7ad-40c0-44c6-bec3-e890ff1b4d09"",
+            ""actions"": [
+                {
+                    ""name"": ""UpAction"",
+                    ""type"": ""Button"",
+                    ""id"": ""7f3206b5-80ce-42c3-8d26-8d3d0688ad5d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RightAction"",
+                    ""type"": ""Button"",
+                    ""id"": ""a113fa53-daac-4e59-897a-c59ff1b36e50"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""DownAction"",
+                    ""type"": ""Button"",
+                    ""id"": ""b049efa3-3201-468f-a245-028418eba26b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""HowToCombat"",
+                    ""type"": ""Value"",
+                    ""id"": ""00f03f44-af5e-4e0b-aaa6-e405bd713a44"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""UpActionP2"",
+                    ""type"": ""Button"",
+                    ""id"": ""1fadaf9a-5316-45e7-b0e8-e8d8473bd919"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RightActionP2"",
+                    ""type"": ""Button"",
+                    ""id"": ""172ab006-8292-4875-8879-7fefaa600d1e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""DownActionP2"",
+                    ""type"": ""Button"",
+                    ""id"": ""a7d8f3b5-44ab-47fe-9bd6-467158b16695"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""aed4ac55-d449-4fd9-99a8-43708f490a4c"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard;Keyboard&Mouse"",
+                    ""action"": ""UpAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9630bad6-bebe-442a-a859-33057ceab25a"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""UpAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fd004318-db11-4103-afff-588bb5dd9e35"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard;Keyboard&Mouse"",
+                    ""action"": ""DownAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""decbfe29-089e-4f20-92c0-05ce90d4138d"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard;Keyboard&Mouse"",
+                    ""action"": ""RightAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""da76c78b-ca14-435a-b513-6ccea432655e"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard;Keyboard&Mouse"",
+                    ""action"": ""HowToCombat"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1b4411fe-ca09-438a-a79a-553da6df4abe"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""RightAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f2f78441-7f03-42ce-840f-b66687fc210b"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""DownAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bf1ce31c-8516-449c-b680-793ee3b5b0d9"",
+                    ""path"": ""<Gamepad>/select"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""HowToCombat"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c8354433-c2c9-4ca1-ac74-b6bfb85e699b"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard;Keyboard&Mouse"",
+                    ""action"": ""DownActionP2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7a9f6153-e017-4305-82e8-57f96dba91a7"",
+                    ""path"": ""<Gamepad>/dpad/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""DownActionP2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f7b7fbb9-10c2-47c4-baf0-935dfe9f7768"",
+                    ""path"": ""<Keyboard>/rightArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard;Keyboard&Mouse"",
+                    ""action"": ""RightActionP2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""aea17666-4650-4131-9957-04929ae20bdc"",
+                    ""path"": ""<Gamepad>/dpad/right"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""RightActionP2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""044fb085-681a-4278-a7ca-c0d66bfff9fd"",
+                    ""path"": ""<Keyboard>/upArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard;Keyboard&Mouse"",
+                    ""action"": ""UpActionP2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""423c60aa-feea-448f-bc46-25f8bd9f5c89"",
+                    ""path"": ""<Gamepad>/dpad/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""UpActionP2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -1457,6 +1682,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_UI_RightClick = m_UI.FindAction("RightClick", throwIfNotFound: true);
         m_UI_TrackedDevicePosition = m_UI.FindAction("TrackedDevicePosition", throwIfNotFound: true);
         m_UI_TrackedDeviceOrientation = m_UI.FindAction("TrackedDeviceOrientation", throwIfNotFound: true);
+        // Combat
+        m_Combat = asset.FindActionMap("Combat", throwIfNotFound: true);
+        m_Combat_UpAction = m_Combat.FindAction("UpAction", throwIfNotFound: true);
+        m_Combat_RightAction = m_Combat.FindAction("RightAction", throwIfNotFound: true);
+        m_Combat_DownAction = m_Combat.FindAction("DownAction", throwIfNotFound: true);
+        m_Combat_HowToCombat = m_Combat.FindAction("HowToCombat", throwIfNotFound: true);
+        m_Combat_UpActionP2 = m_Combat.FindAction("UpActionP2", throwIfNotFound: true);
+        m_Combat_RightActionP2 = m_Combat.FindAction("RightActionP2", throwIfNotFound: true);
+        m_Combat_DownActionP2 = m_Combat.FindAction("DownActionP2", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1880,6 +2114,100 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         }
     }
     public UIActions @UI => new UIActions(this);
+
+    // Combat
+    private readonly InputActionMap m_Combat;
+    private List<ICombatActions> m_CombatActionsCallbackInterfaces = new List<ICombatActions>();
+    private readonly InputAction m_Combat_UpAction;
+    private readonly InputAction m_Combat_RightAction;
+    private readonly InputAction m_Combat_DownAction;
+    private readonly InputAction m_Combat_HowToCombat;
+    private readonly InputAction m_Combat_UpActionP2;
+    private readonly InputAction m_Combat_RightActionP2;
+    private readonly InputAction m_Combat_DownActionP2;
+    public struct CombatActions
+    {
+        private @PlayerInputActions m_Wrapper;
+        public CombatActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @UpAction => m_Wrapper.m_Combat_UpAction;
+        public InputAction @RightAction => m_Wrapper.m_Combat_RightAction;
+        public InputAction @DownAction => m_Wrapper.m_Combat_DownAction;
+        public InputAction @HowToCombat => m_Wrapper.m_Combat_HowToCombat;
+        public InputAction @UpActionP2 => m_Wrapper.m_Combat_UpActionP2;
+        public InputAction @RightActionP2 => m_Wrapper.m_Combat_RightActionP2;
+        public InputAction @DownActionP2 => m_Wrapper.m_Combat_DownActionP2;
+        public InputActionMap Get() { return m_Wrapper.m_Combat; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(CombatActions set) { return set.Get(); }
+        public void AddCallbacks(ICombatActions instance)
+        {
+            if (instance == null || m_Wrapper.m_CombatActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_CombatActionsCallbackInterfaces.Add(instance);
+            @UpAction.started += instance.OnUpAction;
+            @UpAction.performed += instance.OnUpAction;
+            @UpAction.canceled += instance.OnUpAction;
+            @RightAction.started += instance.OnRightAction;
+            @RightAction.performed += instance.OnRightAction;
+            @RightAction.canceled += instance.OnRightAction;
+            @DownAction.started += instance.OnDownAction;
+            @DownAction.performed += instance.OnDownAction;
+            @DownAction.canceled += instance.OnDownAction;
+            @HowToCombat.started += instance.OnHowToCombat;
+            @HowToCombat.performed += instance.OnHowToCombat;
+            @HowToCombat.canceled += instance.OnHowToCombat;
+            @UpActionP2.started += instance.OnUpActionP2;
+            @UpActionP2.performed += instance.OnUpActionP2;
+            @UpActionP2.canceled += instance.OnUpActionP2;
+            @RightActionP2.started += instance.OnRightActionP2;
+            @RightActionP2.performed += instance.OnRightActionP2;
+            @RightActionP2.canceled += instance.OnRightActionP2;
+            @DownActionP2.started += instance.OnDownActionP2;
+            @DownActionP2.performed += instance.OnDownActionP2;
+            @DownActionP2.canceled += instance.OnDownActionP2;
+        }
+
+        private void UnregisterCallbacks(ICombatActions instance)
+        {
+            @UpAction.started -= instance.OnUpAction;
+            @UpAction.performed -= instance.OnUpAction;
+            @UpAction.canceled -= instance.OnUpAction;
+            @RightAction.started -= instance.OnRightAction;
+            @RightAction.performed -= instance.OnRightAction;
+            @RightAction.canceled -= instance.OnRightAction;
+            @DownAction.started -= instance.OnDownAction;
+            @DownAction.performed -= instance.OnDownAction;
+            @DownAction.canceled -= instance.OnDownAction;
+            @HowToCombat.started -= instance.OnHowToCombat;
+            @HowToCombat.performed -= instance.OnHowToCombat;
+            @HowToCombat.canceled -= instance.OnHowToCombat;
+            @UpActionP2.started -= instance.OnUpActionP2;
+            @UpActionP2.performed -= instance.OnUpActionP2;
+            @UpActionP2.canceled -= instance.OnUpActionP2;
+            @RightActionP2.started -= instance.OnRightActionP2;
+            @RightActionP2.performed -= instance.OnRightActionP2;
+            @RightActionP2.canceled -= instance.OnRightActionP2;
+            @DownActionP2.started -= instance.OnDownActionP2;
+            @DownActionP2.performed -= instance.OnDownActionP2;
+            @DownActionP2.canceled -= instance.OnDownActionP2;
+        }
+
+        public void RemoveCallbacks(ICombatActions instance)
+        {
+            if (m_Wrapper.m_CombatActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(ICombatActions instance)
+        {
+            foreach (var item in m_Wrapper.m_CombatActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_CombatActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public CombatActions @Combat => new CombatActions(this);
     private int m_KeyboardMouseSchemeIndex = -1;
     public InputControlScheme KeyboardMouseScheme
     {
@@ -1961,5 +2289,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnRightClick(InputAction.CallbackContext context);
         void OnTrackedDevicePosition(InputAction.CallbackContext context);
         void OnTrackedDeviceOrientation(InputAction.CallbackContext context);
+    }
+    public interface ICombatActions
+    {
+        void OnUpAction(InputAction.CallbackContext context);
+        void OnRightAction(InputAction.CallbackContext context);
+        void OnDownAction(InputAction.CallbackContext context);
+        void OnHowToCombat(InputAction.CallbackContext context);
+        void OnUpActionP2(InputAction.CallbackContext context);
+        void OnRightActionP2(InputAction.CallbackContext context);
+        void OnDownActionP2(InputAction.CallbackContext context);
     }
 }

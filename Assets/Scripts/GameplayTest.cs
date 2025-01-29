@@ -696,7 +696,7 @@ public class GameplayTest : MonoBehaviour
                 if (otherPlayer.combatSceneIndex == -1)
                 {
                     phase = GamePhase.CombatTime;
-
+                    m_EnteredCombatScene.RaiseEvent();
                     m_InitiateCombatOnPassBy.RaiseEvent(otherPlayer);
 
                     p.traveledNodes.Clear();
@@ -759,7 +759,12 @@ public class GameplayTest : MonoBehaviour
             var otherPlayer = p.occupiedNode.playerOccupied;
             if (m.TryGetComponent<StoreManager>(out StoreManager component)) // Forced to buy item(s)
             {
-                if(otherPlayer != null && otherPlayer != currentPlayer) // temp player fight on store
+                // Have the node be occupied by the current player.
+                m.playerOccupied = p;
+                // Update portions of this code later
+                GameObject tile = m.gameObject;
+                StoreManager store = component;
+                if (otherPlayer != null && otherPlayer != currentPlayer) // temp player fight on store
                 {
                     if (otherPlayer.combatSceneIndex == -1)
                     {
@@ -767,22 +772,22 @@ public class GameplayTest : MonoBehaviour
 
                         //Debug.Log("Your Player: " + currentPlayer.nickname);
                         //Debug.Log("Other Player: " + otherPlayer.nickname);
-                        m_EnteredCombatScene.RaiseEvent();
+                        //m_EnteredCombatScene.RaiseEvent();
                         encounterStarted = true;
 
                         // Set IDs of players entering combat.
-                        sceneManager.player1ID = currentPlayer.id;
-                        sceneManager.player2ID = otherPlayer.id;
-                        sceneManager.LoadCombatScene();
+                        //sceneManager.player1ID = currentPlayer.id;
+                        //sceneManager.player2ID = otherPlayer.id;
+
+                        m_EnteredCombatScene.RaiseEvent();
+                        m_InitiateCombatOnPassBy.RaiseEvent(otherPlayer);
+
+                        //sceneManager.LoadCombatScene();
                     }
                 }
-                // Have the node be occupied by the current player.
-                m.playerOccupied = p;
-                // Update portions of this code later
-                GameObject tile = m.gameObject;
-                StoreManager store = component;
-                if (store.playerOwner != currentPlayer)
+                else if (store.playerOwner != currentPlayer)
                 {
+
                     // Forced to buy item(s) from another player's store
                     Debug.Log("Landed on " + store.playerOwner + " store");
 
@@ -851,12 +856,13 @@ public class GameplayTest : MonoBehaviour
                     //Debug.Log("Your Player: " + currentPlayer.nickname);
                     //Debug.Log("Other Player: " + otherPlayer.nickname);
                     m_EnteredCombatScene.RaiseEvent();
+                    m_InitiateCombatOnPassBy.RaiseEvent(otherPlayer);
                     encounterStarted = true;
 
                     // Set IDs of players entering combat.
-                    sceneManager.player1ID = currentPlayer.id;
-                    sceneManager.player2ID = otherPlayer.id;
-                    sceneManager.LoadCombatScene();
+                    //sceneManager.player1ID = currentPlayer.id;
+                    //sceneManager.player2ID = otherPlayer.id;
+                    //sceneManager.LoadCombatScene();
                 }
                 else
                 {
@@ -986,7 +992,7 @@ public class GameplayTest : MonoBehaviour
             }
                 
         }
-        
+        //phase = GamePhase.CombatTime;
         sceneManager.LoadCombatScene();
         
     }
@@ -1172,7 +1178,7 @@ public class GameplayTest : MonoBehaviour
         // UPDATE WITH ACTUAL END GAME UI, AND MAKE IN DIFFERENT SCRIPT WITH EVENT RAISED HERE.
         Debug.Log(winningPlayer.entityName + " is the KING OF THE MARKET!");
         encounterScreen.SetActive(true);
-        resultInfo.text = $"{winningPlayer.entityName} is the \nBLITZIONAIRE!!!";
+        resultInfo.text = $"{winningPlayer.entityName} is the \nWINNER!!!";
     }
 
     private void ConfirmPurchase(ItemStats item)
