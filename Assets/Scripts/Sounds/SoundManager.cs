@@ -37,6 +37,10 @@ public class SoundManager : MonoBehaviour
     public IntEventChannelSO m_ItemUsed;
     public IntEventChannelSO m_ItemBought;
 
+    public PlayerEventChannelSO m_EnterLevelUp;
+    public VoidEventChannelSO m_AugmentedDieFaceValue;
+    public VoidEventChannelSO m_FailAugmentDieFaceValue;
+
     public PlayerEventChannelSO m_ShowCombatBanner;
     public PlayerEventChannelSO m_NextPlayerTurn;
 
@@ -93,6 +97,10 @@ public class SoundManager : MonoBehaviour
         m_ExitInventory.OnEventRaised += PlayUndoSound;
         m_TryExamineTile.OnEventRaised += PlayMoveSoundWithVector2;
 
+        m_EnterLevelUp.OnEventRaised += OnEnterLevelUp;
+        m_AugmentedDieFaceValue.OnEventRaised += PlayStampSound;
+        m_FailAugmentDieFaceValue.OnEventRaised += PlayNotEffectiveHitSound;
+
         //Combat Events
         m_EnteredCombatScene.OnEventRaised += PlayCombatMusic;
         m_EnteredOverworldScene.OnEventRaised += StopCombatMusic;
@@ -127,6 +135,10 @@ public class SoundManager : MonoBehaviour
         m_OpenInventory.OnEventRaised -= PlayMoveSoundWithDude;
         m_ExitInventory.OnEventRaised -= PlayUndoSound;
         m_TryExamineTile.OnEventRaised -= PlayMoveSoundWithVector2;
+
+        m_EnterLevelUp.OnEventRaised -= OnEnterLevelUp;
+        m_AugmentedDieFaceValue.OnEventRaised -= PlayStampSound;
+        m_FailAugmentDieFaceValue.OnEventRaised -= PlayNotEffectiveHitSound;
 
         //Combat Events
         m_EnteredCombatScene.OnEventRaised -= PlayCombatMusic;
@@ -171,6 +183,11 @@ public class SoundManager : MonoBehaviour
         battleThemeInstance.setPaused(true);
     }
 
+    private void PlayStampSound()
+    {
+        AudioHelper.PlayOneShotWithParameters("event:/Stamp", this.transform.position, ("SoundVolume", SFXVolume));
+    }
+
     private void PlayStampSound(EntityPiece entity)
     {
         AudioHelper.PlayOneShotWithParameters("event:/Stamp", this.transform.position, ("SoundVolume", SFXVolume));
@@ -181,6 +198,13 @@ public class SoundManager : MonoBehaviour
         diceRollInstance = FMODUnity.RuntimeManager.CreateInstance("event:/RollDice");
         diceRollInstance.setParameterByName("SoundVolume", SFXVolume);
         diceRollInstance.start();
+    }
+
+    private void StopDiceRollSound()
+    {
+        Debug.Log("stopped dice roll sound");
+        diceRollInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+        diceRollInstance.release();
     }
 
     private void StopDiceRollSound(EntityPiece entity)
@@ -299,5 +323,9 @@ public class SoundManager : MonoBehaviour
         AudioHelper.PlayOneShotWithParameters("event:/SelectCombatAction", this.transform.position, ("SoundVolume", SFXVolume));
     }
 
-    
+    private void OnEnterLevelUp(EntityPiece entity)
+    {
+        StopDiceRollSound(entity);
+        PlayEnterBattleSound();
+    }
 }

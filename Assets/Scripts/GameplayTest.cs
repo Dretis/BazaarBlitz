@@ -4,6 +4,9 @@ using TMPro;
 using DG.Tweening;
 using System.Linq;
 using Febucci.UI.Core;
+using UnityEngine.EventSystems;
+using static UnityEditor.Progress;
+using UnityEngine.UI;
 
 public class GameplayTest : MonoBehaviour
 {
@@ -85,8 +88,9 @@ public class GameplayTest : MonoBehaviour
     public TextMeshProUGUI remainingSP;
     public TextMeshProUGUI upgradeTooltip;
     public GameObject diceStats;
-    public List<TextMeshProUGUI> playerDiceNumbers = new List<TextMeshProUGUI>();
+    public List<DiceStatSelectionHandler> playerDiceNumbers = new List<DiceStatSelectionHandler>();
     public TextMeshProUGUI storestockTooltip;
+    public int[] costArray = { 0, 1, 1, 2, 2, 2, 3, 3, 3, 4, 5, 999 };
 
     public Canvas howToPlayScreen;
 
@@ -134,6 +138,11 @@ public class GameplayTest : MonoBehaviour
     public VoidEventChannelSO m_EnterRaycastTargetSelection;
     public VoidEventChannelSO m_ExitRaycastTargetSelection;
 
+    public PlayerEventChannelSO m_EnterLevelUp; // also listening to this
+    public VoidEventChannelSO m_ExitLevelUp; // also listening to this
+    public VoidEventChannelSO m_AugmentedDieFaceValue; // also listening to this
+    public VoidEventChannelSO m_FailAugmentDieFaceValue; // also listening to this
+
     // Start of Game Event Channels
     public PlayerEventChannelSO m_AssignPlayerToController;
 
@@ -146,6 +155,8 @@ public class GameplayTest : MonoBehaviour
     public PlayerEventChannelSO m_BuildStore; //Listening to this one
     public PlayerEventChannelSO m_FinishStockingStore;
     public VoidEventChannelSO m_DisableFreeview;
+
+    public WeaponTypeIntEventChannel m_TryAugmentDieFaceValue; // lvl up
 
     private void OnEnable()
     {
@@ -165,6 +176,10 @@ public class GameplayTest : MonoBehaviour
         m_StealOnPassBy.OnEventRaised += StealFromPlayer;
         m_InitiateCombatOnPassBy.OnEventRaised += InitiateCombatOnPlayer;
         m_StopOnStoreOnPassBy.OnEventRaised += StopOnStore;
+
+        m_EnterLevelUp.OnEventRaised += OnEnterLevelUp;
+        m_ExitLevelUp.OnEventRaised += OnExitLevelUp;
+        m_TryAugmentDieFaceValue.OnEventRaised += OnTryAugmentDieFaceValue;
     }
 
     private void OnDisable()
@@ -185,6 +200,10 @@ public class GameplayTest : MonoBehaviour
         m_StealOnPassBy.OnEventRaised -= StealFromPlayer;
         m_InitiateCombatOnPassBy.OnEventRaised -= InitiateCombatOnPlayer;
         m_StopOnStoreOnPassBy.OnEventRaised -= StopOnStore;
+
+        m_EnterLevelUp.OnEventRaised -= OnEnterLevelUp;
+        m_ExitLevelUp.OnEventRaised -= OnExitLevelUp;
+        m_TryAugmentDieFaceValue.OnEventRaised -= OnTryAugmentDieFaceValue;
     }
 
     // Start is called before the first frame update
@@ -421,18 +440,8 @@ public class GameplayTest : MonoBehaviour
     {
         // For now level up happens right before you roll dice
         if (p.canLevelUp() && p.combatSceneIndex == -1) {
-            pointsLeft = 5;
-            pointsLeft += p.unspentLevelUpPoints;
-            p.maxHealth += 10;
-            p.health += 10;
-            p.RenownLevel += 1;
-            UpdatePlayerDiceStats(p, diceStats);
-            m_UpdatePlayerScore.RaiseEvent(p.id);
-            levelUpScreen.enabled = true;
-            remainingSP.text = $"{pointsLeft} SP left.";
-            upgradeTooltip.text = "Use [WASD] or [Arrows] to select dice faces.";
-            phase = GamePhase.LevelUp;
-            Debug.Log("Levelup screen!");
+
+            m_EnterLevelUp.RaiseEvent(p);
         }
         if(p.combatSceneIndex == -1)
         {
@@ -1023,6 +1032,7 @@ public class GameplayTest : MonoBehaviour
     {
         // current attribute selected is marked by the int attSelected. 1 is attack, 2 is gun, 3 is magic.
         // diceSelected represents the current dice face. All of these have -1 applied in arrays.
+        /*
         if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
         {
             if (attSelected > 1) {
@@ -1108,6 +1118,7 @@ public class GameplayTest : MonoBehaviour
                 Debug.Log("Uh oh, you just tried to upgrade a dice you dont have.");
             }
         }
+        */
     }
 
     void ConfirmContinue(EntityPiece p)
@@ -1150,7 +1161,7 @@ public class GameplayTest : MonoBehaviour
         isStockingStore = false; // let next player access inventory
         playerUsedItem = false; // let next player access inventory
 
-        m_UpdatePlayerScore.RaiseEvent(0);
+        m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
 
         // Change to the next player in the list.
 
@@ -1313,45 +1324,6 @@ public class GameplayTest : MonoBehaviour
             phase = GamePhase.EndTurn;
         }
         */
-    }
-
-    // I ripped this from another script, delete this later
-    public void UpdatePlayerDiceStats(EntityPiece entity, GameObject diceStats)
-    {
-        // Visually updates the dice stats ui based on the entity and side
-        playerDiceNumbers.Clear();
-
-        // Goes through the diceStats UI List and finds the text components
-        foreach (Transform child in diceStats.transform)
-        {
-            playerDiceNumbers.Add(child.GetComponentInChildren<TextMeshProUGUI>());
-        }
-
-        // Updates each individual dice from the text list based on the type
-        // the following code is ABSOLUTELY DISGUSTING
-        var faceIndex = 0;
-
-        for (int i = 0; i < 6; i++)
-        {
-            playerDiceNumbers[i].text = $"{entity.strDie[faceIndex]}";
-            faceIndex++;
-        }
-
-        faceIndex = 0;
-
-        for (int i = 6; i < 12; i++)
-        {
-            playerDiceNumbers[i].text = $"{entity.dexDie[faceIndex]}";
-            faceIndex++;
-        }
-
-        faceIndex = 0;
-
-        for (int i = 12; i < 18; i++)
-        {
-            playerDiceNumbers[i].text = $"{entity.intDie[faceIndex]}";
-            faceIndex++;
-        }
     }
 
     public void DisableFreeview()
@@ -1566,6 +1538,145 @@ public class GameplayTest : MonoBehaviour
         {
             p.currentStatsModifier.warpDestination.modifier = modifier;
             p.currentStatsModifier.warpDestination.modifierOwner = p;
+        }
+    }
+
+    private void OnEnterLevelUp(EntityPiece p)
+    {
+        pointsLeft = 5;
+        p.unspentLevelUpPoints += 5;
+        p.maxHealth += 10;
+        p.health += 10;
+        p.RenownLevel += 1;
+
+        UpdatePlayerDiceStats(p, diceStats);
+        m_UpdatePlayerScore.RaiseEvent(p.id);
+
+        levelUpScreen.enabled = true; // we need to put the UI stuff in its own script
+        remainingSP.text = $"Remaining SP: {p.unspentLevelUpPoints}";
+
+        /*
+        levelUpScreen.enabled = true;
+        remainingSP.text = $"{pointsLeft} SP left.";
+        upgradeTooltip.text = "Use [WASD] or [Arrows] to select dice faces.";
+        phase = GamePhase.LevelUp;
+        Debug.Log("Levelup screen!");
+        */
+    }
+
+    private void OnExitLevelUp()
+    {
+        // make this shit cooler
+        levelUpScreen.enabled = false;
+    }
+
+    // I ripped this from another script, delete this later
+    public void UpdatePlayerDiceStats(EntityPiece entity, GameObject diceStats)
+    {
+        // Visually updates the dice stats ui based on the entity and side
+        playerDiceNumbers.Clear();
+
+        // Goes through the diceStats UI List and finds the text components
+        foreach (Transform child in diceStats.transform)
+        {
+            playerDiceNumbers.Add(child.GetComponentInChildren<DiceStatSelectionHandler>());
+
+            //EventSystem.current.SetSelectedGameObject(child.gameObject);
+        }
+
+        EventSystem.current.SetSelectedGameObject(playerDiceNumbers[0].gameObject);
+
+        UpdatePlayerDiceStatsInLevelUp(entity);
+    }
+
+    public void UpdatePlayerDiceStatsInLevelUp(EntityPiece entity)
+    {
+        // like the other function but it doesn't reset the button position
+        var faceIndex = 0;
+
+        for (int i = 0; i < 6; i++)
+        {
+            playerDiceNumbers[i].SetDieFaceValue(entity.strDie[faceIndex]);
+            faceIndex++;
+
+        }
+
+        faceIndex = 0;
+
+        for (int i = 6; i < 12; i++)
+        {
+            playerDiceNumbers[i].SetDieFaceValue(entity.dexDie[faceIndex]);
+            faceIndex++;
+        }
+
+        faceIndex = 0;
+
+        for (int i = 12; i < 18; i++)
+        {
+            playerDiceNumbers[i].SetDieFaceValue(entity.intDie[faceIndex]);
+            faceIndex++;
+        }
+    }
+
+    private void OnTryAugmentDieFaceValue(Action.WeaponTypes diceType, int diceIndex)
+    {
+        Debug.Log($"checking if can upgradfe | {diceType} Dice at id{diceIndex} is []");
+       // Debug.Log($"cpsts {costArray[diceIndex]} SP, player has {currentPlayer.unspentLevelUpPoints}");
+        // Check if current player has enough SP to augment this die face
+
+        var selectedDie = currentPlayer.strDie[diceIndex];
+
+        switch (diceType)
+        {
+            case Action.WeaponTypes.Melee:
+                selectedDie = currentPlayer.strDie[diceIndex];
+                break;
+
+            case Action.WeaponTypes.Gun:
+                selectedDie = currentPlayer.dexDie[diceIndex];
+                break;
+
+            case Action.WeaponTypes.Magic:
+                selectedDie = currentPlayer.intDie[diceIndex];
+                break;
+        }
+
+        Debug.Log($"Selected Die [{selectedDie}]");
+
+        if (costArray[selectedDie] <= currentPlayer.unspentLevelUpPoints)
+        {
+            Debug.Log("it can!!!");
+            currentPlayer.unspentLevelUpPoints -= costArray[selectedDie];
+
+            switch (diceType)
+            {
+                case Action.WeaponTypes.Melee:
+                    currentPlayer.strDie[diceIndex]++;
+                    break;
+
+                case Action.WeaponTypes.Gun:
+                    currentPlayer.dexDie[diceIndex]++;
+                    break;
+
+                case Action.WeaponTypes.Magic:
+                    currentPlayer.intDie[diceIndex]++;
+                    break;
+            }
+
+            // broadcast that it did in fact upgrade
+            m_AugmentedDieFaceValue.RaiseEvent();
+            UpdatePlayerDiceStatsInLevelUp(currentPlayer);
+            remainingSP.text = $"Remaining SP: {currentPlayer.unspentLevelUpPoints}";
+            if(currentPlayer.unspentLevelUpPoints <= 0)
+            {
+                m_ExitLevelUp.RaiseEvent();
+            }
+        }
+        else
+        {
+            // Can't augment, fail L bozo
+            Debug.Log("failed to augment wtf how");
+            m_FailAugmentDieFaceValue.RaiseEvent();
         }
     }
 }

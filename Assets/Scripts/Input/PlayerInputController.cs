@@ -36,11 +36,12 @@ public class PlayerInputController : MonoBehaviour
     public PlayerEventChannelSO m_DiceRollPrep;
     public VoidEventChannelSO m_DiceRolled;
     public IntEventChannelSO m_RollForMovement;
-    public PlayerEventChannelSO m_OpenInventory; 
+    public PlayerEventChannelSO m_OpenInventory;  
     public PlayerEventChannelSO m_BuildStore; 
     public PlayerEventChannelSO m_FinishStockingStore; 
     public NodeEventChannelSO m_RestockStore;
     public VoidEventChannelSO m_ExitInventory;
+    public VoidEventChannelSO m_ExitLevelUp;
 
     public EntityIntEventChannelSO m_PlayerActionSelected;
 
@@ -54,6 +55,8 @@ public class PlayerInputController : MonoBehaviour
 
     public VoidEventChannelSO m_EnteredCombatScene;
     public PlayerEventChannelSO m_InitiateCombatOnPassBy;
+
+    public PlayerEventChannelSO m_EnterLevelUp;
 
     public void InitializePlayer(PlayerConfiguration pc)
     {
@@ -117,6 +120,9 @@ public class PlayerInputController : MonoBehaviour
         m_InitiateCombatOnPassBy.OnEventRaised += OnInitiateCombatOnPassBy;
 
         m_AssignPlayerToController.OnEventRaised += OnAssignPlayerToController;
+
+        m_EnterLevelUp.OnEventRaised += OnEnterLevelUp;
+        m_ExitLevelUp.OnEventRaised += OnExitLevelUp;
     }
 
     private void OnDisable()
@@ -135,6 +141,9 @@ public class PlayerInputController : MonoBehaviour
         m_InitiateCombatOnPassBy.OnEventRaised -= OnInitiateCombatOnPassBy;
 
         m_AssignPlayerToController.OnEventRaised -= OnAssignPlayerToController;
+
+        m_EnterLevelUp.OnEventRaised -= OnEnterLevelUp;
+        m_ExitLevelUp.OnEventRaised -= OnExitLevelUp;
     }
 
     private void FixedUpdate()
@@ -216,6 +225,10 @@ public class PlayerInputController : MonoBehaviour
                 m_ExitInventory.RaiseEvent();
 
                 SwitchActionMap(previousGamePhase);
+                break;
+            case GamePhase.LevelUp:
+                m_ExitLevelUp.RaiseEvent();
+                //SwitchActionMap(previousGamePhase);
                 break;
         }
         //SwitchActionMap(previousGamePhase);
@@ -521,6 +534,24 @@ public class PlayerInputController : MonoBehaviour
         SwitchActionMap(GamePhase.CombatTime);
     }
 
+    private void OnEnterLevelUp(EntityPiece entity)
+    {
+        if (!playerInput.inputIsActive) return;
+
+        previousGamePhase = GamePhase.RollDice;
+
+        playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
+        playerInput.uiInputModule.actionsAsset = playerInput.actions;
+        SwitchActionMap(GamePhase.LevelUp);
+    }
+
+    private void OnExitLevelUp()
+    {
+        if (!playerInput.inputIsActive) return;
+
+        SwitchActionMap(previousGamePhase);
+    }
+
     private void OnInitiateCombatOnPassBy(EntityPiece entity)
     {
         // Enable this player's input controls
@@ -548,6 +579,5 @@ public class PlayerInputController : MonoBehaviour
             assignedPlayer.gameObject.GetComponent<PlayerPaletteLoader>().SetInspectorPaletteColor(0, playerConfig.PlayerColor);
         }
     }
-
 
 }
