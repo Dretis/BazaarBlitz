@@ -5,7 +5,6 @@ using DG.Tweening;
 using System.Linq;
 using Febucci.UI.Core;
 using UnityEngine.EventSystems;
-using static UnityEditor.Progress;
 using UnityEngine.UI;
 
 public class GameplayTest : MonoBehaviour
