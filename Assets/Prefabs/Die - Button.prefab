@@ -139,6 +139,7 @@ MonoBehaviour:
   diceFaceIndex: 0
   diceFaceValue: 0
   diceType: 0
+  tooltipText: {fileID: 0}
   m_TryAugmentDieFaceValue: {fileID: 11400000, guid: 54e16fb7a5ff63d409085a638eba2c40, type: 2}
 --- !u!1 &688686467339965928
 GameObject:
@@ -302,8 +303,7 @@ MonoBehaviour:
   useDefaultStyleSheet: 1
   styleSheet: {fileID: 0}
   databaseActions: {fileID: 11400000, guid: 805030f286ae6ad4ca560c442b0e9288, type: 2}
-  defaultAppearancesTags:
-  - size d=2
+  defaultAppearancesTags: []
   defaultDisappearancesTags:
   - fade
   - rot a=6

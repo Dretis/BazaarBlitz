@@ -15,7 +15,11 @@ public class EntityPiece : MonoBehaviour
     public MapNode previousNode = null; // Node player just walked on last turn. They can't go back this way.
     public int unspentLevelUpPoints = 0;
     public List<MapNode> traveledNodes = new List<MapNode>(); // Tracks the nodes the player has gone to
+
+    [Header("Particle Effects")]
     public ParticleSystem dustCloud;
+    public ParticleSystem coinDrop;
+    public ParticleSystem coinSucking;
 
     [Header("Overworld Stats")]
     public int movementTotal;

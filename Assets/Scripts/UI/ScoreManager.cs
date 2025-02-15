@@ -39,6 +39,9 @@ public class ScoreManager : MonoBehaviour
 
     [Header("Listen On Event Channels")]
     public IntEventChannelSO m_ChangeInScore;
+    public IntEventChannelSO m_PlayerScoreDecreased;
+    public IntEventChannelSO m_PlayerScoreIncreased;
+
     public PlayerEventChannelSO m_NextPlayerTurn;
 
     public PlayerEventChannelSO m_PassedByStamp;
@@ -50,6 +53,9 @@ public class ScoreManager : MonoBehaviour
     private void OnEnable()
     {
         m_ChangeInScore.OnEventRaised += UpdateScoreForPlayer;
+        m_PlayerScoreDecreased.OnEventRaised += OnPlayerScoreDecreased;
+        m_PlayerScoreIncreased.OnEventRaised += OnPlayerScoreIncreased;
+
         m_NextPlayerTurn.OnEventRaised += ChangeCurrentPlayer;
         m_NextPlayerTurn.OnEventRaised += UpdateHeldStamps;
         m_PassedByStamp.OnEventRaised += UpdateHeldStamps;
@@ -62,6 +68,9 @@ public class ScoreManager : MonoBehaviour
     private void OnDisable()
     {
         m_ChangeInScore.OnEventRaised -= UpdateScoreForPlayer;
+        m_PlayerScoreDecreased.OnEventRaised -= OnPlayerScoreDecreased;
+        m_PlayerScoreIncreased.OnEventRaised -= OnPlayerScoreIncreased;
+
         m_NextPlayerTurn.OnEventRaised -= ChangeCurrentPlayer;
         m_NextPlayerTurn.OnEventRaised -= UpdateHeldStamps;
         m_PassedByStamp.OnEventRaised -= UpdateHeldStamps;
@@ -97,6 +106,19 @@ public class ScoreManager : MonoBehaviour
             //blueStamps[i].enabled = false;
             //orangeStamps[i].enabled = false;
         }
+    }
+
+    private void OnPlayerScoreDecreased(int scoreChange)
+    {
+        // Prob some text vfx that shows it going down
+        currentPlayer.coinDrop.Play();
+    }
+
+    private void OnPlayerScoreIncreased(int scoreChange)
+    {
+        // Prob some text vfx that shows it going up lol
+        //Debug.Log("yo i got more money");
+        currentPlayer.coinSucking.Play();
     }
 
     private void UpdateScoreForPlayer(int id)

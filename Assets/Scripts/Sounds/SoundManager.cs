@@ -326,6 +326,6 @@ public class SoundManager : MonoBehaviour
     private void OnEnterLevelUp(EntityPiece entity)
     {
         StopDiceRollSound(entity);
-        PlayEnterBattleSound();
+        PlayCurrencyIncreasedSound(0);
     }
 }

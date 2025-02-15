@@ -60,13 +60,13 @@ public class DiceStatSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerC
     {
         // Highlight selected die face
         // Show how much SP it costs to upgrade +1 Face Value
-        //diceFaceText.ShowText($"<incr>{diceFaceValue}");
-        tooltipText.text = $"Augmenting [{diceFaceValue}] costs {GameplayTest.instance.costArray[diceFaceValue]} SP.";
+        diceFaceText.ShowText($"<incr>{diceFaceValue}");
+        tooltipText.text = $"Augmenting [{diceFaceValue}] to [{diceFaceValue+1}] \nCosts {GameplayTest.instance.costArray[diceFaceValue]} SP.";
     }
 
     public void OnDeselect(BaseEventData eventData)
     {
-        //diceFaceText.ShowText($"{diceFaceValue}");
+        diceFaceText.ShowText($"{diceFaceValue}");
     }
 
     public void SetDieFaceValue(int value)

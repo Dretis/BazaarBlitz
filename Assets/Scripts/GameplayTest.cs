@@ -83,11 +83,11 @@ public class GameplayTest : MonoBehaviour
     private int currentPlayerInitialHealth = 0; // for pawn shop healing
 
     //ui to remove for levelup - Nam
-    public Canvas levelUpScreen;
-    public TextMeshProUGUI remainingSP;
-    public TextMeshProUGUI upgradeTooltip;
-    public GameObject diceStats;
-    public List<DiceStatSelectionHandler> playerDiceNumbers = new List<DiceStatSelectionHandler>();
+    //public Canvas levelUpScreen;
+    //public TextMeshProUGUI remainingSP;
+    //public TextMeshProUGUI upgradeTooltip;
+    //public GameObject diceStats;
+    //public List<DiceStatSelectionHandler> playerDiceNumbers = new List<DiceStatSelectionHandler>();
     public TextMeshProUGUI storestockTooltip;
     public int[] costArray = { 0, 1, 1, 2, 2, 2, 3, 3, 3, 4, 5, 999 };
 
@@ -138,9 +138,9 @@ public class GameplayTest : MonoBehaviour
     public VoidEventChannelSO m_ExitRaycastTargetSelection;
 
     public PlayerEventChannelSO m_EnterLevelUp; // also listening to this
-    public VoidEventChannelSO m_ExitLevelUp; // also listening to this
-    public VoidEventChannelSO m_AugmentedDieFaceValue; // also listening to this
-    public VoidEventChannelSO m_FailAugmentDieFaceValue; // also listening to this
+    //public VoidEventChannelSO m_ExitLevelUp; // also listening to this
+    //public VoidEventChannelSO m_AugmentedDieFaceValue;
+    //public VoidEventChannelSO m_FailAugmentDieFaceValue; 
 
     // Start of Game Event Channels
     public PlayerEventChannelSO m_AssignPlayerToController;
@@ -176,9 +176,9 @@ public class GameplayTest : MonoBehaviour
         m_InitiateCombatOnPassBy.OnEventRaised += InitiateCombatOnPlayer;
         m_StopOnStoreOnPassBy.OnEventRaised += StopOnStore;
 
-        m_EnterLevelUp.OnEventRaised += OnEnterLevelUp;
-        m_ExitLevelUp.OnEventRaised += OnExitLevelUp;
-        m_TryAugmentDieFaceValue.OnEventRaised += OnTryAugmentDieFaceValue;
+        //m_EnterLevelUp.OnEventRaised += OnEnterLevelUp;
+        //m_ExitLevelUp.OnEventRaised += OnExitLevelUp;
+        //m_TryAugmentDieFaceValue.OnEventRaised += OnTryAugmentDieFaceValue;
     }
 
     private void OnDisable()
@@ -200,9 +200,9 @@ public class GameplayTest : MonoBehaviour
         m_InitiateCombatOnPassBy.OnEventRaised -= InitiateCombatOnPlayer;
         m_StopOnStoreOnPassBy.OnEventRaised -= StopOnStore;
 
-        m_EnterLevelUp.OnEventRaised -= OnEnterLevelUp;
-        m_ExitLevelUp.OnEventRaised -= OnExitLevelUp;
-        m_TryAugmentDieFaceValue.OnEventRaised -= OnTryAugmentDieFaceValue;
+        //m_EnterLevelUp.OnEventRaised -= OnEnterLevelUp;
+        //m_ExitLevelUp.OnEventRaised -= OnExitLevelUp;
+        //m_TryAugmentDieFaceValue.OnEventRaised -= OnTryAugmentDieFaceValue;
     }
 
     // Start is called before the first frame update
@@ -1005,6 +1005,7 @@ public class GameplayTest : MonoBehaviour
         
     }
 
+    /*
     private void printIndex(int row, int col, EntityPiece p) { // Temporary function, delete later.
         int[] costArray = { -1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 5, 999 };
         if (row == 1) {
@@ -1026,6 +1027,7 @@ public class GameplayTest : MonoBehaviour
 
         }
     }
+    */
 
     private void LevelUp(EntityPiece p)
     {
@@ -1540,6 +1542,8 @@ public class GameplayTest : MonoBehaviour
         }
     }
 
+    // Old Level up stuff
+    /*
     private void OnEnterLevelUp(EntityPiece p)
     {
         pointsLeft = 5;
@@ -1554,13 +1558,6 @@ public class GameplayTest : MonoBehaviour
         levelUpScreen.enabled = true; // we need to put the UI stuff in its own script
         remainingSP.text = $"Remaining SP: {p.unspentLevelUpPoints}";
 
-        /*
-        levelUpScreen.enabled = true;
-        remainingSP.text = $"{pointsLeft} SP left.";
-        upgradeTooltip.text = "Use [WASD] or [Arrows] to select dice faces.";
-        phase = GamePhase.LevelUp;
-        Debug.Log("Levelup screen!");
-        */
     }
 
     private void OnExitLevelUp()
@@ -1678,4 +1675,5 @@ public class GameplayTest : MonoBehaviour
             m_FailAugmentDieFaceValue.RaiseEvent();
         }
     }
+    */
 }

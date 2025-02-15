@@ -9,7 +9,8 @@ public class UIManager : MonoBehaviour
 {
     // CHANGE THIS SCRIPTS NAME, THIS ONE IS ONLY HANDLING STOREFRONT UI
     [Header("UI Visual Elements")]
-    [SerializeField] private Canvas storefrontCanvas;
+    //[SerializeField] private Canvas storefrontCanvas;
+    [SerializeField] private CanvasGroup storefrontFullGroup;
     [SerializeField] private List<Button> itemButtons;
     [SerializeField] private List<ItemSelectionHandler> itemSelectionHandlers;
     [SerializeField] private List<EventTrigger> itemSelectionTriggers;
@@ -78,7 +79,8 @@ public class UIManager : MonoBehaviour
     // Set dependencies here and in Inspector (if needed)
     private void Start()
     {
-        
+        storefrontFullGroup.alpha = 0f;
+        storefrontFullGroup.interactable = false;
     }
 
     private void SpawnItemsInStore(MapNode node)
@@ -150,8 +152,12 @@ public class UIManager : MonoBehaviour
     private void EnterStorefront(MapNode mapNode)
     {
         confirmButtonGroup.gameObject.SetActive(false);
-        storefrontCanvas.gameObject.SetActive(true);
-        storefrontCanvas.enabled = true;
+        //storefrontCanvas.gameObject.SetActive(true);
+        //storefrontCanvas.enabled = true;
+
+        storefrontFullGroup.alpha = 1f;
+        storefrontFullGroup.interactable = true;
+
         // storefrontCanvas.enabled = !storefrontCanvas.enabled;
         currentStore = mapNode.GetComponent<StoreManager>();
         currentPlayer = mapNode.playerOccupied;
@@ -191,9 +197,12 @@ public class UIManager : MonoBehaviour
         // Enable selection of items upon finishing a shopping sesh.
         EnableItemSelections();
         DestroyAllStoreItems();
-        storefrontCanvas.enabled = false;
+        //storefrontCanvas.enabled = false;
         confirmButtonGroup.gameObject.SetActive(false);
-        storefrontCanvas.gameObject.SetActive(false);
+        //storefrontCanvas.gameObject.SetActive(false);
+
+        storefrontFullGroup.alpha = 0f;
+        storefrontFullGroup.interactable = false;
     }
 
     private void FinishShopping(ItemStats item)
