@@ -77,13 +77,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentPlayer: {fileID: 0}
+  assignedPlayer: {fileID: 0}
   playerInput: {fileID: 6796933339612883146}
   previousGamePhase: 0
+  currActionMap:
+    m_Name: Curr
+    m_Id: 8255c261-3937-418a-9b98-1fe619f0f378
+    m_Asset: {fileID: 0}
+    m_Actions: []
+    m_Bindings: []
   freeviewReticle: {fileID: 0}
   freeviewSpeed: 6
   m_EnableFreeview: {fileID: 11400000, guid: d7e81995233eb6340bf998043ae2294f, type: 2}
   m_DisableFreeview: {fileID: 11400000, guid: 9dfdcd33a17daa44088bf0e8fe4c1898, type: 2}
   m_TryExamineTile: {fileID: 11400000, guid: d3b3273277242ba4bb44593c190d5142, type: 2}
+  m_FreeviewReticleMove: {fileID: 0}
   m_DiceRollUndo: {fileID: 11400000, guid: c893b6f1be9cffb4b87d121e14d423c7, type: 2}
   m_DiceRollPrep: {fileID: 11400000, guid: 9e449a1e468efff46b833c09542c6b5f, type: 2}
   m_DiceRolled: {fileID: 11400000, guid: fb9fa3f55f7f0924db5a635622936326, type: 2}
@@ -93,10 +101,16 @@ MonoBehaviour:
   m_FinishStockingStore: {fileID: 11400000, guid: f02cee4c939241841aa967904d4db75e, type: 2}
   m_RestockStore: {fileID: 11400000, guid: 45d6b055127905e4cb2609426a521e19, type: 2}
   m_ExitInventory: {fileID: 11400000, guid: 4992d66997435ac41b90fcee905517ec, type: 2}
+  m_ExitLevelUp: {fileID: 0}
+  m_PlayerActionSelected: {fileID: 0}
+  m_AssignPlayerToController: {fileID: 0}
   m_NextPlayerTurn: {fileID: 11400000, guid: 45e13c3cd9283b74989c51218c39f6c2, type: 2}
   m_LandOnStorefront: {fileID: 11400000, guid: f648c693d8451764f96f063b6b3da44b, type: 2}
   m_ExitStorefront: {fileID: 11400000, guid: 410e906b10aa4ae49ab7395fffa23d79, type: 2}
   m_ItemBought: {fileID: 11400000, guid: ace0aa03bf09d91469d5914ce815154e, type: 2}
+  m_EnteredCombatScene: {fileID: 0}
+  m_InitiateCombatOnPassBy: {fileID: 0}
+  m_EnterLevelUp: {fileID: 0}
 --- !u!114 &3595319914820650954
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -110,13 +124,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentPlayer: {fileID: 0}
+  assignedPlayer: {fileID: 0}
   playerInput: {fileID: 0}
   previousGamePhase: 0
+  currActionMap:
+    m_Name: Curr
+    m_Id: 4471e17c-23ca-4410-be1f-57081a3718c5
+    m_Asset: {fileID: 0}
+    m_Actions: []
+    m_Bindings: []
   freeviewReticle: {fileID: 0}
   freeviewSpeed: 6
   m_EnableFreeview: {fileID: 11400000, guid: d7e81995233eb6340bf998043ae2294f, type: 2}
   m_DisableFreeview: {fileID: 11400000, guid: 9dfdcd33a17daa44088bf0e8fe4c1898, type: 2}
   m_TryExamineTile: {fileID: 11400000, guid: d3b3273277242ba4bb44593c190d5142, type: 2}
+  m_FreeviewReticleMove: {fileID: 0}
   m_DiceRollUndo: {fileID: 11400000, guid: c893b6f1be9cffb4b87d121e14d423c7, type: 2}
   m_DiceRollPrep: {fileID: 11400000, guid: 9e449a1e468efff46b833c09542c6b5f, type: 2}
   m_DiceRolled: {fileID: 11400000, guid: fb9fa3f55f7f0924db5a635622936326, type: 2}
@@ -126,7 +148,13 @@ MonoBehaviour:
   m_FinishStockingStore: {fileID: 11400000, guid: f02cee4c939241841aa967904d4db75e, type: 2}
   m_RestockStore: {fileID: 11400000, guid: 45d6b055127905e4cb2609426a521e19, type: 2}
   m_ExitInventory: {fileID: 11400000, guid: 4992d66997435ac41b90fcee905517ec, type: 2}
+  m_ExitLevelUp: {fileID: 0}
+  m_PlayerActionSelected: {fileID: 0}
+  m_AssignPlayerToController: {fileID: 0}
   m_NextPlayerTurn: {fileID: 11400000, guid: 45e13c3cd9283b74989c51218c39f6c2, type: 2}
   m_LandOnStorefront: {fileID: 11400000, guid: f648c693d8451764f96f063b6b3da44b, type: 2}
   m_ExitStorefront: {fileID: 11400000, guid: 410e906b10aa4ae49ab7395fffa23d79, type: 2}
   m_ItemBought: {fileID: 11400000, guid: ace0aa03bf09d91469d5914ce815154e, type: 2}
+  m_EnteredCombatScene: {fileID: 0}
+  m_InitiateCombatOnPassBy: {fileID: 0}
+  m_EnterLevelUp: {fileID: 0}

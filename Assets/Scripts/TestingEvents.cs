@@ -4,6 +4,9 @@ using UnityEngine;
 public class TestingEvents : MonoBehaviour
 {
     public ItemStats testItem;
+    [SerializeField] private bool debugPlayerInputOn = false;
+    [SerializeField] private GameObject debugPlayerInput;
+
     [Header("Broadcast on Event Channel")]
     [SerializeField] private VoidEventChannelSO voidBroadcastChannel1;
     [SerializeField] private VoidEventChannelSO voidBroadcastChannel2;
@@ -12,6 +15,16 @@ public class TestingEvents : MonoBehaviour
     [SerializeField] private ItemEventChannelSO itemBoughtChannel;
     [SerializeField] private IntEventChannelSO removeItemBroadcastChannel;
     [SerializeField] private IntEventChannelSO buyingItemBroadcastChannel;
+
+
+    private void Start()
+    {
+        DontDestroyOnLoad(this);
+        if (debugPlayerInputOn)
+        {
+            debugPlayerInput.SetActive(true);
+        }
+    }
 
     // Update is called once per frame
     void Update()

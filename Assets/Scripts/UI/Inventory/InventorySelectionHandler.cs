@@ -78,6 +78,7 @@ public class InventorySelectionHandler : MonoBehaviour, ISubmitHandler, IPointer
         }
         else
         {
+            // Use Item
             Debug.Log($"{heldItem.name} used");
             itemIcon.sprite = null;
             itemIcon.enabled = false;
