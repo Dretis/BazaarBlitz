@@ -180,7 +180,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3090161012776482757, guid: 10bd3957932239e45803fd2df6da47a9, type: 3}
       propertyPath: m_Name
-      value: Banhcho
+      value: Dog - Banhcho
       objectReference: {fileID: 0}
     - target: {fileID: 4595250367967340849, guid: 10bd3957932239e45803fd2df6da47a9, type: 3}
       propertyPath: maxHealth
@@ -366,6 +366,22 @@ PrefabInstance:
       propertyPath: id
       value: -7
       objectReference: {fileID: 0}
+    - target: {fileID: 9070606831204597818, guid: 37471afee8bed5644a336f3e58292da0, type: 3}
+      propertyPath: playerColor.b
+      value: 0.31545925
+      objectReference: {fileID: 0}
+    - target: {fileID: 9070606831204597818, guid: 37471afee8bed5644a336f3e58292da0, type: 3}
+      propertyPath: playerColor.g
+      value: 0.33418494
+      objectReference: {fileID: 0}
+    - target: {fileID: 9070606831204597818, guid: 37471afee8bed5644a336f3e58292da0, type: 3}
+      propertyPath: playerColor.r
+      value: 0.4811321
+      objectReference: {fileID: 0}
+    - target: {fileID: 9070606831204597818, guid: 37471afee8bed5644a336f3e58292da0, type: 3}
+      propertyPath: inventory.Array.data[4]
+      value: 
+      objectReference: {fileID: 11400000, guid: f678bd587785a29459a91ba38885eef5, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 37471afee8bed5644a336f3e58292da0, type: 3}
 --- !u!4 &2121315899316594464 stripped
@@ -502,6 +518,10 @@ PrefabInstance:
       propertyPath: id
       value: -5
       objectReference: {fileID: 0}
+    - target: {fileID: 7241835804546387156, guid: 077c78459cb0dae41baa372125701062, type: 3}
+      propertyPath: inventory.Array.data[3]
+      value: 
+      objectReference: {fileID: 11400000, guid: ba165bec7fd5ad748b4e3a0ce659a0f1, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 077c78459cb0dae41baa372125701062, type: 3}
 --- !u!4 &5109353482355465358 stripped
@@ -576,6 +596,30 @@ PrefabInstance:
       propertyPath: id
       value: -1
       objectReference: {fileID: 0}
+    - target: {fileID: 9070606831204597818, guid: f6b7ae9a2297d05499e3d71bab3f0805, type: 3}
+      propertyPath: lootOdds.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 9070606831204597818, guid: f6b7ae9a2297d05499e3d71bab3f0805, type: 3}
+      propertyPath: inventory.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 9070606831204597818, guid: f6b7ae9a2297d05499e3d71bab3f0805, type: 3}
+      propertyPath: lootOdds.Array.data[0]
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 9070606831204597818, guid: f6b7ae9a2297d05499e3d71bab3f0805, type: 3}
+      propertyPath: lootOdds.Array.data[2]
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 9070606831204597818, guid: f6b7ae9a2297d05499e3d71bab3f0805, type: 3}
+      propertyPath: lootOdds.Array.data[3]
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 9070606831204597818, guid: f6b7ae9a2297d05499e3d71bab3f0805, type: 3}
+      propertyPath: inventory.Array.data[3]
+      value: 
+      objectReference: {fileID: 11400000, guid: f678bd587785a29459a91ba38885eef5, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f6b7ae9a2297d05499e3d71bab3f0805, type: 3}
 --- !u!4 &1691865864456834663 stripped

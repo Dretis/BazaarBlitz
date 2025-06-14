@@ -36,6 +36,8 @@ public class UIPromptManager : MonoBehaviour
     public VoidEventChannelSO m_ExitInventory;
     public NodeEventChannelSO m_RestockStore;
 
+    public PlayerEventChannelSO m_BuildStore;
+
     public PlayerEventChannelSO m_OverturnOpportunity;
     public IntItemEventChannelSO m_ItemUsed;
 
@@ -67,6 +69,8 @@ public class UIPromptManager : MonoBehaviour
 
         m_RestockStore.OnEventRaised += ClearInputText;
 
+        m_BuildStore.OnEventRaised += OnBuildStore;
+
         m_OverturnOpportunity.OnEventRaised += DisplayOverturnChoices;
 
         m_ItemUsed.OnEventRaised += StrikethroughInventoryPrompt;
@@ -93,6 +97,8 @@ public class UIPromptManager : MonoBehaviour
         m_ExitInventory.OnEventRaised -= DisplayInitialMenu;
 
         m_RestockStore.OnEventRaised -= ClearInputText;
+
+        m_BuildStore.OnEventRaised -= OnBuildStore;
 
         m_OverturnOpportunity.OnEventRaised -= DisplayOverturnChoices;
 
@@ -253,7 +259,7 @@ public class UIPromptManager : MonoBehaviour
         if(buildCount <= 0 || !ps.occupiedNode.CompareTag("Encounter"))
         {
             buildPromptText.text = "<color=grey>Build</color>";
-            buildLimitText.text = "<color=grey>Cant</color>";
+            buildLimitText.text = "<color=grey>No</color>";
         }
         else
         {
@@ -262,9 +268,10 @@ public class UIPromptManager : MonoBehaviour
         }
     }
 
-    private void StrikethroughBuildPrompt(int index)
+    private void StrikethroughBuildPrompt()
     {
-        inventoryPromptText.text = "<color=grey>Build</color>";
+        buildPromptText.text = "<color=grey>Build</color>";
+        buildLimitText.text = "<color=grey>No</color>";
     }
 
     private void DisplayOverturnChoices(EntityPiece storeOwner)
@@ -272,5 +279,10 @@ public class UIPromptManager : MonoBehaviour
         inputPrompt.text = $"There's no items in {storeOwner.entityName}'s store...  Overturn ownership?";
         inputPrompt.text += "\n<color=white>[LMB]/[SPACE]</color> No, leave it alone.";
         inputPrompt.text += "\n<color=white>[RMB]/[SHIFT]</color> Yes, take it over! <color=white>Costs</color> <color=yellow>@</color>600";
+    }
+
+    private void OnBuildStore(EntityPiece ep)
+    {
+        StrikethroughBuildPrompt();
     }
 }

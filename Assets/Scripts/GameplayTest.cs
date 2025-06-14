@@ -4,9 +4,6 @@ using TMPro;
 using DG.Tweening;
 using System.Linq;
 using Febucci.UI.Core;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
-using UnityEditor.VersionControl;
 
 public class GameplayTest : MonoBehaviour
 {

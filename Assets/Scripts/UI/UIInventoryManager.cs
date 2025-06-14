@@ -5,8 +5,6 @@ using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 using UnityEngine.EventSystems;
-using static UnityEditor.Progress;
-using System;
 
 public class UIInventoryManager : MonoBehaviour
 {
