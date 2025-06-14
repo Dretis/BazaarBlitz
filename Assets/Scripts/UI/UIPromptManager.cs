@@ -37,7 +37,7 @@ public class UIPromptManager : MonoBehaviour
     public NodeEventChannelSO m_RestockStore;
 
     public PlayerEventChannelSO m_OverturnOpportunity;
-    public IntEventChannelSO m_ItemUsed;
+    public IntItemEventChannelSO m_ItemUsed;
 
     public VoidEventChannelSO m_EnableFreeview;
     public VoidEventChannelSO m_DisableFreeview;
@@ -241,7 +241,7 @@ public class UIPromptManager : MonoBehaviour
         inventoryPromptText.text = "Item";
     }
 
-    private void StrikethroughInventoryPrompt(int index)
+    private void StrikethroughInventoryPrompt(int index, ItemStats item)
     {
         inventoryPromptText.text = "<color=grey>Item</color>";
     }

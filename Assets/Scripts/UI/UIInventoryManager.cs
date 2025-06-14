@@ -5,6 +5,8 @@ using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 using UnityEngine.EventSystems;
+using static UnityEditor.Progress;
+using System;
 
 public class UIInventoryManager : MonoBehaviour
 {
@@ -46,6 +48,11 @@ public class UIInventoryManager : MonoBehaviour
     [SerializeField] private List<TextMeshProUGUI> extraPrices;
     [SerializeField] private List<ItemStats> extraInv;
 
+    [Header("Confirmation Space")]
+    [SerializeField] private CanvasGroup confirmGroup;
+    [SerializeField] private List<GameObject> confirmButtonHolders;
+    [SerializeField] private TextMeshProUGUI confirmText;
+
     [Header("Inventory Stats")]
     [SerializeField] private InventoryState currentState;
     [SerializeField] private int currentItemCount;
@@ -53,8 +60,11 @@ public class UIInventoryManager : MonoBehaviour
     [SerializeField] private GameObject heldItemPrefab;
     [SerializeField] private List<GameObject> heldItemHolders;
 
+    private int selectedItemIndex;
+    private ItemStats selectedItem;
+
     [Header("Broadcast on Event Channels")]
-    public IntEventChannelSO m_ItemUsed;
+    public IntItemEventChannelSO m_ItemUsed;
 
     [Header("Listen on Event Channels")]
     public PlayerEventChannelSO m_OpenInventory;
@@ -64,6 +74,8 @@ public class UIInventoryManager : MonoBehaviour
     public IntItemEventChannelSO m_ItemStocked;
     public ItemEventChannelSO m_ItemSelected;
 
+    public IntItemEventChannelSO m_TryUseItemAt;
+
 
     private void OnEnable()
     {
@@ -72,14 +84,19 @@ public class UIInventoryManager : MonoBehaviour
 
         storestockGroup.alpha = 0;
 
+        confirmGroup.interactable = false;
+        confirmGroup.alpha = 0f;
+
         m_OpenInventory.OnEventRaised += DisplayInventory;
         m_ExitInventory.OnEventRaised += HideInventory;
         m_ExitInventory.OnEventRaised += HideStoreStock;
+        m_ExitInventory.OnEventRaised += HideConfirmGroup;
         m_RefreshInventory.OnEventRaised += RefreshInventory;
         m_RestockStore.OnEventRaised += ShowStoreStock;
         m_ItemStocked.OnEventRaised += AddItemToStoreStock;
 
         m_ItemSelected.OnEventRaised += ShowSelectedItemDetails;
+        m_TryUseItemAt.OnEventRaised += OnTryUseItemAt;
     }
 
     private void OnDisable()
@@ -87,11 +104,13 @@ public class UIInventoryManager : MonoBehaviour
         m_OpenInventory.OnEventRaised -= DisplayInventory;
         m_ExitInventory.OnEventRaised -= HideInventory;
         m_ExitInventory.OnEventRaised -= HideStoreStock;
+        m_ExitInventory.OnEventRaised -= HideConfirmGroup;
         m_RefreshInventory.OnEventRaised -= RefreshInventory;
         m_RestockStore.OnEventRaised -= ShowStoreStock;
         m_ItemStocked.OnEventRaised -= AddItemToStoreStock;
 
         m_ItemSelected.OnEventRaised -= ShowSelectedItemDetails;
+        m_TryUseItemAt.OnEventRaised -= OnTryUseItemAt;
     }
 
     private void SpawnItemsInInventory(List<ItemStats> playerInventory)
@@ -225,7 +244,7 @@ public class UIInventoryManager : MonoBehaviour
         }
     }
 
-    public void UseItem(int index)
+    public void DeactivateItemAt(int index)
     {
 
          for (int i = 0; i < itemNames.Count; i++)
@@ -345,5 +364,53 @@ public class UIInventoryManager : MonoBehaviour
     {
         DOTween.Kill(group.gameObject);
         DOTween.To(() => group.alpha, x => group.alpha = x, alphaValue, duration);
+    }
+
+    public void OnTryUseItemAt(int index, ItemStats item)
+    {
+        ShowConfirmGroup();
+
+        confirmText.text = $"Use {item.itemName}?";
+
+        selectedItemIndex = index;
+        selectedItem = item;
+
+        EventSystem.current.SetSelectedGameObject(confirmButtonHolders[0]);
+    }
+
+    public void ConfirmUseItem()
+    {
+        HideConfirmGroup();
+        OnUseItemAt(selectedItemIndex, selectedItem);
+    }
+
+    public void CancelUseItem()
+    {
+        HideConfirmGroup();
+
+        EventSystem.current.SetSelectedGameObject(heldItemHolders[selectedItemIndex]);
+    }
+
+    public void OnUseItemAt(int index, ItemStats item)
+    {
+        HideConfirmGroup();
+
+        //UseItem(selectedItemIndex);
+        HideInventory();
+
+        //Tell everything that this item is being used
+        m_ItemUsed.RaiseEvent(index, item);
+
+    }
+
+    public void ShowConfirmGroup()
+    {
+        confirmGroup.interactable = true;
+        FadeTo(confirmGroup, 1, 0.25f);
+    }
+    public void HideConfirmGroup()
+    {
+        confirmGroup.interactable = false;
+        FadeTo(confirmGroup, 0, 0.25f);
     }
 }

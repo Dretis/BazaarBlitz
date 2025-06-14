@@ -40,7 +40,7 @@ public class PlayerInputController : MonoBehaviour
     public PlayerEventChannelSO m_BuildStore; 
     public PlayerEventChannelSO m_FinishStockingStore; 
     public NodeEventChannelSO m_RestockStore;
-    public VoidEventChannelSO m_ExitInventory;
+    public VoidEventChannelSO m_ExitInventory; // also listening
     public VoidEventChannelSO m_ExitLevelUp;
 
     public EntityIntEventChannelSO m_PlayerActionSelected;
@@ -123,6 +123,8 @@ public class PlayerInputController : MonoBehaviour
 
         m_EnterLevelUp.OnEventRaised += OnEnterLevelUp;
         m_ExitLevelUp.OnEventRaised += OnExitLevelUp;
+
+        m_ExitInventory.OnEventRaised += OnExitInventory;
     }
 
     private void OnDisable()
@@ -144,6 +146,8 @@ public class PlayerInputController : MonoBehaviour
 
         m_EnterLevelUp.OnEventRaised -= OnEnterLevelUp;
         m_ExitLevelUp.OnEventRaised -= OnExitLevelUp;
+
+        m_ExitInventory.OnEventRaised -= OnExitInventory;
     }
 
     private void FixedUpdate()
@@ -224,7 +228,7 @@ public class PlayerInputController : MonoBehaviour
             case GamePhase.Inventory:
                 m_ExitInventory.RaiseEvent();
 
-                SwitchActionMap(previousGamePhase);
+                //SwitchActionMap(previousGamePhase);
                 break;
             case GamePhase.LevelUp:
                 m_ExitLevelUp.RaiseEvent();
@@ -546,6 +550,13 @@ public class PlayerInputController : MonoBehaviour
     }
 
     private void OnExitLevelUp()
+    {
+        if (!playerInput.inputIsActive) return;
+
+        SwitchActionMap(previousGamePhase);
+    }
+
+    private void OnExitInventory()
     {
         if (!playerInput.inputIsActive) return;
 

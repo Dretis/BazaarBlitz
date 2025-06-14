@@ -6,6 +6,7 @@ using System.Linq;
 using Febucci.UI.Core;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEditor.VersionControl;
 
 public class GameplayTest : MonoBehaviour
 {
@@ -148,7 +149,13 @@ public class GameplayTest : MonoBehaviour
     [Header("Listen on Event Channels")]
     public VoidEventChannelSO m_DiceRolled;
     public ItemEventChannelSO m_ItemBought; //Listening to this one
-    public IntEventChannelSO m_ItemUsed; //Listening to this one
+
+    public IntItemEventChannelSO m_TryUseItemAt;
+    private int selectedItemIndex; // CHANGE THIS PART LATER
+
+    public IntItemEventChannelSO m_ItemUsed; // after confirm use
+    public VoidEventChannelSO m_FinishedUsedItem; // after UseItem timeline is done
+
     public IntItemEventChannelSO m_ItemStocked;
     public VoidEventChannelSO m_ExitRaycastedTile; //Listening to this one
     public PlayerEventChannelSO m_BuildStore; //Listening to this one
@@ -161,7 +168,11 @@ public class GameplayTest : MonoBehaviour
     {
         m_DiceRolled.OnEventRaised += CalculateDiceRoll;
         m_ItemBought.OnEventRaised += ConfirmPurchase;
-        m_ItemUsed.OnEventRaised += RemoveItemInPlayerInventory;
+
+        m_TryUseItemAt.OnEventRaised += OnUseItemAt;
+        m_ItemUsed.OnEventRaised += OnItemUsed;
+        m_FinishedUsedItem.OnEventRaised += OnFinishedUsedItem;
+
         m_UpdatePlayerScore.OnEventRaised += RemoveDeathsRow;
         m_ExitRaycastedTile.OnEventRaised += DisableFreeview;
 
@@ -185,7 +196,11 @@ public class GameplayTest : MonoBehaviour
     {
         m_DiceRolled.OnEventRaised -= CalculateDiceRoll;
         m_ItemBought.OnEventRaised -= ConfirmPurchase;
-        m_ItemUsed.OnEventRaised -= RemoveItemInPlayerInventory;
+
+        m_TryUseItemAt.OnEventRaised -= OnUseItemAt;
+        m_ItemUsed.OnEventRaised -= OnItemUsed;
+        m_FinishedUsedItem.OnEventRaised -= OnFinishedUsedItem;
+
         m_UpdatePlayerScore.OnEventRaised -= RemoveDeathsRow;
         m_ExitRaycastedTile.OnEventRaised -= DisableFreeview;
 
@@ -1219,7 +1234,23 @@ public class GameplayTest : MonoBehaviour
         }
     }
 
-    private void RemoveItemInPlayerInventory(int index)
+    private void OnUseItemAt(int index, ItemStats item)
+    {
+        // Recieved from InvSelHand to try using an item
+        selectedItemIndex = index;
+    }
+
+    private void OnItemUsed(int index, ItemStats item)
+    {
+        //RemoveItemInPlayerInventory(index);
+    }
+
+    private void OnFinishedUsedItem()
+    {
+        RemoveItemInPlayerInventory(selectedItemIndex);
+    }
+
+    public void RemoveItemInPlayerInventory(int index)
     {
         // This should be in its own script
         if (isStockingStore)
@@ -1234,6 +1265,14 @@ public class GameplayTest : MonoBehaviour
         } 
         else
         {
+            // Ask player for confirmation to use item [YES/NO]
+            // Raise some event here to show prompt
+            // ...
+
+            // For when player says YES (PUT THIS IN A SEPERATE FUNCTION)
+            // play the PD_UseItem timeline asset here
+
+            // get signalled from the end of timeline sequence to actually give item effect (SEPERATE FUNCTION)
             currentPlayer.AddItemToActiveEffects(currentPlayer.inventory[index].Duration, currentPlayer.inventory[index]);
 
             currentPlayer.UpdateStatModifier(new EntityPiece.ActiveEffect
@@ -1249,6 +1288,7 @@ public class GameplayTest : MonoBehaviour
 
             if (currentPlayer.currentStatsModifier.warpMode != EntityStatsModifiers.WarpMode.None) 
             {
+                Debug.Log("Used target select item");
                 m_ExitInventory.RaiseEvent();
                 // Raise free view event I guess?
                 m_EnableFreeview.RaiseEvent();
@@ -1257,6 +1297,14 @@ public class GameplayTest : MonoBehaviour
                 freeviewEnabled = true;
 
                 phase = GamePhase.RaycastTargetSelection;
+            }
+            else
+            {
+                // only get rid of item if its not a target selection one
+                //currentPlayer.inventory.RemoveAt(index);
+                //playerUsedItem = true;
+                Debug.Log("Used normal item");
+                m_ExitInventory.RaiseEvent();
             }
         }        
     }

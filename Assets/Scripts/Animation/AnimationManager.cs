@@ -3,7 +3,9 @@ using UnityEngine;
 
 public class AnimationManager : MonoBehaviour
 {
-    [SerializeField] private Animator currentAnimator;
+    // This script includes handling Animators/Animations
+    [SerializeField] private Animator currentAnimator; //Current player's animator
+
     [SerializeField] public EntityPiece ep; //test variable delete later
 
     [Header("Listen On Event Channels")]

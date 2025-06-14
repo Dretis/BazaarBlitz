@@ -15,7 +15,7 @@ public class InventorySelectionHandler : MonoBehaviour, ISubmitHandler, IPointer
     [SerializeField] private TextMeshProUGUI itemPrice;
 
     [Header("Broadcast On Event")]
-    public IntEventChannelSO m_ItemUsed;
+    public IntItemEventChannelSO m_TryUseItemAt; // aka m_ItemUsed or "I want to Use Inventory Item At"
     public IntItemEventChannelSO m_ItemStocked;
     public ItemEventChannelSO m_ItemSelected; // basically hovering on item in inv
 
@@ -79,14 +79,16 @@ public class InventorySelectionHandler : MonoBehaviour, ISubmitHandler, IPointer
         else
         {
             // Use Item
-            Debug.Log($"{heldItem.name} used");
+            Debug.Log($"Trying to use {heldItem.name}");
+            /*
             itemIcon.sprite = null;
             itemIcon.enabled = false;
             itemName.text = "";
             itemPrice.text = "";
 
             GetComponent<Button>().interactable = false;
-            m_ItemUsed.RaiseEvent(itemIndex);
+            */
+            m_TryUseItemAt.RaiseEvent(itemIndex, heldItem);
         }
     }
     public void OnPointerClick(PointerEventData eventData)
