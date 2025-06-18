@@ -974,7 +974,7 @@ RectTransform:
   - {fileID: 1287401961}
   - {fileID: 26139328}
   m_Father: {fileID: 698137463}
-  m_RootOrder: 7
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
@@ -1800,9 +1800,9 @@ RectTransform:
   - {fileID: 1448880368}
   - {fileID: 394215690}
   - {fileID: 1722224181}
+  - {fileID: 357690276}
   - {fileID: 437292151}
   - {fileID: 287967489}
-  - {fileID: 357690276}
   - {fileID: 1632485530}
   - {fileID: 1572141477}
   - {fileID: 701171625}
@@ -2144,7 +2144,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Join a lobby and play with others from around the world!
+  m_text: Duke it out locally with 4 players!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: f14f4be18184b9d40943768620494e2d, type: 2}
   m_sharedMaterial: {fileID: 2674762156599226005, guid: f14f4be18184b9d40943768620494e2d, type: 2}
@@ -4504,6 +4504,30 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 698137463}
     m_Modifications:
+    - target: {fileID: 5613114878893535380, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
+      propertyPath: m_Color.b
+      value: 0.7075472
+      objectReference: {fileID: 0}
+    - target: {fileID: 5613114878893535380, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
+      propertyPath: m_Color.g
+      value: 0.63482517
+      objectReference: {fileID: 0}
+    - target: {fileID: 5613114878893535380, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
+      propertyPath: m_Color.r
+      value: 0.44388574
+      objectReference: {fileID: 0}
+    - target: {fileID: 5613114878903374572, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
+      propertyPath: m_Color.b
+      value: 0.88720345
+      objectReference: {fileID: 0}
+    - target: {fileID: 5613114878903374572, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
+      propertyPath: m_Color.g
+      value: 0.9622642
+      objectReference: {fileID: 0}
+    - target: {fileID: 5613114878903374572, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
+      propertyPath: m_Color.r
+      value: 0.52198297
+      objectReference: {fileID: 0}
     - target: {fileID: 5613114878903374573, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
       propertyPath: m_Pivot.x
       value: 0

@@ -427,9 +427,9 @@ public class PlayerInputController : MonoBehaviour
                 playerInput.SwitchCurrentActionMap("UI");
                 break;
 
-            //case GamePhase.OverturnStore:
-            //   playerInput.SwitchCurrentActionMap("Confirmation");
-            //   break;
+            case GamePhase.EndTurn:
+               playerInput.SwitchCurrentActionMap("Combat");
+               break;
 
             case GamePhase.LevelUp:
                 //LevelUp(currentPlayer);
@@ -503,7 +503,9 @@ public class PlayerInputController : MonoBehaviour
         if (previousGamePhase == GamePhase.EncounterTime)
         {
             Debug.Log("What the fc");
-            instance.phase = GamePhase.EndTurn;
+            GameplayTest.instance.phase = GamePhase.EndTurn;
+            previousGamePhase = GamePhase.EndTurn;
+            SwitchActionMap(GamePhase.EndTurn);
             return;
         }
         SwitchActionMap(GamePhase.InitialTurnMenu);
