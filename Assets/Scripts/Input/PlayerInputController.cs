@@ -505,7 +505,7 @@ public class PlayerInputController : MonoBehaviour
             Debug.Log("What the fc");
             GameplayTest.instance.phase = GamePhase.EndTurn;
             previousGamePhase = GamePhase.EndTurn;
-            SwitchActionMap(GamePhase.EndTurn);
+            SwitchActionMap(GamePhase.StockStore);
             return;
         }
         SwitchActionMap(GamePhase.InitialTurnMenu);
