@@ -33,7 +33,7 @@ public class CombatUIManager : MonoBehaviour
     {
         var player1 = FindObjectOfType<CombatManager>().player1;
         var player2 = FindObjectOfType<CombatManager>().player2;
-
+        /*
         if (player1.isEnemy)
             player1Renderer.color = player1.playerColor;
         else
@@ -41,13 +41,27 @@ public class CombatUIManager : MonoBehaviour
             player1Renderer.gameObject.GetComponent<PlayerPaletteLoader>().
                 SetInspectorPalette(player1.GetComponent<PlayerPaletteLoader>().GetInspectorPalette());
         }
-
-        if (player2.isEnemy)
-            player2Renderer.color = player2.playerColor;
+        */
+        if (player1.TryGetComponent<PlayerPaletteLoader>(out PlayerPaletteLoader pal1))
+        {
+            player1Renderer.gameObject.GetComponent<PlayerPaletteLoader>().
+                SetInspectorPalette(pal1.GetInspectorPalette());
+        }
         else
         {
+            Debug.Log("Player/Enemy1 with no palette");
+            player1Renderer.color = player2.playerColor;
+        }
+
+        if (player2.TryGetComponent<PlayerPaletteLoader>(out PlayerPaletteLoader pal2))
+        {
             player2Renderer.gameObject.GetComponent<PlayerPaletteLoader>().
-                SetInspectorPalette(player2.GetComponent<PlayerPaletteLoader>().GetInspectorPalette());
+                SetInspectorPalette(pal2.GetInspectorPalette());
+        }
+        else
+        {
+            Debug.Log("Player/Enemy2 with no palette");
+            player2Renderer.color = player2.playerColor;
         }
 
         player1OverrideController = new AnimatorOverrideController(FindObjectOfType<CombatManager>().player1.combatAnimatorController);
