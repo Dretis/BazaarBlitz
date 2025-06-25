@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
+using Febucci.UI;
+using Febucci.UI.Core;
 
 public class UICombatOverlayManager : MonoBehaviour
 {
@@ -14,11 +16,16 @@ public class UICombatOverlayManager : MonoBehaviour
     [SerializeField] private Color32 defendColor;
     [SerializeField] private Color32 grayoutColor;
 
+    [SerializeField] private TMP_ColorGradient[] actionTypeGradients;
+    [SerializeField] private TMP_ColorGradient[] advantageTypeGradients;
+
+
     [Header("UI Elements")]
     [SerializeField] private RectTransform vsHeader;
     [SerializeField] private CanvasGroup resultsScreen;
 
     [SerializeField] private CanvasGroup floatingDamage;
+    [SerializeField] private TypewriterCore floatingDamageNumber;
     [SerializeField] private CanvasGroup leftDiceRoll;
     [SerializeField] private CanvasGroup rightDiceRoll;
 
@@ -69,7 +76,7 @@ public class UICombatOverlayManager : MonoBehaviour
 
     public EntityActionPhaseEventChannelSO m_ActionSelected; // Entity, check side and phase | Either the attacker or defender picked an action
     public EntityActionEventChannelSO m_BothActionsSelected; // prep time to show what they picked, follow with the dice roll too
-    public DamageEventChannelSO m_DiceRolled; // 2 floats
+    public PlayerFloatActionTypeEventChannelSO m_StoreDiceRolled; // 2 floats
 
     public PlayerEventChannelSO m_PlayOutCombat; // play attack anim and defend anim
 
@@ -92,7 +99,7 @@ public class UICombatOverlayManager : MonoBehaviour
 
         m_ActionSelected.OnEventRaised += UpdatePhaseTextPrompt;
         m_BothActionsSelected.OnEventRaised += ShowSelectedAction;
-        m_DiceRolled.OnEventRaised += SetDiceActionRoll;
+        m_StoreDiceRolled.OnEventRaised += SetDiceActionRoll;
 
         //m_PlayOutCombat.OnEventRaised += HideHeaderInfo;
 
@@ -110,7 +117,7 @@ public class UICombatOverlayManager : MonoBehaviour
 
         m_ActionSelected.OnEventRaised -= UpdatePhaseTextPrompt;
         m_BothActionsSelected.OnEventRaised -= ShowSelectedAction;
-        m_DiceRolled.OnEventRaised -= SetDiceActionRoll;
+        m_StoreDiceRolled.OnEventRaised -= SetDiceActionRoll;
 
         //m_PlayOutCombat.OnEventRaised += HideHeaderInfo;
 
@@ -438,7 +445,7 @@ public class UICombatOverlayManager : MonoBehaviour
         */
     }
 
-    public void ShowFloatingDamageNumber(EntityPiece defender, float damage)
+    public void ShowFloatingDamageNumber(EntityPiece defender, float damage, CombatManager.TypeAdvantage typeAdvantage)
     {
         Vector2 initPos;
         Vector2 goToPos;
@@ -460,13 +467,45 @@ public class UICombatOverlayManager : MonoBehaviour
         dmgPos.anchoredPosition = initPos;
 
         ShowInputPrompt(floatingDamage, 0.05f);
-        floatingDamage.GetComponent<TextMeshProUGUI>().text = $"{(int)damage}";
+
+        DecideFloatingNumberVisual((int)damage, typeAdvantage);
 
         hitParticle.Play();
 
         dmgPos.DOAnchorPos(goToPos, 0.25f, false).SetEase(Ease.OutBounce);
 
         StartCoroutine(HideFloatingDamageNumber(floatingDamage));
+    }
+
+    public void DecideFloatingNumberVisual(int damage, CombatManager.TypeAdvantage typeAdvantage)
+    {
+        if(damage < 0)
+        {
+            // Rainbow heal bullshit, only works if the defense was an 11
+            floatingDamage.GetComponent<TextMeshProUGUI>().colorGradientPreset = advantageTypeGradients[3];
+            floatingDamageNumber.ShowText($"+{(damage * -1)}");
+        }
+        else
+        {
+            floatingDamage.GetComponent<TextMeshProUGUI>().colorGradientPreset = advantageTypeGradients[(int)typeAdvantage];
+            switch (typeAdvantage)
+            {
+                case CombatManager.TypeAdvantage.Resist:
+                    //floatingDamage.GetComponent<TextMeshProUGUI>().text = $"<size=120>{damage}</size>";
+                    floatingDamageNumber.ShowText($"<size=120>{damage}</size>");
+                    break;
+                case CombatManager.TypeAdvantage.Neutral:
+                    floatingDamageNumber.ShowText($"{damage}");
+                    break;
+                case CombatManager.TypeAdvantage.Strong:
+                    floatingDamageNumber.ShowText($"{damage}!!");
+                    break;
+                default:
+                    floatingDamageNumber.ShowText($"{damage}???</size>");
+                    break;
+
+            }
+        }
     }
 
     public IEnumerator HideFloatingDamageNumber(CanvasGroup floatingDamage)
@@ -500,14 +539,17 @@ public class UICombatOverlayManager : MonoBehaviour
         HideInputPrompt(leftAttackPrompt, 0.15f);
     }
 
-    public void SetDiceActionRoll(EntityPiece entity, float roll)
+    public void SetDiceActionRoll(EntityPiece entity, float roll, Action.WeaponTypes weaponType)
     {
+        Debug.Log($"{entity.name} picked {weaponType} with roll[{roll}]");
         if(entity.fightingPosition == CombatUIManager.FightingPosition.Left)
         {
+            leftDiceRoll.GetComponent<TextMeshProUGUI>().colorGradientPreset = actionTypeGradients[(int)weaponType];
             leftDiceRoll.GetComponent<TextMeshProUGUI>().text = $"{roll}";
         }
         else
         {
+            rightDiceRoll.GetComponent<TextMeshProUGUI>().colorGradientPreset = actionTypeGradients[(int)weaponType];
             rightDiceRoll.GetComponent<TextMeshProUGUI>().text = $"{roll}";
         }
     }

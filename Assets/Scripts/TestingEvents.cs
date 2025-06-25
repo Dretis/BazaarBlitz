@@ -23,6 +23,7 @@ public class TestingEvents : MonoBehaviour
         if (debugPlayerInputOn)
         {
             debugPlayerInput.SetActive(true);
+            DontDestroyOnLoad(debugPlayerInput);
         }
     }
 

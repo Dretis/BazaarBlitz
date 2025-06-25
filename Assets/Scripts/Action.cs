@@ -30,4 +30,6 @@ public class Action : ScriptableObject
     public WeaponTypes type;
 
     public string flavorText;
+
+    // add associated animation (for player only)
 }

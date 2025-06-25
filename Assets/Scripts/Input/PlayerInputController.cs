@@ -92,6 +92,8 @@ public class PlayerInputController : MonoBehaviour
         //playerInput = playerConfigs[0].Input;
         playerInput = GetComponent<PlayerInput>();
         Debug.Log("Player Index: " + playerInput.playerIndex);
+        Debug.Log($"Player [{playerInput.playerIndex}] Control Scheme: " + playerInput.currentControlScheme);
+        Debug.Log($"Player [{playerInput.playerIndex}] Device: " + playerInput.GetDevice<Gamepad>());
 
         // Fuck ass work around to disable the UI action map
         //playerInput.SwitchCurrentActionMap("UI"); // FUCK YOU

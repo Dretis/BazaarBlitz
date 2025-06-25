@@ -138,7 +138,7 @@ public class CombatAnimationManager : MonoBehaviour
         m_AttackImpact.RaiseEvent();
     }
 
-    private void OnDamageTaken(EntityPiece entity, float damage)
+    private void OnDamageTaken(EntityPiece entity, float damage, CombatManager.TypeAdvantage advantage)
     {
         if (entity.fightingPosition != fightingPosition) return;
 
@@ -160,6 +160,29 @@ public class CombatAnimationManager : MonoBehaviour
             m_SomeoneDied.RaiseEvent();
             return;
         }
+        else
+        {
+            switch(advantage)
+            {
+                case CombatManager.TypeAdvantage.Resist:
+                    animator.SetInteger("Damage ID", 1); // Ineffective
+                    m_IneffectiveAttack.RaiseEvent();
+                    break;
+                case CombatManager.TypeAdvantage.Neutral:
+                    animator.SetInteger("Damage ID", 2); // Regular
+                    m_EffectiveAttack.RaiseEvent();
+                    break;
+                case CombatManager.TypeAdvantage.Strong:
+                    animator.SetInteger("Damage ID", 3); // Effective
+                    m_SuperEffectiveAttack.RaiseEvent();
+                    break;
+                default:
+                    Debug.Log("No type advantage???");
+                    break;
+            }
+        }
+        animator.SetTrigger("Take Damage");
+        /*
         else if (damage >= 50)
         {
             animator.SetInteger("Damage ID", 3); // Effective
@@ -175,7 +198,7 @@ public class CombatAnimationManager : MonoBehaviour
             animator.SetInteger("Damage ID", 2); // Regular
             m_EffectiveAttack.RaiseEvent();
         }
-        animator.SetTrigger("Take Damage");
+        */
     }
 
     private void OnEntityDied(EntityPiece entity, ItemStats item)

@@ -7,6 +7,14 @@ public class CombatManager : MonoBehaviour
 {
     public static CombatManager Instance;
 
+    public enum TypeAdvantage
+    {
+        Resist,
+        Neutral,
+        Strong
+    }
+
+    private CombatManager.TypeAdvantage damageTypeAdvantage;
 
     // EXTREMELY IMPORTANT COMBAT VARIABLES
 
@@ -48,7 +56,7 @@ public class CombatManager : MonoBehaviour
     public VoidEventChannelSO m_EnteredOverworldScene; 
     public EntityActionPhaseEventChannelSO m_ActionSelected; // Entity, check side and phase | Either the attacker or defender picked an action
     public EntityActionEventChannelSO m_BothActionsSelected; // prep time to show what they picked, follow with the dice roll too
-    public DamageEventChannelSO m_DiceRolled; // 2 floats
+    public PlayerFloatActionTypeEventChannelSO m_StoreDiceRolled;
     public PlayerEventChannelSO m_PlayOutCombat; // play attack anim and defend anim
     public DamageEventChannelSO m_DamageTaken; //upon attack anim finishing, show floating dmg ontop of defender, play hurt anim
     public EntityItemEventChannelSO m_EntityDied; // someone's HP dropped to 0, Victory, show rewards
@@ -303,9 +311,9 @@ public class CombatManager : MonoBehaviour
         
 
         
-        m_DiceRolled.RaiseEvent(attacker, damage); // Send events so that everyone can see what was rolled on either side after a moment. Assumed to start the animation
+        m_StoreDiceRolled.RaiseEvent(attacker, damage, attackerAction.type); // Send events so that everyone can see what was rolled on either side after a moment. Assumed to start the animation
 
-        m_DiceRolled.RaiseEvent(defender, defenseScore);
+        m_StoreDiceRolled.RaiseEvent(defender, defenseScore, defenderAction.type);
 
         // float animationLength = some constant probably;
 
@@ -321,16 +329,19 @@ public class CombatManager : MonoBehaviour
         if (attack.type == defend.type)
         {
             damageTypeMultiplier = 1.5f; // Neutral
+            damageTypeAdvantage = TypeAdvantage.Neutral;
         }
         else if ( (attack.type == Action.WeaponTypes.Melee && defend.type == Action.WeaponTypes.Gun)
                || (attack.type == Action.WeaponTypes.Gun && defend.type == Action.WeaponTypes.Magic)
                || (attack.type == Action.WeaponTypes.Magic && defend.type == Action.WeaponTypes.Melee) )
         {
             damageTypeMultiplier = 1f; // Incorrect defense option
+            damageTypeAdvantage = TypeAdvantage.Resist;
         }
         else
         {
             damageTypeMultiplier = 2f; // Super effective
+            damageTypeAdvantage = TypeAdvantage.Strong;
         }
 
         damage = damage * 10 - (int)defender.currentStatsModifier.defenseModifier;
@@ -368,7 +379,7 @@ public class CombatManager : MonoBehaviour
 
         attacker.health += (int)(damageToDeal * attacker.currentStatsModifier.lifestealMult); // Attacker heals if they have lifesteal
 
-        m_DamageTaken.RaiseEvent(defender, damageToDeal);
+        m_DamageTaken.RaiseEvent(defender, damageToDeal, damageTypeAdvantage);
 
         combatUIManager.UpdateActionText(attacker, Action.PhaseTypes.Attack);
         combatUIManager.UpdateActionText(defender, Action.PhaseTypes.Defend);
