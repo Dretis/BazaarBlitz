@@ -138,11 +138,11 @@ public class ScoreManager : MonoBehaviour
         if (players[id].heldPoints < 0)
         {
             // Red numbers when negative balance
-            playerScores[id].ShowText($"<color=red> {players[id].heldPoints}</color>");
+            playerScores[id].ShowText($"<sprite=\"Coin Icon\" index=0> <color=red> {players[id].heldPoints}</color>");
         }
         else
         {
-            playerScores[id].ShowText($"{players[id].heldPoints}");
+            playerScores[id].ShowText($"<sprite=\"Coin Icon\" index=0> {players[id].heldPoints}");
 
         }
     }

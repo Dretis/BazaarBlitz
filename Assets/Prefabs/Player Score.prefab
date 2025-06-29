@@ -183,12 +183,12 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5718681309808831750}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -67.12645, y: -24}
-  m_SizeDelta: {x: 139.2635, y: 32}
+  m_AnchoredPosition: {x: -55.94966, y: -24}
+  m_SizeDelta: {x: 150.4403, y: 32}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &3203473057839736739
 CanvasRenderer:
@@ -703,12 +703,12 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5718681309808831750}
-  m_RootOrder: 2
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -67.126, y: 16}
-  m_SizeDelta: {x: 90.798, y: 32}
+  m_AnchoredPosition: {x: -72.6, y: 16}
+  m_SizeDelta: {x: 139.26, y: 32}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &1886399580112057765
 CanvasRenderer:
@@ -738,7 +738,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 12345
+  m_text: <sprite="Coin Icon" index=0> 35700
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1fb807301344d164797d565fdea727d0, type: 2}
   m_sharedMaterial: {fileID: 2674762156599226005, guid: 1fb807301344d164797d565fdea727d0, type: 2}
@@ -766,11 +766,11 @@ MonoBehaviour:
     serializedVersion: 2
     rgba: 4294967295
   m_fontSize: 32
-  m_fontSizeBase: 44
+  m_fontSizeBase: 32
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 16
-  m_fontSizeMax: 36
+  m_fontSizeMax: 32
   m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 1024
@@ -780,10 +780,10 @@ MonoBehaviour:
   m_lineSpacing: 0
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
-  m_charWidthMaxAdj: 40.58
+  m_charWidthMaxAdj: 0
   m_enableWordWrapping: 0
   m_wordWrappingRatios: 0.4
-  m_overflowMode: 1
+  m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
@@ -874,8 +874,8 @@ MonoBehaviour:
   onMessage:
     m_PersistentCalls:
       m_Calls: []
-  waitForNormalWord: 0.3
-  waitForWordWithPunctuation: 0.5
+  waitForNormalWord: 0.0001
+  waitForWordWithPunctuation: 0.0001
   disappearanceDelay: 0.5
 --- !u!1 &1886399580144080175
 GameObject:
@@ -1332,7 +1332,7 @@ RectTransform:
   - {fileID: 6773678754986579126}
   - {fileID: 287378638391741992}
   m_Father: {fileID: 5718681309808831750}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1688,7 +1688,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4277703098446147563
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1706,7 +1706,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -2.4, y: 20.1}
+  m_AnchoredPosition: {x: -2.6, y: 20.1}
   m_SizeDelta: {x: 46, y: 46}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2068978258362150666
@@ -1730,7 +1730,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.42745098}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 0
@@ -1781,7 +1781,7 @@ RectTransform:
   - {fileID: 7383700230816040276}
   - {fileID: 3885803802974750868}
   m_Father: {fileID: 5718681309808831750}
-  m_RootOrder: 6
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
@@ -2132,11 +2132,11 @@ RectTransform:
   m_Children:
   - {fileID: 1886399579599986730}
   - {fileID: 1886399580354237277}
-  - {fileID: 1886399580112057767}
+  - {fileID: 8196996942236792911}
   - {fileID: 4277703098446147563}
+  - {fileID: 1886399580112057767}
   - {fileID: 6812579951253288075}
   - {fileID: 8288714901091445141}
-  - {fileID: 8196996942236792911}
   - {fileID: 7983624813546084268}
   - {fileID: 4918712074869675106}
   m_Father: {fileID: 1886399579848694525}

@@ -1,4 +1,6 @@
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MapNode : MonoBehaviour
 {
@@ -6,6 +8,9 @@ public class MapNode : MonoBehaviour
     [Header("Visual Variables")]
     public SpriteRenderer flowerTrapVisual;
     public SpriteRenderer storefrontVisual;
+    public CanvasGroup stockGroup;
+    public Image[] stockItems;
+    public TMP_Text soldoutText;
 
     [Header("Nearby Nodes")] 
     public MapNode north;

@@ -211,11 +211,11 @@ public class UIManager : MonoBehaviour
         DisableItemSelections();
 
         if (currentPlayer.isInDeathsRow)
-            storeChatBubble.text = "\"You have received " + item.itemName +". \n Unfortunately, you've just entered DEATH'S ROW.\"";
+            storeChatBubble.text = "\"You have received " + item.itemName + ". \n Unfortunately, you've just entered <color=red>DEBT'S ROW</color>.\"";
         else if (item != null)
             storeChatBubble.text = "\"Enjoy your brand new " + item.itemName + "! \nThank you for your patronage, and we hope to see you very soon!\"";
         else
-            storeChatBubble.text = "\"I'm sorry but you cannot afford this item.\"";
+            storeChatBubble.text = "\"I'm sorry but you cannot afford the "+ item.itemName + ".\"";
     }
 
     private void HighlightItem(ItemStats item)
@@ -224,14 +224,14 @@ public class UIManager : MonoBehaviour
         if (item == null)
         {
             // There is no item in that spot
-            storeChatBubble.text = "<color=red>SOLD OUT</color>  ";
+            storeChatBubble.text = "<size=42><color=red>SOLD OUT</color></size>";
             storeChatBubble.text += "<color=yellow>@ ----</color>\n";
             storeChatBubble.text += "<size=36>No more stock left.\n\n";
             storeChatBubble.text += "<color=grey>\"Come back another time when we refill it!\"</color></size>";
         }
         else
         {
-            storeChatBubble.text = "<color=lightblue>" + item.itemName + "</color>  ";
+            storeChatBubble.text = "<size=42><color=lightblue>" + item.itemName + "</color></size>";
             storeChatBubble.text += "<color=yellow>@" + item.basePrice + "</color>\n";
             storeChatBubble.text += "<size=36>" + item.effectDescription + "\n\n";
             storeChatBubble.text += "<color=grey>" + item.flavorText + "</color></size>";

@@ -93,8 +93,8 @@ public class UITileTooltipManager : MonoBehaviour
             else if (node.tag == "Castle") //please change this tag
             {
                 tileType.text = "Central Market";
-                tileDescription.text = "Upon passing, exchange all held stamps for <color=yellow>@</color>.";
-                tileDescription.text += "\n\n<color=yellow>@</color> recieved is based on the number of stamps exchanged at once.";
+                tileDescription.text = "Upon passing, exchange all held stamps for <sprite=\"Coin Icon\" index=0>.";
+                tileDescription.text += "\n\n<sprite=\"Coin Icon\" index=0> recieved is based on the number of colored stamps exchanged at once.";
             }
             // Wild Tile
             else
@@ -141,7 +141,7 @@ public class UITileTooltipManager : MonoBehaviour
                 storestockIcons[i].sprite = storeItem.itemSprite;
                 storestockIcons[i].enabled = true;
                 storestockNames[i].text = $"{storeItem.itemName}";
-                storestockPrices[i].text = $"<color=yellow>@</color>{storeItem.basePrice}";
+                storestockPrices[i].text = $"<sprite=\"Coin Icon\" index=0>{storeItem.basePrice}";
 
                 storestockNames[i].GetComponentInParent<Button>().interactable = false;
             }

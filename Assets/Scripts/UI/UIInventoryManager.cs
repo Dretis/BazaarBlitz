@@ -274,7 +274,7 @@ public class UIInventoryManager : MonoBehaviour
         storestockIcons[storeTotalIndex].sprite = item.itemSprite;
         storestockIcons[storeTotalIndex].enabled = true;
         storestockNames[storeTotalIndex].text = $"{item.itemName}";
-        storestockPrices[storeTotalIndex].text = $"<color=yellow>@</color>{item.basePrice}";
+        storestockPrices[storeTotalIndex].text = $"<sprite=\"Coin Icon\" index=0>{item.basePrice}";
     }
     
     // FOR NAM: Used when dropping items on full inventory.
@@ -292,7 +292,7 @@ public class UIInventoryManager : MonoBehaviour
         selectedItemIcon.enabled = true;
 
         selectedItemInfo[0].text = $"{item.itemName}";
-        selectedItemInfo[1].text = $"<color=yellow>@</color>{item.basePrice}";
+        selectedItemInfo[1].text = $"<sprite=\"Coin Icon\" index=0>{item.basePrice}";
         selectedItemInfo[2].text = $"{item.effectDescription}";
         selectedItemInfo[3].text = $"{item.flavorText}";
     }
@@ -346,7 +346,7 @@ public class UIInventoryManager : MonoBehaviour
                 storestockIcons[i].sprite = storeItem.itemSprite;
                 storestockIcons[i].enabled = true;
                 storestockNames[i].text = $"{storeItem.itemName}";
-                storestockPrices[i].text = $"<color=yellow>@</color>{storeItem.basePrice}";
+                storestockPrices[i].text = $"<sprite=\"Coin Icon\" index=0>{storeItem.basePrice}";
 
                 storestockNames[i].GetComponentInParent<Button>().interactable = false;
             }

@@ -67,7 +67,7 @@ public class StoreSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClic
         {
             itemIcon.sprite = item.itemSprite;
             itemIcon.enabled = true;
-            itemPrice.text = $"<color=#FFC900>@</color>{item.basePrice}";
+            itemPrice.text = $"<sprite=\"Coin Icon\" index=0>{item.basePrice}";
 
             button.interactable = true;
         }

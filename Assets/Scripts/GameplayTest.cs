@@ -4,6 +4,7 @@ using TMPro;
 using DG.Tweening;
 using System.Linq;
 using Febucci.UI.Core;
+using UnityEngine.UI;
 
 public class GameplayTest : MonoBehaviour
 {
@@ -1398,6 +1399,11 @@ public class GameplayTest : MonoBehaviour
         node.storefrontVisual.enabled = true;
         node.storefrontVisual.GetComponent<SpriteRenderer>().color = p.playerColor;
 
+        node.stockGroup.alpha = 1;
+        node.stockGroup.GetComponent<Image>().color = p.playerColor;
+        node.stockGroup.GetComponent<Image>().color -= new Color(0, 0, 0, .25f);
+
+
         isStockingStore = true;
 
         //m_RestockStore.RaiseEvent(p.occupiedNode);
@@ -1438,8 +1444,53 @@ public class GameplayTest : MonoBehaviour
             store.AddItem(item);
         }
 
+        // Visual Item Stock Indicator Update
+        MapNode node = player.occupiedNode.GetComponent<MapNode>();
+
+        UpdateStorefrontVisual(node);
+        /*
+        for (int i = 0; i < 3; i++)
+        {
+            if(i < recentStockedItems.Count)
+            {
+                node.stockItems[i].gameObject.SetActive(true);
+                node.stockItems[i].sprite = recentStockedItems[i].itemSprite;
+            }
+            else
+            {
+                node.stockItems[i].gameObject.SetActive(false);
+            }
+        }
+        */
         recentStockedItems.Clear();
         m_ExitInventory.RaiseEvent();
+    }
+
+    public void UpdateStorefrontVisual(MapNode node)
+    {
+        var storeInventory = node.GetComponent<StoreManager>().storeInventory;
+        int emptyStockCheck = 0;
+
+        node.soldoutText.text = "";
+
+        for (int i = 0; i < 3; i++)
+        {
+            if (storeInventory[i] == null)
+            {
+                node.stockItems[i].gameObject.SetActive(false);
+                emptyStockCheck++;
+            }
+            else
+            {
+                node.stockItems[i].gameObject.SetActive(true);
+                node.stockItems[i].sprite = recentStockedItems[i].itemSprite;
+            }
+        }
+
+        if(emptyStockCheck >= 3)
+        {
+            node.soldoutText.text = "SOLD OUT";
+        }
     }
 
     public void StealFromPlayer(EntityPiece otherPlayer)
