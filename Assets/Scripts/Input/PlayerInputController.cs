@@ -6,14 +6,25 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
+using UnityEngine.InputSystem.XInput;
+using UnityEngine.InputSystem.DualShock;
 using static GameplayTest;
+using UnityEngine.InputSystem.Switch;
 
 public class PlayerInputController : MonoBehaviour
 {
+    public enum CurrentDevice
+    {
+        Keyboard,
+        Xbox,
+        PS,
+        Switch
+    }
     //private PlayerInputController instance;
-    [SerializeField] private List<PlayerConfiguration> playerConfigs;
+    //[SerializeField] private List<PlayerConfiguration> playerConfigs;
     private PlayerInputActions playerInputActions; 
 
+    [SerializeField] private CurrentDevice device;
     [SerializeField] private EntityPiece currentPlayer;
     [SerializeField] private EntityPiece assignedPlayer;
     [SerializeField] private PlayerInput playerInput;
@@ -91,7 +102,7 @@ public class PlayerInputController : MonoBehaviour
         //currentPlayer = players.FirstOrDefault(m => m.id == index);
         //playerInput = playerConfigs[0].Input;
         playerInput = GetComponent<PlayerInput>();
-        Debug.Log("Player Index: " + playerInput.playerIndex);
+
         Debug.Log($"Player [{playerInput.playerIndex}] Control Scheme: " + playerInput.currentControlScheme);
         Debug.Log($"Player [{playerInput.playerIndex}] Device: " + playerInput.GetDevice<Gamepad>());
 
@@ -595,4 +606,42 @@ public class PlayerInputController : MonoBehaviour
         }
     }
 
+    //
+    private void OnControlsChanged()
+    {
+        Debug.Log($"Player[{playerInput.playerIndex}] Control Scheme is: {playerInput.currentControlScheme}");
+        // Figure out what kind of Gamepad this Player has
+        if (playerInput.currentControlScheme == "Gamepad")
+        {
+            var gamepad = playerInput.GetDevice<Gamepad>();
+            //Debug.Log($"Player[{playerInput.playerIndex}] Gamepad: {gamepad}");
+            //Debug.Log($"Player [{playerInput.playerIndex}] Device: " + playerInput.GetDevice<Gamepad>());
+            if (gamepad is DualShockGamepad)
+            {
+                Debug.Log($"Player[{playerInput.playerIndex}] is using PS");
+                device = CurrentDevice.PS;
+            }
+            else if (gamepad is XInputController)
+            {
+                Debug.Log($"Player[{playerInput.playerIndex}] is using XBOX");
+                device = CurrentDevice.Xbox;
+            }
+            else if (gamepad is SwitchProControllerHID)
+            {
+                Debug.Log($"Player[{playerInput.playerIndex}] is using Switch Pro");
+                device = CurrentDevice.Switch;
+            }
+            else
+            {
+                Debug.Log($"Heck bro, Player[{playerInput.playerIndex}] is none of the above");
+                device = CurrentDevice.Xbox; // just set it to XBOX as default
+            }
+        }
+        else
+        {
+            // It's a Keyboard
+            Debug.Log($"Player[{playerInput.playerIndex}] is not using gamepad.");
+            device = CurrentDevice.Keyboard;
+        }
+    }
 }

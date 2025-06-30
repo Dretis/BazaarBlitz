@@ -9,7 +9,10 @@ public class PlayerSetupMenuController : MonoBehaviour
 {
     private int playerIndex;
     //[SerializeField] private TextMeshProUGUI titleText;
+    [SerializeField] private List<Sprite> deviceSprites; // Keyboard=0,Xbox=1,PS=2,Switch=3
     [SerializeField] private List<Color> playerPrimaryColors;
+
+    [SerializeField] private Image selectedDevice;
     [SerializeField] private TypewriterCore titleText;
     [SerializeField] private GameObject menuPanel;
     [SerializeField] private GameObject readyPanel;
@@ -52,6 +55,14 @@ public class PlayerSetupMenuController : MonoBehaviour
         if (!inputEnabled) return;
 
         PlayerConfigurationManager.instance.SetPlayerName(playerIndex, name);
+    }
+
+    public void SetDevice(PlayerInputController.CurrentDevice device)
+    {
+        if (!inputEnabled) return;
+
+        selectedDevice.sprite = deviceSprites[(int)device];
+        //PlayerConfigurationManager.instance.SetPlayerName(playerIndex, name);
     }
 
     public void ReadyPlayer()
