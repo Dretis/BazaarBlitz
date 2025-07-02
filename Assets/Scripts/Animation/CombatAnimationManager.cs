@@ -11,6 +11,9 @@ public class CombatAnimationManager : MonoBehaviour
     private Action.PhaseTypes phaseType;
 
     [Header("Broadcast on Event Channels")]
+    [SerializeField] private ParticleSystem coinDrop;
+
+    [Header("Broadcast on Event Channels")]
     public VoidEventChannelSO m_AttackImpact;
     public VoidEventChannelSO m_MeleeWindup;
     public VoidEventChannelSO m_GunWindup;
@@ -207,6 +210,7 @@ public class CombatAnimationManager : MonoBehaviour
         animator.SetTrigger("Death");
     }
 
+    // Helper functions
     private void MeleeWindupSFX(float volume)
     {
         m_MeleeWindup.RaiseEvent();
@@ -222,4 +226,8 @@ public class CombatAnimationManager : MonoBehaviour
         m_MagicWindup.RaiseEvent();
     }
 
+    private void BurstCoinDropParticle()
+    {
+        coinDrop.Play();
+    }
 }
