@@ -28,7 +28,7 @@ AnimationClip:
         inWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
         outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
       - serializedVersion: 3
-        time: 0.7083333
+        time: 0.625
         value: {x: 0, y: 0, z: 0}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
@@ -37,7 +37,7 @@ AnimationClip:
         inWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
         outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
       - serializedVersion: 3
-        time: 0.75
+        time: 0.6666667
         value: {x: 1, y: 0, z: 0}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 0, y: 0, z: 0}
@@ -59,9 +59,9 @@ AnimationClip:
       value: {fileID: -1635836945, guid: 6511817d95ae2b343ba1aa1c64794e7f, type: 3}
     - time: 0.5833333
       value: {fileID: 1141308844, guid: 6511817d95ae2b343ba1aa1c64794e7f, type: 3}
-    - time: 0.7916667
+    - time: 0.7083333
       value: {fileID: -1635836945, guid: 6511817d95ae2b343ba1aa1c64794e7f, type: 3}
-    - time: 1
+    - time: 0.9166667
       value: {fileID: -1635836945, guid: 6511817d95ae2b343ba1aa1c64794e7f, type: 3}
     attribute: m_Sprite
     path: 
@@ -99,7 +99,7 @@ AnimationClip:
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 1.0416666
+    m_StopTime: 0.9583334
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -128,7 +128,7 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.7083333
+        time: 0.625
         value: 0
         inSlope: 0
         outSlope: 0
@@ -137,7 +137,7 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.75
+        time: 0.6666667
         value: 1
         inSlope: 0
         outSlope: 0
@@ -165,7 +165,7 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.7083333
+        time: 0.625
         value: 0
         inSlope: 0
         outSlope: 0
@@ -174,7 +174,7 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.75
+        time: 0.6666667
         value: 0
         inSlope: 0
         outSlope: 0
@@ -202,7 +202,7 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.7083333
+        time: 0.625
         value: 0
         inSlope: 0
         outSlope: 0
@@ -211,7 +211,7 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.75
+        time: 0.6666667
         value: 0
         inSlope: 0
         outSlope: 0
@@ -237,7 +237,14 @@ AnimationClip:
     floatParameter: 2
     intParameter: 0
     messageOptions: 0
-  - time: 0.7083333
+  - time: 0.5833333
+    functionName: BurstShotgun
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.5833333
     functionName: AttackImpact
     data: 
     objectReferenceParameter: {fileID: 0}

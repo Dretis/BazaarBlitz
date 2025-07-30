@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Rendering;
 using TMPro;
 using DG.Tweening;
 using Febucci.UI;
@@ -9,6 +10,7 @@ using Febucci.UI.Core;
 
 public class UICombatOverlayManager : MonoBehaviour
 {
+    [SerializeField] private Volume volume;
     [SerializeField] private ParticleSystem hitParticle;
 
     [Header("Colors")]
@@ -22,12 +24,26 @@ public class UICombatOverlayManager : MonoBehaviour
 
     [Header("UI Elements")]
     [SerializeField] private RectTransform vsHeader;
-    [SerializeField] private CanvasGroup resultsScreen;
 
     [SerializeField] private CanvasGroup floatingDamage;
     [SerializeField] private TypewriterCore floatingDamageNumber;
-    [SerializeField] private CanvasGroup leftDiceRoll;
-    [SerializeField] private CanvasGroup rightDiceRoll;
+    [SerializeField] private TypewriterCore leftDiceRoll;
+    [SerializeField] private TypewriterCore rightDiceRoll;
+
+    [Header("Results Elements")]
+    [SerializeField] private CanvasGroup stalemateGroup;
+    [SerializeField] private CanvasGroup resultsGroup;
+    [SerializeField] private TypewriterCore victoryText;
+    [SerializeField] private TypewriterCore rewardsText;
+
+    private RectTransform victoryTextPos;
+    private RectTransform rewardsTextPos;
+
+    [SerializeField] private Vector3 p1VictoryPosition = new Vector3(300, -32, 0); //Default
+    [SerializeField] private Vector3 p2VictoryPosition = new Vector3(-250, -32, 0); 
+
+    [SerializeField] private Vector3 p1RewardsPosition = new Vector3(300, -330, 0); //Default
+    [SerializeField] private Vector3 p2RewardsPosition = new Vector3(-32, -330, 0);
 
 
 
@@ -83,15 +99,26 @@ public class UICombatOverlayManager : MonoBehaviour
     public DamageEventChannelSO m_DamageTaken; //upon attack anim finishing, show floating dmg ontop of defender, play hurt anim
 
     public EntityItemEventChannelSO m_EntityDied; // someone's HP dropped to 0, Victory, show rewards
-    public ItemListEventChannelSO m_VictoryAgainstEnemy;
+    
     public VoidEventChannelSO m_Stalemate; // Combat is suspended, no one died this stime
+    public IntListItemListEventChannelSO m_VictoryAgainstEnemy;
+    public IntListItemListEventChannelSO m_DefeatAgainstEnemy;
+
 
     private void OnEnable()
     {
+        volume.weight = 0;
+
         resultTestText.text = "";
+
         leftDiceRoll.GetComponent<TextMeshProUGUI>().text = "";
         rightDiceRoll.GetComponent<TextMeshProUGUI>().text = "";
-        resultsScreen.alpha = 0;
+
+        rewardsText.GetComponent<TextMeshProUGUI>().text = "";
+        resultsGroup.alpha = 0;
+        stalemateGroup.alpha = 0;
+        ShowDiceInfo();
+        ShowVSHeader();
 
 
         //m_DecidedTurnOrder.OnEventRaised += UpdateInputPrompts;
@@ -106,6 +133,7 @@ public class UICombatOverlayManager : MonoBehaviour
         m_DamageTaken.OnEventRaised += ShowFloatingDamageNumber;
 
         m_VictoryAgainstEnemy.OnEventRaised += VictoryResults;
+        m_DefeatAgainstEnemy.OnEventRaised += DefeatResults;
         m_Stalemate.OnEventRaised += StalemateResults;
 
     }
@@ -124,6 +152,7 @@ public class UICombatOverlayManager : MonoBehaviour
         m_DamageTaken.OnEventRaised -= ShowFloatingDamageNumber;
 
         m_VictoryAgainstEnemy.OnEventRaised -= VictoryResults;
+        m_DefeatAgainstEnemy.OnEventRaised -= DefeatResults;
         m_Stalemate.OnEventRaised -= StalemateResults;
 
     }
@@ -140,6 +169,9 @@ public class UICombatOverlayManager : MonoBehaviour
 
         vsHeader.anchoredPosition = vsHidePosition;
         diceInfo.anchoredPosition = diceHidePosition;
+
+        victoryTextPos = victoryText.GetComponent<RectTransform>();
+        rewardsTextPos = rewardsText.GetComponent<RectTransform>();
 
         UpdateDiceStats(CombatManager.Instance.player1, leftDiceStat);
         UpdateDiceStats(CombatManager.Instance.player2, rightDiceStat);
@@ -317,9 +349,14 @@ public class UICombatOverlayManager : MonoBehaviour
         }
     }
 
-    public void DisplayResultsScreen()
+    public void DisplayResultsGroup()
     {
-        DOTween.To(() => resultsScreen.alpha, x => resultsScreen.alpha = x, 1, 0.25f).SetEase(Ease.InFlash);
+        DOTween.To(() => resultsGroup.alpha, x => resultsGroup.alpha = x, 1, 0.25f).SetEase(Ease.InFlash);
+    }
+
+    public void DisplayStalemateGroup()
+    {
+        DOTween.To(() => stalemateGroup.alpha, x => stalemateGroup.alpha = x, 1, 0.25f).SetEase(Ease.InFlash);
     }
 
     public void UpdateDiceStats(EntityPiece entity, GameObject diceStats)
@@ -383,69 +420,132 @@ public class UICombatOverlayManager : MonoBehaviour
         }
     }
 
-    public void HideBothInutPrompts()
+    public void HideBothInputPrompts()
     {
+        leftDefendPrompt.alpha = 0;
+        rightAttackPrompt.alpha = 0;
+        leftAttackPrompt.alpha = 0;
+        rightDefendPrompt.alpha = 0;
+        /*
         HideInputPrompt(leftDefendPrompt, 0.15f);
         HideInputPrompt(rightAttackPrompt, 0.15f);
 
         HideInputPrompt(rightDefendPrompt, 0.15f);
         HideInputPrompt(leftAttackPrompt, 0.15f);
+        */
     }
 
     public void StalemateResults()
     {
+        DisplayStalemateGroup();
+        //HideHeaderInfo();
         Debug.Log("stalemate.");
-        DisplayResultsScreen();
-        //resultsScreen.alpha = 1;
-        var result = resultsScreen.GetComponentInChildren<TextMeshProUGUI>();
-        result.color = new Color32(118, 118, 118, 255);
-        result.text = "To Be Continued...";
+        //volume.weight = 1;
+        DOTween.To(() => volume.weight, x => volume.weight = x, 1, 0.15f).SetEase(Ease.InOutExpo);
+
+        leftDiceRoll.StartDisappearingText();
+        rightDiceRoll.StartDisappearingText();
+
+        HideInputPrompt(leftSelectedAction, 0.25f);
+        HideInputPrompt(rightSelectedAction, 0.25f);
+        HideDiceInfo();
+        HideVSHeader();
+
+        //resultsGroup.alpha = 1;
+        var result = stalemateGroup.GetComponentInChildren<TextMeshProUGUI>();
+        //result.color = new Color32(118, 118, 118, 255);
+        result.text = "To be continued...";
         /*
-        var resultsText = resultsScreen.GetComponentInChildren<TextMeshProUGUI>();
+        var resultsText = resultsGroup.GetComponentInChildren<TextMeshProUGUI>();
         resultsText.color = new Color32(118, 118, 118, 255);
         resultsText.text = "To Be Continued...";
 
-        DisplayResultsScreen();
+        DisplayresultsGroup();
         */
     }
 
-    public void VictoryResults(List<ItemStats> items)
+    public void VictoryResults(List<int> rewards, List<ItemStats> items)
     {
+        //rewards[0] = rep/exp gained, rewards[1] = money gained
+        if(rewards.Count >= 3) // stupid ass check for a PvP win
+        {
+            if (rewards[2] == 2) // P2 won
+            {
+                victoryTextPos.anchoredPosition = p2VictoryPosition;
+                rewardsTextPos.anchoredPosition = p2RewardsPosition;
+            }
+        }
+        else // P1 won, also against wildlife
+        {
+            victoryTextPos.anchoredPosition = p1VictoryPosition;
+            rewardsTextPos.anchoredPosition = p1RewardsPosition;
+        }
+
         Debug.Log("victory!");
-        DisplayResultsScreen();
-        //resultsScreen.alpha = 1;
-        var result = resultsScreen.GetComponentInChildren<TextMeshProUGUI>();
+
+        DisplayResultsGroup();
+
+        leftDiceRoll.StartDisappearingText();
+        rightDiceRoll.StartDisappearingText();
+
+        HideInputPrompt(leftSelectedAction, 0.25f);
+        HideInputPrompt(rightSelectedAction, 0.25f);
+
+        victoryText.ShowText("Victory!");
+        //rewardsText.ShowText($"<sprite=\"item_icons\" index={items[0].id}> {items[0].itemName}\n<sprite=\"Coin Icon\" index=0> {items[1].itemName}");
+        string rewardInfo = "";
+        if (rewards[1] > 0) // Money Gained
+        {
+            rewardInfo += $"<color=#FFDC5B>+{rewards[1]}</color><sprite=\"Coin Icon\" index=0>\t";
+        }
+        if (rewards[0] >= 0) // Repuation Gained
+        {
+            rewardInfo += $"<color=#7AFFF7>+{rewards[0]} EXP</color>\n";
+        }
+        if (items != null) // Items Gained
+        {
+            rewardInfo += $"+1 {items[0].itemName}\n+1 {items[1].itemName}";
+        }
+
+        rewardsText.ShowText(rewardInfo);
+
+        //resultsGroup.alpha = 1;
+        /*
+        var result = resultsGroup.GetComponentInChildren<TextMeshProUGUI>();
         result.color = new Color32(240, 250, 0, 255);
         result.text = $"Victory!\n";
-
         result.text += "Obtained:\n";
         foreach(var item in items)
         {
             result.text += $"<color=white>{item.itemName}</color>\n";
         }
-            /*
-        resultTestText.color = new Color32(240, 250, 0, 255);
-        resultTestText.text = $"Victory!\n";
-        if (loser.isEnemy)
-        {
-            resultTestText.text += $"Found items!{item}\n";
-            resultTestText.text += $"Gained {loser.ReputationPoints} rep.\n";
-        }
-        else
-            resultTestText.text += $"Stole loser's @!\n";
-            */
-        /*
-        var resultsText = resultsScreen.GetComponentInChildren<TextMeshProUGUI>();
-        resultsText.color = new Color32(240, 250, 0, 255);
-        resultsText.text = $"Victory for {winner.entityName}!\n";
-        resultsText.text += $"Found: {item}\n";
-        //resultsText.text += $"+{loser.reputation} rep\n";
-
-        DisplayResultsScreen();
         */
     }
+    public void DefeatResults(List<int> rewards, List<ItemStats> items)
+    {
+        // Lost to a wildlife, make fun of the player
+        victoryTextPos.anchoredPosition = p2VictoryPosition;
+        rewardsTextPos.anchoredPosition = p2RewardsPosition;
 
-    public void ShowFloatingDamageNumber(EntityPiece defender, float damage, CombatManager.TypeAdvantage typeAdvantage)
+        DisplayResultsGroup();
+
+        leftDiceRoll.StartDisappearingText();
+        rightDiceRoll.StartDisappearingText();
+
+        HideInputPrompt(leftSelectedAction, 0.25f);
+        HideInputPrompt(rightSelectedAction, 0.25f);
+
+        victoryText.ShowText("Defeat...");
+
+        string rewardInfo = "";
+        rewardInfo += $"<color=#FFDC5B>{rewards[1]}<sprite=\"Coin Icon\" index=0></color> was stolen!\n";
+        rewardInfo += $"The enemy becomes stronger.";
+
+        rewardsText.ShowText(rewardInfo);
+    }
+
+
+        public void ShowFloatingDamageNumber(EntityPiece defender, float damage, CombatManager.TypeAdvantage typeAdvantage)
     {
         Vector2 initPos;
         Vector2 goToPos;
@@ -492,16 +592,16 @@ public class UICombatOverlayManager : MonoBehaviour
             {
                 case CombatManager.TypeAdvantage.Resist:
                     //floatingDamage.GetComponent<TextMeshProUGUI>().text = $"<size=120>{damage}</size>";
-                    floatingDamageNumber.ShowText($"<size=120>{damage}</size>");
+                    floatingDamageNumber.ShowText($"<size=156>{damage}</size>");
                     break;
                 case CombatManager.TypeAdvantage.Neutral:
                     floatingDamageNumber.ShowText($"{damage}");
                     break;
                 case CombatManager.TypeAdvantage.Strong:
-                    floatingDamageNumber.ShowText($"{damage}!!");
+                    floatingDamageNumber.ShowText($"<size=218>{damage}!!");
                     break;
                 default:
-                    floatingDamageNumber.ShowText($"{damage}???</size>");
+                    floatingDamageNumber.ShowText($"{damage}???");
                     break;
 
             }
@@ -522,8 +622,11 @@ public class UICombatOverlayManager : MonoBehaviour
         ShowDiceInfo();
         HideInputPrompt(leftSelectedAction, 0.25f);
         HideInputPrompt(rightSelectedAction, 0.25f);
-        leftDiceRoll.GetComponent<TextMeshProUGUI>().text = "";
-        rightDiceRoll.GetComponent<TextMeshProUGUI>().text = "";
+
+        leftDiceRoll.StartDisappearingText();
+        rightDiceRoll.StartDisappearingText();
+        //leftDiceRoll.GetComponent<TextMeshProUGUI>().text = "";
+        //rightDiceRoll.GetComponent<TextMeshProUGUI>().text = "";
     }
 
     public void HideHeaderInfo()
@@ -545,12 +648,24 @@ public class UICombatOverlayManager : MonoBehaviour
         if(entity.fightingPosition == CombatUIManager.FightingPosition.Left)
         {
             leftDiceRoll.GetComponent<TextMeshProUGUI>().colorGradientPreset = actionTypeGradients[(int)weaponType];
-            leftDiceRoll.GetComponent<TextMeshProUGUI>().text = $"{roll}";
+
+            if (roll <= 1)
+                leftDiceRoll.ShowText($"<size=120><shake a=.2 d=.5>{roll}</shake></size>");
+            else if (roll >= 10)
+                leftDiceRoll.ShowText($"<size=180>{roll}</size>");
+            else
+                leftDiceRoll.ShowText($"{roll}");
         }
         else
         {
             rightDiceRoll.GetComponent<TextMeshProUGUI>().colorGradientPreset = actionTypeGradients[(int)weaponType];
-            rightDiceRoll.GetComponent<TextMeshProUGUI>().text = $"{roll}";
+
+            if (roll <= 1)
+                rightDiceRoll.ShowText($"<size=126><shake a=.2 d=.5>{roll}</shake></size>");
+            else if (roll >= 10)
+                rightDiceRoll.ShowText($"<size=180>{roll}</size>");
+            else
+                rightDiceRoll.ShowText($"{roll}");
         }
     }
 }

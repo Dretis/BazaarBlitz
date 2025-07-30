@@ -44,11 +44,11 @@ public class UITransitionManager : MonoBehaviour
 
     public void FadeOutInkTransition()
     {
-        LoopTween(uiImage.material, 1f, "_FadeAmount", 0.2f, 1f);
+        LoopTween(uiImage.material, 1f, "_FadeAmount", 0.1f, 1f);
     }
 
     public void FadeInInkTransition()
     {
-        LoopTween(uiImage.material, 1f, "_FadeAmount", 1f, 0.2f);
+        LoopTween(uiImage.material, 1f, "_FadeAmount", 1f, 0.1f);
     }
 }

@@ -12,6 +12,9 @@ public class CombatAnimationManager : MonoBehaviour
 
     [Header("Broadcast on Event Channels")]
     [SerializeField] private ParticleSystem coinDrop;
+    [SerializeField] private ParticleSystem gunShotgun;
+    [SerializeField] private ParticleSystem magicSparkle;
+    [SerializeField] private ParticleSystem magicExplosion;
 
     [Header("Broadcast on Event Channels")]
     public VoidEventChannelSO m_AttackImpact;
@@ -34,8 +37,8 @@ public class CombatAnimationManager : MonoBehaviour
     public PlayerEventChannelSO m_PlayOutCombat; // play attack anim and defend anim
     public DamageEventChannelSO m_DamageTaken; //upon attack anim finishing, show floating dmg ontop of defender, play hurt anim
     public EntityItemEventChannelSO m_EntityDied; // someone's HP dropped to 0, Victory, show rewards
-    public VoidEventChannelSO m_Stalemate; // Combat is suspended, no one died this time
-    public ItemListEventChannelSO m_VictoryAgainstEnemy;
+    //public VoidEventChannelSO m_Stalemate; // Combat is suspended, no one died this time
+    //public IntItemListEventChannelSO m_VictoryAgainstEnemy;
 
     private void OnEnable()
     {
@@ -208,6 +211,8 @@ public class CombatAnimationManager : MonoBehaviour
     {
         if (entity.fightingPosition != fightingPosition) return;
         animator.SetTrigger("Death");
+
+        Debug.Log("I died lol");
     }
 
     // Helper functions
@@ -229,5 +234,22 @@ public class CombatAnimationManager : MonoBehaviour
     private void BurstCoinDropParticle()
     {
         coinDrop.Play();
+    }
+
+    private void BurstShotgun()
+    {
+        gunShotgun.Play();
+    }
+
+    private void BurstMagicSparkle()
+    {
+        magicSparkle.gameObject.SetActive(true);
+        magicSparkle.Play();
+    }
+
+    private void BurstMagicExplosion()
+    {
+        magicExplosion.gameObject.SetActive(true);
+        magicExplosion.Play();
     }
 }

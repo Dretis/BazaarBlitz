@@ -16,6 +16,8 @@ public class CombatManager : MonoBehaviour
 
     private CombatManager.TypeAdvantage damageTypeAdvantage;
 
+    public int turnCount = 0;
+
     // EXTREMELY IMPORTANT COMBAT VARIABLES
 
     // Mostly used to load player data and calculate the results of combat, the script refers primarily to attacker/defender.
@@ -61,7 +63,8 @@ public class CombatManager : MonoBehaviour
     public DamageEventChannelSO m_DamageTaken; //upon attack anim finishing, show floating dmg ontop of defender, play hurt anim
     public EntityItemEventChannelSO m_EntityDied; // someone's HP dropped to 0, Victory, show rewards
     public VoidEventChannelSO m_Stalemate; // Combat is suspended, no one died this time
-    public ItemListEventChannelSO m_VictoryAgainstEnemy;
+    public IntListItemListEventChannelSO m_VictoryAgainstEnemy; // A win (PvE and PvP)
+    public IntListItemListEventChannelSO m_DefeatAgainstEnemy; // lost to wildlife lol
 
     //public ????? m_ActionSelected; // I'm leaving this part till after the tuesday meeting, as it should use the same input system as the controller.
     // For now, a debug implementation with WASD and arrowkeys is in place that I'll soon replace. (I also had 1 controller so I couldn't debug at home)
@@ -71,6 +74,12 @@ public class CombatManager : MonoBehaviour
 
     private void OnEnable()
     {
+        turnCount++;
+        if(turnCount > 1) // not on the first turn
+        {
+            //m_SwapPhase.RaiseEvent(attacker);
+        }
+
         combatUIManager.UpdateActionText(attacker, Action.PhaseTypes.Attack);
         combatUIManager.UpdateActionText(defender, Action.PhaseTypes.Defend);
         m_AttackImpact.OnEventRaised += OnAttackImpact;
@@ -181,7 +190,7 @@ public class CombatManager : MonoBehaviour
 
     // Called when m_ActionSelected is raised with 
     public void ActionSelected(EntityPiece player, Action action) {
-        Debug.Log(action);
+        Debug.Log($"{player} did Action {action}");
 
         if (action.phase == Action.PhaseTypes.Attack) {
             attackerAction = action;
@@ -392,7 +401,7 @@ public class CombatManager : MonoBehaviour
         if (player1.health <= 0 || player2.health <= 0) // before we even swap, see if someone died.
         {
             pausingLock = true;
-            StartCoroutine(EndCombatDelay(1.5f)); // These aren't based on animations so they're constants.
+            StartCoroutine(EndCombatDelay(1.75f)); // These aren't based on animations so they're constants.
             return;
         }
 
@@ -409,18 +418,22 @@ public class CombatManager : MonoBehaviour
             player2Attacking = false;
         }
 
-        m_SwapPhase.RaiseEvent(attacker);
-
-
+        //m_SwapPhase.RaiseEvent(attacker);
 
         // With that done, iterate isFirstPhase to see if we should pause combat.
-        if (isFirstPhase == true) { // iterate to next phase
+        if (isFirstPhase == true) 
+        { // iterate to next phase
             isFirstPhase = false;
-        } else { // but pause combat if we looped twice
+            m_SwapPhase.RaiseEvent(attacker);
+        } 
+        else 
+        { // but pause combat if we looped twice
             isFirstPhase = true;
             pausingLock = true;
 
-            if (!isFightingAI) {
+            /*
+            if (!isFightingAI) 
+            {
                 // to be fair to the 2nd place guy, they can go first next turn
                 tempDefender = defender;
                 defender = attacker;
@@ -435,27 +448,18 @@ public class CombatManager : MonoBehaviour
                 }
                 
                 m_SwapPhase.RaiseEvent(attacker);
-            }
+            }*/
 
-            StartCoroutine(PauseCombatDelay(1f));
+            StartCoroutine(PauseCombatDelay(1.25f));
         }
-        
-
-        
-        
-
     }
-
-
-
-
 
 
 
     //   TWO COMBAT WRAP UP FUNCTIONS:
 
     // Suspends and resets the combat scene so that the next player can take a turn. Returns when its either fighter's turn.
-    public void pauseCombat() 
+    public void PauseCombat() 
     {
         //Raise event when moving back to overworld scene
         m_EnteredOverworldScene.RaiseEvent();
@@ -481,31 +485,36 @@ public class CombatManager : MonoBehaviour
     // Decides the consequences of either player 1 or player 2 losing before destroying the scene
     public void endCombat()
     {
-        EntityPiece winner;
-        EntityPiece loser;
-
         //Raise event when moving back to overworld scene
         m_EnteredOverworldScene.RaiseEvent();
 
+        
+        EntityPiece winner;
+        EntityPiece loser;
+
         bool player1Wins;
-        if (player2.health <= 0) { // Player 1 wins
+        if (player2.health <= 0) 
+        { // Player 1 wins
             player1Wins = true;
-            m_EntityDied.RaiseEvent(player2, null);
+            //m_EntityDied.RaiseEvent(player2, null);
             player2.health = player2.maxHealth;
 
             winner = player1;
             loser = player2;
 
-        } else { // Player 2 wins
+        } 
+        else 
+        { // Player 2 wins
             player1Wins = false;
-            m_EntityDied.RaiseEvent(player1, null);
+            //m_EntityDied.RaiseEvent(player1, null);
             player1.health = player1.maxHealth;
 
             loser = player1;
             winner = player2;
         }
-
-        if ( (isFightingAI && player1Wins) == false ) { // player 1 winning against an ai is handled in the coroutine to get here
+        /*
+        if ( (isFightingAI && player1Wins) == false ) // PvP win
+        { // player 1 winning against an ai is handled in the coroutine to get here
             loser.occupiedNode = sceneManager.spawnPoint;
             loser.transform.position = loser.occupiedNode.transform.position;
             loser.occupiedNodeCopy = loser.occupiedNode;
@@ -540,6 +549,7 @@ public class CombatManager : MonoBehaviour
         } else {
             
         }
+        */
 
         
         // If the player defeated is in Death's Row, end the game. Otherwise, go to the next player's turn.
@@ -686,9 +696,34 @@ public class CombatManager : MonoBehaviour
         yield return new WaitForSeconds(animationTime);
 
         m_EnteredOverworldScene.RaiseEvent(); // change this to a fade in transition event or someting idk
+
         yield return new WaitForSeconds(1f);
-        
-        pauseCombat();
+        // Set up P1 to attacker and P2 defender again before leaving combat scene
+        m_SwapPhase.RaiseEvent(attacker);
+
+        if (!isFightingAI) // PvP
+        {
+            // to be fair to the 2nd place guy, they can go first next turn
+            var tempDefender = defender;
+            defender = attacker;
+            attacker = tempDefender;
+
+            if (player1Attacking)
+            {
+                player1Attacking = false;
+                player2Attacking = true;
+            }
+            else
+            {
+                player1Attacking = true;
+                player2Attacking = false;
+            }
+
+            m_SwapPhase.RaiseEvent(attacker);
+        }
+        yield return new WaitForSeconds(.25f);
+
+        PauseCombat();
 
     }
 
@@ -697,8 +732,30 @@ public class CombatManager : MonoBehaviour
         // It was mentioned some stuff like the defense animation could be tuned in the animation timeline, but this
         // moment of the method represents the start of the attack animation.
 
-        if (isFightingAI && player2.health <= 0)
+        // Combat is over, figure out who won and who lost, decide how to show that
+
+        EntityPiece winner;
+        EntityPiece loser;
+        List<int> gainedRewards = new List<int>();
+
+        bool player1Wins;
+        if (player2.health <= 0)
+        { // Player 1 wins
+            player1Wins = true;
+            winner = player1;
+            loser = player2;
+
+        }
+        else
+        { // Player 2 wins
+            player1Wins = false;
+            loser = player1;
+            winner = player2;
+        }
+
+        if (player1Wins && isFightingAI) // Defeated wildlife
         {
+            Debug.Log("Won against wildlife enemy");
             List<ItemStats> newlyGainedItems = new List<ItemStats>();
             for (int i = 0; i < 2; i++) {
                 int loot = Random.Range(0, 100);
@@ -719,10 +776,13 @@ public class CombatManager : MonoBehaviour
                 newlyGainedItems.Add(player2.inventory[itemDropIndex]); 
             }
 
+            var gainedPoints = 0;
             if (player2.heldPoints > 0) {
+                gainedPoints = player2.heldPoints; // Take ALL of the wildlife's points
                 player1.heldPoints += player2.heldPoints;
                 player2.heldPoints = 0;
             }
+
             var gainedRep = player2.ReputationPoints * Mathf.Pow(2, player2.RenownLevel - 1);
             player1.ReputationPoints += gainedRep; // a monster's rep is just its exp yield * 2^(how many players it killed-1)
 
@@ -730,10 +790,65 @@ public class CombatManager : MonoBehaviour
                 player2.resetStats(); // sets renown to 1 and all dies to their originals.
             }
 
-            
+            gainedRewards.Add((int)gainedRep);
+            gainedRewards.Add(gainedPoints);
 
-            m_VictoryAgainstEnemy.RaiseEvent(newlyGainedItems);
+            m_VictoryAgainstEnemy.RaiseEvent(gainedRewards, newlyGainedItems);
         }
+        else if ((isFightingAI && player1Wins) == false) // PvP win or Player 1 died
+        {
+            Debug.Log("Won against wildlife enemy");
+            loser.occupiedNode = sceneManager.spawnPoint;
+            loser.transform.position = loser.occupiedNode.transform.position;
+            loser.occupiedNodeCopy = loser.occupiedNode;
+            loser.traveledNodes.Clear();
+            loser.traveledNodes.Add(loser.occupiedNode);
+
+            // Add defender's points to attacker's points 
+            // Take points from the loser
+            float lostPoints = 0.5f * loser.heldPoints;
+            winner.heldPoints += Mathf.FloorToInt(lostPoints);
+            loser.heldPoints -= Mathf.CeilToInt(lostPoints);
+
+            // Base 100 xp, times 2 for every level the opponent is above you.
+            float reputationGain = 100 * Mathf.Pow(2, loser.RenownLevel - winner.RenownLevel);
+
+            if (player2.isEnemy) // Wildlife won
+            { // Enemies dont increase the amount of xp they give
+                reputationGain = 0;
+                // But they instead level up...
+                player2.health = player2.health + (player2.maxHealth - player2.health) / 2;
+                player2.raiseAllStats();
+                player2.RenownLevel += 1;
+
+                gainedRewards.Add((int)reputationGain);
+                gainedRewards.Add(Mathf.FloorToInt(lostPoints));
+
+                m_DefeatAgainstEnemy.RaiseEvent(gainedRewards, null);
+            }
+            else // A Baggie won
+            {
+                gainedRewards.Add((int)reputationGain);
+                gainedRewards.Add(Mathf.FloorToInt(lostPoints));
+
+                if(winner == player1) gainedRewards.Add(1);
+                else if(winner == player2) gainedRewards.Add(2);
+
+                // pass in - null items, ReputationGain, player1Won
+                m_VictoryAgainstEnemy.RaiseEvent(gainedRewards, null);
+            }
+
+            winner.ReputationPoints += reputationGain;
+            Debug.Log("Gained " + reputationGain + " reputation points! Now at rep: " + winner.ReputationPoints);
+
+            // Remember to throw in that new level up UI in here soon!
+        }
+        else
+        {
+            Debug.Log("Something went really wrong!?");
+        }
+
+
 
         yield return new WaitForSeconds(animationTime);
 
