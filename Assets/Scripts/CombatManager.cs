@@ -800,7 +800,10 @@ public class CombatManager : MonoBehaviour
             Debug.Log("Won against wildlife enemy");
             loser.occupiedNode = sceneManager.spawnPoint;
             loser.transform.position = loser.occupiedNode.transform.position;
+
             loser.occupiedNodeCopy = loser.occupiedNode;
+            loser.previousNode = null; //Reset current direction
+
             loser.traveledNodes.Clear();
             loser.traveledNodes.Add(loser.occupiedNode);
 

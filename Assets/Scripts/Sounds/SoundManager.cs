@@ -9,10 +9,11 @@ public class SoundManager : MonoBehaviour
     public FMOD.Studio.EventInstance overworldThemeInstance;
     public FMOD.Studio.EventInstance battleThemeInstance;
 
-    public float musicVolume = 0.8f;
-    public float SFXVolume = 0.8f;
+    [RangeAttribute(0, 1)]
+    public float musicVolume;
 
-
+    [RangeAttribute(0, 1)]
+    public float SFXVolume;
 
     private EntityPiece stupidFuck;
 
@@ -29,13 +30,19 @@ public class SoundManager : MonoBehaviour
 
     public VoidEventChannelSO m_EnableFreeview;
     public VoidEventChannelSO m_DisableFreeview;
+
     public PlayerEventChannelSO m_OpenInventory;
     public VoidEventChannelSO m_ExitInventory;
+    public ItemEventChannelSO m_ItemSelected;
+
+
     public Vector2EventChannelSO m_TryExamineTile;
     public IntEventChannelSO m_PlayerScoreIncreased;
     public IntEventChannelSO m_PlayerScoreDecreased;
     public IntEventChannelSO m_ItemUsed;
     public IntEventChannelSO m_ItemBought;
+
+    public NodeEventChannelSO m_LandOnStorefront;
 
     public PlayerEventChannelSO m_EnterLevelUp;
     public VoidEventChannelSO m_AugmentedDieFaceValue;
@@ -65,7 +72,7 @@ public class SoundManager : MonoBehaviour
     private void Awake()
     {
         DontDestroyOnLoad(this.gameObject);
-        overworldThemeInstance = FMODUnity.RuntimeManager.CreateInstance("event:/KatamariTheme");
+        overworldThemeInstance = FMODUnity.RuntimeManager.CreateInstance("event:/BGM_Counterflow");
         diceRollInstance = FMODUnity.RuntimeManager.CreateInstance("event:/RollDice");
         battleThemeInstance = FMODUnity.RuntimeManager.CreateInstance("event:/BattleTheme");
         //musicVolume = 0.8f;
@@ -93,9 +100,15 @@ public class SoundManager : MonoBehaviour
         //m_ShowCombatBanner.OnEventRaised += PlayEnterBattleSound;
         m_EnableFreeview.OnEventRaised += PlayMoveSound;
         m_DisableFreeview.OnEventRaised += PlayUndoSound;
-        m_OpenInventory.OnEventRaised += PlayMoveSoundWithDude;
-        m_ExitInventory.OnEventRaised += PlayUndoSound;
+
+        m_OpenInventory.OnEventRaised += OnOpenInventory;
+        m_ExitInventory.OnEventRaised += OnExitInventory;
+        m_ItemSelected.OnEventRaised += OnItemSelected;
+
+
         m_TryExamineTile.OnEventRaised += PlayMoveSoundWithVector2;
+
+        m_LandOnStorefront.OnEventRaised += OnLandOnStorefront;
 
         m_EnterLevelUp.OnEventRaised += OnEnterLevelUp;
         m_AugmentedDieFaceValue.OnEventRaised += PlayStampSound;
@@ -132,9 +145,14 @@ public class SoundManager : MonoBehaviour
         //m_ShowCombatBanner.OnEventRaised -= PlayEnterBattleSound;
         m_EnableFreeview.OnEventRaised -= PlayMoveSound;
         m_DisableFreeview.OnEventRaised -= PlayUndoSound;
-        m_OpenInventory.OnEventRaised -= PlayMoveSoundWithDude;
-        m_ExitInventory.OnEventRaised -= PlayUndoSound;
+
+        m_OpenInventory.OnEventRaised -= OnOpenInventory;
+        m_ExitInventory.OnEventRaised -= OnExitInventory;
+        m_ItemSelected.OnEventRaised -= OnItemSelected;
+
         m_TryExamineTile.OnEventRaised -= PlayMoveSoundWithVector2;
+
+        m_LandOnStorefront.OnEventRaised -= OnLandOnStorefront;
 
         m_EnterLevelUp.OnEventRaised -= OnEnterLevelUp;
         m_AugmentedDieFaceValue.OnEventRaised -= PlayStampSound;
@@ -155,16 +173,19 @@ public class SoundManager : MonoBehaviour
 
     private void PlayOverworldMusic()
     {
-        overworldThemeInstance.setPaused(false);
+        //overworldThemeInstance.setPaused(false);
+        FMODUnity.RuntimeManager.StudioSystem.setParameterByName("GameState", 0);
     }
 
     private void StopOverworldMusic()
     {
-        overworldThemeInstance.setPaused(true);
+        //overworldThemeInstance.setPaused(true);
+        FMODUnity.RuntimeManager.StudioSystem.setParameterByName("GameState", 1);
     }
 
     private void PlayCombatMusic()
     {
+        /*
         if (startedBattleMusic)
         {
             battleThemeInstance.setPaused(false);
@@ -175,12 +196,12 @@ public class SoundManager : MonoBehaviour
             battleThemeInstance.start();
             startedBattleMusic = true;
         }
-
+        */
     }
 
     private void StopCombatMusic()
     {
-        battleThemeInstance.setPaused(true);
+        //battleThemeInstance.setPaused(true);
     }
 
     private void PlayStampSound()
@@ -243,6 +264,11 @@ public class SoundManager : MonoBehaviour
         AudioHelper.PlayOneShotWithParameters("event:/UseItem(Food)", this.transform.position, ("SoundVolume", SFXVolume));
     }
 
+    public void PlayEnterStoreSound()
+    {
+        AudioHelper.PlayOneShotWithParameters("event:/EnterStore", this.transform.position, ("SoundVolume", SFXVolume));
+    }
+
     public void PlayEnterBattleSound()
     {
         AudioHelper.PlayOneShotWithParameters("event:/EnterCombat", this.transform.position, ("SoundVolume", SFXVolume));
@@ -268,7 +294,7 @@ public class SoundManager : MonoBehaviour
         AudioHelper.PlayOneShotWithParameters("event:/Move", this.transform.position, ("SoundVolume", SFXVolume));
     }
 
-    private void PlayMoveSoundWithDude(EntityPiece entity)
+    private void PlayMoveSoundWithDude()
     {
         AudioHelper.PlayOneShotWithParameters("event:/Move", this.transform.position, ("SoundVolume", SFXVolume));
     }
@@ -321,6 +347,29 @@ public class SoundManager : MonoBehaviour
     private void PlaySelectCombatActionSound(EntityPiece entity, Action.PhaseTypes phase)
     {
         AudioHelper.PlayOneShotWithParameters("event:/SelectCombatAction", this.transform.position, ("SoundVolume", SFXVolume));
+    }
+
+    private void OnOpenInventory(EntityPiece entity)
+    {
+        //PlayMoveSound();
+        FMODUnity.RuntimeManager.StudioSystem.setParameterByName("GameState", 2);
+    }
+
+    private void OnExitInventory()
+    {
+        PlayUndoSound();
+        FMODUnity.RuntimeManager.StudioSystem.setParameterByName("GameState", 0);
+    }
+
+    private void OnItemSelected(ItemStats item)
+    {
+        PlayMoveSound();
+    }
+
+    private void OnLandOnStorefront(MapNode node)
+    {
+        PlayEnterStoreSound();
+        //FMODUnity.RuntimeManager.StudioSystem.setParameterByName("GameState", 2);
     }
 
     private void OnEnterLevelUp(EntityPiece entity)

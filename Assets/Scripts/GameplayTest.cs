@@ -559,6 +559,7 @@ public class GameplayTest : MonoBehaviour
     {
         var lastEle = p.traveledNodes.Count;
         var lastNode = p.traveledNodes[lastEle - 1];
+        lastNode = p.traveledNodes[^1];
 
         if (wantedNode == lastNode) // The direction you picked was the node you just came from (Redo)
         {
@@ -834,17 +835,10 @@ public class GameplayTest : MonoBehaviour
                     phase = GamePhase.StockStore;                  
                 }
             }
-            else if (m.CompareTag("Castle")) //Stash your points
+            else if (m.CompareTag("Castle"))
             {
-                /*
-                encounterScreen.SetActive(true);
-                p1fight.text = "";
-                p2fight.text = "";
-                resultInfo.text = "<size=45>[PAWN SHOP]</size>\nLanded on pawn shop. All held stamps have been converted to points.\n<size=30> [SPACE] to continue.</size>";
-
-                encounterOver = true;
-                phase = GamePhase.ConfirmContinue;
-                */
+                // Clear your direction so you can choose next turn
+                p.previousNode = null;
 
                 encounterOver = true;
                 phase = GamePhase.EndTurn;
@@ -861,6 +855,9 @@ public class GameplayTest : MonoBehaviour
                 encounterOver = true;
                 phase = GamePhase.ConfirmContinue;
                 */
+
+                // Clear your direction so you can choose next turn (TEMPORARY)
+                p.previousNode = null;
 
                 encounterOver = true;
                 phase = GamePhase.EndTurn;
