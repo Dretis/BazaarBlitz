@@ -13,6 +13,7 @@ public class UITransitionManager : MonoBehaviour
     public VoidEventChannelSO m_EnteredCombatScene;
     public VoidEventChannelSO m_EnteredOverworldScene;
     public VoidEventChannelSO m_AllPlayersReady;
+    public PlayerEventChannelSO m_TransitionIntoCombat;
 
     void Awake()
     {
@@ -24,16 +25,18 @@ public class UITransitionManager : MonoBehaviour
     {
         FadeOutInkTransition();
 
-        m_EnteredCombatScene.OnEventRaised += FadeInInkTransition;
+        m_EnteredCombatScene.OnEventRaised += OnEnteredCombatScene;
         m_EnteredOverworldScene.OnEventRaised += FadeInInkTransition;
         m_AllPlayersReady.OnEventRaised += FadeInInkTransition;
+        m_TransitionIntoCombat.OnEventRaised += OnTransitionIntoCombat;
     }
 
     private void OnDisable()
     {
-        m_EnteredCombatScene.OnEventRaised -= FadeInInkTransition;
+        m_EnteredCombatScene.OnEventRaised -= OnEnteredCombatScene;
         m_EnteredOverworldScene.OnEventRaised -= FadeInInkTransition;
         m_AllPlayersReady.OnEventRaised -= FadeInInkTransition;
+        m_TransitionIntoCombat.OnEventRaised -= OnTransitionIntoCombat;
     }
 
     public void LoopTween(Material m, float delay, string attribute, float startVal, float endVal)
@@ -47,8 +50,28 @@ public class UITransitionManager : MonoBehaviour
         LoopTween(uiImage.material, 1f, "_FadeAmount", 0.1f, 1f);
     }
 
+    public void FadeOutInkTransition(float delay)
+    {
+        LoopTween(uiImage.material, delay, "_FadeAmount", 0.1f, 1f);
+    }
+
     public void FadeInInkTransition()
     {
         LoopTween(uiImage.material, 1f, "_FadeAmount", 1f, 0.1f);
+    }
+
+    public void FadeInInkTransition(float delay)
+    {
+        LoopTween(uiImage.material, delay, "_FadeAmount", 1f, 0.1f);
+    }
+
+    private void OnEnteredCombatScene()
+    {
+        FadeInInkTransition(.25f);
+    }
+
+    private void OnTransitionIntoCombat(EntityPiece player)
+    {
+        FadeInInkTransition(.5f);
     }
 }

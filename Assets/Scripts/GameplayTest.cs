@@ -5,6 +5,7 @@ using DG.Tweening;
 using System.Linq;
 using Febucci.UI.Core;
 using UnityEngine.UI;
+using System.Collections;
 
 public class GameplayTest : MonoBehaviour
 {
@@ -143,6 +144,8 @@ public class GameplayTest : MonoBehaviour
 
     // Start of Game Event Channels
     public PlayerEventChannelSO m_AssignPlayerToController;
+
+    //public PlayerEventChannelSO m_TransitionIntoCombat;
 
     [Header("Listen on Event Channels")]
     public VoidEventChannelSO m_DiceRolled;
@@ -718,8 +721,10 @@ public class GameplayTest : MonoBehaviour
                 if (otherPlayer.combatSceneIndex == -1)
                 {
                     phase = GamePhase.CombatTime;
-                    m_EnteredCombatScene.RaiseEvent();
-                    m_InitiateCombatOnPassBy.RaiseEvent(otherPlayer);
+
+                    StartCoroutine(StartTransitionIntoCombat(.5f, otherPlayer));
+                    //m_EnteredCombatScene.RaiseEvent();
+                    //m_InitiateCombatOnPassBy.RaiseEvent(otherPlayer);
 
                     p.traveledNodes.Clear();
                     p.traveledNodes.Add(p.occupiedNode);
@@ -801,8 +806,9 @@ public class GameplayTest : MonoBehaviour
                         //sceneManager.player1ID = currentPlayer.id;
                         //sceneManager.player2ID = otherPlayer.id;
 
-                        m_EnteredCombatScene.RaiseEvent();
-                        m_InitiateCombatOnPassBy.RaiseEvent(otherPlayer);
+                        StartCoroutine(StartTransitionIntoCombat(.5f, otherPlayer));
+                        //m_EnteredCombatScene.RaiseEvent();
+                        //m_InitiateCombatOnPassBy.RaiseEvent(otherPlayer);
 
                         //sceneManager.LoadCombatScene();
                     }
@@ -873,8 +879,10 @@ public class GameplayTest : MonoBehaviour
 
                     //Debug.Log("Your Player: " + currentPlayer.nickname);
                     //Debug.Log("Other Player: " + otherPlayer.nickname);
-                    m_EnteredCombatScene.RaiseEvent();
-                    m_InitiateCombatOnPassBy.RaiseEvent(otherPlayer);
+                    StartCoroutine(StartTransitionIntoCombat(.5f, otherPlayer));
+                    //m_EnteredCombatScene.RaiseEvent();
+                    //m_InitiateCombatOnPassBy.RaiseEvent(otherPlayer);
+
                     encounterStarted = true;
 
                     // Set IDs of players entering combat.
@@ -933,6 +941,7 @@ public class GameplayTest : MonoBehaviour
 
                 }
                 */
+                StartCoroutine(InitiateCombatOnEnemy(.25f, p));
 
                 phase = GamePhase.RockPaperScissors;
             }
@@ -987,6 +996,7 @@ public class GameplayTest : MonoBehaviour
 
     void RockPaperScissors(EntityPiece p)
     {
+        /*
         //Raise event for moving to combat scene
         m_EnteredCombatScene.RaiseEvent();
         encounterStarted = true;
@@ -1012,6 +1022,7 @@ public class GameplayTest : MonoBehaviour
         }
         //phase = GamePhase.CombatTime;
         sceneManager.LoadCombatScene();
+        */
         
     }
 
@@ -1506,6 +1517,44 @@ public class GameplayTest : MonoBehaviour
         // Raise event to show UI of item stolen. Not sure what to do if other player has no items to steal.
     }
 
+    public IEnumerator InitiateCombatOnEnemy(float delay, EntityPiece p)
+    {
+        //Raise event for moving to combat scene
+        m_EnteredCombatScene.RaiseEvent();
+
+        encounterStarted = true;
+
+        // Set IDs of players entering combat.
+        sceneManager.player1ID = p.id;
+
+        bool lookingForTarget = true;
+        while (lookingForTarget)
+        {
+            var monsterType = Random.Range(-8, 0); // int from -6 to -1
+
+            sceneManager.player2ID = monsterType;
+
+            var enemy = sceneManager.entities.Find(entity => sceneManager.player2ID == entity.id);
+            if (enemy.combatSceneIndex == -1)
+            {
+                float spawnChance = Random.Range(0f, 1f);
+
+                if (spawnChance < enemy.spawnRarityModifier)
+                {
+                    lookingForTarget = false;
+                }
+            }
+
+        }
+
+        yield return new WaitForSeconds(delay);
+
+        phase = GamePhase.CombatTime;
+        sceneManager.LoadCombatScene();
+
+        yield return null;
+    }
+
     public void InitiateCombatOnPlayer(EntityPiece otherPlayer)
     {
         Debug.Log("InitiateCombatOnPlayer");
@@ -1633,6 +1682,19 @@ public class GameplayTest : MonoBehaviour
             p.currentStatsModifier.warpDestination.modifier = modifier;
             p.currentStatsModifier.warpDestination.modifierOwner = p;
         }
+    }
+
+    IEnumerator StartTransitionIntoCombat(float delay, EntityPiece entity)
+    {
+        // This is like kinda only for player v player
+        //m_TransitionIntoCombat.RaiseEvent(entity);
+        m_EnteredCombatScene.RaiseEvent();
+        yield return new WaitForSeconds(delay);
+
+        //m_EnteredCombatScene.RaiseEvent();
+        m_InitiateCombatOnPassBy.RaiseEvent(entity);
+
+        yield return null;
     }
 
     // Old Level up stuff
