@@ -117,7 +117,7 @@ public class RaycastTiles : MonoBehaviour
 
     public void DisableRaycasting()
     {
-        m_ExitRaycastedTile.RaiseEvent();
+        //m_ExitRaycastedTile.RaiseEvent();
         freeviewEnabled = false;
         isTileSelected = false;
         tileSelected = null;

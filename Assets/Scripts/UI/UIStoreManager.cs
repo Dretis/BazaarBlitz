@@ -5,7 +5,7 @@ using TMPro;
 using System.Linq;
 using UnityEngine.EventSystems;
 
-public class UIManager : MonoBehaviour
+public class UIStoreManager : MonoBehaviour
 {
     // CHANGE THIS SCRIPTS NAME, THIS ONE IS ONLY HANDLING STOREFRONT UI
     [Header("UI Visual Elements")]

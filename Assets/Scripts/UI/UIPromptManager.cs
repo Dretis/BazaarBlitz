@@ -7,6 +7,7 @@ public class UIPromptManager : MonoBehaviour
 {
     private bool NextPlayerGoIsRunning = false;
     private Coroutine oldNextPlayerGo;
+    private EntityPiece currentPlayer;
 
     [SerializeField] private TAnimCore rollTextAnimator;
     [SerializeField] private TypewriterCore rollTypewriter;
@@ -45,6 +46,9 @@ public class UIPromptManager : MonoBehaviour
     public VoidEventChannelSO m_DisableFreeview;
     public VoidEventChannelSO m_ExitRaycastedTile;
 
+    public PlayerEventChannelSO m_EnterLevelUp;
+    public VoidEventChannelSO m_ExitLevelUp;
+
     private void Start()
     {
         rolledNumber.text = "";
@@ -78,6 +82,9 @@ public class UIPromptManager : MonoBehaviour
         m_EnableFreeview.OnEventRaised += DisplayFreeviewPrompt;
         m_EnableFreeview.OnEventRaised += HideInitialMenu;
         m_DisableFreeview.OnEventRaised += DisplayInitialMenu;
+
+        m_EnterLevelUp.OnEventRaised += OnEnterLevelUp;
+        m_ExitLevelUp.OnEventRaised += OnExitLevelUp;
     }
 
     private void OnDisable()
@@ -106,10 +113,15 @@ public class UIPromptManager : MonoBehaviour
 
         m_EnableFreeview.OnEventRaised -= HideInitialMenu;
         m_DisableFreeview.OnEventRaised -= DisplayInitialMenu;
+
+        m_EnterLevelUp.OnEventRaised -= OnEnterLevelUp;
+        m_ExitLevelUp.OnEventRaised -= OnExitLevelUp;
     }
 
     private void OnNextPlayerTurn(EntityPiece ps)
     {
+        currentPlayer = ps;
+
         DisplayInitialMenu(ps);
         NormalizeInventoryPrompt();
 
@@ -284,5 +296,16 @@ public class UIPromptManager : MonoBehaviour
     private void OnBuildStore(EntityPiece ep)
     {
         StrikethroughBuildPrompt();
+    }
+
+    private void OnEnterLevelUp(EntityPiece ep)
+    {
+        ClearInputText();
+    }
+
+    private void OnExitLevelUp()
+    {
+        DisplayRollPrompt(null);
+        m_DiceRollPrep.RaiseEvent(currentPlayer);
     }
 }

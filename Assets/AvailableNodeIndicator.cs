@@ -15,6 +15,7 @@ public class AvailableNodeIndicator : MonoBehaviour
     [SerializeField] private List<Transform> nodeIndicators = new List<Transform>();
     [SerializeField] private List<SpriteRenderer> nodeVisualIndicators = new List<SpriteRenderer>();
     [SerializeField] private List<MapNode> nearbyNodes = new List<MapNode>();
+    [SerializeField] private Vector3 nearbyNodesOffset;
 
     //[SerializeField] private Transform northTarget;
     //[SerializeField] private Transform eastTarget;
@@ -62,7 +63,7 @@ public class AvailableNodeIndicator : MonoBehaviour
 
     private void ShowNodeIndicators()
     {
-        transform.position = target.position;
+        transform.position = target.position + nearbyNodesOffset;
 
         var existingNodes = new List<MapNode>();
 
@@ -82,7 +83,7 @@ public class AvailableNodeIndicator : MonoBehaviour
             else
             {
                 nodeVisualIndicators[i].enabled = true;
-                nodeIndicators[i].right = nearbyNodes[i].transform.position - nodeIndicators[i].position;
+                nodeIndicators[i].right = nearbyNodes[i].transform.position - nodeIndicators[i].position + nearbyNodesOffset;
                 existingNodes.Add(nearbyNodes[i]);
             }
         }

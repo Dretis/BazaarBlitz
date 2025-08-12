@@ -349,6 +349,11 @@ public class SoundManager : MonoBehaviour
         AudioHelper.PlayOneShotWithParameters("event:/SelectCombatAction", this.transform.position, ("SoundVolume", SFXVolume));
     }
 
+    private void PlayLevelUpSound()
+    {
+        AudioHelper.PlayOneShotWithParameters("event:/LevelUp", this.transform.position, ("SoundVolume", SFXVolume));
+    }
+
     private void OnOpenInventory(EntityPiece entity)
     {
         //PlayMoveSound();
@@ -375,6 +380,7 @@ public class SoundManager : MonoBehaviour
     private void OnEnterLevelUp(EntityPiece entity)
     {
         StopDiceRollSound(entity);
-        PlayCurrencyIncreasedSound(0);
+        //PlayCurrencyIncreasedSound(0);
+        PlayLevelUpSound();
     }
 }

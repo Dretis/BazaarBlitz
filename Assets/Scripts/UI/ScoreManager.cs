@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Febucci.UI.Core;
+using LitMotion;
+using LitMotion.Extensions;
 
 public class ScoreManager : MonoBehaviour
 {
@@ -26,9 +28,11 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private List<TextMeshProUGUI> playerExps;
 
     //[SerializeField] private List<TextMeshProUGUI> playerScores;
-    [SerializeField] private List<TypewriterCore> playerScores;
+    //[SerializeField] private List<TypewriterCore> playerScores;
+    [SerializeField] private List<TMP_Text> playerScores;
 
-    [SerializeField] private List<TextMeshProUGUI> playerHPs;
+    [SerializeField] private List<TextMeshProUGUI> playerCurrentHPs;
+    [SerializeField] private List<TextMeshProUGUI> playerMaxHPs;
     [SerializeField] private List<Image> playerImages;
 
     [Header("Stamp Elements")]
@@ -133,24 +137,54 @@ public class ScoreManager : MonoBehaviour
         UpdateHealthForPlayer(id);
     }
 
+    private void SetMoneyForPlayer(int id)
+    {
+        playerScores[id].text = players[id].heldPoints.ToString();
+    }
+
     private void UpdateMoneyForPlayer(int id)
     {
+        var currentVisualPoints = int.Parse(playerScores[id].text);
+
+        if(currentVisualPoints == players[id].heldPoints)
+        {
+            return;
+        }
+
+        var handle = LMotion.Create(currentVisualPoints, players[id].heldPoints, 1f)
+                        .BindToText(playerScores[id]);
+        /*
         if (players[id].heldPoints < 0)
         {
+
             // Red numbers when negative balance
             playerScores[id].ShowText($"<sprite=\"Coin Icon\" index=0> <color=red> {players[id].heldPoints}</color>");
         }
         else
         {
-            playerScores[id].ShowText($"<sprite=\"Coin Icon\" index=0> {players[id].heldPoints}");
-
+           playerScores[id].ShowText($"<sprite=\"Coin Icon\" index=0> {players[id].heldPoints}");
         }
+        */
     }
 
     private void UpdateHealthForPlayer(int id)
     {
-        playerHPs[id].text = $"<color=#4DCF56>HP</color> {players[id].health}<size=18>/" +
+        playerMaxHPs[id].text = $"/{players[id].maxHealth * players[id].currentStatsModifier.maxHealthMultModifier + players[id].currentStatsModifier.maxHealthFlatModifier}";
+
+        var currentVisualHealth = int.Parse(playerCurrentHPs[id].text);
+
+        if (currentVisualHealth == players[id].health)
+        {
+            return;
+        }
+
+        var handle = LMotion.Create(currentVisualHealth, players[id].health, .5f)
+                        .BindToText(playerCurrentHPs[id]);
+
+        /*
+        playerCurrentHPs[id].text = $"<color=#4DCF56>HP</color> {players[id].health}<size=18>/" +
             $"{players[id].maxHealth * players[id].currentStatsModifier.maxHealthMultModifier + players[id].currentStatsModifier.maxHealthFlatModifier}</size>";
+        */
     }
 
     private void ChangeCurrentPlayer(EntityPiece ps)

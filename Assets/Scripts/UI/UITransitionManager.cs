@@ -67,7 +67,7 @@ public class UITransitionManager : MonoBehaviour
 
     private void OnEnteredCombatScene()
     {
-        FadeInInkTransition(.25f);
+        FadeInInkTransition(.45f);
     }
 
     private void OnTransitionIntoCombat(EntityPiece player)

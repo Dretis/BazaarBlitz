@@ -941,7 +941,7 @@ public class GameplayTest : MonoBehaviour
 
                 }
                 */
-                StartCoroutine(InitiateCombatOnEnemy(.25f, p));
+                StartCoroutine(InitiateCombatOnEnemy(.45f, p));
 
                 phase = GamePhase.RockPaperScissors;
             }
