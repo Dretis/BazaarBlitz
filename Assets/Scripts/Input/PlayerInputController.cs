@@ -358,6 +358,7 @@ public class PlayerInputController : MonoBehaviour
         //if()
         Debug.Log("CONFIG[" + playerInput.playerIndex + "] | " + "P1 Up action pressed");
         m_PlayerActionSelected.RaiseEvent(assignedPlayer, 1);
+        TryRumbling(0.5f, .25f, .15f);
         //sendAction(true, 1); // Player 1 second element (melee)
     }
 
@@ -365,6 +366,7 @@ public class PlayerInputController : MonoBehaviour
     {
         Debug.Log("CONFIG["+ playerInput.playerIndex + "] | "+"P1 Right action pressed");
         m_PlayerActionSelected.RaiseEvent(assignedPlayer, 0);
+        TryRumbling(0.5f, .25f, .15f);
         //sendAction(true, 0); // Player 1 first element (gun)
     }
 
@@ -372,6 +374,7 @@ public class PlayerInputController : MonoBehaviour
     {
         Debug.Log("CONFIG[" + playerInput.playerIndex + "] | " + "P1 Down action pressed");
         m_PlayerActionSelected.RaiseEvent(assignedPlayer, 2);
+        TryRumbling(0.5f, .25f, .15f);
         //sendAction(true, 2); // Player 1 first element (magic)
     }
 
@@ -469,7 +472,7 @@ public class PlayerInputController : MonoBehaviour
     {
         currentPlayer = player;
 
-        if(assignedPlayer != currentPlayer)
+        if (assignedPlayer != currentPlayer)
         {
             playerInput.DeactivateInput();
             Debug.Log($"Player ID: {playerInput.playerIndex} deactivated input.");
@@ -482,7 +485,27 @@ public class PlayerInputController : MonoBehaviour
             playerInput.currentActionMap.Disable();
             playerInput.SwitchCurrentActionMap("Initial Turn Menu");
             playerInput.currentActionMap.Enable();
+
+            TryRumbling(0.25f, .5f, .25f);
         }
+    }
+
+    private void TryRumbling(float lowFreq, float highFreq, float delay)
+    {
+        if (playerInput.currentControlScheme == "Gamepad")
+        {
+            var gamepad = playerInput.GetDevice<Gamepad>();
+
+            gamepad.SetMotorSpeeds(lowFreq, highFreq);
+
+            StartCoroutine(StopRumbling(delay, gamepad));
+        }
+    }
+
+    IEnumerator StopRumbling(float delay, Gamepad gamepad)
+    {
+        yield return new WaitForSeconds(delay);
+        gamepad.SetMotorSpeeds(0, 0);
     }
 
     private void FreeviewEnabled()
@@ -562,6 +585,10 @@ public class PlayerInputController : MonoBehaviour
         playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
         playerInput.uiInputModule.actionsAsset = playerInput.actions;
         SwitchActionMap(GamePhase.LevelUp);
+
+        // May want to put this somewhere else
+        assignedPlayer.levelUpRays.gameObject.SetActive(true);
+        assignedPlayer.levelUpRays.Play();
     }
 
     private void OnExitLevelUp()
@@ -569,6 +596,10 @@ public class PlayerInputController : MonoBehaviour
         if (!playerInput.inputIsActive) return;
 
         SwitchActionMap(previousGamePhase);
+
+        // May want to put this somewhere else
+        assignedPlayer.levelUpRays.gameObject.SetActive(false);
+        assignedPlayer.levelUpRays.Stop();
     }
 
     private void OnExitInventory()

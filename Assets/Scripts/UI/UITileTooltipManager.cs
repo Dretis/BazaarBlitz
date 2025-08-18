@@ -86,22 +86,25 @@ public class UITileTooltipManager : MonoBehaviour
                 var stampHexColor = stamp.stampColor.ToHexString();
                 tileType.text = $"<color=#{stampHexColor}>{stamp.stampType} Stamp</color>";
                 tileDescription.text = $"Upon passing, collect the <color=#{stampHexColor}>{stamp.stampType}</color> stamp.";
-                tileDescription.text += "\n\nCan only hold one of this stamp at a time.";
+                tileDescription.text += $"\n\nCan only hold one <color=#{stampHexColor}>{stamp.stampType}</color> stamp at a time.";
                 tileDescription.text += "\n\nFights cannot happen on this tile.";
             }
             // Pawn Shop
             else if (node.tag == "Castle") //please change this tag
             {
-                tileType.text = "Central Market";
-                tileDescription.text = "Upon passing, exchange all held stamps for <sprite=\"Coin Icon\" index=0>.";
-                tileDescription.text += "\n\n<sprite=\"Coin Icon\" index=0> recieved is based on the number of colored stamps exchanged at once.";
+                tileType.text = "<color=yellow>Central Market</color>";
+                tileDescription.text = "Upon passing, heal <color=#4DCF56>33% HP</color> and exchange all currently held stamps. " +
+                    "\n\nGain <sprite=\"Coin Icon\" index=0> and <color=#7AFFF7>EXP</color> relative to the number of exchanged stamps.";
+                tileDescription.text += "\n\nThe first player to pass with <color=#FDECAD>4000</color><sprite=\"Coin Icon\" index=0> in hand wins!";
+                //tileDescription.text += "\n\n<sprite=\"Coin Icon\" index=0> recieved is based on the number of colored stamps exchanged at once.";
             }
             // Wild Tile
             else
             {
                 tileType.text = "Wild Tile";
                 tileDescription.text = "Upon landing, encounter an enemy.";
-                tileDescription.text += "\n\nCan build a store on this space.";
+                tileDescription.text += "\n\nCan set up shop on this space.";
+                //tileDescription.text += "\n\nCan build a store on this space.";
             }
         }
     }

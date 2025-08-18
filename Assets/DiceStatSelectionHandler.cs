@@ -9,6 +9,8 @@ using Febucci.UI.Core;
 public class DiceStatSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler
 {
     private Image buttonImage;
+    private RectTransform rec;
+    private float scaleMult = 1.2f;
 
     //[SerializeField] private PlayerSetupMenuController setup;
     //[SerializeField] private Image baggieVisual;
@@ -32,6 +34,7 @@ public class DiceStatSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerC
     void Start()
     {
         buttonImage = GetComponent<Image>();
+        rec = GetComponent<RectTransform>();
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -61,12 +64,16 @@ public class DiceStatSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerC
         // Highlight selected die face
         // Show how much SP it costs to upgrade +1 Face Value
         diceFaceText.ShowText($"<incr>{diceFaceValue}");
-        tooltipText.text = $"Augmenting [{diceFaceValue}] to [{diceFaceValue+1}] \nCosts {GameplayTest.instance.costArray[diceFaceValue]} SP.";
+        tooltipText.text = $"Increase  <sprite={(int)diceType}> <color=white>[{diceFaceValue}]</color> to <color=white>[{diceFaceValue+1}]</color> " +
+            $"for <color=#8AEFFF>{GameplayTest.instance.costArray[diceFaceValue]} SP</color>.";
+
+        rec.localScale = Vector3.one * scaleMult;
     }
 
     public void OnDeselect(BaseEventData eventData)
     {
         diceFaceText.ShowText($"{diceFaceValue}");
+        rec.localScale = Vector3.one;
     }
 
     public void SetDieFaceValue(int value)

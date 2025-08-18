@@ -600,10 +600,11 @@ public class GameplayTest : MonoBehaviour
             p.movementLeft++;
 
             string roll = "" + p.movementLeft;
+
             rollTypewriter.ShowText(roll);
 
             p.transform.DOMove(lastNode.transform.position, .25f)
-                .SetEase(Ease.OutQuint);
+                .SetEase(DG.Tweening.Ease.OutQuint);
 
             wantedNode = null;
             m_PlayerUndidSomething.RaiseEvent();
@@ -616,7 +617,7 @@ public class GameplayTest : MonoBehaviour
                 wantedNode.modifier = MapNode.Modifier.None;
                 p.movementLeft = 0;
 
-                rollTypewriter.ShowText("" + p.movementLeft);
+                rollTypewriter.ShowText("");
 
                 p.previousNode = null;
 
@@ -637,10 +638,14 @@ public class GameplayTest : MonoBehaviour
             p.movementLeft--;
 
             string roll = "" + p.movementLeft;
-            rollTypewriter.ShowText(roll);
+            if(p.movementLeft == 0)
+                rollTypewriter.ShowText("");
+            else
+                rollTypewriter.ShowText(roll);
 
             p.transform.DOMove(wantedNode.transform.position, .25f)
-                .SetEase(Ease.OutQuint);
+                .SetEase(DG.Tweening.Ease.OutQuint);
+            
 
             wantedNode = null;
             m_PlayerMovedOnBoard.RaiseEvent();

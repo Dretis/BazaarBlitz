@@ -98,6 +98,7 @@ public class CameraObserver : MonoBehaviour
         vcam.Follow = entity.transform;
 
         freeviewReticle.SetActive(false);
+        Debug.Log($"Entity {entity} | Following {vcam.Follow}");
         //var composer = vcam.GetCinemachineComponent<CinemachineComposer>();
         //composer.m_TrackedObjectOffset = new Vector3(0, 0.5f, 0);
         //composer.m_TrackedObjectOffset = defaultFollowOffset;

@@ -20,6 +20,7 @@ public class EntityPiece : MonoBehaviour
     public ParticleSystem dustCloud;
     public ParticleSystem coinDrop;
     public ParticleSystem coinSucking;
+    public ParticleSystem levelUpRays;
 
     [Header("Overworld Stats")]
     public int movementTotal;
@@ -199,7 +200,7 @@ public class EntityPiece : MonoBehaviour
         // 100, 230, 396, 608, 874... Every level costs around 30% more (should be tuned in testing).
         if (ReputationPoints >= levelThreshold) {
             Debug.Log("Passed threshold of " + levelThreshold);
-            levelThreshold = (RenownLevel * 100) * (Mathf.Pow(1.15f, RenownLevel - 1)); // update the new threshold again
+            //levelThreshold = (RenownLevel * 100) * (Mathf.Pow(1.15f, RenownLevel - 1)); // update the new threshold again
             return true; // Allows the level up screen when ready on the player's turn.
         } else {
             return false;

@@ -21,6 +21,8 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private Color blueStampColor;
     [SerializeField] private Color orangeStampColor;
 
+    [SerializeField] private List<TMP_ColorGradient> levelColorGradients;
+
     [Header("UI Elements")]
     [SerializeField] private Canvas scoreCanvas;
     [SerializeField] private List<TextMeshProUGUI> playerNames;
@@ -54,6 +56,8 @@ public class ScoreManager : MonoBehaviour
     public VoidEventChannelSO m_PassByPawnShop;
     public PlayerEventChannelSO m_UndoPassByPawnShop;
 
+    public VoidEventChannelSO m_ExitLevelUp;
+
     private void OnEnable()
     {
         m_ChangeInScore.OnEventRaised += UpdateScoreForPlayer;
@@ -67,6 +71,8 @@ public class ScoreManager : MonoBehaviour
 
         m_PassByPawnShop.OnEventRaised += ClearHeldStamps;
         m_UndoPassByPawnShop.OnEventRaised += OnUndoPassByPawnShop;
+
+        m_ExitLevelUp.OnEventRaised += OnExitLevelUp;
     }
 
     private void OnDisable()
@@ -82,6 +88,8 @@ public class ScoreManager : MonoBehaviour
 
         m_PassByPawnShop.OnEventRaised -= ClearHeldStamps;
         m_UndoPassByPawnShop.OnEventRaised -= OnUndoPassByPawnShop;
+
+        m_ExitLevelUp.OnEventRaised -= OnExitLevelUp;
     }
 
     void Start()
@@ -129,8 +137,7 @@ public class ScoreManager : MonoBehaviour
     {
         // Debug.Log("updating player {id} score");
         // Update specific player score on the scoreboard based on their ID.
-        playerLevels[id].text = "*\n" + players[id].RenownLevel;
-        playerExps[id].text = "[" + (int)players[id].ReputationPoints + "/" + (int)players[id].levelThreshold + "]";
+        UpdateLevelForPlayer(id);
 
         UpdateMoneyForPlayer(id);
 
@@ -140,6 +147,24 @@ public class ScoreManager : MonoBehaviour
     private void SetMoneyForPlayer(int id)
     {
         playerScores[id].text = players[id].heldPoints.ToString();
+    }
+
+    private void UpdateLevelForPlayer(int id)
+    {
+        //levelColorGradients
+        var lvl = players[id].RenownLevel;
+
+        if (lvl >= 10)
+        {
+            playerLevels[id].colorGradientPreset = levelColorGradients[levelColorGradients.Count - 1];
+        }
+        else
+        {
+            playerLevels[id].colorGradientPreset = levelColorGradients[lvl - 1];
+        }
+
+        playerLevels[id].text = "*\n" + players[id].RenownLevel;
+        playerExps[id].text = "[" + (int)players[id].ReputationPoints + "/" + (int)players[id].levelThreshold + "]";
     }
 
     private void UpdateMoneyForPlayer(int id)
@@ -261,5 +286,11 @@ public class ScoreManager : MonoBehaviour
     {
         ClearHeldStamps();
         UpdateHeldStamps(ps);
+    }
+
+    private void OnExitLevelUp()
+    {
+        Debug.Log("updating");
+        UpdateScoreForPlayer(currentPlayer.id); //spagetti ass code
     }
 }

@@ -5,16 +5,20 @@ using TMPro;
 using Febucci.UI.Core;
 using UnityEngine.EventSystems;
 using UnityEditor;
+using UnityEngine.UI;
 
 public class UILevelUpManager : MonoBehaviour
 {
     private EntityPiece currentPlayer;
     [SerializeField] private CanvasGroup levelUpGroup;
     [SerializeField] private TypewriterCore levelIndicator;
+    [SerializeField] private Image levelIndicatorDiamond;
+    [SerializeField] private Image tooltipTextbox;
     [SerializeField] private TextMeshProUGUI remainingSP;
     [SerializeField] private TextMeshProUGUI tooltipText;
     [SerializeField] private GameObject diceStats;
     [SerializeField] private List<DiceStatSelectionHandler> playerDiceNumbers = new List<DiceStatSelectionHandler>();
+    [SerializeField] private List<TMP_ColorGradient> levelColorGradients;
 
     private int[] costArray = { 0, 1, 1, 2, 2, 2, 3, 3, 3, 4, 5, 999 };
 
@@ -102,15 +106,31 @@ public class UILevelUpManager : MonoBehaviour
         p.maxHealth += 10;
         p.health += 10;
         p.RenownLevel += 1;
+        p.levelThreshold = (p.RenownLevel * 100) * (Mathf.Pow(1.15f, p.RenownLevel - 1));
 
         UpdatePlayerDiceStats(p, diceStats);
-        m_UpdatePlayerScore.RaiseEvent(p.id);
+
+        var lvl = p.RenownLevel;
+
+        if (lvl >= 10)
+        {
+            levelIndicator.GetComponent<TextMeshProUGUI>().colorGradientPreset = levelColorGradients[levelColorGradients.Count - 1];
+        }
+        else
+        {
+            levelIndicator.GetComponent<TextMeshProUGUI>().colorGradientPreset = levelColorGradients[lvl - 1];
+        }
 
         levelUpGroup.alpha = 1f;
         levelUpGroup.interactable = true;
 
         levelIndicator.ShowText($"*\n{p.RenownLevel}");
         remainingSP.text = $"Remaining SP: {p.unspentLevelUpPoints}";
+
+        levelIndicatorDiamond.color = p.playerColor - new Color32 (0,0,0,25);
+        tooltipTextbox.color = p.playerColor - new Color32 (0,0,0, 100);
+
+        m_UpdatePlayerScore.RaiseEvent(p.id);
     }
     private void OnExitLevelUp()
     {
@@ -167,7 +187,8 @@ public class UILevelUpManager : MonoBehaviour
             m_AugmentedDieFaceValue.RaiseEvent();
             UpdatePlayerDiceStatsInLevelUp(currentPlayer);
             remainingSP.text = $"Remaining SP: {currentPlayer.unspentLevelUpPoints}";
-            tooltipText.text = $"Augmenting [{selectedDie+1}] to [{selectedDie + 2}] \nCosts {GameplayTest.instance.costArray[selectedDie+1]} SP.";  
+            tooltipText.text = $"Increase  <sprite={(int)diceType}> <color=white>[{selectedDie+1}]</color> to <color=white>[{selectedDie + 2}]</color> " +
+                $"for <color=#8AEFFF>{GameplayTest.instance.costArray[selectedDie+1]} SP</color>.";  
 
             if (currentPlayer.unspentLevelUpPoints <= 0)
             {

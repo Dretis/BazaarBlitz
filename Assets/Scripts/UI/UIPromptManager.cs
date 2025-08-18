@@ -18,7 +18,7 @@ public class UIPromptManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI rolledNumber;
     [SerializeField] private TextMeshProUGUI movementRoll;
 
-    [SerializeField] private GameObject menuPrompt;
+    [SerializeField] private CanvasGroup menuPrompt;
     [SerializeField] private TextMeshProUGUI inventoryPromptText;
     [SerializeField] private TextMeshProUGUI buildPromptText;
     [SerializeField] private TextMeshProUGUI buildLimitText;
@@ -197,8 +197,8 @@ public class UIPromptManager : MonoBehaviour
         ClearInputText();
         NormalizeBuildPrompt(ps);
         if (GameplayTest.instance.phase == GameplayTest.GamePhase.PickDirection)
-            return; 
-        menuPrompt.SetActive(true);
+            return;
+        menuPrompt.alpha = 1;
     }
 
     private void DisplayInitialMenu()
@@ -209,17 +209,17 @@ public class UIPromptManager : MonoBehaviour
             return;
 
         ClearInputText();
-        menuPrompt.SetActive(true);
+        menuPrompt.alpha = 1;
     }
 
     private void HideInitialMenu(EntityPiece ps)
     {
-        menuPrompt.SetActive(false);
+        menuPrompt.alpha = 0;
     }
 
     private void HideInitialMenu()
     {
-        menuPrompt.SetActive(false);
+        menuPrompt.alpha = 0;
     }
 
     private void DisplayEncounterChoices(EntityPiece ps)
