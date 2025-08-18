@@ -2,6 +2,9 @@ using System.Collections;
 using UnityEngine;
 using TMPro;
 using Febucci.UI.Core;
+using LitMotion;
+using static UnityEngine.Rendering.DebugUI;
+using LitMotion.Extensions;
 
 public class UIPromptManager : MonoBehaviour
 {
@@ -198,7 +201,9 @@ public class UIPromptManager : MonoBehaviour
         NormalizeBuildPrompt(ps);
         if (GameplayTest.instance.phase == GameplayTest.GamePhase.PickDirection)
             return;
-        menuPrompt.alpha = 1;
+
+        //menuPrompt.alpha = 1;
+        ShowMenuPrompt();
     }
 
     private void DisplayInitialMenu()
@@ -209,17 +214,40 @@ public class UIPromptManager : MonoBehaviour
             return;
 
         ClearInputText();
-        menuPrompt.alpha = 1;
+        //menuPrompt.alpha = 1;
+        ShowMenuPrompt();
     }
 
     private void HideInitialMenu(EntityPiece ps)
     {
-        menuPrompt.alpha = 0;
+        //menuPrompt.alpha = 0;
+        HideMenuPrompt();
     }
 
     private void HideInitialMenu()
     {
-        menuPrompt.alpha = 0;
+        //menuPrompt.alpha = 0;
+        HideMenuPrompt();
+    }
+
+    private void ShowMenuPrompt()
+    {
+        LMotion.Create(menuPrompt.alpha, 1, 0.1f)
+            .Bind(x => menuPrompt.alpha = x);
+
+        LMotion.Create(menuPrompt.GetComponent<RectTransform>().localScale, Vector3.one, 0.1f)
+            .WithEase(Ease.InQuad)
+            .Bind(x => menuPrompt.GetComponent<RectTransform>().localScale = x);
+    }
+
+    private void HideMenuPrompt()
+    {
+        LMotion.Create(menuPrompt.alpha, 0, 0.1f)
+            .Bind(x => menuPrompt.alpha = x);
+
+        LMotion.Create(menuPrompt.GetComponent<RectTransform>().localScale, Vector3.zero, 0.1f)
+            .WithEase(Ease.OutQuad)
+            .Bind(x => menuPrompt.GetComponent<RectTransform>().localScale = x);
     }
 
     private void DisplayEncounterChoices(EntityPiece ps)

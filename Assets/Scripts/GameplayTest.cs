@@ -9,6 +9,7 @@ using System.Collections;
 
 public class GameplayTest : MonoBehaviour
 {
+    [SerializeField] private TextMeshProUGUI debugPhaseText;
     [SerializeField] private bool turnOffMonsterEncounters = false;
 
     public static GameplayTest instance;
@@ -224,6 +225,8 @@ public class GameplayTest : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        debugPhaseText.text = "";
+
         instance = this;
         sceneManager = GameObject.FindGameObjectWithTag("SceneManager").GetComponent<SceneGameManager>();
         //playerUnits.AddRange(FindObjectsOfType<EntityPiece>());
@@ -258,6 +261,9 @@ public class GameplayTest : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        #if UNITY_EDITOR
+        debugPhaseText.text = "" + phase;
+        #endif
         switch (phase)
         {
             // Checks item effects on player
@@ -1258,6 +1264,7 @@ public class GameplayTest : MonoBehaviour
 
     private void OnFinishedUsedItem()
     {
+        Debug.Log("Finished used item");
         RemoveItemInPlayerInventory(selectedItemIndex);
     }
 
@@ -1266,6 +1273,7 @@ public class GameplayTest : MonoBehaviour
         // This should be in its own script
         if (isStockingStore)
         {
+            Debug.Log("remove item when isStockingStore");
             /*
             var store = currentPlayer.occupiedNode.GetComponent<StoreManager>();
             //Debug.Log(index);
@@ -1475,6 +1483,9 @@ public class GameplayTest : MonoBehaviour
             }
         }
         */
+
+        isStockingStore = false;
+
         recentStockedItems.Clear();
         m_ExitInventory.RaiseEvent();
     }
