@@ -182,7 +182,7 @@ public class UIPromptManager : MonoBehaviour
         inputPrompt.text = "<sprite=0><color=white></color> Roll Dice";
         inputPrompt.text += "\n<sprite=1><color=white></color> Back";
 
-        rollTypewriter.ShowText("<size=84><bounce a=.3>Rolling...</>");
+        //rollTypewriter.ShowText("<size=84><bounce a=.3>Rolling...</>");
 
         HideInitialMenu();
     }

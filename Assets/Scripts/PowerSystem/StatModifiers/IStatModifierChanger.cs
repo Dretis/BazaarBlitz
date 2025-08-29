@@ -25,5 +25,7 @@ public abstract class StatModifierChangerSO : ScriptableObject, IStatModifierCha
     // Maximum of Duration.
     public int activateEffectEndTurn;
 
+    public Sprite effectIcon;
+
     public abstract EntityStatsModifiers ApplyStatModChanges(EntityStatsModifiers currentStats, int currentTurn);
 }

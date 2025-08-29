@@ -24,6 +24,7 @@ public class ItemStats : ScriptableObject, IStatModifierChanger
     public string itemName;
     [SerializeField]
     private int duration = 1;
+    public bool showAsEffect = true;
 
     [Header("Shop and Visual Information")]
     public Sprite itemSprite;

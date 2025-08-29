@@ -39,6 +39,7 @@ public class EntityPiece : MonoBehaviour
     public DieConfig dexDie => entityStats.dieConfigs[(int)EntityBaseStats.DieTypes.Dex];
     public DieConfig intDie => entityStats.dieConfigs[(int)EntityBaseStats.DieTypes.Int];
 
+    [Header("Combat Info")]
     public int combatSceneIndex = -1; // -1 indicates player is not in battle
     public bool isEnemy;
     public int favoredAttack;
@@ -79,6 +80,9 @@ public class EntityPiece : MonoBehaviour
 
     [SerializeField]
     public List<ActiveEffect> activeEffects = new();
+
+    [Header("Broadcast On Event Channels")]
+    public PlayerEventChannelSO m_RefreshedActiveEffects;
 
     /// <summary>
     /// Add a specified item to this player's list of active stat modifier effects
@@ -128,6 +132,8 @@ public class EntityPiece : MonoBehaviour
         {
             currentStatsModifier = item.originalItem.ApplyStatModChanges(currentStatsModifier, item.originalItem.Duration - item.turnsRemaining);
         }
+
+        m_RefreshedActiveEffects.RaiseEvent(this);
     }
 
     private void TickDownActiveEffects()

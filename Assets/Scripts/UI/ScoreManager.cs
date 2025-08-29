@@ -5,6 +5,8 @@ using TMPro;
 using Febucci.UI.Core;
 using LitMotion;
 using LitMotion.Extensions;
+using System;
+using UnityEngine.EventSystems;
 
 public class ScoreManager : MonoBehaviour
 {
@@ -37,6 +39,10 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private List<TextMeshProUGUI> playerMaxHPs;
     [SerializeField] private List<Image> playerImages;
 
+    [Header("Active Effects / Buffs Indicator")]
+    [SerializeField] private GameObject effectIndicatorPrefab;
+    [SerializeField] private List<RectTransform> activeEffectsGridContainers;
+
     [Header("Stamp Elements")]
     [SerializeField] private List<Image> greenStamps;
     [SerializeField] private List<Image> redStamps;
@@ -58,6 +64,8 @@ public class ScoreManager : MonoBehaviour
 
     public VoidEventChannelSO m_ExitLevelUp;
 
+    public PlayerEventChannelSO m_RefreshedActiveEffects;
+
     private void OnEnable()
     {
         m_ChangeInScore.OnEventRaised += UpdateScoreForPlayer;
@@ -73,6 +81,8 @@ public class ScoreManager : MonoBehaviour
         m_UndoPassByPawnShop.OnEventRaised += OnUndoPassByPawnShop;
 
         m_ExitLevelUp.OnEventRaised += OnExitLevelUp;
+
+        m_RefreshedActiveEffects.OnEventRaised += OnRefreshedActiveEffects;
     }
 
     private void OnDisable()
@@ -90,6 +100,8 @@ public class ScoreManager : MonoBehaviour
         m_UndoPassByPawnShop.OnEventRaised -= OnUndoPassByPawnShop;
 
         m_ExitLevelUp.OnEventRaised -= OnExitLevelUp;
+
+        m_RefreshedActiveEffects.OnEventRaised -= OnRefreshedActiveEffects;
     }
 
     void Start()
@@ -292,5 +304,74 @@ public class ScoreManager : MonoBehaviour
     {
         Debug.Log("updating");
         UpdateScoreForPlayer(currentPlayer.id); //spagetti ass code
+    }
+
+    private void OnRefreshedActiveEffects(EntityPiece player)
+    {
+        Debug.Log("Refreshing Active Effect [Buff] Indicators");
+        var id = player.id;
+        var activeEffects = player.activeEffects;
+
+        DestroyAllActiveEffects(id);
+
+        Debug.Log("spawning");
+
+        //heldItemHolders.Clear();
+        var activeEffectsParentTransform = activeEffectsGridContainers[id].transform;
+
+        foreach (var effect in activeEffects)
+        {
+            if (effect.originalItem.showAsEffect)
+            {
+                var indicator = Instantiate(effectIndicatorPrefab, activeEffectsGridContainers[id]);
+                indicator.GetComponent<ActiveEffectIndicatorHandler>().UpdateEffectInfo(effect);
+            }
+        }
+        /*
+        var itemsToSpawn = playerInventory.Count;
+
+        if (itemsToSpawn <= INVENTORY_LIMIT)
+        {
+            itemsToSpawn = INVENTORY_LIMIT;
+        }
+
+        ItemStats itemToSpawn;
+        for (int i = 0; i < itemsToSpawn; i++)
+        {
+            if (i < playerInventory.Count)
+            {
+                itemToSpawn = playerInventory[i];
+            }
+            else
+            {
+                itemToSpawn = null;
+            }
+
+            var item = Instantiate(heldItemPrefab, activeEffectsGridContainer);
+            item.GetComponent<InventorySelectionHandler>().UpdateItemInfo(itemToSpawn);
+            item.GetComponent<InventorySelectionHandler>().itemIndex = i;
+
+            heldItemHolders.Add(item);
+
+            if (i == 0)
+            {
+                EventSystem.current.SetSelectedGameObject(item);
+            }
+        }
+        */
+        //throw new NotImplementedException();
+    }
+
+    private void DestroyAllActiveEffects(int id)
+    {
+        // Gets rid of all the held item containers in the inventory UI
+
+        //var inventoryParentTransform = inventoryGridContainer.transform;
+        var activeEffectsParentTransform = activeEffectsGridContainers[id].transform;
+
+        for (int i = activeEffectsParentTransform.childCount - 1; i >= 0; i--)
+        {
+            Destroy(activeEffectsParentTransform.GetChild(i).gameObject);
+        }
     }
 }
