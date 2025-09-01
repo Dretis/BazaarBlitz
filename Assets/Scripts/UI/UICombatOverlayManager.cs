@@ -7,6 +7,8 @@ using TMPro;
 using DG.Tweening;
 using Febucci.UI;
 using Febucci.UI.Core;
+using UnityEngine.Rendering.Universal;
+using UnityEditor.Experimental.GraphView;
 
 public class UICombatOverlayManager : MonoBehaviour
 {
@@ -59,11 +61,14 @@ public class UICombatOverlayManager : MonoBehaviour
     [SerializeField] private CanvasGroup leftAttackPrompt;
     [SerializeField] private CanvasGroup leftDefendPrompt;
     [SerializeField] private CanvasGroup leftSelectedAction;
+    [SerializeField] private List<TextMeshProUGUI> leftSelectableActions;
 
+
+    [Space]
     [SerializeField] private CanvasGroup rightAttackPrompt;
     [SerializeField] private CanvasGroup rightDefendPrompt;
     [SerializeField] private CanvasGroup rightSelectedAction;
-
+    [SerializeField] private List<TextMeshProUGUI> rightSelectableActions;
 
     [Header("Text")]
     [SerializeField] private TextMeshProUGUI leftHealthPoints;
@@ -179,7 +184,7 @@ public class UICombatOverlayManager : MonoBehaviour
         ShowVSHeader();
         ShowDiceInfo();
 
-
+        UpdateInputPrompts(CombatManager.Instance.player1);
     }
     /*
     private void Update()
@@ -361,6 +366,26 @@ public class UICombatOverlayManager : MonoBehaviour
 
     public void UpdateDiceStats(EntityPiece entity, GameObject diceStats)
     {
+        var attacking = false;
+        if(entity == CombatManager.Instance.attacker)
+        {
+            attacking = true;
+        }
+        //Debug.Log($"{entity} is {attacking} | Attacker: {CombatManager.Instance.attacker}");
+
+        // Get all the die mods for this player
+        var strDieFlatMod = entity.currentStatsModifier.dieModifiers[0].finalResultFlatModifier;
+        var strDieMultMod = entity.currentStatsModifier.dieModifiers[0].finalResultMultModifier;
+
+
+        var dexDieFlatMod = entity.currentStatsModifier.dieModifiers[1].finalResultFlatModifier;
+        var dexDieMultMod = entity.currentStatsModifier.dieModifiers[1].finalResultMultModifier;
+
+        var intDieFlatMod = entity.currentStatsModifier.dieModifiers[2].finalResultFlatModifier;
+        var intDieMultMod = entity.currentStatsModifier.dieModifiers[2].finalResultMultModifier;
+
+
+
         // Visually updates the dice stats ui based on the entity and side
         diceNumbers.Clear();
 
@@ -376,7 +401,20 @@ public class UICombatOverlayManager : MonoBehaviour
 
         for (int i = 0; i < 6; i++)
         {
-            diceNumbers[i].text = $"{entity.strDie[faceIndex]}";
+            if (attacking)
+            {
+                if (strDieFlatMod == 0 && strDieMultMod == 1) diceNumbers[i].colorGradientPreset = actionTypeGradients[0];
+                else diceNumbers[i].colorGradientPreset = actionTypeGradients[3];
+
+                diceNumbers[i].text = $"{((entity.strDie[faceIndex] * strDieMultMod) + strDieFlatMod)}";
+            }
+            else
+            {
+                diceNumbers[i].colorGradientPreset = actionTypeGradients[0];
+                diceNumbers[i].text = $"{entity.strDie[faceIndex]}";
+            }
+
+            //diceNumbers[i].text = $"{((entity.strDie[faceIndex] * strDieMultMod) + strDieFlatMod)}";
             faceIndex++;
         }
 
@@ -384,7 +422,20 @@ public class UICombatOverlayManager : MonoBehaviour
 
         for (int i = 6; i < 12; i++)
         {
-            diceNumbers[i].text = $"{entity.dexDie[faceIndex]}";
+            if (attacking)
+            {
+                if (dexDieFlatMod == 0 && dexDieMultMod == 1) diceNumbers[i].colorGradientPreset = actionTypeGradients[1];
+                else diceNumbers[i].colorGradientPreset = actionTypeGradients[3];
+
+                diceNumbers[i].text = $"{((entity.dexDie[faceIndex] * dexDieMultMod) + dexDieFlatMod)}";
+            }
+            else
+            {
+                diceNumbers[i].colorGradientPreset = actionTypeGradients[1];
+                diceNumbers[i].text = $"{entity.dexDie[faceIndex]}";
+            }
+
+            //diceNumbers[i].text = $"{((entity.dexDie[faceIndex] * dexDieMultMod) + dexDieFlatMod)}";
             faceIndex++;
         }
 
@@ -392,13 +443,37 @@ public class UICombatOverlayManager : MonoBehaviour
 
         for (int i = 12; i < 18; i++)
         {
-            diceNumbers[i].text = $"{entity.intDie[faceIndex]}";
+            if (attacking)
+            {
+                if (intDieFlatMod == 0 && intDieMultMod == 1) diceNumbers[i].colorGradientPreset = actionTypeGradients[2];
+                else diceNumbers[i].colorGradientPreset = actionTypeGradients[3];
+
+                diceNumbers[i].text = $"{((entity.intDie[faceIndex] * intDieMultMod) + intDieFlatMod)}";
+            }
+            else
+            {
+                diceNumbers[i].colorGradientPreset = actionTypeGradients[2];
+                diceNumbers[i].text = $"{entity.intDie[faceIndex]}";
+            }
+
+            //diceNumbers[i].text = $"{((entity.intDie[faceIndex] * intDieMultMod) + intDieFlatMod)}";
             faceIndex++;
         }
     }
 
     public void UpdateInputPrompts(EntityPiece attacker)
     {
+        if(CombatManager.Instance.player1 == CombatManager.Instance.attacker)
+        {
+            ShowInputPrompt(rightDefendPrompt, 0.25f);
+            ShowInputPrompt(leftAttackPrompt, 0.25f);
+
+            HideInputPrompt(leftDefendPrompt, 0.25f);
+            HideInputPrompt(rightAttackPrompt, 0.25f);
+
+            UpdateSelectableActions(attacker, attacker.fightingPosition);
+        }
+
         // should always pass player that is attacking
         if (attacker.fightingPosition == CombatUIManager.FightingPosition.Left)
         {
@@ -408,6 +483,8 @@ public class UICombatOverlayManager : MonoBehaviour
 
             HideInputPrompt(leftDefendPrompt, 0.25f);
             HideInputPrompt(rightAttackPrompt, 0.25f);
+
+            UpdateSelectableActions(attacker, attacker.fightingPosition);
         }
         else
         {
@@ -417,7 +494,21 @@ public class UICombatOverlayManager : MonoBehaviour
 
             HideInputPrompt(rightDefendPrompt, 0.25f);
             HideInputPrompt(leftAttackPrompt, 0.25f);
+
+            UpdateSelectableActions(attacker, attacker.fightingPosition);
         }
+    }
+
+    public void UpdateSelectableActions(EntityPiece entity, CombatUIManager.FightingPosition fp)
+    {
+        List<TextMeshProUGUI> selectableActions = new List<TextMeshProUGUI>();
+
+        if (fp == CombatUIManager.FightingPosition.Left) selectableActions = leftSelectableActions;
+        else selectableActions = rightSelectableActions;
+
+        selectableActions[0].text = $"<sprite=\"switch_buttons\" index=2> <sprite={(int)entity.attackActions[1].type}> {entity.attackActions[1].actionName}";
+        selectableActions[1].text = $"<sprite=\"switch_buttons\" index=1> <sprite={(int)entity.attackActions[0].type}> {entity.attackActions[0].actionName}";
+        selectableActions[2].text = $"<sprite=\"switch_buttons\" index=0> <sprite={(int)entity.attackActions[2].type}> {entity.attackActions[2].actionName}";
     }
 
     public void HideBothInputPrompts()
@@ -617,6 +708,9 @@ public class UICombatOverlayManager : MonoBehaviour
 
     public void SwapPhaseTransitions(EntityPiece attacker)
     {
+        UpdateDiceStats(CombatManager.Instance.player1, leftDiceStat);
+        UpdateDiceStats(CombatManager.Instance.player2, rightDiceStat);
+
         UpdateInputPrompts(attacker);
         ShowVSHeader();
         ShowDiceInfo();

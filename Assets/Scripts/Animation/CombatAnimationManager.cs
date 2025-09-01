@@ -10,11 +10,13 @@ public class CombatAnimationManager : MonoBehaviour
     [SerializeField] private CombatUIManager.FightingPosition fightingPosition;
     private Action.PhaseTypes phaseType;
 
-    [Header("Broadcast on Event Channels")]
+    [Header("Extra FX")]
     [SerializeField] private ParticleSystem coinDrop;
     [SerializeField] private ParticleSystem gunShotgun;
     [SerializeField] private ParticleSystem magicSparkle;
     [SerializeField] private ParticleSystem magicExplosion;
+    //[SerializeField] private ParticleSystem gunSniper;
+    [SerializeField] private GameObject gunSniperCrosshair;
 
     [Header("Broadcast on Event Channels")]
     public VoidEventChannelSO m_AttackImpact;
@@ -98,19 +100,24 @@ public class CombatAnimationManager : MonoBehaviour
         // play reveal roll anim
         animator.SetTrigger("Reveal Roll");
 
+        Debug.Log(entity + " | " + action + " | " + action.type);
+
         // Prep which animation to play for attacking
         switch (action.type)
         {
             case Action.WeaponTypes.Melee:
-                animator.SetInteger("Action ID", 1);
+                animator.SetInteger("Action Type ID", 1);
                 break;
             case Action.WeaponTypes.Gun:
-                animator.SetInteger("Action ID", 2);
+                animator.SetInteger("Action Type ID", 2);
                 break;
             case Action.WeaponTypes.Magic:
-                animator.SetInteger("Action ID", 3);
+                animator.SetInteger("Action Type ID", 3);
                 break;
         }
+
+        // Find out what the action anim to play
+        animator.SetInteger("Weapon ID", action.weaponID);
     }
 
     private IEnumerator DelayActionAnimation(float duration)
@@ -251,5 +258,16 @@ public class CombatAnimationManager : MonoBehaviour
     {
         magicExplosion.gameObject.SetActive(true);
         magicExplosion.Play();
+    }
+
+    private void SniperScopeIn()
+    {
+        // m_SniperScopeIn.RaiseEvent(fightingPosition);
+        gunSniperCrosshair.SetActive(true);
+    }
+
+    private void SniperShot()
+    {
+        gunSniperCrosshair.SetActive(false);
     }
 }

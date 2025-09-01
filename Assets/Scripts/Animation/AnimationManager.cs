@@ -13,6 +13,10 @@ public class AnimationManager : MonoBehaviour
     public PlayerEventChannelSO m_DiceRollPrep;
     public IntEventChannelSO m_DiceThrown;
     public PlayerEventChannelSO m_ResetToIdle;
+    public PlayerEventChannelSO m_EnterLevelUp;
+    public VoidEventChannelSO m_ExitLevelUp;
+
+    public PlayerEventChannelSO m_CheerForPlayer;
 
     private void OnEnable()
     {
@@ -20,6 +24,10 @@ public class AnimationManager : MonoBehaviour
         m_DiceRollPrep.OnEventRaised += DiceIsRolling;
         m_DiceThrown.OnEventRaised += DiceIsThrown;
         m_ResetToIdle.OnEventRaised += ResetToIdleAnim;
+        m_EnterLevelUp.OnEventRaised += OnEnterLevelUp;
+        m_ExitLevelUp.OnEventRaised += OnExitLevelUp;
+
+        m_CheerForPlayer.OnEventRaised += OnCheerForPlayer;
     }
 
     private void OnDisable()
@@ -28,6 +36,10 @@ public class AnimationManager : MonoBehaviour
         m_DiceRollPrep.OnEventRaised -= DiceIsRolling;
         m_DiceThrown.OnEventRaised -= DiceIsThrown;
         m_ResetToIdle.OnEventRaised -= ResetToIdleAnim;
+        m_EnterLevelUp.OnEventRaised -= OnEnterLevelUp;
+        m_ExitLevelUp.OnEventRaised -= OnExitLevelUp;
+
+        m_CheerForPlayer.OnEventRaised -= OnCheerForPlayer;
     }
 
     private void SetCurrentPlayerAnimator(EntityPiece entity)
@@ -50,7 +62,9 @@ public class AnimationManager : MonoBehaviour
         // currentAnimator = entity.GetComponentInChildren<Animator>();
 
         if (currentAnimator != null)
+        {
             currentAnimator.SetBool("Dice Thrown", true);
+        }
 
         // Get current animation 
         var state = currentAnimator.GetCurrentAnimatorStateInfo(0);
@@ -76,6 +90,7 @@ public class AnimationManager : MonoBehaviour
             currentAnimator.SetTrigger(trigger);
             currentAnimator.SetBool("Dice Rolling", false);
             currentAnimator.SetBool("Dice Thrown", false);
+            currentAnimator.SetBool("Moving", true);
         }
     }
 
@@ -88,7 +103,35 @@ public class AnimationManager : MonoBehaviour
             currentAnimator.SetTrigger("ToIdle");
             currentAnimator.SetBool("Dice Rolling", false);
             currentAnimator.SetBool("Dice Thrown", false);
+            currentAnimator.SetBool("Moving", false);
         }
+    }
+
+    private void OnEnterLevelUp(EntityPiece entity)
+    {
+        if (currentAnimator != null)
+        {
+            currentAnimator.SetBool("Dice Rolling", false);
+            currentAnimator.SetTrigger("ToCheer");
+            currentAnimator.SetBool("Extend Cheer", true);
+        }
+
+    }
+
+    private void OnExitLevelUp()
+    {
+        if (currentAnimator != null)
+        {
+            currentAnimator.SetTrigger("ToIdle");
+            currentAnimator.SetBool("Extend Cheer", false);
+            //currentAnimator.SetTrigger("Exit Anim");
+        }
+    }
+
+    private void OnCheerForPlayer(EntityPiece entity)
+    {
+        var animator = entity.GetComponentInChildren<Animator>();
+        animator.SetTrigger("ToCheer");
     }
 
     // Testing Functions

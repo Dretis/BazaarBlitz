@@ -59,6 +59,7 @@ MonoBehaviour:
   dustCloud: {fileID: 0}
   coinDrop: {fileID: 0}
   coinSucking: {fileID: 0}
+  levelUpRays: {fileID: 0}
   movementTotal: 0
   movementLeft: 0
   heldPoints: 0
@@ -69,7 +70,7 @@ MonoBehaviour:
   maxHealth: 25
   combatSceneIndex: -1
   isEnemy: 1
-  favoredAttack: 1
+  favoredAttack: 2
   spawnRarityModifier: 1
   entityStats:
     dieConfigs:
@@ -77,12 +78,12 @@ MonoBehaviour:
     - dieFaces: 010000000100000001000000010000000100000006000000
     - dieFaces: 010000000100000001000000020000000200000003000000
   attackActions:
-  - {fileID: 11400000, guid: 092cf3b3af66061478bc3530f1af01f9, type: 2}
   - {fileID: 11400000, guid: 6ca9e4123ea095d4fb087a3cc7c9a44d, type: 2}
+  - {fileID: 11400000, guid: 092cf3b3af66061478bc3530f1af01f9, type: 2}
   - {fileID: 11400000, guid: 32a37866383854b4d80b76bd6c92a71b, type: 2}
   defendActions:
   - {fileID: 11400000, guid: 188957564c85adc4a8e2ce5c7b8466f5, type: 2}
-  - {fileID: 11400000, guid: 704ee6dbca2f62140ad5caf58846a975, type: 2}
+  - {fileID: 11400000, guid: 188957564c85adc4a8e2ce5c7b8466f5, type: 2}
   - {fileID: 11400000, guid: 5b8f525effb08414abb503dfc27d55f6, type: 2}
   fightingPosition: 1
   ReputationPoints: 50
@@ -115,6 +116,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8503e05f3a6bdcf408fae19a2cab1d52, type: 2}
   lootOdds: 320000000a00000028000000
   activeEffects: []
+  m_RefreshedActiveEffects: {fileID: 0}
 --- !u!212 &2909311081613334417
 SpriteRenderer:
   m_ObjectHideFlags: 0

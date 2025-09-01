@@ -44,6 +44,8 @@ public class SpinDiceInfoHolder : MonoBehaviour
         m_RollForMovement.OnEventRaised -= OnRollForMovement;
 
         m_EnterLevelUp.OnEventRaised -= OnEnterLevelUp;
+
+        transform.localScale = Vector3.zero;
     }
 
     private void OnDiceRollPrep(EntityPiece p)

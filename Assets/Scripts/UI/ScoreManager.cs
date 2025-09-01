@@ -49,6 +49,9 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private List<Image> blueStamps;
     [SerializeField] private List<Image> orangeStamps;
 
+    [Header("Broadcast On Event Channels")]
+    public PlayerEventChannelSO m_CheerForPlayer;
+
     [Header("Listen On Event Channels")]
     public IntEventChannelSO m_ChangeInScore;
     public IntEventChannelSO m_PlayerScoreDecreased;
@@ -186,6 +189,11 @@ public class ScoreManager : MonoBehaviour
         if(currentVisualPoints == players[id].heldPoints)
         {
             return;
+        }
+
+        if(currentVisualPoints < players[id].heldPoints)
+        {
+            m_CheerForPlayer.RaiseEvent(players[id]);
         }
 
         var handle = LMotion.Create(currentVisualPoints, players[id].heldPoints, 1f)
