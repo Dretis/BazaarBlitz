@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 121825f5fa4139f479f26d2b51d39cad
+guid: 65356fb9b54be0d47a1279fdfc8531e7
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -42,12 +42,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 256
+  spritePixelsToUnits: 512
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -139,7 +139,91 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: Hanoi_Sitting_Pho
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 232
+        width: 156
+        height: 90
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64481d16191255548b45352cb4fb5a6c
+      internalID: 1367400804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hanoi_Sitting_Coffee
+      rect:
+        serializedVersion: 2
+        x: 172
+        y: 260
+        width: 86
+        height: 103
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 376d3e0a86792aa418c7b5f2cc1fe6bb
+      internalID: 1748270150
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hanoi_Sitting_Table
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 6
+        width: 259
+        height: 253
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3160d1a94dd778444a93f107c144fdc4
+      internalID: -1691704165
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hanoi_Sitting_Chair
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 6
+        width: 152
+        height: 182
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0230b2274c6b41140a9405d8cbcf9b85
+      internalID: 864080792
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -150,7 +234,11 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Hanoi_Sitting_Chair: 864080792
+      Hanoi_Sitting_Coffee: 1748270150
+      Hanoi_Sitting_Pho: 1367400804
+      Hanoi_Sitting_Table: -1691704165
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0
