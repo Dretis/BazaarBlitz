@@ -1,0 +1,69 @@
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class BoardSelector : MonoBehaviour
+{
+    [SerializeField] private string selectedBoard;
+
+    [Header("UI")]
+    [SerializeField] private Canvas mainLayout;
+    [SerializeField] private CanvasGroup boardSelectGroup;
+    [SerializeField] private TextMeshProUGUI headerText;
+    [SerializeField] private TextMeshProUGUI bottomText;
+
+
+    [Header("Boardcast on Event Channels")]
+    public VoidEventChannelSO m_BoardSelected;
+    
+    [Header("Listen on Event Channels")]
+    public VoidEventChannelSO m_AllPlayersReady;
+
+    private void OnEnable()
+    {
+        m_AllPlayersReady.OnEventRaised += OnAllPlayersReady;
+        m_BoardSelected.OnEventRaised += OnBoardSelected;
+    }
+
+
+    private void OnDisable()
+    {
+        m_AllPlayersReady.OnEventRaised -= OnAllPlayersReady;
+        m_BoardSelected.OnEventRaised -= OnBoardSelected;
+    }
+
+    void Start()
+    {
+        //boardSelectGroup.alpha = 0;
+        boardSelectGroup.gameObject.SetActive(false);
+    }
+
+    private void OnAllPlayersReady()
+    {
+        mainLayout.enabled = false;
+        boardSelectGroup.gameObject.SetActive(true);
+
+        headerText.text = "[Board Select]";
+        bottomText.text = "Choose which board to play on!";
+    }
+
+    public void BoardSelected(string board)
+    {
+        selectedBoard = board;
+        m_BoardSelected.RaiseEvent();
+    }
+
+    public void OnBoardSelected()
+    {
+        StartCoroutine(DelayedEnterMatch(selectedBoard, 1.5f));
+    }
+
+    public IEnumerator DelayedEnterMatch(string sceneName, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        SceneManager.LoadScene(sceneName);
+        yield return null;
+    }
+}

@@ -270,7 +270,6 @@ public class UIStoreManager : MonoBehaviour
             // Signal that this item was sold.
             // Likely for the PlayerManager to subtract currency based off item's price.
 
-            m_ItemBought.RaiseEvent(selectedStoreItem);
             currentPlayer.inventory.Add(selectedStoreItem);
             currentStore.playerOwner.heldPoints += selectedStoreItem.basePrice;
 
@@ -280,8 +279,8 @@ public class UIStoreManager : MonoBehaviour
             //Broadcast the player's score difference for the sound effect
             m_PlayerScoreDecreased.RaiseEvent(currentPlayer.heldPoints - selectedStoreItem.basePrice);
 
-            selectedStoreItem = null;
             currentStore.storeInventory[i] = null;
+            m_ItemBought.RaiseEvent(selectedStoreItem);
         }
         else
         {

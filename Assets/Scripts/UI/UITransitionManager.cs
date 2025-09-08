@@ -12,7 +12,7 @@ public class UITransitionManager : MonoBehaviour
     [Header("Listen on Event Channels")]
     public VoidEventChannelSO m_EnteredCombatScene;
     public VoidEventChannelSO m_EnteredOverworldScene;
-    public VoidEventChannelSO m_AllPlayersReady;
+    public VoidEventChannelSO m_BoardSelected;
     public PlayerEventChannelSO m_TransitionIntoCombat;
 
     void Awake()
@@ -27,7 +27,7 @@ public class UITransitionManager : MonoBehaviour
 
         m_EnteredCombatScene.OnEventRaised += OnEnteredCombatScene;
         m_EnteredOverworldScene.OnEventRaised += FadeInInkTransition;
-        m_AllPlayersReady.OnEventRaised += FadeInInkTransition;
+        m_BoardSelected.OnEventRaised += FadeInInkTransition;
         m_TransitionIntoCombat.OnEventRaised += OnTransitionIntoCombat;
     }
 
@@ -35,7 +35,7 @@ public class UITransitionManager : MonoBehaviour
     {
         m_EnteredCombatScene.OnEventRaised -= OnEnteredCombatScene;
         m_EnteredOverworldScene.OnEventRaised -= FadeInInkTransition;
-        m_AllPlayersReady.OnEventRaised -= FadeInInkTransition;
+        m_BoardSelected.OnEventRaised -= FadeInInkTransition;
         m_TransitionIntoCombat.OnEventRaised -= OnTransitionIntoCombat;
     }
 

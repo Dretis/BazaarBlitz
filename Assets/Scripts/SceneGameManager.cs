@@ -20,7 +20,7 @@ public class SceneGameManager : MonoBehaviour
     {
         DontDestroyOnLoad(this.gameObject);
         entities.AddRange(FindObjectsOfType<EntityPiece>());
-        overworldScene = GameObject.Find("Input Manager").GetComponent<GameplayTest>();
+        overworldScene = GameObject.Find("Game Manager").GetComponent<GameplayTest>();
     }
 
     public void LoadCombatScene()

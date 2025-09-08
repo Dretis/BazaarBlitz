@@ -98,14 +98,7 @@ public class PlayerConfigurationManager : MonoBehaviour
 
     public void OnAllPlayersReady()
     {
-        StartCoroutine(DelayedEnterMatch(1.5f));
-    }
-
-    public IEnumerator DelayedEnterMatch(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        SceneManager.LoadScene("Overworld 2");
-        yield return null;
+        
     }
 }
 

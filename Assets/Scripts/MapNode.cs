@@ -7,6 +7,8 @@ public class MapNode : MonoBehaviour
     public EntityPiece playerOccupied;
     [Header("Visual Variables")]
     public SpriteRenderer flowerTrapVisual;
+    public Sprite[] flowerTrapSprites;
+
     public SpriteRenderer storefrontVisual;
     public CanvasGroup stockGroup;
     public Image[] stockItems;

@@ -12,14 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdd1368eedb123d4db8a885acb84d3a9, type: 3}
   m_Name: Banh Mi
   m_EditorClassIdentifier: 
-  itemName: Banh Mi
+  itemName: "B\xE1nh Mi"
   duration: 1
   showAsEffect: 0
   itemSprite: {fileID: 21300000, guid: 3387efeb494fc244592adc85d82f8a56, type: 3}
-  effectDescription: Allows you to warp to any player on the map. Select a tile with
-    a player on it and press (A) to confirm your selection.
-  flavorText: '"Players warping to each other? Now that''s news to me..." - Russell,
-    the Grand Poo-Bah of Items'
+  effectDescription: Warp to a selected player on the board.
+  flavorText: '"Crunchy on the outside, fluffy on the inside. People will hear that
+    crunch a mile away!"'
   basePrice: 700
   modifiers:
   - {fileID: 11400000, guid: 3e15cc0d0e233bd44a5da12d749eb4e6, type: 2}

@@ -1230,8 +1230,10 @@ public class GameplayTest : MonoBehaviour
         // When an item is bought, allow confirmation via SPACE bar to continue the game
         if (item != null)
         {
+            UpdateStorefrontVisual(currentPlayer.occupiedNode.GetComponent<MapNode>());
             //encounterOver = true;
             currentPlayer.heldPoints -= item.basePrice;
+            currentPlayer.ReputationPoints += 20 + (item.basePrice / 10);
 
             m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
 
@@ -1501,13 +1503,16 @@ public class GameplayTest : MonoBehaviour
         {
             if (storeInventory[i] == null)
             {
+                Debug.Log($"[]Store has blank spot");
                 node.stockItems[i].gameObject.SetActive(false);
                 emptyStockCheck++;
             }
             else
             {
+                Debug.Log($"()Store has a {storeInventory[i]}");
                 node.stockItems[i].gameObject.SetActive(true);
-                node.stockItems[i].sprite = recentStockedItems[i].itemSprite;
+                node.stockItems[i].sprite = storeInventory[i].itemSprite;
+                //node.stockItems[i].sprite = recentStockedItems[i].itemSprite;
             }
         }
 
@@ -1650,6 +1655,7 @@ public class GameplayTest : MonoBehaviour
             if (RaycastTiles.tileSelected.CompareTag("Store") && RaycastTiles.tileSelected.modifier == MapNode.Modifier.None)
             {
                 RaycastTiles.tileSelected.flowerTrapVisual.color = currentPlayer.playerColor;
+                RaycastTiles.tileSelected.flowerTrapVisual.sprite = RaycastTiles.tileSelected.flowerTrapSprites[0];
                 PlantConfirmed(currentPlayer, MapNode.Modifier.Marigold);
             }
             else
@@ -1663,6 +1669,7 @@ public class GameplayTest : MonoBehaviour
             if (RaycastTiles.tileSelected.modifier == MapNode.Modifier.None)
             {
                 RaycastTiles.tileSelected.flowerTrapVisual.color = currentPlayer.playerColor;
+                RaycastTiles.tileSelected.flowerTrapVisual.sprite = RaycastTiles.tileSelected.flowerTrapSprites[1];
                 PlantConfirmed(currentPlayer, MapNode.Modifier.Rafflesia);
             }
         }
