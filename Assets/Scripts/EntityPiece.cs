@@ -5,6 +5,17 @@ using UnityEngine;
 
 public class EntityPiece : MonoBehaviour
 {
+    public enum State
+    {
+        Alive,
+        Dead,
+        Fighting,
+        InsideVendor,
+        Invulernable,
+        DeathsRow,
+    }
+
+    public List<State> currentStates = new List<State>();
     public string entityName;
     public int id;
     public Color playerColor; // idk man

@@ -54,6 +54,9 @@ public class PlayerInputController : MonoBehaviour
     public VoidEventChannelSO m_ExitInventory; // also listening
     public VoidEventChannelSO m_ExitLevelUp;
 
+    public PlayerEventChannelSO m_BuyFromVendor;
+    public VoidEventChannelSO m_ExitVendor;
+
     public EntityIntEventChannelSO m_PlayerActionSelected;
 
     [Header("Listen on Event Channels")]
@@ -63,6 +66,8 @@ public class PlayerInputController : MonoBehaviour
     public NodeEventChannelSO m_LandOnStorefront;
     public VoidEventChannelSO m_ExitStorefront;
     public ItemEventChannelSO m_ItemBought;
+
+    public NodeEventChannelSO m_LandOnVendor;
 
     public VoidEventChannelSO m_EnteredCombatScene;
     public PlayerEventChannelSO m_InitiateCombatOnPassBy;
@@ -129,6 +134,8 @@ public class PlayerInputController : MonoBehaviour
         m_ExitStorefront.OnEventRaised += OnExitStorefront;
         m_ItemBought.OnEventRaised += OnItemBought;
 
+        m_LandOnVendor.OnEventRaised += OnLandOnVendor;
+
         m_EnteredCombatScene.OnEventRaised += OnEnteredCombatScene;
         m_InitiateCombatOnPassBy.OnEventRaised += OnInitiateCombatOnPassBy;
 
@@ -151,6 +158,8 @@ public class PlayerInputController : MonoBehaviour
         m_LandOnStorefront.OnEventRaised -= OnLandOnStorefront;
         m_ExitStorefront.OnEventRaised -= OnExitStorefront;
         m_ItemBought.OnEventRaised -= OnItemBought;
+
+        m_LandOnVendor.OnEventRaised -= OnLandOnVendor;
 
         m_EnteredCombatScene.OnEventRaised -= OnEnteredCombatScene;
         m_InitiateCombatOnPassBy.OnEventRaised -= OnInitiateCombatOnPassBy;
@@ -329,6 +338,12 @@ public class PlayerInputController : MonoBehaviour
                 //currentPlayer.movementTotal = currentPlayer.movementLeft = 33;
                 SwitchActionMap(GamePhase.PickDirection);
                 break;
+            case GamePhase.InVendor:
+                Debug.Log($"{assignedPlayer} buys from vendor");
+                m_BuyFromVendor.RaiseEvent(assignedPlayer);
+                //GameplayTest.instance.phase = GamePhase.EndTurn;
+                GameplayTest.instance.phase = GamePhase.ConfirmContinue;
+                break;
             case GamePhase.ConfirmContinue:
                 Debug.Log("confirm to continued!");
                 GameplayTest.instance.ConfirmContinue();
@@ -344,6 +359,11 @@ public class PlayerInputController : MonoBehaviour
                 Debug.Log("undo confirm pressed");
                 m_DiceRollUndo.RaiseEvent(currentPlayer);
                 SwitchActionMap(GamePhase.InitialTurnMenu);
+                break;
+            case GamePhase.InVendor:
+                Debug.Log($"{assignedPlayer} leaves the vendor");
+                m_ExitVendor.RaiseEvent();
+                GameplayTest.instance.phase = GamePhase.EndTurn;
                 break;
             case GamePhase.ConfirmContinue:
                 GameplayTest.instance.ConfirmContinue();
@@ -441,6 +461,10 @@ public class PlayerInputController : MonoBehaviour
 
             case GamePhase.StockStore:
                 playerInput.SwitchCurrentActionMap("UI");
+                break;
+
+            case GamePhase.InVendor:
+                playerInput.SwitchCurrentActionMap("Confirmation");
                 break;
 
             case GamePhase.EndTurn:
@@ -541,7 +565,7 @@ public class PlayerInputController : MonoBehaviour
             Debug.Log("What the fc");
             GameplayTest.instance.phase = GamePhase.EndTurn;
             previousGamePhase = GamePhase.EndTurn;
-            SwitchActionMap(GamePhase.StockStore);
+            //SwitchActionMap(GamePhase.StockStore);
             return;
         }
         SwitchActionMap(GamePhase.InitialTurnMenu);
@@ -567,6 +591,13 @@ public class PlayerInputController : MonoBehaviour
     private void OnExitStorefront()
     {
 
+    }
+
+    private void OnLandOnVendor(MapNode node)
+    {
+        if (!playerInput.inputIsActive) return;
+
+        SwitchActionMap(GamePhase.InVendor);
     }
 
     private void OnEnteredCombatScene()

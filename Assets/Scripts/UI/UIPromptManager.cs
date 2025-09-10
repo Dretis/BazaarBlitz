@@ -5,6 +5,7 @@ using Febucci.UI.Core;
 using LitMotion;
 using static UnityEngine.Rendering.DebugUI;
 using LitMotion.Extensions;
+using System;
 
 public class UIPromptManager : MonoBehaviour
 {
@@ -35,6 +36,8 @@ public class UIPromptManager : MonoBehaviour
     public PlayerEventChannelSO m_EncounterDecisions;
     public NodeEventChannelSO m_LandOnStorefront;
     public ItemEventChannelSO m_ItemSold;
+
+    public NodeEventChannelSO m_LandOnVendor;
 
     public PlayerEventChannelSO m_OpenInventory;
     public VoidEventChannelSO m_ExitInventory;
@@ -71,6 +74,8 @@ public class UIPromptManager : MonoBehaviour
         m_LandOnStorefront.OnEventRaised += DisplayStorefrontPrompt;
         m_ItemSold.OnEventRaised += DisplayLeavePrompt;
 
+        m_LandOnVendor.OnEventRaised += OnLandOnVendor;
+
         m_OpenInventory.OnEventRaised += HideInitialMenu;
         m_ExitInventory.OnEventRaised += DisplayInitialMenu;
 
@@ -101,6 +106,8 @@ public class UIPromptManager : MonoBehaviour
         m_EncounterDecisions.OnEventRaised -= DisplayEncounterChoices;
         m_LandOnStorefront.OnEventRaised -= DisplayStorefrontPrompt;
         m_ItemSold.OnEventRaised -= DisplayLeavePrompt;
+
+        m_LandOnVendor.OnEventRaised -= OnLandOnVendor;
 
         m_EnableFreeview.OnEventRaised -= DisplayFreeviewPrompt;
         m_OpenInventory.OnEventRaised -= HideInitialMenu;
@@ -272,14 +279,23 @@ public class UIPromptManager : MonoBehaviour
 
     private void DisplayStorefrontPrompt(MapNode mapNode)
     {
+        inputPrompt.text = "<sprite=0><color=white></color> Purchase";
+        /*
         inputPrompt.text = "<color=white>Hover over</color> items to see details.\n";
         inputPrompt.text += "<color=white>Left click</color> to buy an item.\n";
         inputPrompt.text += "You <color=red>must</color> buy one item to leave.";
+        */
     }
 
     private void DisplayLeavePrompt(ItemStats item)
     {
-        inputPrompt.text = "<color=white>[SPACE]</color> to leave the store.\n";
+        inputPrompt.text = "<sprite=0><color=white></color> Leave";
+    }
+
+    private void OnLandOnVendor(MapNode mapNode)
+    {
+        inputPrompt.text = "<sprite=0><color=white></color> Purchase";
+        inputPrompt.text += "\n<sprite=1><color=white></color> Leave Vendor";
     }
 
     private void NormalizeInventoryPrompt()

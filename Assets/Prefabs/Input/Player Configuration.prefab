@@ -90,6 +90,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8978cbcb9a4430a478e1d0d86c497c5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  device: 0
   currentPlayer: {fileID: 0}
   assignedPlayer: {fileID: 0}
   playerInput: {fileID: 4572607719132578481}
@@ -116,12 +117,15 @@ MonoBehaviour:
   m_RestockStore: {fileID: 11400000, guid: 45d6b055127905e4cb2609426a521e19, type: 2}
   m_ExitInventory: {fileID: 11400000, guid: 4992d66997435ac41b90fcee905517ec, type: 2}
   m_ExitLevelUp: {fileID: 11400000, guid: 0ced05665b46bb549b612dc3b7cba01f, type: 2}
+  m_BuyFromVendor: {fileID: 11400000, guid: 2c43e930fd2d37542bcd3086e71af4eb, type: 2}
+  m_ExitVendor: {fileID: 11400000, guid: 939cfdef1274efd4faab3b158b8b75c9, type: 2}
   m_PlayerActionSelected: {fileID: 11400000, guid: d7651c1dc2c5cc74d90001e0a479c397, type: 2}
   m_AssignPlayerToController: {fileID: 11400000, guid: ad03087746d19e74292e7dbccb547d32, type: 2}
   m_NextPlayerTurn: {fileID: 11400000, guid: 45e13c3cd9283b74989c51218c39f6c2, type: 2}
   m_LandOnStorefront: {fileID: 11400000, guid: f648c693d8451764f96f063b6b3da44b, type: 2}
   m_ExitStorefront: {fileID: 11400000, guid: 410e906b10aa4ae49ab7395fffa23d79, type: 2}
   m_ItemBought: {fileID: 11400000, guid: ace0aa03bf09d91469d5914ce815154e, type: 2}
+  m_LandOnVendor: {fileID: 11400000, guid: eb2649013aa7cbc41af4a7f3a5c359c8, type: 2}
   m_EnteredCombatScene: {fileID: 11400000, guid: b06b734815e5e434087c29d416ff002e, type: 2}
   m_InitiateCombatOnPassBy: {fileID: 11400000, guid: 738add0769a4e0047bfef96c86d9f906, type: 2}
   m_EnterLevelUp: {fileID: 11400000, guid: 2e765a5770dc0604e9dbf9fa24b60fba, type: 2}

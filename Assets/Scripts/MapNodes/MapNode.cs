@@ -6,6 +6,8 @@ public class MapNode : MonoBehaviour
 {
     public EntityPiece playerOccupied;
     [Header("Visual Variables")]
+    public GameObject focusPoint;
+
     public SpriteRenderer flowerTrapVisual;
     public Sprite[] flowerTrapSprites;
 

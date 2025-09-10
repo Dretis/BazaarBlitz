@@ -19,6 +19,7 @@ public class GameplayTest : MonoBehaviour
     [SerializeField]
     private List<EntityPiece> nextPlayers = new List<EntityPiece>();
     public EntityPiece currentPlayer;
+    private EntityPiece winner;
     public MapNode currentPlayerInitialNode;
 
     //public Dictionary<Vector2Int, GameObject> map = new Dictionary<Vector2Int, GameObject>();
@@ -39,6 +40,7 @@ public class GameplayTest : MonoBehaviour
         InStore, // new for input system
         StockStore,
         OverturnStore,
+        InVendor,
         RockPaperScissors,
         LevelUp,
         CombatTime,
@@ -47,9 +49,13 @@ public class GameplayTest : MonoBehaviour
         EndGame
     }
 
-    public int turn = 1;
+    public int playerCount = 4;
+    public int turnRound = 1; // Round based on every player has had a turn
+    private int playersActed = 0; // goes up every time a unique players turn is done
+
     public GamePhase phase = GamePhase.RollDice;
     public int diceRoll;
+
     public List<ItemStats> recentStockedItems;
     public int emptyStockCount = 0;
 
@@ -126,9 +132,11 @@ public class GameplayTest : MonoBehaviour
 
     public PlayerEventChannelSO m_OverturnOpportunity;
 
-    // Store-based Event Channels
+    // Tile-based Event Channels
     public NodeEventChannelSO m_LandOnStorefront;
     public VoidEventChannelSO m_ExitStorefront;
+
+    public NodeEventChannelSO m_LandOnVendor;
 
     // Pass-by Event Channels
     public PlayerEventChannelSO m_StealOnPassBy;
@@ -166,6 +174,8 @@ public class GameplayTest : MonoBehaviour
 
     public WeaponTypeIntEventChannel m_TryAugmentDieFaceValue; // lvl up
 
+    public IntItemEventChannelSO m_RecieveVendorItem;
+
     private void OnEnable()
     {
         m_DiceRolled.OnEventRaised += CalculateDiceRoll;
@@ -188,6 +198,8 @@ public class GameplayTest : MonoBehaviour
         m_StealOnPassBy.OnEventRaised += StealFromPlayer;
         m_InitiateCombatOnPassBy.OnEventRaised += InitiateCombatOnPlayer;
         m_StopOnStoreOnPassBy.OnEventRaised += StopOnStore;
+
+        m_RecieveVendorItem.OnEventRaised += OnRecieveVendorItem;
 
         //m_EnterLevelUp.OnEventRaised += OnEnterLevelUp;
         //m_ExitLevelUp.OnEventRaised += OnExitLevelUp;
@@ -217,6 +229,8 @@ public class GameplayTest : MonoBehaviour
         m_InitiateCombatOnPassBy.OnEventRaised -= InitiateCombatOnPlayer;
         m_StopOnStoreOnPassBy.OnEventRaised -= StopOnStore;
 
+        m_RecieveVendorItem.OnEventRaised -= OnRecieveVendorItem;
+
         //m_EnterLevelUp.OnEventRaised -= OnEnterLevelUp;
         //m_ExitLevelUp.OnEventRaised -= OnExitLevelUp;
         //m_TryAugmentDieFaceValue.OnEventRaised -= OnTryAugmentDieFaceValue;
@@ -243,6 +257,8 @@ public class GameplayTest : MonoBehaviour
 
             m_AssignPlayerToController.RaiseEvent(player);
         }
+
+        playerCount = playerUnits.Count;
 
         // Get the player at the start of the list.
         currentPlayer = nextPlayers[0];
@@ -625,7 +641,7 @@ public class GameplayTest : MonoBehaviour
 
                 rollTypewriter.ShowText("");
 
-                p.previousNode = null;
+                p.previousNode = p.traveledNodes[p.traveledNodes.Count - 1];
 
                 wantedNode.flowerTrapVisual.color = new Color32(0, 0, 0, 0);
                 wantedNode = null;
@@ -669,6 +685,7 @@ public class GameplayTest : MonoBehaviour
             if (p.heldPoints >= 4000)
             {
                 Debug.Log("BRO HE WON");
+                winner = p;
                 phase = GamePhase.EndGame; // Finish game if player w/ enough points passes by Pawn Shop
                 return;
             }
@@ -859,6 +876,33 @@ public class GameplayTest : MonoBehaviour
 
                 encounterOver = true;
                 phase = GamePhase.EndTurn;
+            }
+            else if (m.CompareTag("Vendor"))
+            {
+                Debug.Log("On vendor");
+                if(otherPlayer != null && otherPlayer != currentPlayer
+                    && otherPlayer.combatSceneIndex == -1)
+                {
+                    Debug.Log("person here");
+                    if (!otherPlayer.currentStates.Contains(EntityPiece.State.InsideVendor))
+                    {
+                        Debug.Log("fight person on vendor here");
+                        phase = GamePhase.CombatTime;
+                        StartCoroutine(StartTransitionIntoCombat(.5f, otherPlayer));
+
+                        encounterStarted = true;
+                    }
+                    else
+                    {
+                        m_LandOnVendor.RaiseEvent(m);
+                        phase = GamePhase.InVendor;
+                    }
+                }
+                else
+                {
+                    m_LandOnVendor.RaiseEvent(m);
+                    phase = GamePhase.InVendor;
+                }
             }
             else if (m.CompareTag("Stamp"))
             {
@@ -1202,6 +1246,13 @@ public class GameplayTest : MonoBehaviour
         nextPlayers.Add(currentPlayer);
         currentPlayer = nextPlayers[0];
 
+        // Done eating and chillin, get out of the estalbishment!
+        if (currentPlayer.currentStates.Contains(EntityPiece.State.InsideVendor))
+        {
+            currentPlayer.currentStates.Remove(EntityPiece.State.InsideVendor);
+            currentPlayer.playerSprite.enabled = true;
+        }
+
         m_NextPlayerTurn.RaiseEvent(currentPlayer);
 
         rollTypewriter.ShowText("");
@@ -1212,17 +1263,33 @@ public class GameplayTest : MonoBehaviour
         currentPlayerInitialNode = currentPlayer.occupiedNode;
         oldStamps = new List<Stamp.StampType>(currentPlayer.stamps); // keeping track of stamps for next player
         phase = GamePhase.ItemSelection;
+
+
+        playersActed++;
+        if(playersActed == playerCount)
+        {
+            Debug.Log($"Round {turnRound} over.");
+            turnRound++;
+            playersActed = 0;
+            // Raise event that round is over with the current round #.
+        }
     }
 
     void EndGame()
     {
         // The player with the most points wins!
-        var winningPlayer = playerUnits.OrderBy(playerUnit => playerUnit.heldPoints).LastOrDefault();
+        if(winner == null)
+        {
+            // This will happen when someone dies during Death's Row
+            winner = playerUnits.OrderBy(playerUnit => playerUnit.heldPoints).LastOrDefault();
+        }
 
         // UPDATE WITH ACTUAL END GAME UI, AND MAKE IN DIFFERENT SCRIPT WITH EVENT RAISED HERE.
-        Debug.Log(winningPlayer.entityName + " is the KING OF THE MARKET!");
+        Debug.Log(winner.entityName + " is the KING OF THE MARKET!");
         encounterScreen.SetActive(true);
-        resultInfo.text = $"{winningPlayer.entityName} is the \nWINNER!!!";
+        resultInfo.text = $"{winner.entityName} is the \nWINNER!!!";
+
+        // Raise an event that this player won bro
     }
 
     private void ConfirmPurchase(ItemStats item)
@@ -1230,7 +1297,7 @@ public class GameplayTest : MonoBehaviour
         // When an item is bought, allow confirmation via SPACE bar to continue the game
         if (item != null)
         {
-            UpdateStorefrontVisual(currentPlayer.occupiedNode.GetComponent<MapNode>());
+            //UpdateStorefrontVisual(currentPlayer.occupiedNode.GetComponent<MapNode>());
             //encounterOver = true;
             currentPlayer.heldPoints -= item.basePrice;
             currentPlayer.ReputationPoints += 20 + (item.basePrice / 10);
@@ -1718,6 +1785,14 @@ public class GameplayTest : MonoBehaviour
         m_InitiateCombatOnPassBy.RaiseEvent(entity);
 
         yield return null;
+    }
+
+    private void OnRecieveVendorItem(int salePrice, ItemStats gainedItem)
+    {
+        currentPlayer.inventory.Add(gainedItem);
+        currentPlayer.heldPoints -= salePrice;
+        m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
+        m_PlayerScoreDecreased.RaiseEvent(salePrice); //this event is so fucking stupid
     }
 
     // Old Level up stuff

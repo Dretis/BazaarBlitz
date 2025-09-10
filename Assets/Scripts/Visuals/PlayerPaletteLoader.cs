@@ -82,6 +82,7 @@ public class PlayerPaletteLoader : MonoBehaviour
     public void SetInspectorPalette(List<Color> newPalette)
     {
         inspectorPalette = newPalette;
+        UpdatePaletteColors(inspectorPalette);
     }
 
     public void SetInspectorPaletteColor(int index, Color newColor)

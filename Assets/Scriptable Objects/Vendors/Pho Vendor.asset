@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85267a0d9f3e8f5489ed3c965d9dfc38, type: 3}
+  m_Name: Pho Vendor
+  m_EditorClassIdentifier: 
+  vendorName: What the Pho
+  itemsForSale:
+  - {fileID: 11400000, guid: 15495949de59c4f4695a50e184f7bd44, type: 2}
+  salePrice: f0000000
+  enterDialogue: '"Grab some <color=white>Hanoi Pho</color> here!
+
+    Only <sprite="Coin
+    Icon" index=0>240!"'
+  leaveDialogue: you are poor goodbye
+  purchaseDialogue: '"Thank you!
+
+    Have a seat till its ready!"'

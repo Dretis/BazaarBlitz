@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdd1368eedb123d4db8a885acb84d3a9, type: 3}
+  m_Name: Pho Hanoi
+  m_EditorClassIdentifier: 
+  itemName: Hanoi Pho
+  duration: 3
+  showAsEffect: 1
+  itemSprite: {fileID: 21300000, guid: ea71bd1a11d6af048a7d8c88444a0811, type: 3}
+  effectDescription: Double your Max HP and heal 10% of the damage you deal in battle
+    for 3 turns.
+  flavorText: '"A Northern-style classic. Its clear broth makes it obvious why its
+    on top!"'
+  basePrice: 400
+  modifiers:
+  - {fileID: 11400000, guid: 50fcc29f6df14e241a3d1ad29f287010, type: 2}
+  - {fileID: 11400000, guid: 7c145d77a4ff091419d7d58d29d88d47, type: 2}

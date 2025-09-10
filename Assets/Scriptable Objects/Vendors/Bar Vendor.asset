@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85267a0d9f3e8f5489ed3c965d9dfc38, type: 3}
+  m_Name: Bar Vendor
+  m_EditorClassIdentifier: 
+  vendorName: 2h00 Bar
+  itemsForSale:
+  - {fileID: 11400000, guid: 5dacc74e19faf304387062e3044c3944, type: 2}
+  salePrice: 2c010000
+  enterDialogue: "\"Happy hour, every hour! \nDrink some <color=white>Xi Muoi</color>
+    <size=18>(plum juice)</size>\nfor just <sprite=\"Coin Icon\" index=0>300!\""
+  leaveDialogue: you are poor goodbye
+  purchaseDialogue: Thanks for your money buddy

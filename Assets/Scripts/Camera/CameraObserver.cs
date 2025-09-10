@@ -22,6 +22,7 @@ public class CameraObserver : MonoBehaviour
     [SerializeField] private CinemachineVirtualCamera zoomedInCam;
     [SerializeField] private CinemachineVirtualCamera levelUpCam;
     [SerializeField] private CinemachineVirtualCamera combatZoomCam;
+    [SerializeField] private CinemachineVirtualCamera focusZoomCam;
 
     [Header("Listen on Event Channels")]
     public PlayerEventChannelSO m_NextPlayerTurn;
@@ -42,6 +43,8 @@ public class CameraObserver : MonoBehaviour
 
     public VoidEventChannelSO m_EnteredCombatScene;
 
+    public NodeEventChannelSO m_LandedOnVendor;
+
     private void OnEnable()
     {
         freeviewReticle.SetActive(false);
@@ -60,6 +63,8 @@ public class CameraObserver : MonoBehaviour
         m_ExitRaycastedTile.OnEventRaised += OnExitRaycastedTile;
 
         m_EnteredCombatScene.OnEventRaised += OnEnteredCombatScene;
+
+        m_LandedOnVendor.OnEventRaised += OnLandedOnVendor;
     }
 
     private void OnDisable()
@@ -79,6 +84,8 @@ public class CameraObserver : MonoBehaviour
         m_ExitRaycastedTile.OnEventRaised -= OnExitRaycastedTile;
 
         m_EnteredCombatScene.OnEventRaised -= OnEnteredCombatScene;
+
+        m_LandedOnVendor.OnEventRaised -= OnLandedOnVendor;
     }
 
     // Start is called before the first frame update
@@ -93,6 +100,7 @@ public class CameraObserver : MonoBehaviour
     {
         zoomedInCam.enabled = false;
         combatZoomCam.enabled = false;
+        focusZoomCam.enabled = false;
 
         currentPlayer = entity;
         vcam.Follow = entity.transform;
@@ -175,6 +183,16 @@ public class CameraObserver : MonoBehaviour
     {
         combatZoomCam.Follow = currentPlayer.transform;
         combatZoomCam.enabled = true;
+    }
+
+    private void OnLandedOnVendor(MapNode node)
+    {
+        var vendorPos = node.focusPoint;
+        if (vendorPos != null)
+        {
+            focusZoomCam.Follow = vendorPos.transform;
+            focusZoomCam.enabled = true;
+        }
     }
 
     /*

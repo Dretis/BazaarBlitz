@@ -98,6 +98,12 @@ public class UITileTooltipManager : MonoBehaviour
                 tileDescription.text += "\n\nThe first player to pass with <color=#FDECAD>4000</color><sprite=\"Coin Icon\" index=0> in hand wins!";
                 //tileDescription.text += "\n\n<sprite=\"Coin Icon\" index=0> recieved is based on the number of colored stamps exchanged at once.";
             }
+            else if(node.tag == "Vendor")
+            {
+                tileType.text = "<color=#7EC673>Vendor</color>";
+                tileDescription.text = "Upon landing, choose to enter and buy the item being sold.";
+                tileDescription.text += "\n\nBecome safe from fights and damage if entered.";
+            }
             // Wild Tile
             else
             {
