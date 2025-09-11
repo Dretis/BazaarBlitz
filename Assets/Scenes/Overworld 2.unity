@@ -694,7 +694,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerOccupied: {fileID: 0}
+  focusPoint: {fileID: 0}
   flowerTrapVisual: {fileID: 0}
+  flowerTrapSprites: []
   storefrontVisual: {fileID: 0}
   stockGroup: {fileID: 0}
   stockItems: []
@@ -3891,7 +3893,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerOccupied: {fileID: 0}
+  focusPoint: {fileID: 0}
   flowerTrapVisual: {fileID: 0}
+  flowerTrapSprites: []
   storefrontVisual: {fileID: 0}
   stockGroup: {fileID: 0}
   stockItems: []
@@ -4738,7 +4742,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 1495556093}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
   m_Name: 
@@ -6356,7 +6360,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerOccupied: {fileID: 0}
+  focusPoint: {fileID: 0}
   flowerTrapVisual: {fileID: 0}
+  flowerTrapSprites: []
   storefrontVisual: {fileID: 0}
   stockGroup: {fileID: 0}
   stockItems: []
@@ -6621,7 +6627,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8184592382734835342, guid: 55735af4b26789a4094dea8489060239, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 55735af4b26789a4094dea8489060239, type: 3}
@@ -6910,7 +6916,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerOccupied: {fileID: 0}
+  focusPoint: {fileID: 0}
   flowerTrapVisual: {fileID: 0}
+  flowerTrapSprites: []
   storefrontVisual: {fileID: 0}
   stockGroup: {fileID: 0}
   stockItems: []
@@ -11379,7 +11387,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 8184592382734835336, guid: 55735af4b26789a4094dea8489060239, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8184592382734835336, guid: 55735af4b26789a4094dea8489060239, type: 3}
       propertyPath: m_UIInputModule
@@ -11463,7 +11471,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8184592382734835342, guid: 55735af4b26789a4094dea8489060239, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 55735af4b26789a4094dea8489060239, type: 3}
@@ -11724,7 +11732,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8184592382734835342, guid: 55735af4b26789a4094dea8489060239, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 55735af4b26789a4094dea8489060239, type: 3}
@@ -12435,7 +12443,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1713288853}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 58b51795e9f6d8147953806860420c9c, type: 3}
   m_Name: 
@@ -12868,7 +12876,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerOccupied: {fileID: 0}
+  focusPoint: {fileID: 0}
   flowerTrapVisual: {fileID: 0}
+  flowerTrapSprites: []
   storefrontVisual: {fileID: 0}
   stockGroup: {fileID: 0}
   stockItems: []
@@ -14228,7 +14238,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8184592382734835342, guid: 55735af4b26789a4094dea8489060239, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 55735af4b26789a4094dea8489060239, type: 3}
@@ -17076,6 +17086,10 @@ PrefabInstance:
     - target: {fileID: 6700546163635772301, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6700546163749520452, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: orthographic size
+      value: 4.4
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163865522836, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: occupiedNode

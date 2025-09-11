@@ -18,6 +18,8 @@ public class UIPromptManager : MonoBehaviour
     [SerializeField] private TypewriterCore turnTypewriter;
 
     [Header("UI Elements")]
+    [SerializeField] private TextMeshProUGUI turnRoundIndicator;
+
     [SerializeField] private TextMeshProUGUI inputPrompt;
     [SerializeField] private TextMeshProUGUI rolledNumber;
     [SerializeField] private TextMeshProUGUI movementRoll;
@@ -33,6 +35,8 @@ public class UIPromptManager : MonoBehaviour
     public PlayerEventChannelSO m_DiceRollUndo;
 
     public PlayerEventChannelSO m_NextPlayerTurn;
+    public IntEventChannelSO m_NextTurnRound;
+
     public PlayerEventChannelSO m_EncounterDecisions;
     public NodeEventChannelSO m_LandOnStorefront;
     public ItemEventChannelSO m_ItemSold;
@@ -55,6 +59,8 @@ public class UIPromptManager : MonoBehaviour
     public PlayerEventChannelSO m_EnterLevelUp;
     public VoidEventChannelSO m_ExitLevelUp;
 
+    public VoidEventChannelSO m_IncidentStarted;
+
     private void Start()
     {
         rolledNumber.text = "";
@@ -69,6 +75,7 @@ public class UIPromptManager : MonoBehaviour
         m_DiceRollUndo.OnEventRaised += DisplayInitialMenu;
 
         m_NextPlayerTurn.OnEventRaised += OnNextPlayerTurn;
+        m_NextTurnRound.OnEventRaised += OnNextTurnRound;
         //m_NextPlayerTurn.OnEventRaised += NormalizeInventoryPrompt; //temp
         m_EncounterDecisions.OnEventRaised += DisplayEncounterChoices;
         m_LandOnStorefront.OnEventRaised += DisplayStorefrontPrompt;
@@ -93,6 +100,8 @@ public class UIPromptManager : MonoBehaviour
 
         m_EnterLevelUp.OnEventRaised += OnEnterLevelUp;
         m_ExitLevelUp.OnEventRaised += OnExitLevelUp;
+
+        m_IncidentStarted.OnEventRaised += OnIncidentStarted;
     }
 
     private void OnDisable()
@@ -101,7 +110,9 @@ public class UIPromptManager : MonoBehaviour
 
         m_DiceRollPrep.OnEventRaised -= DisplayRollPrompt;
         m_DiceRollUndo.OnEventRaised -= DisplayInitialMenu;
+
         m_NextPlayerTurn.OnEventRaised -= OnNextPlayerTurn;
+        m_NextTurnRound.OnEventRaised -= OnNextTurnRound;
         //m_NextPlayerTurn.OnEventRaised -= NormalizeInventoryPrompt; //temp
         m_EncounterDecisions.OnEventRaised -= DisplayEncounterChoices;
         m_LandOnStorefront.OnEventRaised -= DisplayStorefrontPrompt;
@@ -126,6 +137,8 @@ public class UIPromptManager : MonoBehaviour
 
         m_EnterLevelUp.OnEventRaised -= OnEnterLevelUp;
         m_ExitLevelUp.OnEventRaised -= OnExitLevelUp;
+
+        m_IncidentStarted.OnEventRaised -= OnIncidentStarted;
     }
 
     private void OnNextPlayerTurn(EntityPiece ps)
@@ -138,6 +151,11 @@ public class UIPromptManager : MonoBehaviour
         if (NextPlayerGoIsRunning)
             StopCoroutine(oldNextPlayerGo);
         oldNextPlayerGo = StartCoroutine(NotifyNextPlayerGo(ps));
+    }
+
+    private void OnNextTurnRound(int round)
+    {
+        turnRoundIndicator.text = round.ToString();
     }
 
     private IEnumerator NotifyNextPlayerGo(EntityPiece ps)
@@ -351,5 +369,12 @@ public class UIPromptManager : MonoBehaviour
     {
         DisplayRollPrompt(null);
         m_DiceRollPrep.RaiseEvent(currentPlayer);
+    }
+
+    private void OnIncidentStarted()
+    {
+        HideMenuPrompt();
+        turnTypewriter.ShowText("");
+        inputPrompt.text = "";
     }
 }

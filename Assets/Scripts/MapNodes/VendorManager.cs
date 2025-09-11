@@ -36,6 +36,9 @@ public class VendorManager : MonoBehaviour
 
     public PlayerEventChannelSO m_NextPlayerTurn;
 
+    public VoidEventChannelSO m_IncidentStarted;
+
+
     private void OnEnable()
     {
         m_LandedOnVendor.OnEventRaised += OnLandedOnVendor;
@@ -43,6 +46,8 @@ public class VendorManager : MonoBehaviour
         m_ExitVendor.OnEventRaised += OnExitVendor;
 
         m_NextPlayerTurn.OnEventRaised += OnNextPlayerTurn;
+
+        m_IncidentStarted.OnEventRaised += OnIncidentStarted;
     }
 
     private void OnDisable()
@@ -52,6 +57,8 @@ public class VendorManager : MonoBehaviour
         m_ExitVendor.OnEventRaised -= OnExitVendor;
 
         m_NextPlayerTurn.OnEventRaised -= OnNextPlayerTurn;
+
+        m_IncidentStarted.OnEventRaised += OnIncidentStarted;
     }
 
     private void OnLandedOnVendor(MapNode node)
@@ -133,10 +140,11 @@ public class VendorManager : MonoBehaviour
 
             seatedPlayerSprites[id].GetComponent<SpriteRenderer>().color = new Color32(0,0,0,0);
         }
-        else
-        {
-            Debug.Log($"wtf {player.entityName} isn't here");
-        }
+    }
+
+    private void OnIncidentStarted()
+    {
+        OnExitVendor();
     }
 
 

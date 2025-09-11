@@ -62,6 +62,7 @@ public class PlayerInputController : MonoBehaviour
     [Header("Listen on Event Channels")]
     public PlayerEventChannelSO m_AssignPlayerToController;
     public PlayerEventChannelSO m_NextPlayerTurn;
+    public IntEventChannelSO m_NextTurnRound;
     // Store-based Event Channels
     public NodeEventChannelSO m_LandOnStorefront;
     public VoidEventChannelSO m_ExitStorefront;
@@ -126,7 +127,10 @@ public class PlayerInputController : MonoBehaviour
         //freeviewReticle.SetActive(false);
         m_EnableFreeview.OnEventRaised += FreeviewEnabled;
         m_DisableFreeview.OnEventRaised += FreeviewDisabled;
+
         m_NextPlayerTurn.OnEventRaised += SetCurrentPlayer;
+        m_NextTurnRound.OnEventRaised += OnNextTurnRound;
+
         m_RestockStore.OnEventRaised += OnRestockStore;
         m_FinishStockingStore.OnEventRaised += OnFinishStockingStore;
 
@@ -151,7 +155,10 @@ public class PlayerInputController : MonoBehaviour
     {
         m_EnableFreeview.OnEventRaised -= FreeviewEnabled;
         m_DisableFreeview.OnEventRaised -= FreeviewDisabled;
+
         m_NextPlayerTurn.OnEventRaised -= SetCurrentPlayer;
+        m_NextTurnRound.OnEventRaised -= OnNextTurnRound;
+
         m_RestockStore.OnEventRaised -= OnRestockStore;
         m_FinishStockingStore.OnEventRaised -= OnFinishStockingStore;
 
@@ -511,6 +518,15 @@ public class PlayerInputController : MonoBehaviour
             playerInput.currentActionMap.Enable();
 
             TryRumbling(0.25f, .5f, .25f);
+        }
+    }
+
+    private void OnNextTurnRound(int round)
+    {
+        if (assignedPlayer == currentPlayer)
+        {
+            playerInput.DeactivateInput();
+            Debug.Log($"NextTurnRound | Player ID: {playerInput.playerIndex} deactivated input.");
         }
     }
 

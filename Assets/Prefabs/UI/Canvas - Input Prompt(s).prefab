@@ -1569,6 +1569,7 @@ MonoBehaviour:
   rollTextAnimator: {fileID: 1165529080}
   rollTypewriter: {fileID: 1165529083}
   turnTypewriter: {fileID: 0}
+  turnRoundIndicator: {fileID: 0}
   inputPrompt: {fileID: 6674750566376000198}
   rolledNumber: {fileID: 6674750567810470794}
   movementRoll: {fileID: 0}
@@ -1580,9 +1581,11 @@ MonoBehaviour:
   m_DiceRollPrep: {fileID: 11400000, guid: 9e449a1e468efff46b833c09542c6b5f, type: 2}
   m_DiceRollUndo: {fileID: 11400000, guid: c893b6f1be9cffb4b87d121e14d423c7, type: 2}
   m_NextPlayerTurn: {fileID: 11400000, guid: 45e13c3cd9283b74989c51218c39f6c2, type: 2}
+  m_NextTurnRound: {fileID: 11400000, guid: 100b03d519b6b1543a4661a2be5dad3d, type: 2}
   m_EncounterDecisions: {fileID: 11400000, guid: 8718b783fa7492048bcffd162050642b, type: 2}
   m_LandOnStorefront: {fileID: 11400000, guid: f648c693d8451764f96f063b6b3da44b, type: 2}
   m_ItemSold: {fileID: 11400000, guid: ace0aa03bf09d91469d5914ce815154e, type: 2}
+  m_LandOnVendor: {fileID: 0}
   m_OpenInventory: {fileID: 11400000, guid: 91caeb767faff934e81ba8e6ff774d38, type: 2}
   m_ExitInventory: {fileID: 11400000, guid: 4992d66997435ac41b90fcee905517ec, type: 2}
   m_RestockStore: {fileID: 11400000, guid: 45d6b055127905e4cb2609426a521e19, type: 2}
@@ -1594,6 +1597,7 @@ MonoBehaviour:
   m_ExitRaycastedTile: {fileID: 11400000, guid: bb03629fcd15efc49a85071214823911, type: 2}
   m_EnterLevelUp: {fileID: 11400000, guid: 2e765a5770dc0604e9dbf9fa24b60fba, type: 2}
   m_ExitLevelUp: {fileID: 11400000, guid: 0ced05665b46bb549b612dc3b7cba01f, type: 2}
+  m_IncidentStarted: {fileID: 11400000, guid: fbbbe6e31fced7641b6b92ac4a0ea4c9, type: 2}
 --- !u!1 &6674750566837866532
 GameObject:
   m_ObjectHideFlags: 0

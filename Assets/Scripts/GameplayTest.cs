@@ -6,6 +6,7 @@ using System.Linq;
 using Febucci.UI.Core;
 using UnityEngine.UI;
 using System.Collections;
+using Unity.VisualScripting;
 
 public class GameplayTest : MonoBehaviour
 {
@@ -46,16 +47,30 @@ public class GameplayTest : MonoBehaviour
         CombatTime,
         ConfirmContinue,
         EndTurn,
+        IncidentHappening,
         EndGame
     }
 
+    public enum SpecialIncidents
+    {
+        Train,
+        AirRaid,
+        None,
+    }
+
+    [Header("Game Match Info")]
     public int playerCount = 4;
     public int turnRound = 1; // Round based on every player has had a turn
     private int playersActed = 0; // goes up every time a unique players turn is done
 
     public GamePhase phase = GamePhase.RollDice;
-    public int diceRoll;
 
+    public List<SpecialIncidents> matchIncidents; // list of periodic incidents for this specific board
+    private List<SpecialIncidents> incidentsToActivate = new List<SpecialIncidents>(); // list of periodic incidents for this specific board
+    public bool incidentIsPlaying = false;
+
+    public int diceRoll;
+    [Header("UI Additional Variables")]
     public List<ItemStats> recentStockedItems;
     public int emptyStockCount = 0;
 
@@ -102,7 +117,14 @@ public class GameplayTest : MonoBehaviour
 
 
     // Event Channels
+    [Header("Special Event Channels")]
+    public VoidEventChannelSO m_IncidentStarted; // broadcasting
+    public VoidEventChannelSO m_ActivateIncidentTrain; // broadcasting
+    public NodeListFloatEventChannelSO m_DamageAffectedNodes; // listening
+
     [Header("Broadcast on Event Channels")]
+    public IntEventChannelSO m_NextTurnRound;
+
     public VoidEventChannelSO m_EnableFreeview;
     public PlayerEventChannelSO m_DiceRollUndo;
     public PlayerEventChannelSO m_DiceRollPrep;
@@ -178,6 +200,8 @@ public class GameplayTest : MonoBehaviour
 
     private void OnEnable()
     {
+        m_NextTurnRound.OnEventRaised += OnNextTurnRound;
+
         m_DiceRolled.OnEventRaised += CalculateDiceRoll;
         m_ItemBought.OnEventRaised += ConfirmPurchase;
 
@@ -201,6 +225,7 @@ public class GameplayTest : MonoBehaviour
 
         m_RecieveVendorItem.OnEventRaised += OnRecieveVendorItem;
 
+        m_DamageAffectedNodes.OnEventRaised += OnDamageAffectedNodes;
         //m_EnterLevelUp.OnEventRaised += OnEnterLevelUp;
         //m_ExitLevelUp.OnEventRaised += OnExitLevelUp;
         //m_TryAugmentDieFaceValue.OnEventRaised += OnTryAugmentDieFaceValue;
@@ -208,6 +233,8 @@ public class GameplayTest : MonoBehaviour
 
     private void OnDisable()
     {
+        m_NextTurnRound.OnEventRaised -= OnNextTurnRound;
+
         m_DiceRolled.OnEventRaised -= CalculateDiceRoll;
         m_ItemBought.OnEventRaised -= ConfirmPurchase;
 
@@ -231,6 +258,7 @@ public class GameplayTest : MonoBehaviour
 
         m_RecieveVendorItem.OnEventRaised -= OnRecieveVendorItem;
 
+        m_DamageAffectedNodes.OnEventRaised -= OnDamageAffectedNodes;
         //m_EnterLevelUp.OnEventRaised -= OnEnterLevelUp;
         //m_ExitLevelUp.OnEventRaised -= OnExitLevelUp;
         //m_TryAugmentDieFaceValue.OnEventRaised -= OnTryAugmentDieFaceValue;
@@ -272,14 +300,15 @@ public class GameplayTest : MonoBehaviour
     private void Start()
     {
         m_NextPlayerTurn.RaiseEvent(currentPlayer);
+        //m_NextTurnRound.RaiseEvent(turnRound);
     }
 
     // Update is called once per frame
     void Update()
     {
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         debugPhaseText.text = "" + phase;
-        #endif
+#endif
         switch (phase)
         {
             // Checks item effects on player
@@ -349,7 +378,7 @@ public class GameplayTest : MonoBehaviour
             case GamePhase.EndTurn:
                 EndOfTurn(currentPlayer);
                 break;
-            
+
             // Game over! Someone has won!
             case GamePhase.EndGame:
                 EndGame();
@@ -367,7 +396,7 @@ public class GameplayTest : MonoBehaviour
             p.inventory.Remove(item);
         }
         */
-        foreach(Stamp.StampType s in oldStamps)
+        foreach (Stamp.StampType s in oldStamps)
         {
             Debug.Log(s);
         }
@@ -447,7 +476,7 @@ public class GameplayTest : MonoBehaviour
             phase = GamePhase.Inventory;
         }
         */
-        
+
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             howToPlayScreen.enabled = true;
@@ -480,7 +509,7 @@ public class GameplayTest : MonoBehaviour
 
             m_EnterLevelUp.RaiseEvent(p);
         }
-        if(p.combatSceneIndex == -1)
+        if (p.combatSceneIndex == -1)
         {
             /*
             if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Mouse0))
@@ -633,7 +662,7 @@ public class GameplayTest : MonoBehaviour
 
             phase = GamePhase.PickDirection; // Go back to picking direction
         }
-        else if(wantedNode != null) // Go to that new node and occupy it
+        else if (wantedNode != null) // Go to that new node and occupy it
         {
             if (wantedNode.modifier == MapNode.Modifier.Rafflesia) {
                 wantedNode.modifier = MapNode.Modifier.None;
@@ -647,8 +676,8 @@ public class GameplayTest : MonoBehaviour
                 wantedNode = null;
                 //audioSource.PlayOneShot(moveSFX, 1.2f);
 
-                
-                p.traveledNodes.Clear(); 
+
+                p.traveledNodes.Clear();
                 p.traveledNodes.Add(p.occupiedNode);
                 phase = GamePhase.EncounterTime; // next phase
                 return;
@@ -660,14 +689,14 @@ public class GameplayTest : MonoBehaviour
             p.movementLeft--;
 
             string roll = "" + p.movementLeft;
-            if(p.movementLeft == 0)
+            if (p.movementLeft == 0)
                 rollTypewriter.ShowText("");
             else
                 rollTypewriter.ShowText(roll);
 
             p.transform.DOMove(wantedNode.transform.position, .25f)
                 .SetEase(DG.Tweening.Ease.OutQuint);
-            
+
 
             wantedNode = null;
             m_PlayerMovedOnBoard.RaiseEvent();
@@ -678,7 +707,7 @@ public class GameplayTest : MonoBehaviour
     }
 
     void PassBy(EntityPiece p, MapNode m)
-    {       
+    {
         // Cash in Stamps
         if (m.CompareTag("Castle"))
         {
@@ -695,10 +724,10 @@ public class GameplayTest : MonoBehaviour
 
             if (p.stamps.Count != 0)
             {
-                p.ReputationPoints += (75 * Mathf.Pow(1.5f, p.stamps.Count-1));
-                p.heldPoints += (int)(150 * Mathf.Pow(2, p.stamps.Count-1));
+                p.ReputationPoints += (75 * Mathf.Pow(1.5f, p.stamps.Count - 1));
+                p.heldPoints += (int)(150 * Mathf.Pow(2, p.stamps.Count - 1));
                 //m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
-                m_PlayerScoreIncreased.RaiseEvent((int)(150 * Mathf.Pow(2, p.stamps.Count-1)));
+                m_PlayerScoreIncreased.RaiseEvent((int)(150 * Mathf.Pow(2, p.stamps.Count - 1)));
                 m_PassByPawnShop.RaiseEvent(); // change this later
 
                 p.stamps.Clear();
@@ -706,7 +735,7 @@ public class GameplayTest : MonoBehaviour
 
             // Heal player by 33%
             currentPlayerInitialHealth = p.health; // track health before, in case they undo
-            p.health += p.maxHealth / 3; 
+            p.health += p.maxHealth / 3;
             if (p.health > p.maxHealth)
             {
                 p.health = p.maxHealth;
@@ -772,21 +801,21 @@ public class GameplayTest : MonoBehaviour
 
             // Deactivate all active effects of items that end on store.
             p.RemoveItemEffectOnUse(ItemLists.StopOnStoreOnPassBy);
-        }  
-        else if (m.CompareTag("Store") && (m.modifier == MapNode.Modifier.Marigold && m.modifierOwner != p) ) {
+        }
+        else if (m.CompareTag("Store") && (m.modifier == MapNode.Modifier.Marigold && m.modifierOwner != p)) {
             m.flowerTrapVisual.color = new Color32(0, 0, 0, 0);
             p.previousNode = p.traveledNodes[p.traveledNodes.Count - 1];
             m_StopOnStoreOnPassBy.RaiseEvent();
 
             m.modifier = MapNode.Modifier.None;
         }
-        
+
         // Change phase.
-        
+
         else if (p.movementLeft <= 0)
         {
             p.previousNode = p.traveledNodes[p.traveledNodes.Count - 1];
-            p.traveledNodes.Clear(); 
+            p.traveledNodes.Clear();
             p.traveledNodes.Add(p.occupiedNode);
 
             if (turnOffMonsterEncounters)
@@ -866,7 +895,7 @@ public class GameplayTest : MonoBehaviour
                     m_RestockStore.RaiseEvent(m);
                     //m_OpenInventory.RaiseEvent(p); // COMMENT THIS OUT WHEN RAISING THE RESTOCK EVENT
                     storestockTooltip.enabled = true; // PROBABLY PUT THIS IN UI AS WELL
-                    phase = GamePhase.StockStore;                  
+                    phase = GamePhase.StockStore;
                 }
             }
             else if (m.CompareTag("Castle"))
@@ -880,7 +909,7 @@ public class GameplayTest : MonoBehaviour
             else if (m.CompareTag("Vendor"))
             {
                 Debug.Log("On vendor");
-                if(otherPlayer != null && otherPlayer != currentPlayer
+                if (otherPlayer != null && otherPlayer != currentPlayer
                     && otherPlayer.combatSceneIndex == -1)
                 {
                     Debug.Log("person here");
@@ -1006,7 +1035,7 @@ public class GameplayTest : MonoBehaviour
     void OverturnStore(EntityPiece p, MapNode m)
     {
         phase = GamePhase.EndTurn; //TEMPORARY UNTIL I FIX THIS
-        
+
         /*
         // No money to overturn or at store cap.
         if (p.heldPoints < 600 || p.storeCount >= 4)
@@ -1078,7 +1107,7 @@ public class GameplayTest : MonoBehaviour
         //phase = GamePhase.CombatTime;
         sceneManager.LoadCombatScene();
         */
-        
+
     }
 
     /*
@@ -1235,13 +1264,70 @@ public class GameplayTest : MonoBehaviour
         oldPoints = 0;
 
         p.occupiedNode.playerOccupied = p; // update to have that player on that node now
+
+        rollTypewriter.ShowText("");
+
         isStockingStore = false; // let next player access inventory
         playerUsedItem = false; // let next player access inventory
 
         m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
+        rollTypewriter.ShowText("");
 
+
+        playersActed++;
+        if (playersActed == playerCount)
+        {
+            Debug.Log($"Round {turnRound} over.");
+            turnRound++;
+            playersActed = 0;
+
+            // Raise event that round is over with the current round #.
+            m_NextTurnRound.RaiseEvent(turnRound);
+            //SetupNextPlayer();
+        }
+        else
+        {
+            SetupNextPlayer();
+        }
+    }
+
+    public void OnNextTurnRound(int round)
+    {
+        bool active = false;
+        foreach (SpecialIncidents incidents in matchIncidents)
+        {
+            switch (incidents)
+            {
+                case SpecialIncidents.Train:
+                    if (round % 6 == 0)
+                    {
+                        //m_ActivateIncidentTrain.RaiseEvent();
+                        incidentsToActivate.Add(SpecialIncidents.Train);
+                        active = true;
+                    }
+                    break;
+                default:
+                    Debug.Log("default, idk what incident this is");
+                    break;
+            }
+        }
+
+        if (active)
+        {
+            Debug.Log("There's incidents to make, play them out");
+            phase = GamePhase.IncidentHappening;
+            m_IncidentStarted.RaiseEvent();
+            StartCoroutine(PlayOutActiveIncidents());
+        }
+        else
+        {
+            SetupNextPlayer();
+        }
+    }
+
+    public void SetupNextPlayer()
+    {
         // Change to the next player in the list.
-
         nextPlayers.Remove(currentPlayer);
         nextPlayers.Add(currentPlayer);
         currentPlayer = nextPlayers[0];
@@ -1255,30 +1341,36 @@ public class GameplayTest : MonoBehaviour
 
         m_NextPlayerTurn.RaiseEvent(currentPlayer);
 
-        rollTypewriter.ShowText("");
-
-        //turnText.text = currentPlayer.entityName + "'s Turn!";
-        //turnText.color = currentPlayer.playerColor;
-
         currentPlayerInitialNode = currentPlayer.occupiedNode;
         oldStamps = new List<Stamp.StampType>(currentPlayer.stamps); // keeping track of stamps for next player
         phase = GamePhase.ItemSelection;
+    }
 
-
-        playersActed++;
-        if(playersActed == playerCount)
+    public IEnumerator PlayOutActiveIncidents()
+    {
+        foreach (SpecialIncidents incidents in incidentsToActivate)
         {
-            Debug.Log($"Round {turnRound} over.");
-            turnRound++;
-            playersActed = 0;
-            // Raise event that round is over with the current round #.
+            incidentIsPlaying = true;
+            switch (incidents)
+            {
+                case SpecialIncidents.Train:
+                    m_ActivateIncidentTrain.RaiseEvent();
+                    break;
+                default:
+                    Debug.Log($"Some {incidents} Incident should play here.");
+                    break;
+
+            }
+            yield return new WaitUntil(() => incidentIsPlaying == false);
         }
+        incidentsToActivate.Clear();
+        SetupNextPlayer();
     }
 
     void EndGame()
     {
         // The player with the most points wins!
-        if(winner == null)
+        if (winner == null)
         {
             // This will happen when someone dies during Death's Row
             winner = playerUnits.OrderBy(playerUnit => playerUnit.heldPoints).LastOrDefault();
@@ -1350,7 +1442,7 @@ public class GameplayTest : MonoBehaviour
             currentPlayer.inventory.RemoveAt(index);
             */
             //m_OpenInventory.RaiseEvent(currentPlayer);
-        } 
+        }
         else
         {
             // Ask player for confirmation to use item [YES/NO]
@@ -1374,7 +1466,7 @@ public class GameplayTest : MonoBehaviour
             currentPlayer.inventory.RemoveAt(index);
             playerUsedItem = true;
 
-            if (currentPlayer.currentStatsModifier.warpMode != EntityStatsModifiers.WarpMode.None) 
+            if (currentPlayer.currentStatsModifier.warpMode != EntityStatsModifiers.WarpMode.None)
             {
                 Debug.Log("Used target select item");
                 m_ExitInventory.RaiseEvent();
@@ -1394,7 +1486,7 @@ public class GameplayTest : MonoBehaviour
                 Debug.Log("Used normal item");
                 m_ExitInventory.RaiseEvent();
             }
-        }        
+        }
     }
 
     private void DropItemInPlayerInventory(int index)
@@ -1408,8 +1500,8 @@ public class GameplayTest : MonoBehaviour
     private void ApplyItemEffectsOnTurnStart(EntityPiece p)
     {
         // Regenerate health from active effects.
-        p.health = Mathf.Min(p.maxHealth * p.currentStatsModifier.maxHealthMultModifier 
-            + p.currentStatsModifier.maxHealthFlatModifier, 
+        p.health = Mathf.Min(p.maxHealth * p.currentStatsModifier.maxHealthMultModifier
+            + p.currentStatsModifier.maxHealthFlatModifier,
             p.health + p.currentStatsModifier.healthRegen);
         m_UpdatePlayerScore.RaiseEvent(p.id);
 
@@ -1424,7 +1516,7 @@ public class GameplayTest : MonoBehaviour
         }
     }
 
-    private void ApplyItemEffectsOnTargetSelection(EntityPiece p) 
+    private void ApplyItemEffectsOnTargetSelection(EntityPiece p)
     {
         // Warp player to specified destination.
         if (p.currentStatsModifier.warpDestination != null)
@@ -1522,7 +1614,7 @@ public class GameplayTest : MonoBehaviour
         currentPlayer.inventory.RemoveAt(index);
         m_RefreshInventory.RaiseEvent(currentPlayer);
 
-        if(emptyStockCount <= 0)
+        if (emptyStockCount <= 0)
             m_FinishStockingStore.RaiseEvent(currentPlayer);
     }
 
@@ -1583,7 +1675,7 @@ public class GameplayTest : MonoBehaviour
             }
         }
 
-        if(emptyStockCheck >= 3)
+        if (emptyStockCheck >= 3)
         {
             node.soldoutText.text = "SOLD OUT";
         }
@@ -1661,7 +1753,7 @@ public class GameplayTest : MonoBehaviour
 
         string roll = "" + currentPlayer.movementLeft;
         rollTypewriter.ShowText(roll);
-    }  
+    }
 
     public void SelectRaycastTarget(EntityPiece p)
     {
@@ -1764,7 +1856,7 @@ public class GameplayTest : MonoBehaviour
         phase = GamePhase.InitialTurnMenu;
     }
 
-    private void PlantItemOnSpaceSelection(EntityPiece p, MapNode.Modifier modifier) 
+    private void PlantItemOnSpaceSelection(EntityPiece p, MapNode.Modifier modifier)
     {
         // Warp player to specified destination.
         if (p.currentStatsModifier.warpDestination != null)
@@ -1793,6 +1885,30 @@ public class GameplayTest : MonoBehaviour
         currentPlayer.heldPoints -= salePrice;
         m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
         m_PlayerScoreDecreased.RaiseEvent(salePrice); //this event is so fucking stupid
+    }
+
+    private void OnDamageAffectedNodes(List<MapNode> affectedNodes, float damageRatio)
+    {
+        foreach(EntityPiece player in playerUnits)
+        {
+            // this dude is chilling, he aint getting hit
+            if (player.currentStates.Contains(EntityPiece.State.InsideVendor)) 
+            {
+                Debug.Log($"{player.entityName} is in a vendor, no damage taken.");
+            }
+            else if (affectedNodes.Contains(player.occupiedNode))
+            {
+                Debug.Log($"{player.entityName} in the streets. GOOBYE!!");
+
+                player.health -= (int)(player.maxHealth * damageRatio);
+                if(player.health < 0)
+                {
+                    player.health = 1;
+                }
+
+                m_UpdatePlayerScore.RaiseEvent(player.id);
+            }
+        }
     }
 
     // Old Level up stuff

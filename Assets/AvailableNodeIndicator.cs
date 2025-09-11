@@ -29,6 +29,8 @@ public class AvailableNodeIndicator : MonoBehaviour
     public VoidEventChannelSO m_PlayerMovedOnBoard;
     public VoidEventChannelSO m_PlayerUndidSomething; // is this going back while moving??
 
+    public VoidEventChannelSO m_IncidentStarted;
+
     private void OnEnable()
     {
         m_NextPlayerTurn.OnEventRaised += OnNextPlayerTurn;
@@ -36,6 +38,7 @@ public class AvailableNodeIndicator : MonoBehaviour
         m_PlayerMovedOnBoard.OnEventRaised += OnPlayerMovedOnBoard;
         m_PlayerUndidSomething.OnEventRaised += OnPlayerUndidSomething;
 
+        m_IncidentStarted.OnEventRaised += OnIncidentStarted;
     }
 
     private void OnDisable()
@@ -44,6 +47,8 @@ public class AvailableNodeIndicator : MonoBehaviour
         m_DiceRolled.OnEventRaised -= OnDiceRolled;
         m_PlayerMovedOnBoard.OnEventRaised -= OnPlayerMovedOnBoard;
         m_PlayerUndidSomething.OnEventRaised -= OnPlayerUndidSomething;
+
+        m_IncidentStarted.OnEventRaised -= OnIncidentStarted;
     }
 
     // Update is called once per frame
@@ -143,5 +148,10 @@ public class AvailableNodeIndicator : MonoBehaviour
     {
         SetTargetNode(currentPlayer.occupiedNode);
         ShowNodeIndicators();
+    }
+
+    private void OnIncidentStarted()
+    {
+        HideNodeIndicators();
     }
 }
