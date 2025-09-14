@@ -10,6 +10,10 @@ using Unity.VisualScripting;
 
 public class GameplayTest : MonoBehaviour
 {
+    public GameBoard board;
+    public GamePhase phase = GamePhase.RollDice;
+
+    [Header("Debugging")]
     [SerializeField] private TextMeshProUGUI debugPhaseText;
     [SerializeField] private bool turnOffMonsterEncounters = false;
 
@@ -25,6 +29,13 @@ public class GameplayTest : MonoBehaviour
 
     //public Dictionary<Vector2Int, GameObject> map = new Dictionary<Vector2Int, GameObject>();
     //public Dictionary<Vector2Int, GameObject> unitPos = new Dictionary<Vector2Int, GameObject>();
+
+    public enum GameBoard
+    {
+        CentralMarket,
+        TrainStreet,
+        RiceTerrace,
+    }
 
     public enum GamePhase
     {
@@ -62,8 +73,6 @@ public class GameplayTest : MonoBehaviour
     public int playerCount = 4;
     public int turnRound = 1; // Round based on every player has had a turn
     private int playersActed = 0; // goes up every time a unique players turn is done
-
-    public GamePhase phase = GamePhase.RollDice;
 
     public List<SpecialIncidents> matchIncidents; // list of periodic incidents for this specific board
     private List<SpecialIncidents> incidentsToActivate = new List<SpecialIncidents>(); // list of periodic incidents for this specific board
