@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: becd1747bd74ce04d85067ec540c05fd
+guid: cd0836926e55b534c8b6fc119a9bc2d8
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -42,12 +42,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 512
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -139,7 +139,112 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: BaggyB_AttackMagic_Mind_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 525
+        width: 512
+        height: 525
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dc8c3511aef62894ab1b8f6d236a89fb
+      internalID: 1496633803
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BaggyB_AttackMagic_Mind_1
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 525
+        width: 512
+        height: 525
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b3df8016873150e45aca5074b376ccd8
+      internalID: -1139818659
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BaggyB_AttackMagic_Mind_2
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 525
+        width: 512
+        height: 525
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ee33c554e0aae8c45a32da4b9fcc328b
+      internalID: -249728128
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BaggyB_AttackMagic_Mind_3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 512
+        height: 525
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 92caaa98704f3ed47baeb34bf70d830e
+      internalID: 1599769030
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BaggyB_AttackMagic_Mind_4
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 512
+        height: 525
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3be2cde95e7646f4d92a9841a8e28489
+      internalID: -1784958367
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -149,8 +254,15 @@ TextureImporter:
     indices: 
     edges: []
     weights: []
-    secondaryTextures: []
-    nameFileIdTable: {}
+    secondaryTextures:
+    - texture: {fileID: 2800000, guid: e22354a9c4cf8654985f020820434751, type: 3}
+      name: _PaletteMap
+    nameFileIdTable:
+      BaggyB_AttackMagic_Mind_0: 1496633803
+      BaggyB_AttackMagic_Mind_1: -1139818659
+      BaggyB_AttackMagic_Mind_2: -249728128
+      BaggyB_AttackMagic_Mind_3: 1599769030
+      BaggyB_AttackMagic_Mind_4: -1784958367
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

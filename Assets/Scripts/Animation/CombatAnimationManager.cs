@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class CombatAnimationManager : MonoBehaviour
 {
@@ -10,13 +11,21 @@ public class CombatAnimationManager : MonoBehaviour
     [SerializeField] private CombatUIManager.FightingPosition fightingPosition;
     private Action.PhaseTypes phaseType;
 
+    [Header("Additional Objects")]
+    [SerializeField] private GameObject boat;
+    private Vector3 boatInitialPos;
+    [SerializeField] private GameObject gunSniperCrosshair;
+
     [Header("Extra FX")]
     [SerializeField] private ParticleSystem coinDrop;
     [SerializeField] private ParticleSystem gunShotgun;
+    [SerializeField] private ParticleSystem gunShrapnel;
     [SerializeField] private ParticleSystem magicSparkle;
     [SerializeField] private ParticleSystem magicExplosion;
+    [SerializeField] private ParticleSystem magicExplosion2;
+    [SerializeField] private ParticleSystem magicWard;
     //[SerializeField] private ParticleSystem gunSniper;
-    [SerializeField] private GameObject gunSniperCrosshair;
+    
 
     [Header("Broadcast on Event Channels")]
     public VoidEventChannelSO m_AttackImpact;
@@ -67,6 +76,8 @@ public class CombatAnimationManager : MonoBehaviour
     void Start()
     {
         animator = GetComponent<Animator>();
+
+        boatInitialPos = boat.transform.position;
     }
     
     private void OnSwapPhase(EntityPiece entity)
@@ -76,6 +87,9 @@ public class CombatAnimationManager : MonoBehaviour
         animator.SetTrigger("ToIdle");
         animator.SetBool("Action Picked", false);
         animator.SetBool("IsAttacking", false);
+
+        //.transform.position = boatInitialPos;
+        ResetBoatPosition(.2f);
     }
 
     private void OnActionSelected(EntityPiece entity, Action.PhaseTypes type)
@@ -248,6 +262,11 @@ public class CombatAnimationManager : MonoBehaviour
         gunShotgun.Play();
     }
 
+    private void BurstShrapnel()
+    {
+        gunShrapnel.Play();
+    }
+
     private void BurstMagicSparkle()
     {
         magicSparkle.gameObject.SetActive(true);
@@ -260,6 +279,18 @@ public class CombatAnimationManager : MonoBehaviour
         magicExplosion.Play();
     }
 
+    private void BurstMagicExplosion2()
+    {
+        magicExplosion2.gameObject.SetActive(true);
+        magicExplosion2.Play();
+    }
+
+    private void BurstMagicWard()
+    {
+        magicWard.gameObject.SetActive(true);
+        magicWard.Play();
+    }
+
     private void SniperScopeIn()
     {
         // m_SniperScopeIn.RaiseEvent(fightingPosition);
@@ -269,5 +300,37 @@ public class CombatAnimationManager : MonoBehaviour
     private void SniperShot()
     {
         gunSniperCrosshair.SetActive(false);
+        gunShrapnel.Play();
+    }
+
+    private void CancelWardEffect()
+    {
+        magicWard.gameObject.SetActive(false);
+    }
+
+    private void MoveBoatToEntity(float duration)
+    {
+        if(boat == null) return;
+
+        //Debug.Log(gameObject);
+        boat.transform.DOMoveX(gameObject.transform.position.x, duration).From(boat.transform.position)
+            .SetEase(Ease.OutQuad);
+    }
+
+    private void MoveBoatToX(float xPosition)
+    {
+        if (boat == null) return;
+
+        //Debug.Log(gameObject);
+        boat.transform.DOLocalMoveX(xPosition, 0.25f).From(boat.transform.position)
+            .SetEase(Ease.InSine);
+    }
+
+    private void ResetBoatPosition(float duration)
+    {
+        if (boat == null) return;
+
+        //Debug.Log(gameObject);
+        boat.transform.DOMoveX(boatInitialPos.x, duration).From(boat.transform.position);
     }
 }

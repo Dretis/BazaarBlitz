@@ -224,17 +224,17 @@ public class UIStoreManager : MonoBehaviour
         if (item == null)
         {
             // There is no item in that spot
-            storeChatBubble.text = "<size=42><color=red>SOLD OUT</color></size>";
-            storeChatBubble.text += "<color=yellow>@ ----</color>\n";
+            storeChatBubble.text = "<size=36><color=red>SOLD OUT</color></size>";
+            storeChatBubble.text += "<color=yellow><sprite=\"Coin Icon\" index=0> ----</color>\n";
             storeChatBubble.text += "<size=36>No more stock left.\n\n";
             storeChatBubble.text += "<color=grey>\"Come back another time when we refill it!\"</color></size>";
         }
         else
         {
-            storeChatBubble.text = "<size=42><color=lightblue>" + item.itemName + "</color></size>";
-            storeChatBubble.text += "<color=yellow>@" + item.basePrice + "</color>\n";
-            storeChatBubble.text += "<size=36>" + item.effectDescription + "\n\n";
-            storeChatBubble.text += "<color=grey>" + item.flavorText + "</color></size>";
+            storeChatBubble.text = "<size=36><color=lightblue>" + item.itemName + "</color></size>";
+            storeChatBubble.text += "<color=yellow><sprite=\"Coin Icon\" index=0>" + item.basePrice + "</color>\n";
+            storeChatBubble.text += "" + item.effectDescription + "\n\n";
+            storeChatBubble.text += "<color=grey>" + item.flavorText + "</color>";
         }
     }
     private void OnTryBuyItemAt(int i)

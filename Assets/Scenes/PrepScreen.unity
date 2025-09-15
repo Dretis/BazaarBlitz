@@ -975,6 +975,18 @@ PrefabInstance:
     m_TransformParent: {fileID: 65545952}
     m_Modifications:
     - target: {fileID: 1014884351678274355, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
+      propertyPath: m_Colors.m_NormalColor.b
+      value: 0.1882353
+      objectReference: {fileID: 0}
+    - target: {fileID: 1014884351678274355, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
+      propertyPath: m_Colors.m_NormalColor.g
+      value: 0.11764706
+      objectReference: {fileID: 0}
+    - target: {fileID: 1014884351678274355, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
+      propertyPath: m_Colors.m_NormalColor.r
+      value: 0.105882354
+      objectReference: {fileID: 0}
+    - target: {fileID: 1014884351678274355, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1024683601}
@@ -2133,7 +2145,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d0f51f27fd7c3945b05ed3b3fa92bd9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxPlayers: 4
+  maxPlayers: 2
   m_AllPlayersReady: {fileID: 11400000, guid: 37905259d5fecd543864e8f0d6b52f12, type: 2}
 --- !u!4 &983315348
 Transform:
@@ -2208,6 +2220,34 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 65545952}
     m_Modifications:
+    - target: {fileID: 1014884351678274355, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
+      propertyPath: m_Colors.m_NormalColor.b
+      value: 0.1882353
+      objectReference: {fileID: 0}
+    - target: {fileID: 1014884351678274355, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
+      propertyPath: m_Colors.m_NormalColor.g
+      value: 0.11764706
+      objectReference: {fileID: 0}
+    - target: {fileID: 1014884351678274355, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
+      propertyPath: m_Colors.m_NormalColor.r
+      value: 0.105882354
+      objectReference: {fileID: 0}
+    - target: {fileID: 1014884351678274355, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1014884351678274355, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1024683601}
+    - target: {fileID: 1014884351678274355, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: BoardSelected
+      objectReference: {fileID: 0}
+    - target: {fileID: 1014884351678274355, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
+      value: Overworld 4
+      objectReference: {fileID: 0}
     - target: {fileID: 5613114878548303166, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
       propertyPath: m_Type
       value: 0
@@ -2747,78 +2787,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 5613114878903374573, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
   m_PrefabInstance: {fileID: 1091975214}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1097246570 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5613114878903374574, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
-  m_PrefabInstance: {fileID: 1033083185}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1097246572 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5613114878903374572, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
-  m_PrefabInstance: {fileID: 1033083185}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1097246570}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1097246574
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1097246570}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Navigation:
-    m_Mode: 3
-    m_WrapAround: 0
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
-    m_SelectOnLeft: {fileID: 0}
-    m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
-  m_Colors:
-    m_NormalColor: {r: 0.105882354, g: 0.11764706, b: 0.1882353, a: 0.88235295}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.21226418, g: 1, b: 0.8536516, a: 1}
-    m_SelectedColor: {r: 0.47450984, g: 0.749425, b: 1, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
-    m_ColorMultiplier: 1
-    m_FadeDuration: 0.1
-  m_SpriteState:
-    m_HighlightedSprite: {fileID: 0}
-    m_PressedSprite: {fileID: 0}
-    m_SelectedSprite: {fileID: 0}
-    m_DisabledSprite: {fileID: 0}
-  m_AnimationTriggers:
-    m_NormalTrigger: Normal
-    m_HighlightedTrigger: Highlighted
-    m_PressedTrigger: Pressed
-    m_SelectedTrigger: Selected
-    m_DisabledTrigger: Disabled
-  m_Interactable: 1
-  m_TargetGraphic: {fileID: 1097246572}
-  m_OnClick:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1024683601}
-        m_TargetAssemblyTypeName: BoardSelector, Assembly-CSharp
-        m_MethodName: BoardSelected
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: Overworld 4
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!1 &1145415270
 GameObject:
   m_ObjectHideFlags: 0

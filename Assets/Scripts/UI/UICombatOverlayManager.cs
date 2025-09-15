@@ -405,7 +405,7 @@ public class UICombatOverlayManager : MonoBehaviour
                 if (strDieFlatMod == 0 && strDieMultMod == 1) diceNumbers[i].colorGradientPreset = actionTypeGradients[0];
                 else diceNumbers[i].colorGradientPreset = actionTypeGradients[3];
 
-                diceNumbers[i].text = $"{((entity.strDie[faceIndex] * strDieMultMod) + strDieFlatMod)}";
+                diceNumbers[i].text = $"{(int)((entity.strDie[faceIndex] * strDieMultMod) + strDieFlatMod)}";
             }
             else
             {
@@ -426,7 +426,7 @@ public class UICombatOverlayManager : MonoBehaviour
                 if (dexDieFlatMod == 0 && dexDieMultMod == 1) diceNumbers[i].colorGradientPreset = actionTypeGradients[1];
                 else diceNumbers[i].colorGradientPreset = actionTypeGradients[3];
 
-                diceNumbers[i].text = $"{((entity.dexDie[faceIndex] * dexDieMultMod) + dexDieFlatMod)}";
+                diceNumbers[i].text = $"{(int)((entity.dexDie[faceIndex] * dexDieMultMod) + dexDieFlatMod)}";
             }
             else
             {
@@ -447,7 +447,7 @@ public class UICombatOverlayManager : MonoBehaviour
                 if (intDieFlatMod == 0 && intDieMultMod == 1) diceNumbers[i].colorGradientPreset = actionTypeGradients[2];
                 else diceNumbers[i].colorGradientPreset = actionTypeGradients[3];
 
-                diceNumbers[i].text = $"{((entity.intDie[faceIndex] * intDieMultMod) + intDieFlatMod)}";
+                diceNumbers[i].text = $"{(int)((entity.intDie[faceIndex] * intDieMultMod) + intDieFlatMod)}";
             }
             else
             {
