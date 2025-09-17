@@ -810,8 +810,11 @@ public class CombatManager : MonoBehaviour
             // Add defender's points to attacker's points 
             // Take points from the loser
             float lostPoints = 0.5f * loser.heldPoints;
-            winner.heldPoints += Mathf.FloorToInt(lostPoints);
-            loser.heldPoints -= Mathf.CeilToInt(lostPoints);
+            if(lostPoints > 0)
+            {
+                winner.heldPoints += Mathf.FloorToInt(lostPoints);
+                loser.heldPoints -= Mathf.CeilToInt(lostPoints);
+            }
 
             // Base 100 xp, times 2 for every level the opponent is above you.
             float reputationGain = 100 * Mathf.Pow(2, loser.RenownLevel - winner.RenownLevel);

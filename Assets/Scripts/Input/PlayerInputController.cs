@@ -10,6 +10,7 @@ using UnityEngine.InputSystem.XInput;
 using UnityEngine.InputSystem.DualShock;
 using static GameplayTest;
 using UnityEngine.InputSystem.Switch;
+using UnityEngine.Analytics;
 
 public class PlayerInputController : MonoBehaviour
 {
@@ -74,6 +75,8 @@ public class PlayerInputController : MonoBehaviour
     public PlayerEventChannelSO m_InitiateCombatOnPassBy;
 
     public PlayerEventChannelSO m_EnterLevelUp;
+
+    public PlayerEventChannelSO m_PlayerWon;
 
     public void InitializePlayer(PlayerConfiguration pc)
     {
@@ -149,6 +152,8 @@ public class PlayerInputController : MonoBehaviour
         m_ExitLevelUp.OnEventRaised += OnExitLevelUp;
 
         m_ExitInventory.OnEventRaised += OnExitInventory;
+
+        m_PlayerWon.OnEventRaised += OnPlayerWon;
     }
 
     private void OnDisable()
@@ -177,6 +182,8 @@ public class PlayerInputController : MonoBehaviour
         m_ExitLevelUp.OnEventRaised -= OnExitLevelUp;
 
         m_ExitInventory.OnEventRaised -= OnExitInventory;
+
+        m_PlayerWon.OnEventRaised -= OnPlayerWon;
     }
 
     private void FixedUpdate()
@@ -355,6 +362,9 @@ public class PlayerInputController : MonoBehaviour
                 Debug.Log("confirm to continued!");
                 GameplayTest.instance.ConfirmContinue();
                 break;
+            case GamePhase.GameOver:
+                Debug.Log("YES | Game Finished, go to results scene?");
+                break;
         }
     }
 
@@ -374,6 +384,9 @@ public class PlayerInputController : MonoBehaviour
                 break;
             case GamePhase.ConfirmContinue:
                 GameplayTest.instance.ConfirmContinue();
+                break;
+            case GamePhase.GameOver:
+                Debug.Log("NO | Game Finished, go to results scene?");
                 break;
         }
     }
@@ -490,6 +503,10 @@ public class PlayerInputController : MonoBehaviour
 
             case GamePhase.CombatTime:
                 playerInput.SwitchCurrentActionMap("Combat");
+                break;
+
+            case GamePhase.GameOver:
+                playerInput.SwitchCurrentActionMap("Confirmation");
                 break;
         }
 
@@ -654,6 +671,14 @@ public class PlayerInputController : MonoBehaviour
         if (!playerInput.inputIsActive) return;
 
         SwitchActionMap(previousGamePhase);
+    }
+
+    private void OnPlayerWon(EntityPiece winner)
+    {
+        if (winner != assignedPlayer) playerInput.DeactivateInput();
+
+        playerInput.ActivateInput();
+        SwitchActionMap(GamePhase.GameOver);
     }
 
     private void OnInitiateCombatOnPassBy(EntityPiece entity)

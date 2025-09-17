@@ -7,6 +7,7 @@ using Febucci.UI.Core;
 using UnityEngine.UI;
 using System.Collections;
 using Unity.VisualScripting;
+using UnityEngine.Analytics;
 
 public class GameplayTest : MonoBehaviour
 {
@@ -59,7 +60,8 @@ public class GameplayTest : MonoBehaviour
         ConfirmContinue,
         EndTurn,
         IncidentHappening,
-        EndGame
+        EndGame,
+        GameOver
     }
 
     public enum SpecialIncidents
@@ -132,6 +134,9 @@ public class GameplayTest : MonoBehaviour
     public NodeListFloatEventChannelSO m_DamageAffectedNodes; // listening
 
     [Header("Broadcast on Event Channels")]
+    public PlayerEventChannelSO m_PlayerWon;
+    public PlayerListEventChannelSO m_ResultFinalScores;
+
     public IntEventChannelSO m_NextTurnRound;
 
     public VoidEventChannelSO m_EnableFreeview;
@@ -1385,12 +1390,19 @@ public class GameplayTest : MonoBehaviour
             winner = playerUnits.OrderBy(playerUnit => playerUnit.heldPoints).LastOrDefault();
         }
 
+        var playersByPlacement = playerUnits.OrderBy(playerUnit => playerUnit.heldPoints).ToList();
+        m_ResultFinalScores.RaiseEvent(playersByPlacement);
+
+        // Raise an event that this player won bro
+        m_PlayerWon.RaiseEvent(winner);
+        /*
         // UPDATE WITH ACTUAL END GAME UI, AND MAKE IN DIFFERENT SCRIPT WITH EVENT RAISED HERE.
         Debug.Log(winner.entityName + " is the KING OF THE MARKET!");
         encounterScreen.SetActive(true);
         resultInfo.text = $"{winner.entityName} is the \nWINNER!!!";
+        */
 
-        // Raise an event that this player won bro
+        phase = GamePhase.GameOver;
     }
 
     private void ConfirmPurchase(ItemStats item)
@@ -1398,7 +1410,7 @@ public class GameplayTest : MonoBehaviour
         // When an item is bought, allow confirmation via SPACE bar to continue the game
         if (item != null)
         {
-            //UpdateStorefrontVisual(currentPlayer.occupiedNode.GetComponent<MapNode>());
+            UpdateStorefrontVisual(currentPlayer.occupiedNode.GetComponent<MapNode>());
             //encounterOver = true;
             currentPlayer.heldPoints -= item.basePrice;
             currentPlayer.ReputationPoints += 20 + (item.basePrice / 10);

@@ -23,7 +23,6 @@ public class CameraObserver : MonoBehaviour
     [SerializeField] private CinemachineVirtualCamera levelUpCam;
     [SerializeField] private CinemachineVirtualCamera combatZoomCam;
     [SerializeField] private CinemachineVirtualCamera focusZoomCam;
-    [SerializeField] private CinemachineVirtualCamera incidentCam;
 
     [Header("Listen on Event Channels")]
     public PlayerEventChannelSO m_NextPlayerTurn;
@@ -48,6 +47,8 @@ public class CameraObserver : MonoBehaviour
 
     public VoidEventChannelSO m_IncidentStarted;
 
+    public PlayerEventChannelSO m_PlayerWon;
+
     private void OnEnable()
     {
         freeviewReticle.SetActive(false);
@@ -70,6 +71,8 @@ public class CameraObserver : MonoBehaviour
         m_LandedOnVendor.OnEventRaised += OnLandedOnVendor;
 
         m_IncidentStarted.OnEventRaised += OnIncidentStarted;
+
+        m_PlayerWon.OnEventRaised += OnPlayerWon;
     }
 
     private void OnDisable()
@@ -93,6 +96,8 @@ public class CameraObserver : MonoBehaviour
         m_LandedOnVendor.OnEventRaised -= OnLandedOnVendor;
 
         m_IncidentStarted.OnEventRaised -= OnIncidentStarted;
+
+        m_PlayerWon.OnEventRaised -= OnPlayerWon;
     }
 
     // Start is called before the first frame update
@@ -207,6 +212,15 @@ public class CameraObserver : MonoBehaviour
         zoomedInCam.enabled = false;
         combatZoomCam.enabled = false;
         focusZoomCam.enabled = false;
+    }
+
+    private void OnPlayerWon(EntityPiece winner)
+    {
+        combatZoomCam.enabled = false;
+        focusZoomCam.enabled = false;
+
+        zoomedInCam.Follow = winner.transform;
+        zoomedInCam.enabled = true;
     }
 
     /*

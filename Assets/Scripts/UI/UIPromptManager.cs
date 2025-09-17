@@ -61,6 +61,8 @@ public class UIPromptManager : MonoBehaviour
 
     public VoidEventChannelSO m_IncidentStarted;
 
+    public PlayerEventChannelSO m_PlayerWon;
+
     private void Start()
     {
         rolledNumber.text = "";
@@ -102,6 +104,8 @@ public class UIPromptManager : MonoBehaviour
         m_ExitLevelUp.OnEventRaised += OnExitLevelUp;
 
         m_IncidentStarted.OnEventRaised += OnIncidentStarted;
+
+        m_PlayerWon.OnEventRaised += OnPlayerWon;
     }
 
     private void OnDisable()
@@ -139,6 +143,8 @@ public class UIPromptManager : MonoBehaviour
         m_ExitLevelUp.OnEventRaised -= OnExitLevelUp;
 
         m_IncidentStarted.OnEventRaised -= OnIncidentStarted;
+
+        m_PlayerWon.OnEventRaised -= OnPlayerWon;
     }
 
     private void OnNextPlayerTurn(EntityPiece ps)
@@ -376,5 +382,11 @@ public class UIPromptManager : MonoBehaviour
         HideMenuPrompt();
         turnTypewriter.ShowText("");
         inputPrompt.text = "";
+    }
+
+    private void OnPlayerWon(EntityPiece winner)
+    {
+        rolledNumber.enabled = false;
+        turnTypewriter.ShowText("");
     }
 }

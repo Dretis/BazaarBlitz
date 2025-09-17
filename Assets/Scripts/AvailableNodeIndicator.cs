@@ -31,6 +31,8 @@ public class AvailableNodeIndicator : MonoBehaviour
 
     public VoidEventChannelSO m_IncidentStarted;
 
+    public PlayerEventChannelSO m_PlayerWon;
+
     private void OnEnable()
     {
         m_NextPlayerTurn.OnEventRaised += OnNextPlayerTurn;
@@ -39,6 +41,8 @@ public class AvailableNodeIndicator : MonoBehaviour
         m_PlayerUndidSomething.OnEventRaised += OnPlayerUndidSomething;
 
         m_IncidentStarted.OnEventRaised += OnIncidentStarted;
+
+        m_PlayerWon.OnEventRaised += OnPlayerWon;
     }
 
     private void OnDisable()
@@ -49,6 +53,8 @@ public class AvailableNodeIndicator : MonoBehaviour
         m_PlayerUndidSomething.OnEventRaised -= OnPlayerUndidSomething;
 
         m_IncidentStarted.OnEventRaised -= OnIncidentStarted;
+
+        m_PlayerWon.OnEventRaised -= OnPlayerWon;
     }
 
     // Update is called once per frame
@@ -151,6 +157,11 @@ public class AvailableNodeIndicator : MonoBehaviour
     }
 
     private void OnIncidentStarted()
+    {
+        HideNodeIndicators();
+    }
+
+    private void OnPlayerWon(EntityPiece winner)
     {
         HideNodeIndicators();
     }

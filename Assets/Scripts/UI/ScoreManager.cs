@@ -69,6 +69,8 @@ public class ScoreManager : MonoBehaviour
 
     public PlayerEventChannelSO m_RefreshedActiveEffects;
 
+    public PlayerEventChannelSO m_PlayerWon;
+
     private void OnEnable()
     {
         m_ChangeInScore.OnEventRaised += UpdateScoreForPlayer;
@@ -86,6 +88,8 @@ public class ScoreManager : MonoBehaviour
         m_ExitLevelUp.OnEventRaised += OnExitLevelUp;
 
         m_RefreshedActiveEffects.OnEventRaised += OnRefreshedActiveEffects;
+
+        m_PlayerWon.OnEventRaised += OnPlayerWon;
     }
 
     private void OnDisable()
@@ -105,6 +109,8 @@ public class ScoreManager : MonoBehaviour
         m_ExitLevelUp.OnEventRaised -= OnExitLevelUp;
 
         m_RefreshedActiveEffects.OnEventRaised -= OnRefreshedActiveEffects;
+
+        m_PlayerWon.OnEventRaised -= OnPlayerWon;
     }
 
     void Start()
@@ -312,6 +318,11 @@ public class ScoreManager : MonoBehaviour
     {
         Debug.Log("updating");
         UpdateScoreForPlayer(currentPlayer.id); //spagetti ass code
+    }
+
+    private void OnPlayerWon(EntityPiece winner)
+    {
+        scoreCanvas.enabled = false;
     }
 
     private void OnRefreshedActiveEffects(EntityPiece player)
