@@ -13,6 +13,10 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private EntityPiece currentPlayer;
     [SerializeField] private List<EntityPiece> players;
 
+    [Header("Number Holders")]
+    [SerializeField] private List<int> playerScoreNumbers;
+    [SerializeField] private List<int> playerHPNumbers;
+
     [Header("Colors")]
     [SerializeField] private Color healthyColor;
     [SerializeField] private Color injuredColor;
@@ -124,6 +128,9 @@ public class ScoreManager : MonoBehaviour
             // Set Color of Baggie in score
             playerImages[i].color = players[i].playerColor - new Color32(0, 0, 0, 0); // minus transparency
 
+            playerScoreNumbers[i] = players[i].heldPoints;
+            playerHPNumbers[i] = players[i].health;
+
             UpdateScoreForPlayer(i);
         }
 
@@ -190,10 +197,29 @@ public class ScoreManager : MonoBehaviour
 
     private void UpdateMoneyForPlayer(int id)
     {
+        if (playerScoreNumbers[id] == players[id].heldPoints)
+        {
+            Debug.Log($"!! Money is the same.");
+            return;
+        }
+
+        if (playerScoreNumbers[id] < players[id].heldPoints)
+        {
+            m_CheerForPlayer.RaiseEvent(players[id]);
+        }
+
+        var handle = LMotion.Create(playerScoreNumbers[id], players[id].heldPoints, 1f)
+                        .BindToText(playerScores[id]);
+
+        playerScoreNumbers[id] = players[id].heldPoints;
+
+        /*
         var currentVisualPoints = int.Parse(playerScores[id].text);
+        Debug.Log($"HELP!! Player[{id}] CurrentVisualPoints: {currentVisualPoints} | HeldPoints: {players[id].heldPoints}");
 
         if(currentVisualPoints == players[id].heldPoints)
         {
+            Debug.Log($"!! Money is the same.");
             return;
         }
 
@@ -204,6 +230,7 @@ public class ScoreManager : MonoBehaviour
 
         var handle = LMotion.Create(currentVisualPoints, players[id].heldPoints, 1f)
                         .BindToText(playerScores[id]);
+        */
         /*
         if (players[id].heldPoints < 0)
         {
@@ -222,15 +249,30 @@ public class ScoreManager : MonoBehaviour
     {
         playerMaxHPs[id].text = $"/{players[id].maxHealth * players[id].currentStatsModifier.maxHealthMultModifier + players[id].currentStatsModifier.maxHealthFlatModifier}";
 
+        if (playerHPNumbers[id] == players[id].health)
+        {
+            Debug.Log($"!! Health is the same.");
+            return;
+        }
+
+        var handle = LMotion.Create(playerHPNumbers[id], players[id].health, .5f)
+                        .BindToText(playerCurrentHPs[id]);
+
+        playerHPNumbers[id] = players[id].health;
+
+        /*
         var currentVisualHealth = int.Parse(playerCurrentHPs[id].text);
+        Debug.Log($"HELP!! Player[{id}] currentVisualHealth: {currentVisualHealth} | Health: {players[id].health}");
 
         if (currentVisualHealth == players[id].health)
         {
+            Debug.Log($"!! Health is the same.");
             return;
         }
 
         var handle = LMotion.Create(currentVisualHealth, players[id].health, .5f)
                         .BindToText(playerCurrentHPs[id]);
+        */
 
         /*
         playerCurrentHPs[id].text = $"<color=#4DCF56>HP</color> {players[id].health}<size=18>/" +

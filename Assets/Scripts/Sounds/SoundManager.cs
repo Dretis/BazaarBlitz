@@ -1,3 +1,4 @@
+using FMODUnity;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +6,7 @@ using UnityEngine;
 public class SoundManager : MonoBehaviour
 {
     //FMOD stuff
+    public StudioEventEmitter overworldBGM;
     public FMOD.Studio.EventInstance diceRollInstance;
     public FMOD.Studio.EventInstance overworldThemeInstance;
     public FMOD.Studio.EventInstance battleThemeInstance;
@@ -77,8 +79,12 @@ public class SoundManager : MonoBehaviour
         battleThemeInstance = FMODUnity.RuntimeManager.CreateInstance("event:/BattleTheme");
         //musicVolume = 0.8f;
         //SFXVolume = 0.8f;
-        overworldThemeInstance.setParameterByName("MusicVolume", musicVolume);
-        overworldThemeInstance.start();
+        //overworldThemeInstance.setParameterByName("MusicVolume", musicVolume);
+        //overworldThemeInstance.start();
+
+        //Debug.Log(overworldBGM.EventReference);
+        //Debug.Log(overworldBGM.EventInstance);
+        overworldBGM.Play();
     }
 
     private void OnEnable()

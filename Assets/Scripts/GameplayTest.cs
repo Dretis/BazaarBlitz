@@ -1262,7 +1262,7 @@ public class GameplayTest : MonoBehaviour
         encounterOver = false;
         encounterScreen.SetActive(false);
         storeScreen.SetActive(false);
-        m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
+        //m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
         m_ExitStorefront.RaiseEvent();
     }
 
