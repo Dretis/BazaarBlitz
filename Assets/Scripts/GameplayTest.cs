@@ -72,6 +72,7 @@ public class GameplayTest : MonoBehaviour
     }
 
     [Header("Game Match Info")]
+    public int targetGoal = 4000;
     public int playerCount = 4;
     public int turnRound = 1; // Round based on every player has had a turn
     private int playersActed = 0; // goes up every time a unique players turn is done
@@ -725,14 +726,6 @@ public class GameplayTest : MonoBehaviour
         // Cash in Stamps
         if (m.CompareTag("Castle"))
         {
-            if (p.heldPoints >= 4000)
-            {
-                Debug.Log("BRO HE WON");
-                winner = p;
-                phase = GamePhase.EndGame; // Finish game if player w/ enough points passes by Pawn Shop
-                return;
-            }
-
             oldPoints = p.heldPoints;
             oldStamps = new List<Stamp.StampType>(p.stamps);
 
@@ -755,6 +748,14 @@ public class GameplayTest : MonoBehaviour
                 p.health = p.maxHealth;
             }
             m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
+
+            if (p.heldPoints >= targetGoal)
+            {
+                Debug.Log("BRO HE WON");
+                winner = p;
+                phase = GamePhase.EndGame; // Finish game if player w/ enough points passes by Pawn Shop
+                return;
+            }
         }
         else if (m.CompareTag("Stamp"))
         {
@@ -1389,12 +1390,11 @@ public class GameplayTest : MonoBehaviour
             // This will happen when someone dies during Death's Row
             winner = playerUnits.OrderBy(playerUnit => playerUnit.heldPoints).LastOrDefault();
         }
+        m_PlayerWon.RaiseEvent(winner);
 
         var playersByPlacement = playerUnits.OrderBy(playerUnit => playerUnit.heldPoints).ToList();
         m_ResultFinalScores.RaiseEvent(playersByPlacement);
-
-        // Raise an event that this player won bro
-        m_PlayerWon.RaiseEvent(winner);
+        
         /*
         // UPDATE WITH ACTUAL END GAME UI, AND MAKE IN DIFFERENT SCRIPT WITH EVENT RAISED HERE.
         Debug.Log(winner.entityName + " is the KING OF THE MARKET!");

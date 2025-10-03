@@ -132,6 +132,8 @@ public class ScoreManager : MonoBehaviour
             playerHPNumbers[i] = players[i].health;
 
             UpdateScoreForPlayer(i);
+
+            SetMoneyForPlayer(i);
         }
 
         for (int i = 0; i < players.Count; i++)

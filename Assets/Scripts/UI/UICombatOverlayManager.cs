@@ -11,6 +11,7 @@ using UnityEngine.Rendering.Universal;
 
 public class UICombatOverlayManager : MonoBehaviour
 {
+    private CombatManager thisCombatManager;
     [SerializeField] private Volume volume;
     [SerializeField] private ParticleSystem hitParticle;
 
@@ -124,6 +125,11 @@ public class UICombatOverlayManager : MonoBehaviour
         ShowDiceInfo();
         ShowVSHeader();
 
+        if(thisCombatManager != null)
+        {
+            UpdateDiceStats(thisCombatManager.player1, leftDiceStat);
+            UpdateDiceStats(thisCombatManager.player2, rightDiceStat);
+        }
 
         //m_DecidedTurnOrder.OnEventRaised += UpdateInputPrompts;
         m_SwapPhase.OnEventRaised += SwapPhaseTransitions;
@@ -177,13 +183,15 @@ public class UICombatOverlayManager : MonoBehaviour
         victoryTextPos = victoryText.GetComponent<RectTransform>();
         rewardsTextPos = rewardsText.GetComponent<RectTransform>();
 
-        UpdateDiceStats(CombatManager.Instance.player1, leftDiceStat);
-        UpdateDiceStats(CombatManager.Instance.player2, rightDiceStat);
+        thisCombatManager = CombatManager.Instance;
+
+        UpdateDiceStats(thisCombatManager.player1, leftDiceStat);
+        UpdateDiceStats(thisCombatManager.player2, rightDiceStat);
 
         ShowVSHeader();
         ShowDiceInfo();
 
-        UpdateInputPrompts(CombatManager.Instance.player1);
+        UpdateInputPrompts(thisCombatManager.player1);
     }
     /*
     private void Update()
@@ -366,7 +374,7 @@ public class UICombatOverlayManager : MonoBehaviour
     public void UpdateDiceStats(EntityPiece entity, GameObject diceStats)
     {
         var attacking = false;
-        if(entity == CombatManager.Instance.attacker)
+        if(entity == thisCombatManager.attacker)
         {
             attacking = true;
         }
@@ -462,7 +470,7 @@ public class UICombatOverlayManager : MonoBehaviour
 
     public void UpdateInputPrompts(EntityPiece attacker)
     {
-        if(CombatManager.Instance.player1 == CombatManager.Instance.attacker)
+        if(thisCombatManager.player1 == thisCombatManager.attacker)
         {
             ShowInputPrompt(rightDefendPrompt, 0.25f);
             ShowInputPrompt(leftAttackPrompt, 0.25f);
@@ -707,8 +715,8 @@ public class UICombatOverlayManager : MonoBehaviour
 
     public void SwapPhaseTransitions(EntityPiece attacker)
     {
-        UpdateDiceStats(CombatManager.Instance.player1, leftDiceStat);
-        UpdateDiceStats(CombatManager.Instance.player2, rightDiceStat);
+        UpdateDiceStats(thisCombatManager.player1, leftDiceStat);
+        UpdateDiceStats(thisCombatManager.player2, rightDiceStat);
 
         UpdateInputPrompts(attacker);
         ShowVSHeader();
