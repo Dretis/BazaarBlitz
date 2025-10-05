@@ -17,6 +17,7 @@ public class InventorySelectionHandler : MonoBehaviour, ISubmitHandler, IPointer
     [Header("Broadcast On Event")]
     public IntItemEventChannelSO m_TryUseItemAt; // aka m_ItemUsed or "I want to Use Inventory Item At"
     public IntItemEventChannelSO m_ItemStocked;
+    public IntItemEventChannelSO m_ItemDiscarded;
     public ItemEventChannelSO m_ItemSelected; // basically hovering on item in inv
 
     public ItemStats HeldItem { 
@@ -76,6 +77,18 @@ public class InventorySelectionHandler : MonoBehaviour, ISubmitHandler, IPointer
             GetComponent<Button>().interactable = false;
             m_ItemStocked.RaiseEvent(itemIndex, heldItem);
         }
+        else if(GameplayTest.instance.phase == GameplayTest.GamePhase.DiscardItem)
+        {
+            Debug.Log($"{heldItem.name} discarded");
+
+            itemIcon.sprite = null;
+            itemIcon.enabled = false;
+            itemName.text = "";
+            itemPrice.text = "";
+
+            GetComponent<Button>().interactable = false;
+            m_ItemDiscarded.RaiseEvent(itemIndex, heldItem);
+        }
         else
         {
             // Use Item
@@ -123,6 +136,7 @@ public class InventorySelectionHandler : MonoBehaviour, ISubmitHandler, IPointer
         //StartCoroutine(MoveItem(true));
         // Display Detailed Item Information
         m_ItemSelected.RaiseEvent(heldItem);
+        //Debug.Log("selected ???");
     }
 
     public void OnDeselect(BaseEventData eventData)

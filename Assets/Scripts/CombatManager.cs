@@ -553,12 +553,12 @@ public class CombatManager : MonoBehaviour
 
         
         // If the player defeated is in Death's Row, end the game. Otherwise, go to the next player's turn.
-        if (!loser.isEnemy && loser.isInDeathsRow)
+        if (!loser.isEnemy && loser.currentStates.Contains(EntityPiece.State.DeathsRow))
             sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndGame);
         else
         {
-            if (loser.heldPoints < 0)
-                loser.isInDeathsRow = true;
+            if (loser.heldPoints < 0) loser.currentStates.Add(EntityPiece.State.DeathsRow);
+            //loser.isInDeathsRow = true;
             sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
         }
 

@@ -69,6 +69,8 @@ public class PlayerInputController : MonoBehaviour
     public VoidEventChannelSO m_ExitStorefront;
     public ItemEventChannelSO m_ItemBought;
 
+    public PlayerEventChannelSO m_FullInventory;
+
     public NodeEventChannelSO m_LandOnVendor;
 
     public VoidEventChannelSO m_EnteredCombatScene;
@@ -152,6 +154,7 @@ public class PlayerInputController : MonoBehaviour
         m_ExitLevelUp.OnEventRaised += OnExitLevelUp;
 
         m_ExitInventory.OnEventRaised += OnExitInventory;
+        m_FullInventory.OnEventRaised += OnFullInventory;
 
         m_PlayerWon.OnEventRaised += OnPlayerWon;
     }
@@ -182,6 +185,7 @@ public class PlayerInputController : MonoBehaviour
         m_ExitLevelUp.OnEventRaised -= OnExitLevelUp;
 
         m_ExitInventory.OnEventRaised -= OnExitInventory;
+        m_FullInventory.OnEventRaised -= OnFullInventory;
 
         m_PlayerWon.OnEventRaised -= OnPlayerWon;
     }
@@ -465,6 +469,10 @@ public class PlayerInputController : MonoBehaviour
                 playerInput.SwitchCurrentActionMap("UI");
                 break;
 
+            case GamePhase.DiscardItem:
+                playerInput.SwitchCurrentActionMap("UI");
+                break;
+
             // Roll Phase 
             case GamePhase.RollDice:
                 playerInput.SwitchCurrentActionMap("Confirmation");
@@ -671,6 +679,15 @@ public class PlayerInputController : MonoBehaviour
         if (!playerInput.inputIsActive) return;
 
         SwitchActionMap(previousGamePhase);
+    }
+
+    private void OnFullInventory(EntityPiece entity)
+    {
+        if (!playerInput.inputIsActive) return;
+
+        previousGamePhase = GamePhase.EndTurn;
+        //m_OpenInventory.RaiseEvent(currentPlayer);
+        SwitchActionMap(GamePhase.DiscardItem);
     }
 
     private void OnPlayerWon(EntityPiece winner)

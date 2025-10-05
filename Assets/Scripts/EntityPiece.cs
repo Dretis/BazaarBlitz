@@ -15,12 +15,35 @@ public class EntityPiece : MonoBehaviour
         DeathsRow,
     }
 
+    //public bool isInDeathsRow = false; //replace this with the 'State' later
+
     public List<State> currentStates = new List<State>();
     public string entityName;
     public int id;
     public Color playerColor; // idk man
     public SpriteRenderer playerSprite; // idk man
     public RuntimeAnimatorController combatAnimatorController; // to use and send in combat
+
+    [Header("Player Score Info")]
+    public int heldPoints = 0;
+    public int health = 75;
+    public int maxHealth = 75;
+
+    [Space]
+    [Range(1,99)]public int RenownLevel = 1; // Used to calculate the next level threshold.
+    public float ReputationPoints = 0; // For enemies: how much rep they give on kill. For players: they're total exp
+    public float levelThreshold = 100;
+
+    public List<Stamp.StampType> stamps = new List<Stamp.StampType>();
+
+    [Header("Additional Info")]
+    public int inventoryLimit = 8;
+    public int storeCount = 0;
+
+    [Header("Overworld Info")]
+    public int movementTotal;
+    public int movementLeft;
+
     public MapNode occupiedNode; // Node player is currently on
     public MapNode occupiedNodeCopy; // Node player is currently on
     public MapNode previousNode = null; // Node player just walked on last turn. They can't go back this way.
@@ -32,18 +55,6 @@ public class EntityPiece : MonoBehaviour
     public ParticleSystem coinDrop;
     public ParticleSystem coinSucking;
     public ParticleSystem levelUpRays;
-
-    [Header("Overworld Stats")]
-    public int movementTotal;
-    public int movementLeft;
-    public int heldPoints = 0;
-    public int storeCount = 0;
-    public List<Stamp.StampType> stamps = new List<Stamp.StampType>();
-    public bool isInDeathsRow = false;
-
-    [Header("Combat Stats")]
-    public int health = 75;
-    public int maxHealth = 75;
 
     // Dice faces initialization.
     public DieConfig strDie => entityStats.dieConfigs[(int)EntityBaseStats.DieTypes.Strength];
@@ -62,10 +73,6 @@ public class EntityPiece : MonoBehaviour
     public List<Action> attackActions;
     public List<Action> defendActions;
     public CombatUIManager.FightingPosition fightingPosition; // Just for the combat, will change
-
-    public float ReputationPoints = 0; // For enemies: how much rep they give on kill. For players: they're total exp
-    public float levelThreshold = 100;
-    public int RenownLevel = 1; // Used to calculate the next level threshold.
 
     private void OnEnable()
     {

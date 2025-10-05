@@ -129,7 +129,8 @@ public class UIStoreManager : MonoBehaviour
             Exists(item => currentPlayer.heldPoints >= item.basePrice))
         {
             // Note: Need to display Death's Row notice somehow. Maybe have an icon in the overworld?
-            currentPlayer.isInDeathsRow = true;
+            //currentPlayer.isInDeathsRow = true;
+            currentPlayer.currentStates.Add(EntityPiece.State.DeathsRow);
             // Force player to buy cheapest item in the store.
             var cheapestItem = stockedItems.Where(item => item != null).
                 OrderBy(i => i.basePrice).FirstOrDefault();
@@ -210,7 +211,7 @@ public class UIStoreManager : MonoBehaviour
         // Disable buying of all other items.
         DisableItemSelections();
 
-        if (currentPlayer.isInDeathsRow)
+        if (currentPlayer.currentStates.Contains(EntityPiece.State.DeathsRow))
             storeChatBubble.text = "\"You have received " + item.itemName + ". \n Unfortunately, you've just entered <color=red>DEBT'S ROW</color>.\"";
         else if (item != null)
             storeChatBubble.text = "\"Enjoy your brand new " + item.itemName + "! \nThank you for your patronage, and we hope to see you very soon!\"";
@@ -256,7 +257,7 @@ public class UIStoreManager : MonoBehaviour
     {
         // Try to buy an item
         var selectedStoreItem = storeItemHolders[i].GetComponent<StoreSelectionHandler>().HeldItem;
-        if (selectedStoreItem != null || currentPlayer.isInDeathsRow ||
+        if (selectedStoreItem != null || currentPlayer.currentStates.Contains(EntityPiece.State.DeathsRow) ||
             currentPlayer.heldPoints >= selectedStoreItem.basePrice)
         {
             // Item is buyable, buy it and remove the item from the store

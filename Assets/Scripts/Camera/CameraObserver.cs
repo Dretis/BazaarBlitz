@@ -23,6 +23,7 @@ public class CameraObserver : MonoBehaviour
     [SerializeField] private CinemachineVirtualCamera levelUpCam;
     [SerializeField] private CinemachineVirtualCamera combatZoomCam;
     [SerializeField] private CinemachineVirtualCamera focusZoomCam;
+    [SerializeField] private CinemachineVirtualCamera discardZoomCam;
 
     [Header("Listen on Event Channels")]
     public PlayerEventChannelSO m_NextPlayerTurn;
@@ -40,6 +41,8 @@ public class CameraObserver : MonoBehaviour
 
     public PlayerEventChannelSO m_EnterLevelUp;
     public VoidEventChannelSO m_ExitLevelUp;
+
+    public PlayerEventChannelSO m_FullInventory;
 
     public VoidEventChannelSO m_EnteredCombatScene;
 
@@ -66,6 +69,8 @@ public class CameraObserver : MonoBehaviour
         m_EnterRaycastedTile.OnEventRaised += OnEnterRaycastedTile;
         m_ExitRaycastedTile.OnEventRaised += OnExitRaycastedTile;
 
+        m_FullInventory.OnEventRaised += OnFullInventory;
+
         m_EnteredCombatScene.OnEventRaised += OnEnteredCombatScene;
 
         m_LandedOnVendor.OnEventRaised += OnLandedOnVendor;
@@ -91,6 +96,8 @@ public class CameraObserver : MonoBehaviour
         m_EnterRaycastedTile.OnEventRaised -= OnEnterRaycastedTile;
         m_ExitRaycastedTile.OnEventRaised -= OnExitRaycastedTile;
 
+        m_FullInventory.OnEventRaised -= OnFullInventory;
+
         m_EnteredCombatScene.OnEventRaised -= OnEnteredCombatScene;
 
         m_LandedOnVendor.OnEventRaised -= OnLandedOnVendor;
@@ -113,6 +120,7 @@ public class CameraObserver : MonoBehaviour
         zoomedInCam.enabled = false;
         combatZoomCam.enabled = false;
         focusZoomCam.enabled = false;
+        discardZoomCam.enabled = false;
 
         currentPlayer = entity;
         vcam.Follow = entity.transform;
@@ -191,6 +199,14 @@ public class CameraObserver : MonoBehaviour
         levelUpCam.enabled = false;
     }
 
+    private void OnFullInventory(EntityPiece player)
+    {
+        combatZoomCam.enabled = false;
+
+        discardZoomCam.Follow = currentPlayer.transform;
+        discardZoomCam.enabled = true;
+    }
+
     private void OnEnteredCombatScene()
     {
         combatZoomCam.Follow = currentPlayer.transform;
@@ -212,6 +228,7 @@ public class CameraObserver : MonoBehaviour
         zoomedInCam.enabled = false;
         combatZoomCam.enabled = false;
         focusZoomCam.enabled = false;
+        discardZoomCam.enabled = false;
     }
 
     private void OnPlayerWon(EntityPiece winner)

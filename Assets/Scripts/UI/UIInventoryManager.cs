@@ -12,6 +12,7 @@ public class UIInventoryManager : MonoBehaviour
     {
         UseItem,
         RestockStore,
+        Discard,
         DropItem
     }
     //[SerializeField] private List<ItemStats> playerInventory; //effectively copy of player's inv
@@ -30,6 +31,10 @@ public class UIInventoryManager : MonoBehaviour
     [Header("Selected Item Details")]
     [SerializeField] private Image selectedItemIcon;
     [SerializeField] private List<TextMeshProUGUI> selectedItemInfo;
+
+    [Header("Inventory Instruction Details")]
+    [SerializeField] private CanvasGroup instructionGroup;
+    [SerializeField] private TextMeshProUGUI instructionText;
 
     [Header("Storestock Inventory")]
     [SerializeField] private CanvasGroup storestockGroup;
@@ -53,7 +58,8 @@ public class UIInventoryManager : MonoBehaviour
 
     [Header("Inventory Stats")]
     [SerializeField] private InventoryState currentState;
-    [SerializeField] private int currentItemCount;
+    //[SerializeField] private int currentItemCount;
+    [SerializeField] private int discardedItemCount;
     [SerializeField] private const int INVENTORY_LIMIT = 8;
     [SerializeField] private GameObject heldItemPrefab;
     [SerializeField] private List<GameObject> heldItemHolders;
@@ -69,10 +75,14 @@ public class UIInventoryManager : MonoBehaviour
     public VoidEventChannelSO m_ExitInventory;
     public PlayerEventChannelSO m_RefreshInventory;
     public NodeEventChannelSO m_RestockStore;
+
     public IntItemEventChannelSO m_ItemStocked;
+    public IntItemEventChannelSO m_ItemDiscarded;
     public ItemEventChannelSO m_ItemSelected;
 
     public IntItemEventChannelSO m_TryUseItemAt;
+
+    public PlayerEventChannelSO m_FullInventory;
 
 
     private void OnEnable()
@@ -85,16 +95,22 @@ public class UIInventoryManager : MonoBehaviour
         confirmGroup.interactable = false;
         confirmGroup.alpha = 0f;
 
+        instructionGroup.alpha = 0;
+
         m_OpenInventory.OnEventRaised += DisplayInventory;
         m_ExitInventory.OnEventRaised += HideInventory;
         m_ExitInventory.OnEventRaised += HideStoreStock;
         m_ExitInventory.OnEventRaised += HideConfirmGroup;
         m_RefreshInventory.OnEventRaised += RefreshInventory;
         m_RestockStore.OnEventRaised += ShowStoreStock;
-        m_ItemStocked.OnEventRaised += AddItemToStoreStock;
 
+        m_ItemStocked.OnEventRaised += AddItemToStoreStock;
+        m_ItemDiscarded.OnEventRaised += OnItemDiscarded;
         m_ItemSelected.OnEventRaised += ShowSelectedItemDetails;
+
         m_TryUseItemAt.OnEventRaised += OnTryUseItemAt;
+
+        m_FullInventory.OnEventRaised += OnFullInventory;
     }
 
     private void OnDisable()
@@ -105,10 +121,14 @@ public class UIInventoryManager : MonoBehaviour
         m_ExitInventory.OnEventRaised -= HideConfirmGroup;
         m_RefreshInventory.OnEventRaised -= RefreshInventory;
         m_RestockStore.OnEventRaised -= ShowStoreStock;
-        m_ItemStocked.OnEventRaised -= AddItemToStoreStock;
 
+        m_ItemStocked.OnEventRaised -= AddItemToStoreStock;
+        m_ItemDiscarded.OnEventRaised -= OnItemDiscarded;
         m_ItemSelected.OnEventRaised -= ShowSelectedItemDetails;
+
         m_TryUseItemAt.OnEventRaised -= OnTryUseItemAt;
+
+        m_FullInventory.OnEventRaised -= OnFullInventory;
     }
 
     private void SpawnItemsInInventory(List<ItemStats> playerInventory)
@@ -121,6 +141,10 @@ public class UIInventoryManager : MonoBehaviour
         if (itemsToSpawn <= INVENTORY_LIMIT)
         {
             itemsToSpawn = INVENTORY_LIMIT;
+        }
+        else
+        {
+            itemsToSpawn = itemsToSpawn = playerInventory.Count + (playerInventory.Count % 2);
         }
 
         ItemStats itemToSpawn;
@@ -214,7 +238,19 @@ public class UIInventoryManager : MonoBehaviour
         var playerInventory = entity.inventory;
         ItemStats itemToSpawn;
 
-        for (int i = 0; i < INVENTORY_LIMIT; i++)
+        var itemsToSpawn = playerInventory.Count;
+
+        if (itemsToSpawn <= INVENTORY_LIMIT)
+        {
+            itemsToSpawn = INVENTORY_LIMIT;
+        }
+        else
+        {
+            itemsToSpawn = playerInventory.Count + (playerInventory.Count % 2);
+        }
+        //i < INVENTORY_LIMIT
+
+        for (int i = 0; i < itemsToSpawn; i++)
         {
             if (i < playerInventory.Count)
             {
@@ -275,12 +311,6 @@ public class UIInventoryManager : MonoBehaviour
         storestockIcons[storeTotalIndex].enabled = true;
         storestockNames[storeTotalIndex].text = $"{item.itemName}";
         storestockPrices[storeTotalIndex].text = $"<sprite=\"Coin Icon\" index=0>{item.basePrice}";
-    }
-    
-    // FOR NAM: Used when dropping items on full inventory.
-    public void DropItem(int index)
-    {
-        // Remove visual from inventory UI.
     }
 
     public void ShowSelectedItemDetails(ItemStats item)
@@ -410,5 +440,35 @@ public class UIInventoryManager : MonoBehaviour
     {
         confirmGroup.interactable = false;
         FadeTo(confirmGroup, 0, 0.25f);
+    }
+    public void OnItemDiscarded(int index, ItemStats item)
+    {
+        discardedItemCount--;
+
+        instructionText.text = $"Inventory full!\r\nChoose {discardedItemCount} items to discard.";
+
+        if ( discardedItemCount <= 0)
+        {
+            instructionText.text = "";
+            instructionGroup.alpha = 0;
+
+            m_ExitInventory.RaiseEvent();
+            //GameplayTest.instance.phase = GameplayTest.GamePhase.EndTurn; // CHANGE THIS LATER PLZ
+        }
+    }
+
+    public void OnFullInventory(EntityPiece player)
+    {
+        discardedItemCount = player.inventory.Count - player.inventoryLimit;
+
+        DisplayInventory(player);
+
+        instructionGroup.alpha = 1;
+        m_RefreshInventory.RaiseEvent(player);
+
+        if (discardedItemCount > 0) 
+        {
+            instructionText.text = $"Inventory full!\r\nChoose {discardedItemCount} items to discard.";
+        }
     }
 }

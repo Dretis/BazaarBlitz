@@ -45,6 +45,7 @@ public class GameplayTest : MonoBehaviour
         RaycastTargetSelection,
         Freeview, // for new input system
         Inventory,
+        DiscardItem,
         RollDice,
         PickDirection,
         MoveAround,
@@ -163,9 +164,12 @@ public class GameplayTest : MonoBehaviour
 
     public PlayerEventChannelSO m_OpenInventory; // JASPER OR RUSSELL PLEASE USE THIS EVENT TO ACCESS THE INVENTORY
     public PlayerEventChannelSO m_RefreshInventory;
+    public PlayerEventChannelSO m_FullInventory;
+
     public NodeEventChannelSO m_RestockStore;
     public VoidEventChannelSO m_ExitInventory;
-    public EntityItemListEventChannelSO m_DropItems; // FOR NAM
+
+    //public EntityItemListEventChannelSO m_DropItems; // FOR NAM
 
     public PlayerEventChannelSO m_OverturnOpportunity;
 
@@ -204,6 +208,8 @@ public class GameplayTest : MonoBehaviour
     public VoidEventChannelSO m_FinishedUsedItem; // after UseItem timeline is done
 
     public IntItemEventChannelSO m_ItemStocked;
+    public IntItemEventChannelSO m_ItemDiscarded;
+
     public VoidEventChannelSO m_ExitRaycastedTile; //Listening to this one
     public PlayerEventChannelSO m_BuildStore; //Listening to this one
     public PlayerEventChannelSO m_FinishStockingStore;
@@ -231,6 +237,8 @@ public class GameplayTest : MonoBehaviour
         m_RestockStore.OnEventRaised += OnRestockStore;
         m_FinishStockingStore.OnEventRaised += AddRecentStockIntoStore;
         m_ItemStocked.OnEventRaised += TrackItemFromPlayerInventory;
+
+        m_ItemDiscarded.OnEventRaised += OnItemDiscarded;
 
         m_DisableFreeview.OnEventRaised += DisableFreeview;
 
@@ -264,6 +272,8 @@ public class GameplayTest : MonoBehaviour
         m_RestockStore.OnEventRaised -= OnRestockStore;
         m_FinishStockingStore.OnEventRaised -= AddRecentStockIntoStore;
         m_ItemStocked.OnEventRaised -= TrackItemFromPlayerInventory;
+
+        m_ItemDiscarded.OnEventRaised -= OnItemDiscarded;
 
         m_DisableFreeview.OnEventRaised -= DisableFreeview;
 
@@ -1267,42 +1277,62 @@ public class GameplayTest : MonoBehaviour
         m_ExitStorefront.RaiseEvent();
     }
 
+    public IEnumerator DelayFullInventory(EntityPiece p, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        m_FullInventory.RaiseEvent(p);
+        yield return null;
+    }
+
     void EndOfTurn(EntityPiece p)
     {
-        if (currentPlayerInitialNode.playerOccupied == currentPlayer)
+        if(p.inventory.Count > p.inventoryLimit)
         {
-            currentPlayerInitialNode.playerOccupied = null;
-        }
-
-        // Reset temp values.
-        oldStamps.Clear();
-        oldPoints = 0;
-
-        p.occupiedNode.playerOccupied = p; // update to have that player on that node now
-
-        rollTypewriter.ShowText("");
-
-        isStockingStore = false; // let next player access inventory
-        playerUsedItem = false; // let next player access inventory
-
-        m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
-        rollTypewriter.ShowText("");
-
-
-        playersActed++;
-        if (playersActed == playerCount)
-        {
-            Debug.Log($"Round {turnRound} over.");
-            turnRound++;
-            playersActed = 0;
-
-            // Raise event that round is over with the current round #.
-            m_NextTurnRound.RaiseEvent(turnRound);
-            //SetupNextPlayer();
+            // Player has too many items
+            Debug.Log($"{p.entityName} HAS TOO MANY ITEMS");
+            phase = GamePhase.DiscardItem;
+            StartCoroutine(DelayFullInventory(p, .25f));
+            //m_FullInventory.RaiseEvent(p);
+            //phase = GamePhase.DiscardItem;
         }
         else
         {
-            SetupNextPlayer();
+            // Regular turn end logic
+            if (currentPlayerInitialNode.playerOccupied == currentPlayer)
+            {
+                currentPlayerInitialNode.playerOccupied = null;
+            }
+
+            // Reset temp values.
+            oldStamps.Clear();
+            oldPoints = 0;
+
+            p.occupiedNode.playerOccupied = p; // update to have that player on that node now
+
+            rollTypewriter.ShowText("");
+
+            isStockingStore = false; // let next player access inventory
+            playerUsedItem = false; // let next player access inventory
+
+            m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
+            rollTypewriter.ShowText("");
+
+
+            playersActed++;
+            if (playersActed == playerCount)
+            {
+                Debug.Log($"Round {turnRound} over.");
+                turnRound++;
+                playersActed = 0;
+
+                // Raise event that round is over with the current round #.
+                m_NextTurnRound.RaiseEvent(turnRound);
+                //SetupNextPlayer();
+            }
+            else
+            {
+                SetupNextPlayer();
+            }
         }
     }
 
@@ -1417,7 +1447,7 @@ public class GameplayTest : MonoBehaviour
 
             m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
 
-            if (currentPlayer.inventory.Count > 6)
+            if (currentPlayer.inventory.Count > currentPlayer.inventoryLimit)
             {
                 List<ItemStats> incomingItems = new List<ItemStats> { item };
 
@@ -1552,10 +1582,11 @@ public class GameplayTest : MonoBehaviour
 
     private void RemoveDeathsRow(int id)
     {
-        if (id > -1 && playerUnits[id].heldPoints >= 0 && playerUnits[id].isInDeathsRow)
+        if (id > -1 && playerUnits[id].heldPoints >= 0 && playerUnits[id].currentStates.Contains(EntityPiece.State.DeathsRow))
         {
             Debug.Log(playerUnits[id].entityName + " is no longer in Death's Row");
-            playerUnits[id].isInDeathsRow = false;
+            //playerUnits[id].isInDeathsRow = false;
+            playerUnits[id].currentStates.Remove(EntityPiece.State.DeathsRow);
         }
     }
 
@@ -1702,13 +1733,19 @@ public class GameplayTest : MonoBehaviour
         }
     }
 
+    private void OnItemDiscarded(int index, ItemStats item)
+    {
+        currentPlayer.inventory.RemoveAt(index);
+        m_RefreshInventory.RaiseEvent(currentPlayer);
+    }
+
     public void StealFromPlayer(EntityPiece otherPlayer)
     {
         Debug.Log("StealFromPlayer");
         int indexToSteal = Random.Range(0, otherPlayer.inventory.Count);
         currentPlayer.inventory.Add(otherPlayer.inventory[indexToSteal]);
 
-        if (currentPlayer.inventory.Count > 6)
+        if (currentPlayer.inventory.Count > currentPlayer.inventoryLimit)
         {
             // Raise event to drop items.
         }
