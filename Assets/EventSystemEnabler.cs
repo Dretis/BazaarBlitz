@@ -22,7 +22,7 @@ public class EventSystemEnabler : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
         _inputSystemUIInputModule.enabled = false;
-        yield return new WaitForSeconds(0.2f);
+        //yield return new WaitForSeconds(0.1f);
         _inputSystemUIInputModule.enabled = true;
         _inputSystemUIInputModule.actionsAsset = actionAssetToUse;
     }

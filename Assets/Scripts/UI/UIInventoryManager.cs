@@ -35,6 +35,7 @@ public class UIInventoryManager : MonoBehaviour
     [Header("Inventory Instruction Details")]
     [SerializeField] private CanvasGroup instructionGroup;
     [SerializeField] private TextMeshProUGUI instructionText;
+    [SerializeField] private TextMeshProUGUI inventoryInputPromptText;
 
     [Header("Storestock Inventory")]
     [SerializeField] private CanvasGroup storestockGroup;
@@ -102,7 +103,7 @@ public class UIInventoryManager : MonoBehaviour
         m_ExitInventory.OnEventRaised += HideStoreStock;
         m_ExitInventory.OnEventRaised += HideConfirmGroup;
         m_RefreshInventory.OnEventRaised += RefreshInventory;
-        m_RestockStore.OnEventRaised += ShowStoreStock;
+        m_RestockStore.OnEventRaised += OnRestockStore;
 
         m_ItemStocked.OnEventRaised += AddItemToStoreStock;
         m_ItemDiscarded.OnEventRaised += OnItemDiscarded;
@@ -120,8 +121,8 @@ public class UIInventoryManager : MonoBehaviour
         m_ExitInventory.OnEventRaised -= HideStoreStock;
         m_ExitInventory.OnEventRaised -= HideConfirmGroup;
         m_RefreshInventory.OnEventRaised -= RefreshInventory;
-        m_RestockStore.OnEventRaised -= ShowStoreStock;
-
+        m_RestockStore.OnEventRaised -= OnRestockStore;
+        
         m_ItemStocked.OnEventRaised -= AddItemToStoreStock;
         m_ItemDiscarded.OnEventRaised -= OnItemDiscarded;
         m_ItemSelected.OnEventRaised -= ShowSelectedItemDetails;
@@ -175,8 +176,11 @@ public class UIInventoryManager : MonoBehaviour
     private void DisplayInventory(EntityPiece entity)
     {
         Debug.Log("wtf how");
+
         FadeTo(inventoryGroup, 1, 0.25f);
+
         inventoryGroup.interactable = true;
+        inventoryInputPromptText.text = "<sprite=0> Use Item\r\n<sprite=1> Exit";
 
         //inventoryCanvas.enabled = true;
         HideSelectedItemDetails();
@@ -225,6 +229,7 @@ public class UIInventoryManager : MonoBehaviour
     {
         FadeTo(inventoryGroup, 0, 0.25f);
         inventoryGroup.interactable = false;
+        instructionGroup.alpha = 0;
         //inventoryCanvas.enabled = false;
 
         DestroyAllHeldItems();
@@ -234,6 +239,11 @@ public class UIInventoryManager : MonoBehaviour
     {
         //DestroyAllHeldItems();
         //SpawnItemsInInventory(entity.inventory);
+
+        if(GameplayTest.instance.phase == GameplayTest.GamePhase.StockStore)
+        {
+            instructionText.text = $"<color=#FFEC75>Store resupply!\r\nStock up to {GameplayTest.instance.emptyStockCount} more items.";
+        }
 
         var playerInventory = entity.inventory;
         ItemStats itemToSpawn;
@@ -336,6 +346,15 @@ public class UIInventoryManager : MonoBehaviour
         selectedItemInfo[1].text = "";
         selectedItemInfo[2].text = "";
         selectedItemInfo[3].text = "";
+    }
+
+    public void OnRestockStore(MapNode node)
+    {
+        ShowStoreStock(node);
+
+        instructionText.text = $"<color=#FFEC75>Store resupply!\r\nStock up to {GameplayTest.instance.emptyStockCount} more items.";
+        inventoryInputPromptText.text = "<sprite=0> Stock Item\r\n<sprite=1> Finish Stocking";
+        instructionGroup.alpha = 1;
     }
 
     public void ShowStoreStock(MapNode node)
@@ -445,7 +464,7 @@ public class UIInventoryManager : MonoBehaviour
     {
         discardedItemCount--;
 
-        instructionText.text = $"Inventory full!\r\nChoose {discardedItemCount} items to discard.";
+        instructionText.text = $"<color=#FF8A8A>Inventory full!\r\nChoose {discardedItemCount} items to discard.</color>";
 
         if ( discardedItemCount <= 0)
         {
@@ -463,12 +482,14 @@ public class UIInventoryManager : MonoBehaviour
 
         DisplayInventory(player);
 
+        inventoryInputPromptText.text = "<sprite=0> <color=#FF8A8A>Discard Item</color>";
         instructionGroup.alpha = 1;
         m_RefreshInventory.RaiseEvent(player);
 
+
         if (discardedItemCount > 0) 
         {
-            instructionText.text = $"Inventory full!\r\nChoose {discardedItemCount} items to discard.";
+            instructionText.text = $"<color=#FF8A8A>Inventory full!\r\nChoose {discardedItemCount} items to discard.</color>";
         }
     }
 }

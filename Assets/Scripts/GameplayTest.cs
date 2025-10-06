@@ -1554,6 +1554,12 @@ public class GameplayTest : MonoBehaviour
         p.health = Mathf.Min(p.maxHealth * p.currentStatsModifier.maxHealthMultModifier
             + p.currentStatsModifier.maxHealthFlatModifier,
             p.health + p.currentStatsModifier.healthRegen);
+
+        if(p.health < 1)
+        {
+            p.health = 1;
+        }
+
         m_UpdatePlayerScore.RaiseEvent(p.id);
 
         // Warp player to specified destination.

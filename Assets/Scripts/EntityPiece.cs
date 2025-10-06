@@ -37,8 +37,8 @@ public class EntityPiece : MonoBehaviour
     public List<Stamp.StampType> stamps = new List<Stamp.StampType>();
 
     [Header("Additional Info")]
-    public int inventoryLimit = 8;
-    public int storeCount = 0;
+    [Range(1, 10)] public int inventoryLimit = 8;
+    [Range(0, 6)] public int storeCount = 0;
 
     [Header("Overworld Info")]
     public int movementTotal;
