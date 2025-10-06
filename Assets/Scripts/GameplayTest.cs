@@ -5,9 +5,7 @@ using DG.Tweening;
 using System.Linq;
 using Febucci.UI.Core;
 using UnityEngine.UI;
-using System.Collections;
-using Unity.VisualScripting;
-using UnityEngine.Analytics;
+using System.Collections; 
 
 public class GameplayTest : MonoBehaviour
 {

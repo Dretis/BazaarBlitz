@@ -5,7 +5,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using LitMotion;
-using static UnityEngine.Rendering.DebugUI;
 
 public class VendorManager : MonoBehaviour
 {
@@ -108,7 +107,9 @@ public class VendorManager : MonoBehaviour
         player.currentStates.Add(EntityPiece.State.InsideVendor);
 
         // Make it so the player looks like they're in the vendor
-        seatedPlayerSprites[newestPlayerID].GetComponent<SpriteRenderer>().color = Color.white;
+        //seatedPlayerSprites[newestPlayerID].GetComponent<SpriteRenderer>().color = Color.white;
+        seatedPlayerSprites[newestPlayerID].GetComponent<SpriteRenderer>().enabled = true;
+        //seatedPlayerSprites[newestPlayerID].SetActive(true);
 
         seatedPlayerSprites[newestPlayerID].GetComponent<PlayerPaletteLoader>().
                 SetInspectorPalette(player.GetComponent<PlayerPaletteLoader>().GetInspectorPalette());
@@ -138,7 +139,9 @@ public class VendorManager : MonoBehaviour
             //seatedPlayers.Remove(player);
             seatedPlayers[id] = null;
 
-            seatedPlayerSprites[id].GetComponent<SpriteRenderer>().color = new Color32(0,0,0,0);
+            //seatedPlayerSprites[id].GetComponent<SpriteRenderer>().color = new Color32(0,0,0,0);
+            seatedPlayerSprites[id].GetComponent<SpriteRenderer>().enabled = false;
+            //seatedPlayerSprites[id].SetActive(false);
         }
     }
 

@@ -10,7 +10,6 @@ using UnityEngine.InputSystem.XInput;
 using UnityEngine.InputSystem.DualShock;
 using static GameplayTest;
 using UnityEngine.InputSystem.Switch;
-using UnityEngine.Analytics;
 
 public class PlayerInputController : MonoBehaviour
 {
@@ -592,6 +591,9 @@ public class PlayerInputController : MonoBehaviour
     {
         if (!playerInput.inputIsActive) return;
 
+        playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
+        playerInput.uiInputModule.actionsAsset = playerInput.actions;
+
         previousGamePhase = instance.phase;
         Debug.Log("prev phase = "+previousGamePhase);
         SwitchActionMap(GamePhase.StockStore);
@@ -684,6 +686,9 @@ public class PlayerInputController : MonoBehaviour
     private void OnFullInventory(EntityPiece entity)
     {
         if (!playerInput.inputIsActive) return;
+
+        playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
+        playerInput.uiInputModule.actionsAsset = playerInput.actions;
 
         previousGamePhase = GamePhase.EndTurn;
         //m_OpenInventory.RaiseEvent(currentPlayer);
