@@ -352,9 +352,10 @@ public class UIInventoryManager : MonoBehaviour
     {
         ShowStoreStock(node);
 
-        instructionText.text = $"<color=#FFEC75>Store resupply!\r\nStock up to {GameplayTest.instance.emptyStockCount} more items.";
         inventoryInputPromptText.text = "<sprite=0> Stock Item\r\n<sprite=1> Finish Stocking";
         instructionGroup.alpha = 1;
+
+        instructionText.text = $"<color=#FFEC75>Store resupply!\r\nStock up to {GameplayTest.instance.emptyStockCount} more items.";
     }
 
     public void ShowStoreStock(MapNode node)

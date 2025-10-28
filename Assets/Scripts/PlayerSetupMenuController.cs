@@ -12,8 +12,15 @@ public class PlayerSetupMenuController : MonoBehaviour
     [SerializeField] private List<Sprite> deviceSprites; // Keyboard=0,Xbox=1,PS=2,Switch=3
     [SerializeField] private List<Color> playerPrimaryColors;
 
+    [Header("Indexed")]
     [SerializeField] private Image selectedDevice;
     [SerializeField] private TypewriterCore titleText;
+
+    [Header("Setup Visuals")]
+    [SerializeField] private Image baggieVisual;
+    [SerializeField] private TypewriterCore baggieVisualName;
+
+
     [SerializeField] private GameObject menuPanel;
     [SerializeField] private GameObject readyPanel;
     [SerializeField] private Button readyButton;
@@ -50,11 +57,28 @@ public class PlayerSetupMenuController : MonoBehaviour
         menuPanel.SetActive(false);
     }
 
+    public void SetPalette(List<Color> palette)
+    {
+        if (!inputEnabled) return;
+
+        PlayerConfigurationManager.instance.SetPlayerPalette(playerIndex, palette);
+    }
+
     public void SetName(string name)
     {
         if (!inputEnabled) return;
 
         PlayerConfigurationManager.instance.SetPlayerName(playerIndex, name);
+    }
+
+    public void SetSelectedColor(Color selectedColor)
+    {
+        baggieVisual.color = selectedColor;
+    }
+
+    public void SetSelectedName(string selectedName)
+    {
+        baggieVisualName.ShowText(selectedName);
     }
 
     public void SetDevice(PlayerInputController.CurrentDevice device)

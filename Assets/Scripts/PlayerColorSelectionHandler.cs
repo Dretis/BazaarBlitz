@@ -11,16 +11,18 @@ public class PlayerColorSelectionHandler : MonoBehaviour, ISubmitHandler, IPoint
     private Image buttonImage;
 
     [SerializeField] private PlayerSetupMenuController setup;
-    [SerializeField] private Image baggieVisual;
-    [SerializeField] private TypewriterCore baggieVisualName;
-    [SerializeField] private Color color;
-    [SerializeField] private string baggieColorName;
+    //[SerializeField] private Image baggieVisual;
+    //[SerializeField] private TypewriterCore baggieVisualName;
+    [SerializeField] private PlayerColorPalettePreset colorPreset;
+    //[SerializeField] private Color mainColor;
+    //[SerializeField] private List<Color> colorPalette = new List<Color>();
+    //[SerializeField] private string baggieColorName;
 
     // Start is called before the first frame update
     void Start()
     {
         buttonImage = GetComponent<Image>();
-        buttonImage.color = color;
+        buttonImage.color = colorPreset.mainColor;
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -39,17 +41,19 @@ public class PlayerColorSelectionHandler : MonoBehaviour, ISubmitHandler, IPoint
     }
     public void OnSubmit(BaseEventData eventData)
     {
-        Debug.Log("Submitted | "+eventData);
-        setup.SetColor(color);
-        setup.SetName(baggieColorName);
+        Debug.Log("Submitted | " + eventData);
+        setup.SetColor(colorPreset.mainColor);
+        setup.SetPalette(colorPreset.baggieColorPalette);
+        setup.SetName(colorPreset.presetName);
         // set Baggie name here too with baggieColorName
     }
 
     public void OnSelect(BaseEventData eventData)
     {
         // Change color of the Baggie visual
-        baggieVisual.color = color;
-        baggieVisualName.ShowText(baggieColorName);
+        setup.SetSelectedColor(colorPreset.mainColor);
+        //setup.SetSelectedPalette(colorPreset.baggieColorPalette);
+        setup.SetSelectedName(colorPreset.presetName);
     }
     public void OnDeselect(BaseEventData eventData)
     {

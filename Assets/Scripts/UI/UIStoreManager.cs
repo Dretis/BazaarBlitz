@@ -161,7 +161,7 @@ public class UIStoreManager : MonoBehaviour
 
         // storefrontCanvas.enabled = !storefrontCanvas.enabled;
         currentStore = mapNode.GetComponent<StoreManager>();
-        currentPlayer = mapNode.playerOccupied;
+        currentPlayer = GameplayTest.instance.currentPlayer; //mapNode.playerOccupied;
 
         SpawnItemsInStore(mapNode);
 

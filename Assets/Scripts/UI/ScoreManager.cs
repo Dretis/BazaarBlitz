@@ -18,10 +18,14 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private List<int> playerHPNumbers;
 
     [Header("Colors")]
+    [SerializeField] private Color negativeMoneyColor;
+
+    [Space]
     [SerializeField] private Color healthyColor;
     [SerializeField] private Color injuredColor;
     [SerializeField] private Color dangerColor;
 
+    [Space]
     [SerializeField] private Color greenStampColor;
     [SerializeField] private Color redStampColor;
     [SerializeField] private Color blueStampColor;
@@ -204,6 +208,11 @@ public class ScoreManager : MonoBehaviour
             Debug.Log($"!! Money is the same.");
             return;
         }
+
+        if (players[id].heldPoints < 0)
+            playerScores[id].color = negativeMoneyColor;
+        else
+            playerScores[id].color = Color.white;
 
         if (playerScoreNumbers[id] < players[id].heldPoints)
         {

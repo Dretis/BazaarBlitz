@@ -1,6 +1,7 @@
 using UnityEngine;
 using Cinemachine;
 using static UnityEngine.EventSystems.EventTrigger;
+using System.Collections.Generic;
 
 public class CameraObserver : MonoBehaviour
 {
@@ -47,6 +48,7 @@ public class CameraObserver : MonoBehaviour
     public VoidEventChannelSO m_EnteredCombatScene;
 
     public NodeEventChannelSO m_LandedOnVendor;
+    public PlayerListEventChannelSO m_LandedOnMultipleEntities;
 
     public VoidEventChannelSO m_IncidentStarted;
 
@@ -74,6 +76,7 @@ public class CameraObserver : MonoBehaviour
         m_EnteredCombatScene.OnEventRaised += OnEnteredCombatScene;
 
         m_LandedOnVendor.OnEventRaised += OnLandedOnVendor;
+        m_LandedOnMultipleEntities.OnEventRaised += OnLandedOnMultipleEntities;
 
         m_IncidentStarted.OnEventRaised += OnIncidentStarted;
 
@@ -101,6 +104,7 @@ public class CameraObserver : MonoBehaviour
         m_EnteredCombatScene.OnEventRaised -= OnEnteredCombatScene;
 
         m_LandedOnVendor.OnEventRaised -= OnLandedOnVendor;
+        m_LandedOnMultipleEntities.OnEventRaised -= OnLandedOnMultipleEntities;
 
         m_IncidentStarted.OnEventRaised -= OnIncidentStarted;
 
@@ -221,6 +225,13 @@ public class CameraObserver : MonoBehaviour
             focusZoomCam.Follow = vendorPos.transform;
             focusZoomCam.enabled = true;
         }
+    }
+
+    private void OnLandedOnMultipleEntities(List<EntityPiece> entities)
+    {
+        zoomedInCam.Follow = currentPlayer.transform;
+
+        zoomedInCam.enabled = true;
     }
 
     private void OnIncidentStarted()

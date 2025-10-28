@@ -3,9 +3,8 @@ using UnityEngine;
 using TMPro;
 using Febucci.UI.Core;
 using LitMotion;
-using static UnityEngine.Rendering.DebugUI;
-using LitMotion.Extensions;
-using System;
+using UnityEngine.EventSystems;
+using System.Collections.Generic;
 
 public class UIPromptManager : MonoBehaviour
 {
@@ -24,10 +23,27 @@ public class UIPromptManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI rolledNumber;
     [SerializeField] private TextMeshProUGUI movementRoll;
 
+    [Space]
+    [SerializeField] private CanvasGroup promptInstructionGroup;
+    [SerializeField] private TextMeshProUGUI promptInstructionText;
+    [SerializeField] private List<GameObject> promptConfirmButtonHolders = new List<GameObject>();
+
+    [Header("ITM UI Elements")]
     [SerializeField] private CanvasGroup menuPrompt;
+    [SerializeField] private TextMeshProUGUI movePromptText;
+
+    [Space]
     [SerializeField] private TextMeshProUGUI inventoryPromptText;
+    [SerializeField] private TextMeshProUGUI inventoryLimitText;
+
+    [Space]
     [SerializeField] private TextMeshProUGUI buildPromptText;
     [SerializeField] private TextMeshProUGUI buildLimitText;
+
+    [Header("Broadcast on Event Channels")]
+    public PlayerEventChannelSO m_BuildStore; // also listening
+    public VoidEventChannelSO m_CancelBuildStore; // also listening
+    public NodeEventChannelSO m_RestockStore; // also listening
 
     [Header("Listen on Event Channels")]
     public IntEventChannelSO m_RollForMovement;
@@ -45,9 +61,9 @@ public class UIPromptManager : MonoBehaviour
 
     public PlayerEventChannelSO m_OpenInventory;
     public VoidEventChannelSO m_ExitInventory;
-    public NodeEventChannelSO m_RestockStore;
 
-    public PlayerEventChannelSO m_BuildStore;
+    public PlayerEventChannelSO m_TryBuildStore;
+    public PlayerEventChannelSO m_FinishStockingStore;
 
     public PlayerEventChannelSO m_OverturnOpportunity;
     public IntItemEventChannelSO m_ItemUsed;
@@ -67,6 +83,9 @@ public class UIPromptManager : MonoBehaviour
     {
         rolledNumber.text = "";
         movementRoll.text = "-";
+
+        promptInstructionGroup.alpha = 0;
+        promptInstructionGroup.interactable = false;
     }
 
     private void OnEnable()
@@ -90,7 +109,10 @@ public class UIPromptManager : MonoBehaviour
 
         m_RestockStore.OnEventRaised += ClearInputText;
 
+        m_TryBuildStore.OnEventRaised += OnTryBuildStore;
         m_BuildStore.OnEventRaised += OnBuildStore;
+        m_CancelBuildStore.OnEventRaised += OnCancelBuildStore;
+        m_FinishStockingStore.OnEventRaised += OnFinishStockingStore;
 
         m_OverturnOpportunity.OnEventRaised += DisplayOverturnChoices;
 
@@ -130,7 +152,10 @@ public class UIPromptManager : MonoBehaviour
 
         m_RestockStore.OnEventRaised -= ClearInputText;
 
+        m_TryBuildStore.OnEventRaised -= OnTryBuildStore;
         m_BuildStore.OnEventRaised -= OnBuildStore;
+        m_CancelBuildStore.OnEventRaised -= OnCancelBuildStore;
+        m_FinishStockingStore.OnEventRaised -= OnFinishStockingStore;
 
         m_OverturnOpportunity.OnEventRaised -= DisplayOverturnChoices;
 
@@ -152,7 +177,8 @@ public class UIPromptManager : MonoBehaviour
         currentPlayer = ps;
 
         DisplayInitialMenu(ps);
-        NormalizeInventoryPrompt();
+        NormalizeInventoryPrompt(ps);
+        ContextualizeMovePrompt(ps);
 
         if (NextPlayerGoIsRunning)
             StopCoroutine(oldNextPlayerGo);
@@ -230,7 +256,8 @@ public class UIPromptManager : MonoBehaviour
     {
         ClearInputText();
         NormalizeBuildPrompt(ps);
-        if (GameplayTest.instance.phase == GameplayTest.GamePhase.PickDirection)
+        if (GameplayTest.instance.phase == GameplayTest.GamePhase.PickDirection 
+            || GameplayTest.instance.phase == GameplayTest.GamePhase.CombatSelector)
             return;
 
         //menuPrompt.alpha = 1;
@@ -322,14 +349,32 @@ public class UIPromptManager : MonoBehaviour
         inputPrompt.text += "\n<sprite=1><color=white></color> Leave Vendor";
     }
 
-    private void NormalizeInventoryPrompt()
+    private void ContextualizeMovePrompt(EntityPiece ps)
+    {
+        if(ps == null) return;
+
+        if (ps.currentStates.Contains(EntityPiece.State.Fighting) 
+            || ps.currentStates.Contains(EntityPiece.State.FightingParty)) 
+        {
+            movePromptText.text = "Fight";
+        }
+        else movePromptText.text = "Move";
+
+    }
+
+    private void NormalizeInventoryPrompt(EntityPiece ps)
     {
         inventoryPromptText.text = "Item";
+
+        inventoryLimitText.color = Color.white;
+        inventoryLimitText.text = $"{ps.inventory.Count}/{ps.inventoryLimit}";
     }
 
     private void StrikethroughInventoryPrompt(int index, ItemStats item)
     {
         inventoryPromptText.text = "<color=grey>Item</color>";
+        inventoryLimitText.color = Color.grey;
+        inventoryLimitText.text = $"{currentPlayer.inventory.Count-1}/{currentPlayer.inventoryLimit}";
     }
 
     private void NormalizeBuildPrompt(EntityPiece ps)
@@ -361,9 +406,55 @@ public class UIPromptManager : MonoBehaviour
         inputPrompt.text += "\n<color=white>[RMB]/[SHIFT]</color> Yes, take it over! <color=white>Costs</color> <color=yellow>@</color>600";
     }
 
+    // Button functions
+    public void ConfirmBuildStoreButton()
+    {
+        m_BuildStore.RaiseEvent(currentPlayer);
+        m_RestockStore.RaiseEvent(currentPlayer.occupiedNode);
+    }
+
+    public void CancelBuildStoreButton()
+    {
+        m_CancelBuildStore.RaiseEvent();
+    }
+    // end of button functions
+
+    private void OnTryBuildStore(EntityPiece ep)
+    {
+        HideMenuPrompt();
+
+        promptInstructionGroup.alpha = 1;
+        promptInstructionGroup.interactable = true;
+
+        promptInstructionText.text = "Build a store on this space?";
+
+        if(ep.inventory.Count == 0)
+        {
+            promptInstructionText.text += "\n<color=#D94A45>[!] You have no items to stock.";
+        }
+
+        EventSystem.current.SetSelectedGameObject(promptConfirmButtonHolders[0]);
+    }
+
     private void OnBuildStore(EntityPiece ep)
     {
+        promptInstructionGroup.alpha = 0;
+        promptInstructionGroup.interactable = false;
+
         StrikethroughBuildPrompt();
+    }
+
+    private void OnCancelBuildStore()
+    {
+        ShowMenuPrompt();
+
+        promptInstructionGroup.alpha = 0;
+        promptInstructionGroup.interactable = false;
+    }
+
+    private void OnFinishStockingStore(EntityPiece ep)
+    {
+        inventoryLimitText.text = $"{ep.inventory.Count}/{ep.inventoryLimit}";
     }
 
     private void OnEnterLevelUp(EntityPiece ep)

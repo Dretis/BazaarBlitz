@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4572607719132578481}
   - component: {fileID: 3958107595109039652}
   - component: {fileID: 2168771787654494451}
+  - component: {fileID: 2933081348831019752}
   m_Layer: 0
   m_Name: Player Configuration
   m_TagString: Untagged
@@ -112,6 +113,7 @@ MonoBehaviour:
   m_DiceRolled: {fileID: 11400000, guid: fb9fa3f55f7f0924db5a635622936326, type: 2}
   m_RollForMovement: {fileID: 11400000, guid: d015287f1c859dc49a75cff91e2028a9, type: 2}
   m_OpenInventory: {fileID: 11400000, guid: 91caeb767faff934e81ba8e6ff774d38, type: 2}
+  m_TryBuildStore: {fileID: 11400000, guid: 94cd759fd9c7842498fdd73d020eac27, type: 2}
   m_BuildStore: {fileID: 11400000, guid: 9d5f0aa79aca10040958b1cad28bafa1, type: 2}
   m_FinishStockingStore: {fileID: 11400000, guid: f02cee4c939241841aa967904d4db75e, type: 2}
   m_RestockStore: {fileID: 11400000, guid: 45d6b055127905e4cb2609426a521e19, type: 2}
@@ -123,12 +125,48 @@ MonoBehaviour:
   m_AssignPlayerToController: {fileID: 11400000, guid: ad03087746d19e74292e7dbccb547d32, type: 2}
   m_NextPlayerTurn: {fileID: 11400000, guid: 45e13c3cd9283b74989c51218c39f6c2, type: 2}
   m_NextTurnRound: {fileID: 11400000, guid: 100b03d519b6b1543a4661a2be5dad3d, type: 2}
+  m_CancelBuildStore: {fileID: 11400000, guid: 4877417aba6a2424d92d6c65a6fa67db, type: 2}
   m_LandOnStorefront: {fileID: 11400000, guid: f648c693d8451764f96f063b6b3da44b, type: 2}
   m_ExitStorefront: {fileID: 11400000, guid: 410e906b10aa4ae49ab7395fffa23d79, type: 2}
   m_ItemBought: {fileID: 11400000, guid: ace0aa03bf09d91469d5914ce815154e, type: 2}
   m_FullInventory: {fileID: 11400000, guid: 887e975774de4964595a6eb83fd1b16b, type: 2}
   m_LandOnVendor: {fileID: 11400000, guid: eb2649013aa7cbc41af4a7f3a5c359c8, type: 2}
+  m_LandOnMultipleEntities: {fileID: 11400000, guid: 29c82be8cac6c7342aff3ab44e4757eb, type: 2}
   m_EnteredCombatScene: {fileID: 11400000, guid: b06b734815e5e434087c29d416ff002e, type: 2}
   m_InitiateCombatOnPassBy: {fileID: 11400000, guid: 738add0769a4e0047bfef96c86d9f906, type: 2}
   m_EnterLevelUp: {fileID: 11400000, guid: 2e765a5770dc0604e9dbf9fa24b60fba, type: 2}
   m_PlayerWon: {fileID: 11400000, guid: 30be4a0c1ed8bdc43b43a3dc867dd37d, type: 2}
+--- !u!114 &2933081348831019752
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 839208357971544691}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41a9ac9ec632e9241987845dcdf2afde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerName: Baggie_Name
+  playerColor: {r: 0.7372549, g: 0.15566039, b: 0.3254902, a: 1}
+  baggiePaletteColorCount: 8
+  baggieColorPalette:
+  - {r: 0.7372549, g: 0.15686275, b: 0.3254902, a: 1}
+  - {r: 0.8235294, g: 0.6627451, b: 0.40784314, a: 1}
+  - {r: 0.9150943, g: 0.28057137, b: 0.3634921, a: 1}
+  - {r: 0.8235294, g: 0.6627451, b: 0.40784314, a: 1}
+  - {r: 0.9921569, g: 0.9450981, b: 0.7254902, a: 1}
+  - {r: 0.9490196, g: 0.42352942, b: 0.4862745, a: 1}
+  - {r: 0.42745098, g: 0.62352943, b: 0.9490196, a: 1}
+  - {r: 0.88235295, g: 0.5568628, b: 1, a: 1}
+  boatPaletteColorCount: 8
+  boatColorPalette:
+  - {r: 0.97647065, g: 0.75294125, b: 0.6392157, a: 1}
+  - {r: 0.97647065, g: 0.75294125, b: 0.6392157, a: 1}
+  - {r: 0.9450981, g: 0.8117648, b: 0.61960787, a: 1}
+  - {r: 0.78823537, g: 0.7294118, b: 0.6431373, a: 1}
+  - {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  - {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  - {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  - {r: 0.5, g: 0.5, b: 0.5, a: 1}

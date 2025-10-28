@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 public class PlayerConfigurationManager : MonoBehaviour
 {
     private List<PlayerConfiguration> playerConfigs;
+    [SerializeField] private List<PlayerCosmeticManager> playerCosmeticManagers;
 
     [SerializeField] private int maxPlayers = 4;
 
@@ -34,6 +35,7 @@ public class PlayerConfigurationManager : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(instance);
             playerConfigs = new List<PlayerConfiguration>();
+            playerCosmeticManagers = new List<PlayerCosmeticManager>();
         }
     }
 
@@ -47,14 +49,26 @@ public class PlayerConfigurationManager : MonoBehaviour
         return playerConfigs[index];
     }
 
+    public PlayerCosmeticManager GetPlayerCosmeticManager(int index)
+    {
+        return playerCosmeticManagers[index];
+    }
+
     public void SetPlayerColor(int index, Color color)
     {
         playerConfigs[index].PlayerColor = color;
+        playerCosmeticManagers[index].playerColor = color;
+    }
+
+    public void SetPlayerPalette(int index, List<Color> palette)
+    {
+        playerCosmeticManagers[index].baggieColorPalette = palette;
     }
 
     public void SetPlayerName(int index, string newName)
     {
         playerConfigs[index].PlayerName = newName;
+        playerCosmeticManagers[index].playerName = newName;
     }
 
     public void ReadyPlayer(int index)
@@ -92,6 +106,7 @@ public class PlayerConfigurationManager : MonoBehaviour
         {
             pi.transform.SetParent(transform); // Becomes child of the ParentConfigManager to perist across scenes
             playerConfigs.Add(new PlayerConfiguration(pi));
+            playerCosmeticManagers.Add(pi.GetComponent<PlayerCosmeticManager>());
             pi.gameObject.name = $"PLAYER CONFIG [{pi.playerIndex}]";
         }
     }

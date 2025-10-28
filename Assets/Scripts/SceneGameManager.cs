@@ -43,8 +43,8 @@ public class SceneGameManager : MonoBehaviour
         foreach(var combatManager in combatManagers)
         {
             combatManager.combatSceneIndex = combatManagers.IndexOf(combatManager)+1;
-            combatManager.player1.combatSceneIndex = combatManager.combatSceneIndex;
-            combatManager.player2.combatSceneIndex = combatManager.combatSceneIndex;
+            //combatManager.player1.combatSceneIndex = combatManager.combatSceneIndex;
+            //combatManager.player2.combatSceneIndex = combatManager.combatSceneIndex;
         }
 
         //SceneManager.SetActiveScene(SceneManager.GetSceneAt(0));

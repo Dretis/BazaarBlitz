@@ -10,6 +10,7 @@ public class EntityPiece : MonoBehaviour
         Alive,
         Dead,
         Fighting,
+        FightingParty,
         InsideVendor,
         Invulernable,
         DeathsRow,
@@ -21,6 +22,7 @@ public class EntityPiece : MonoBehaviour
     public string entityName;
     public int id;
     public Color playerColor; // idk man
+    public EntityInfo entityInfo; // Holds info about this specific being
     public SpriteRenderer playerSprite; // idk man
     public RuntimeAnimatorController combatAnimatorController; // to use and send in combat
 
@@ -45,7 +47,7 @@ public class EntityPiece : MonoBehaviour
     public int movementLeft;
 
     public MapNode occupiedNode; // Node player is currently on
-    public MapNode occupiedNodeCopy; // Node player is currently on
+    public MapNode occupiedNodeCopy; // Node player's initial node at the start of the turn
     public MapNode previousNode = null; // Node player just walked on last turn. They can't go back this way.
     public int unspentLevelUpPoints = 0;
     public List<MapNode> traveledNodes = new List<MapNode>(); // Tracks the nodes the player has gone to
@@ -62,7 +64,8 @@ public class EntityPiece : MonoBehaviour
     public DieConfig intDie => entityStats.dieConfigs[(int)EntityBaseStats.DieTypes.Int];
 
     [Header("Combat Info")]
-    public int combatSceneIndex = -1; // -1 indicates player is not in battle
+    //public int combatSceneIndex = -1; // -1 indicates player is not in battle
+    //public List<CombatManager> involvedCombatManagers = new List<CombatManager>();
     public bool isEnemy;
     public int favoredAttack;
     public float spawnRarityModifier = 1; // 1 (full odds) to 0 (never spawns), set to a decimal percent to make the enemy spawn less. 
@@ -76,9 +79,12 @@ public class EntityPiece : MonoBehaviour
 
     private void OnEnable()
     {
-        if (!isEnemy && combatSceneIndex > -1)
+        //if (!isEnemy && combatSceneIndex > -1)
+        if (!isEnemy && 
+            (currentStates.Contains(State.Fighting) || currentStates.Contains(State.FightingParty)))
         {
             // In combat, dust cloud around players
+            Debug.Log($"{entityName} is still in combat");
             dustCloud.gameObject.SetActive(true);
             dustCloud.Play();
         }

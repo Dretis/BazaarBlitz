@@ -1,10 +1,11 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class MapNode : MonoBehaviour
 {
-    public EntityPiece playerOccupied;
+    public List<EntityPiece> playersOccupied;
     [Header("Visual Variables")]
     public GameObject focusPoint;
 

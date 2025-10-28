@@ -50,7 +50,7 @@ public class EntityInfoHandler : MonoBehaviour
     private void OnEnterRaycastedTile(MapNode node)
     {
         // Attempt to get a player on the tile (if there is one)
-        entity = node.playerOccupied;
+        //entity = node.playerOccupied; FIX THIS LATER / NOW
 
         if (entity != null)
         {

@@ -8,9 +8,11 @@ public class StoreManager : MonoBehaviour
     public EntityPiece playerOwner;
     private int storeCapacity = 3;
 
+
+    
     private void Awake()
     {
-        playerOwner = GetComponent<MapNode>().playerOccupied;
+        //playerOwner = GetComponent<MapNode>().playerOccupied;
 
         storeInventory = new List<ItemStats>();
 

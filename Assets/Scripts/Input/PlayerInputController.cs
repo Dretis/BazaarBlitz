@@ -47,10 +47,13 @@ public class PlayerInputController : MonoBehaviour
     public PlayerEventChannelSO m_DiceRollPrep;
     public VoidEventChannelSO m_DiceRolled;
     public IntEventChannelSO m_RollForMovement;
-    public PlayerEventChannelSO m_OpenInventory;  
+    public PlayerEventChannelSO m_OpenInventory;
+
+    public PlayerEventChannelSO m_TryBuildStore;
     public PlayerEventChannelSO m_BuildStore; 
     public PlayerEventChannelSO m_FinishStockingStore; 
-    public NodeEventChannelSO m_RestockStore;
+    public NodeEventChannelSO m_RestockStore; // also listening
+
     public VoidEventChannelSO m_ExitInventory; // also listening
     public VoidEventChannelSO m_ExitLevelUp;
 
@@ -63,7 +66,10 @@ public class PlayerInputController : MonoBehaviour
     public PlayerEventChannelSO m_AssignPlayerToController;
     public PlayerEventChannelSO m_NextPlayerTurn;
     public IntEventChannelSO m_NextTurnRound;
+
     // Store-based Event Channels
+    public VoidEventChannelSO m_CancelBuildStore;
+
     public NodeEventChannelSO m_LandOnStorefront;
     public VoidEventChannelSO m_ExitStorefront;
     public ItemEventChannelSO m_ItemBought;
@@ -71,6 +77,8 @@ public class PlayerInputController : MonoBehaviour
     public PlayerEventChannelSO m_FullInventory;
 
     public NodeEventChannelSO m_LandOnVendor;
+
+    public PlayerListEventChannelSO m_LandOnMultipleEntities;
 
     public VoidEventChannelSO m_EnteredCombatScene;
     public PlayerEventChannelSO m_InitiateCombatOnPassBy;
@@ -106,15 +114,15 @@ public class PlayerInputController : MonoBehaviour
     {
         //Debug.Log("hello" + playerConfigs[0].PlayerIndex);
         //playerInput = GetComponent<PlayerInput>();
-        var players = FindObjectsOfType<EntityPiece>();
+        //var players = FindObjectsOfType<EntityPiece>();
         //var index = playerInput.playerIndex;
 
         //currentPlayer = players.FirstOrDefault(m => m.id == index);
         //playerInput = playerConfigs[0].Input;
         playerInput = GetComponent<PlayerInput>();
 
-        Debug.Log($"Player [{playerInput.playerIndex}] Control Scheme: " + playerInput.currentControlScheme);
-        Debug.Log($"Player [{playerInput.playerIndex}] Device: " + playerInput.GetDevice<Gamepad>());
+        //Debug.Log($"Player [{playerInput.playerIndex}] Control Scheme: " + playerInput.currentControlScheme);
+        //Debug.Log($"Player [{playerInput.playerIndex}] Device: " + playerInput.GetDevice<Gamepad>());
 
         // Fuck ass work around to disable the UI action map
         //playerInput.SwitchCurrentActionMap("UI"); // FUCK YOU
@@ -135,6 +143,8 @@ public class PlayerInputController : MonoBehaviour
         m_NextPlayerTurn.OnEventRaised += SetCurrentPlayer;
         m_NextTurnRound.OnEventRaised += OnNextTurnRound;
 
+        m_CancelBuildStore.OnEventRaised += OnCancelBuildStore;
+
         m_RestockStore.OnEventRaised += OnRestockStore;
         m_FinishStockingStore.OnEventRaised += OnFinishStockingStore;
 
@@ -143,6 +153,8 @@ public class PlayerInputController : MonoBehaviour
         m_ItemBought.OnEventRaised += OnItemBought;
 
         m_LandOnVendor.OnEventRaised += OnLandOnVendor;
+
+        m_LandOnMultipleEntities.OnEventRaised += OnLandOnMultipleEntities;
 
         m_EnteredCombatScene.OnEventRaised += OnEnteredCombatScene;
         m_InitiateCombatOnPassBy.OnEventRaised += OnInitiateCombatOnPassBy;
@@ -166,6 +178,8 @@ public class PlayerInputController : MonoBehaviour
         m_NextPlayerTurn.OnEventRaised -= SetCurrentPlayer;
         m_NextTurnRound.OnEventRaised -= OnNextTurnRound;
 
+        m_CancelBuildStore.OnEventRaised -= OnCancelBuildStore;
+
         m_RestockStore.OnEventRaised -= OnRestockStore;
         m_FinishStockingStore.OnEventRaised -= OnFinishStockingStore;
 
@@ -174,6 +188,8 @@ public class PlayerInputController : MonoBehaviour
         m_ItemBought.OnEventRaised -= OnItemBought;
 
         m_LandOnVendor.OnEventRaised -= OnLandOnVendor;
+
+        m_LandOnMultipleEntities.OnEventRaised -= OnLandOnMultipleEntities;
 
         m_EnteredCombatScene.OnEventRaised -= OnEnteredCombatScene;
         m_InitiateCombatOnPassBy.OnEventRaised -= OnInitiateCombatOnPassBy;
@@ -240,10 +256,13 @@ public class PlayerInputController : MonoBehaviour
             playerInput.uiInputModule.actionsAsset = playerInput.actions;
 
             previousGamePhase = GamePhase.InitialTurnMenu;
-            Debug.Log("Built a store");
+
+            m_TryBuildStore.RaiseEvent(currentPlayer);
+            SwitchActionMap(GamePhase.BuildingStore);
+            //Debug.Log("Built a store");
             // Build a store in the current tile
-            m_BuildStore.RaiseEvent(currentPlayer);
-            m_RestockStore.RaiseEvent(currentPlayer.occupiedNode);
+            //m_BuildStore.RaiseEvent(currentPlayer);
+            //m_RestockStore.RaiseEvent(currentPlayer.occupiedNode);
             //SwitchActionMap(GamePhase.StockStore);
 
         }
@@ -266,12 +285,12 @@ public class PlayerInputController : MonoBehaviour
                 break;
             case GamePhase.Inventory:
                 m_ExitInventory.RaiseEvent();
-
-                //SwitchActionMap(previousGamePhase);
+                break;
+            case GamePhase.BuildingStore:
+                m_CancelBuildStore.RaiseEvent();
                 break;
             case GamePhase.LevelUp:
                 m_ExitLevelUp.RaiseEvent();
-                //SwitchActionMap(previousGamePhase);
                 break;
         }
         //SwitchActionMap(previousGamePhase);
@@ -482,6 +501,10 @@ public class PlayerInputController : MonoBehaviour
                 playerInput.SwitchCurrentActionMap("Moving");
                 break;
 
+            case GamePhase.BuildingStore:
+                playerInput.SwitchCurrentActionMap("UI");
+                break;
+
             case GamePhase.InStore:
                 playerInput.SwitchCurrentActionMap("UI");
                 break;
@@ -506,6 +529,10 @@ public class PlayerInputController : MonoBehaviour
             // Confirmation Phase
             case GamePhase.ConfirmContinue:
                 playerInput.SwitchCurrentActionMap("Confirmation");
+                break;
+
+            case GamePhase.CombatSelector:
+                playerInput.SwitchCurrentActionMap("UI");
                 break;
 
             case GamePhase.CombatTime:
@@ -587,6 +614,13 @@ public class PlayerInputController : MonoBehaviour
         SwitchActionMap(previousGamePhase); // Should be whatever the one it was before
     }
 
+    private void OnCancelBuildStore()
+    {
+        if (!playerInput.inputIsActive) return;
+
+        SwitchActionMap(previousGamePhase);
+    }
+
     private void OnRestockStore(MapNode node)
     {
         if (!playerInput.inputIsActive) return;
@@ -641,6 +675,15 @@ public class PlayerInputController : MonoBehaviour
         if (!playerInput.inputIsActive) return;
 
         SwitchActionMap(GamePhase.InVendor);
+    }
+
+    private void OnLandOnMultipleEntities(List<EntityPiece> entities)
+    {
+        if (!playerInput.inputIsActive) return;
+
+        playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
+        playerInput.uiInputModule.actionsAsset = playerInput.actions;
+        SwitchActionMap(GamePhase.CombatSelector);
     }
 
     private void OnEnteredCombatScene()
@@ -727,7 +770,10 @@ public class PlayerInputController : MonoBehaviour
             assignedPlayer.playerColor = playerConfig.PlayerColor;
 
             // Set main color of Baggie body in the palette
-            assignedPlayer.gameObject.GetComponent<PlayerPaletteLoader>().SetInspectorPaletteColor(0, playerConfig.PlayerColor);
+            //assignedPlayer.gameObject.GetComponent<PlayerPaletteLoader>().SetInspectorPaletteColor(0, playerConfig.PlayerColor);
+
+            var playerCosmeticManager = PlayerConfigurationManager.instance.GetPlayerCosmeticManager(playerInput.playerIndex);
+            assignedPlayer.gameObject.GetComponent<PlayerPaletteLoader>().SetInspectorPalette(playerCosmeticManager.baggieColorPalette);
         }
     }
 

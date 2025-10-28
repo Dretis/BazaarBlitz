@@ -32,7 +32,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4249173696434467315}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
@@ -132,7 +131,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4249173696434467315}
-  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
@@ -210,7 +208,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4249173696434467315}
-  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
@@ -416,7 +413,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 215334489335916337}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -492,7 +488,6 @@ RectTransform:
   m_Children:
   - {fileID: 2639856553332334803}
   m_Father: {fileID: 4249173696434467315}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -547,7 +542,6 @@ RectTransform:
   m_Children:
   - {fileID: 4249173696079773050}
   m_Father: {fileID: 4249173697110552225}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -635,19 +629,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4249173695426836252}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 4249173696434467314}
-        m_TargetAssemblyTypeName: PlayerSetupMenuController, Assembly-CSharp
-        m_MethodName: SetColor
-        m_Mode: 3
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 1
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &6165914062308080409
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -661,10 +643,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   setup: {fileID: 4249173696434467314}
-  baggieVisual: {fileID: 1091382522168470864}
-  baggieVisualName: {fileID: 4397707941184767339}
-  color: {r: 0.227451, g: 0.5529412, b: 0.92549026, a: 1}
-  baggieColorName: Blueberry
+  colorPreset: {fileID: 11400000, guid: 2abf46780a4a6b543b1aec37ac66a0cb, type: 2}
 --- !u!1 &4249173695564023036
 GameObject:
   m_ObjectHideFlags: 0
@@ -696,7 +675,6 @@ RectTransform:
   - {fileID: 4249173696440743025}
   - {fileID: 4249173697435067958}
   m_Father: {fileID: 4249173696434467315}
-  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -737,7 +715,6 @@ RectTransform:
   m_Children:
   - {fileID: 4249173696567860619}
   m_Father: {fileID: 4249173697110552225}
-  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -825,19 +802,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4249173695726385208}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 4249173696434467314}
-        m_TargetAssemblyTypeName: PlayerSetupMenuController, Assembly-CSharp
-        m_MethodName: SetColor
-        m_Mode: 3
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 7
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &4401202647986531593
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -851,10 +816,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   setup: {fileID: 4249173696434467314}
-  baggieVisual: {fileID: 1091382522168470864}
-  baggieVisualName: {fileID: 4397707941184767339}
-  color: {r: 1, g: 0.99215686, b: 0.88235295, a: 1}
-  baggieColorName: Coconut
+  colorPreset: {fileID: 11400000, guid: 881751964a54d414592f51d23a9c21e9, type: 2}
 --- !u!1 &4249173695730413891
 GameObject:
   m_ObjectHideFlags: 0
@@ -888,7 +850,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1688269054679468711}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -1101,7 +1062,6 @@ RectTransform:
   m_Children:
   - {fileID: 4249173697110552225}
   m_Father: {fileID: 4249173697193741885}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
@@ -1236,7 +1196,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4249173696434467315}
-  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1289,6 +1248,7 @@ MonoBehaviour:
   m_DeselectOnBackgroundClick: 1
   m_PointerBehavior: 0
   m_CursorLockBehavior: 0
+  m_ScrollDeltaPerTick: 6
 --- !u!1 &4249173695823289323
 GameObject:
   m_ObjectHideFlags: 0
@@ -1323,7 +1283,6 @@ RectTransform:
   m_Children:
   - {fileID: 4249173697313542846}
   m_Father: {fileID: 4249173697110552225}
-  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1411,19 +1370,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4249173695823289320}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 4249173696434467314}
-        m_TargetAssemblyTypeName: PlayerSetupMenuController, Assembly-CSharp
-        m_MethodName: SetColor
-        m_Mode: 3
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 3
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &3828102511771856637
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1437,10 +1384,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   setup: {fileID: 4249173696434467314}
-  baggieVisual: {fileID: 1091382522168470864}
-  baggieVisualName: {fileID: 4397707941184767339}
-  color: {r: 0.5568628, g: 1, b: 0.28627452, a: 1}
-  baggieColorName: Honeydew
+  colorPreset: {fileID: 11400000, guid: 4bfdffc9671c6f049bf7c6bfd1dfd86d, type: 2}
 --- !u!1 &4249173695895110260
 GameObject:
   m_ObjectHideFlags: 0
@@ -1475,7 +1419,6 @@ RectTransform:
   m_Children:
   - {fileID: 4249173696899193930}
   m_Father: {fileID: 4249173697110552225}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1563,19 +1506,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4249173695895110258}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 4249173696434467314}
-        m_TargetAssemblyTypeName: PlayerSetupMenuController, Assembly-CSharp
-        m_MethodName: SetColor
-        m_Mode: 3
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &4917957858327860797
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1589,10 +1520,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   setup: {fileID: 4249173696434467314}
-  baggieVisual: {fileID: 1091382522168470864}
-  baggieVisualName: {fileID: 4397707941184767339}
-  color: {r: 0.7372549, g: 0.15686275, b: 0.3254902, a: 1}
-  baggieColorName: Apple
+  colorPreset: {fileID: 11400000, guid: c9a41851deac784409f96d565cbea4a7, type: 2}
 --- !u!1 &4249173695902620167
 GameObject:
   m_ObjectHideFlags: 0
@@ -1624,7 +1552,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4249173697435067958}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 1}
@@ -1762,7 +1689,6 @@ RectTransform:
   m_Children:
   - {fileID: 4249173697305781824}
   m_Father: {fileID: 4249173697110552225}
-  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1850,19 +1776,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4249173696056726770}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 4249173696434467314}
-        m_TargetAssemblyTypeName: PlayerSetupMenuController, Assembly-CSharp
-        m_MethodName: SetColor
-        m_Mode: 3
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 5
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1326178747252067068
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1876,10 +1790,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   setup: {fileID: 4249173696434467314}
-  baggieVisual: {fileID: 1091382522168470864}
-  baggieVisualName: {fileID: 4397707941184767339}
-  color: {r: 1, g: 0.56078434, b: 0.8941177, a: 1}
-  baggieColorName: Peach
+  colorPreset: {fileID: 11400000, guid: 235acb98a2547be48bf031774d2f5387, type: 2}
 --- !u!1 &4249173696079773051
 GameObject:
   m_ObjectHideFlags: 0
@@ -1911,7 +1822,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4249173695426836254}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -2049,7 +1959,6 @@ RectTransform:
   m_Children:
   - {fileID: 4249173696738627449}
   m_Father: {fileID: 4249173697110552225}
-  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -2137,19 +2046,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4249173696082393878}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 4249173696434467314}
-        m_TargetAssemblyTypeName: PlayerSetupMenuController, Assembly-CSharp
-        m_MethodName: SetColor
-        m_Mode: 3
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 4
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1123966422738023710
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2163,10 +2060,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   setup: {fileID: 4249173696434467314}
-  baggieVisual: {fileID: 1091382522168470864}
-  baggieVisualName: {fileID: 4397707941184767339}
-  color: {r: 0.68235296, g: 0.5568628, b: 0.9725491, a: 1}
-  baggieColorName: Taro
+  colorPreset: {fileID: 11400000, guid: 436dcf6e1b7e0a847bf945797970f88c, type: 2}
 --- !u!1 &4249173696246699250
 GameObject:
   m_ObjectHideFlags: 0
@@ -2201,7 +2095,6 @@ RectTransform:
   m_Children:
   - {fileID: 4249173696681911832}
   m_Father: {fileID: 4249173697110552225}
-  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -2289,19 +2182,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4249173696246699247}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 4249173696434467314}
-        m_TargetAssemblyTypeName: PlayerSetupMenuController, Assembly-CSharp
-        m_MethodName: SetColor
-        m_Mode: 3
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 6
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1509405164884838213
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2315,10 +2196,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   setup: {fileID: 4249173696434467314}
-  baggieVisual: {fileID: 1091382522168470864}
-  baggieVisualName: {fileID: 4397707941184767339}
-  color: {r: 0.86666673, g: 0.6431373, b: 0.5294118, a: 1}
-  baggieColorName: Kiwi
+  colorPreset: {fileID: 11400000, guid: 9232ea1b372c4f84a999c27a74fdd0ff, type: 2}
 --- !u!1 &4249173696434467316
 GameObject:
   m_ObjectHideFlags: 0
@@ -2360,7 +2238,6 @@ RectTransform:
   - {fileID: 511166116306631208}
   - {fileID: 4249173695817151668}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -2433,6 +2310,8 @@ MonoBehaviour:
   - {r: 1, g: 0.99215686, b: 0.88235295, a: 1}
   selectedDevice: {fileID: 644593023009260692}
   titleText: {fileID: 4249173695730413890}
+  baggieVisual: {fileID: 1091382522168470864}
+  baggieVisualName: {fileID: 4397707941184767339}
   menuPanel: {fileID: 4249173697193741886}
   readyPanel: {fileID: 4249173695564023036}
   readyButton: {fileID: 4249173697435067961}
@@ -2470,7 +2349,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4249173695564023035}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
@@ -2682,7 +2560,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4249173695726385210}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -2820,7 +2697,6 @@ RectTransform:
   m_Children:
   - {fileID: 4249173697038667636}
   m_Father: {fileID: 4249173697110552225}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -2908,19 +2784,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4249173696576748851}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 4249173696434467314}
-        m_TargetAssemblyTypeName: PlayerSetupMenuController, Assembly-CSharp
-        m_MethodName: SetColor
-        m_Mode: 3
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 2
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1002447816858569101
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2934,10 +2798,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   setup: {fileID: 4249173696434467314}
-  baggieVisual: {fileID: 1091382522168470864}
-  baggieVisualName: {fileID: 4397707941184767339}
-  color: {r: 1, g: 0.8980393, b: 0.3254902, a: 1}
-  baggieColorName: Lemon
+  colorPreset: {fileID: 11400000, guid: f65d457d6122a5c46b963e62c70cb533, type: 2}
 --- !u!1 &4249173696681911833
 GameObject:
   m_ObjectHideFlags: 0
@@ -2969,7 +2830,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4249173696246699249}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -3104,7 +2964,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4249173696082393880}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -3239,7 +3098,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4249173695895110256}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -3374,7 +3232,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4249173696576748853}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -3518,7 +3375,6 @@ RectTransform:
   - {fileID: 4249173696246699249}
   - {fileID: 4249173695726385210}
   m_Father: {fileID: 4249173695800374462}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -3617,7 +3473,6 @@ RectTransform:
   m_Children:
   - {fileID: 4249173695800374462}
   m_Father: {fileID: 4249173696434467315}
-  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -3655,7 +3510,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4249173696056726772}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -3790,7 +3644,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4249173695823289322}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -3927,7 +3780,6 @@ RectTransform:
   m_Children:
   - {fileID: 4249173695902620166}
   m_Father: {fileID: 4249173695564023035}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
@@ -4060,7 +3912,6 @@ RectTransform:
   m_Children:
   - {fileID: 4249173695730414014}
   m_Father: {fileID: 4249173696434467315}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -4136,7 +3987,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 511166116306631208}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -4212,7 +4062,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 511166116306631208}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -4290,7 +4139,6 @@ RectTransform:
   - {fileID: 8022615454887637534}
   - {fileID: 1291613562203773500}
   m_Father: {fileID: 4249173696434467315}
-  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}

@@ -21,6 +21,7 @@ public class CombatManager : MonoBehaviour
     // EXTREMELY IMPORTANT COMBAT VARIABLES
 
     // Mostly used to load player data and calculate the results of combat, the script refers primarily to attacker/defender.
+    [SerializeField] private MapNode associatedNode; // The node this combat instance takes place on
     [SerializeField] public EntityPiece player1; // Not necessarily the person who attacked first.
     [SerializeField] public EntityPiece player2; // However if its a wild encounter, we know this is the enemy.
 
@@ -104,6 +105,11 @@ public class CombatManager : MonoBehaviour
             // IDs are set in scene manager as the encounter starts, letting us know who to load.
             player1 = sceneManager.entities.Find(entity => sceneManager.player1ID == entity.id);
             player2 = sceneManager.entities.Find(entity => sceneManager.player2ID == entity.id);
+
+            //player1.involvedCombatManagers.Add(this);
+            //player2.involvedCombatManagers.Add(this);
+
+            associatedNode = player1.occupiedNode;
         }
 
         // Keep a track of combat managers.
@@ -116,8 +122,8 @@ public class CombatManager : MonoBehaviour
         combatSceneIndex = SceneManager.sceneCount - 1;
 
         // Indicate which combat scene each player is in.
-        player1.combatSceneIndex = combatSceneIndex;
-        player2.combatSceneIndex = combatSceneIndex;
+        //player1.combatSceneIndex = combatSceneIndex;
+        //player2.combatSceneIndex = combatSceneIndex;
 
         Instance = this;
 
@@ -471,11 +477,12 @@ public class CombatManager : MonoBehaviour
             sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(player2.id);
         }
 
+        sceneManager.UnloadCombatScene(SceneManager.GetSceneAt(combatSceneIndex), combatSceneIndex);
 
         // Pause combat scene and re-enable overworld scene
         // This does not remove the scene but makes all the game objects under the combat scene inactive.
         // Similarly, all game objects in the overworld scene are re-enabled.
-        sceneManager.DisableScene(combatSceneIndex);
+        //sceneManager.DisableScene(combatSceneIndex);
         sceneManager.EnableScene(0);
 
         // This changes the game phase in gameplay test remotely.
@@ -487,7 +494,6 @@ public class CombatManager : MonoBehaviour
     {
         //Raise event when moving back to overworld scene
         m_EnteredOverworldScene.RaiseEvent();
-
         
         EntityPiece winner;
         EntityPiece loser;
@@ -551,38 +557,71 @@ public class CombatManager : MonoBehaviour
         }
         */
 
-        
+        // Get rid of entity states based on end situation
+        var entitiesOnNode = associatedNode.playersOccupied;
+
+        // The battlers are no longer fighting
+        winner.currentStates.Remove(EntityPiece.State.Fighting);
+        loser.currentStates.Remove(EntityPiece.State.Fighting);
+
+        foreach (EntityPiece entity in entitiesOnNode)
+        {
+            if(entity.currentStates.Contains(EntityPiece.State.Fighting))
+                entity.currentStates.Remove(EntityPiece.State.Fighting);
+        }
+
+        // Get the loser out of the mosh pit
+        if (loser.currentStates.Contains(EntityPiece.State.FightingParty))
+            loser.currentStates.Remove(EntityPiece.State.FightingParty);
+
+        entitiesOnNode.Remove(loser);
+
+        if (loser.isEnemy) loser.occupiedNode = null;
+        else loser.occupiedNode = sceneManager.spawnPoint;
+
         // If the player defeated is in Death's Row, end the game. Otherwise, go to the next player's turn.
         if (!loser.isEnemy && loser.currentStates.Contains(EntityPiece.State.DeathsRow))
             sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndGame);
-        else
+        else if (loser.heldPoints < 0)
         {
-            if (loser.heldPoints < 0) loser.currentStates.Add(EntityPiece.State.DeathsRow);
+            loser.currentStates.Add(EntityPiece.State.DeathsRow);
             //loser.isInDeathsRow = true;
             sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
         }
-
-
         
         // Rest is (mostly) scene management stuff / events
 
         // Players exit combat. A combatSceneIndex of -1 indicates they are out of combat. Otherwise, the scene index
         //  variable takes the current sceneIndex of the scene.
         
-        player1.combatSceneIndex = -1;
-        player2.combatSceneIndex = -1;
-            
+        //player1.combatSceneIndex = -1;
+        //player2.combatSceneIndex = -1;
+
         // Deletes the current combat scene.
+        //sceneManager.UnloadCombatScene(SceneManager.GetSceneAt(combatSceneIndex), combatSceneIndex);
+        /*
+        foreach(CombatManager combatInstance in loser.involvedCombatManagers)
+        {
+            if(combatInstance != null)
+                sceneManager.UnloadCombatScene(SceneManager.GetSceneAt(combatInstance.combatSceneIndex), combatInstance.combatSceneIndex);
+        }
+        //loser.involvedCombatManagers.Clear();
+        //winner.involvedCombatManagers.Remove(this);
+        */
+
+        // Update player scores.
+        sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(player1.id);
+        if (!player2.isEnemy)
+        {
+            sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(player2.id);
+        }
+
         sceneManager.UnloadCombatScene(SceneManager.GetSceneAt(combatSceneIndex), combatSceneIndex);
 
         // Re-enable scene
         sceneManager.EnableScene(0);
 
-        // Update player scores.
-        //sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(player1.id);
-        if (!player2.isEnemy) {
-            sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(player2.id);
-        }
+        sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
     }
 
     private Action decideAttackAI()
