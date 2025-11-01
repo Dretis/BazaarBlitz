@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using LitMotion;
+using LitMotion.Extensions;
 
 public class VendorManager : MonoBehaviour
 {
@@ -21,6 +22,7 @@ public class VendorManager : MonoBehaviour
     public GameObject vendorObject;
 
     public CanvasGroup vendorPromptGroup;
+    private RectTransform vendorPromptGroupTransform;
     public TextMeshProUGUI vendorDialogue;
 
     public List<GameObject> seatedPlayerSprites;
@@ -66,6 +68,10 @@ public class VendorManager : MonoBehaviour
         {
             LMotion.Create(0f, 1f, 0.25f)
                 .Bind(x => vendorPromptGroup.alpha = x);
+
+            LMotion.Create(vendorPromptGroupTransform.localScale, Vector3.one, 0.25f)
+                .WithEase(Ease.InOutBack)
+                .Bind(x => vendorPromptGroupTransform.localScale = x);
 
             itemForSale = vendor.itemsForSale[0];
             salePrice = (int)(itemForSale.basePrice * 0.6f);
@@ -126,6 +132,10 @@ public class VendorManager : MonoBehaviour
         LMotion.Create(1f, 0f, 0.25f)
                 .Bind(x => vendorPromptGroup.alpha = x);
 
+        LMotion.Create(vendorPromptGroupTransform.localScale, Vector3.zero, 0.25f)
+                .WithEase(Ease.InOutBack)
+                .Bind(x => vendorPromptGroupTransform.localScale = x);
+
         currentlyVisiting = false;
     }
 
@@ -155,6 +165,8 @@ public class VendorManager : MonoBehaviour
     void Start()
     {
         vendorPromptGroup.alpha = 0.0f;
+        vendorPromptGroupTransform = vendorPromptGroup.GetComponent<RectTransform>();
+        vendorPromptGroupTransform.localScale = Vector3.zero;
         //vendorPromptGroup.interactable = false;
     }
 }

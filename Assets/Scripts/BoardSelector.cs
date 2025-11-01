@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
 public class BoardSelector : MonoBehaviour
@@ -47,6 +48,8 @@ public class BoardSelector : MonoBehaviour
 
         headerText.text = "[Board Select]";
         bottomText.text = "Choose which board to play on!";
+
+        EventSystem.current.SetSelectedGameObject(boardSelectGroup.transform.GetChild(0).gameObject);
     }
 
     public void BoardSelected(string board)

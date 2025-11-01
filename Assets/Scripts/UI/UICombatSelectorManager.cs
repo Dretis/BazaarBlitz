@@ -28,7 +28,7 @@ public class UICombatSelectorManager : MonoBehaviour
 
     private void Start()
     {
-        DectivateSelectorContainer();
+        DeactivateSelectorContainer();
 
         combatSelectorContainer.alpha = 0.0f;
         combatSelectorContainer.interactable = false;
@@ -43,11 +43,11 @@ public class UICombatSelectorManager : MonoBehaviour
 
     private void OnFighterSelected(EntityPiece entity)
     {
-        DectivateSelectorContainer();
+        DeactivateSelectorContainer();
         DestroyAllFighterSelectors();
     }
 
-    private void DectivateSelectorContainer()
+    private void DeactivateSelectorContainer()
     {
         selectorInstructionGroup.alpha = 0.0f;
 

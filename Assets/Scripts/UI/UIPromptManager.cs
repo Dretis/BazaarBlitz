@@ -5,6 +5,7 @@ using Febucci.UI.Core;
 using LitMotion;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
+using LitMotion.Extensions;
 
 public class UIPromptManager : MonoBehaviour
 {
@@ -47,6 +48,7 @@ public class UIPromptManager : MonoBehaviour
 
     [Header("Listen on Event Channels")]
     public IntEventChannelSO m_RollForMovement;
+    public PlayerEventChannelSO m_TryDiceRollPrep;
     public PlayerEventChannelSO m_DiceRollPrep;
     public PlayerEventChannelSO m_DiceRollUndo;
 
@@ -86,12 +88,14 @@ public class UIPromptManager : MonoBehaviour
 
         promptInstructionGroup.alpha = 0;
         promptInstructionGroup.interactable = false;
+        promptInstructionGroup.GetComponent<RectTransform>().localScale = Vector3.zero;
     }
 
     private void OnEnable()
     {
         m_RollForMovement.OnEventRaised += RolledDice;
 
+        m_TryDiceRollPrep.OnEventRaised += OnTryDiceRollPrep;
         m_DiceRollPrep.OnEventRaised += DisplayRollPrompt;
         m_DiceRollUndo.OnEventRaised += DisplayInitialMenu;
 
@@ -134,6 +138,7 @@ public class UIPromptManager : MonoBehaviour
     {
         m_RollForMovement.OnEventRaised -= RolledDice;
 
+        m_TryDiceRollPrep.OnEventRaised -= OnTryDiceRollPrep;
         m_DiceRollPrep.OnEventRaised -= DisplayRollPrompt;
         m_DiceRollUndo.OnEventRaised -= DisplayInitialMenu;
 
@@ -233,6 +238,11 @@ public class UIPromptManager : MonoBehaviour
         rollTypewriter.ShowText("{size a=1.1}"+roll);
     }
 
+    private void OnTryDiceRollPrep(EntityPiece ps)
+    {
+        HideMenuPrompt();
+    }
+
     private void DisplayRollPrompt(EntityPiece ps)
     {
         // This will get swapped out with a menu selection
@@ -240,6 +250,9 @@ public class UIPromptManager : MonoBehaviour
         inputPrompt.text += "\n<sprite=1><color=white></color> Back";
 
         //rollTypewriter.ShowText("<size=84><bounce a=.3>Rolling...</>");
+        //LMotion.Punch.Create(0, 25, 0.5f)
+        //    .WithDampingRatio(0f)
+        //   .BindToAnchoredPositionX(movePromptText.GetComponent<RectTransform>());
 
         HideInitialMenu();
     }
@@ -290,20 +303,22 @@ public class UIPromptManager : MonoBehaviour
 
     private void ShowMenuPrompt()
     {
-        LMotion.Create(menuPrompt.alpha, 1, 0.1f)
+        LMotion.Create(menuPrompt.alpha, 1, 0.15f)
             .Bind(x => menuPrompt.alpha = x);
 
-        LMotion.Create(menuPrompt.GetComponent<RectTransform>().localScale, Vector3.one, 0.1f)
-            .WithEase(Ease.InQuad)
+        LMotion.Create(menuPrompt.GetComponent<RectTransform>().localScale, Vector3.one, 0.15f)
+            //.WithEase(Ease.InQuad)
+            .WithEase(Ease.InOutBack)
+            //.WithEase(Ease.InQuint)
             .Bind(x => menuPrompt.GetComponent<RectTransform>().localScale = x);
     }
 
     private void HideMenuPrompt()
     {
-        LMotion.Create(menuPrompt.alpha, 0, 0.1f)
+        LMotion.Create(menuPrompt.alpha, 0, 0.15f)
             .Bind(x => menuPrompt.alpha = x);
 
-        LMotion.Create(menuPrompt.GetComponent<RectTransform>().localScale, Vector3.zero, 0.1f)
+        LMotion.Create(menuPrompt.GetComponent<RectTransform>().localScale, Vector3.zero, 0.15f)
             .WithEase(Ease.OutQuad)
             .Bind(x => menuPrompt.GetComponent<RectTransform>().localScale = x);
     }
@@ -405,6 +420,31 @@ public class UIPromptManager : MonoBehaviour
         inputPrompt.text += "\n<color=white>[LMB]/[SPACE]</color> No, leave it alone.";
         inputPrompt.text += "\n<color=white>[RMB]/[SHIFT]</color> Yes, take it over! <color=white>Costs</color> <color=yellow>@</color>600";
     }
+    private void ShowPromptInstruction()
+    {
+        //promptInstructionGroup.alpha = 1;
+        promptInstructionGroup.interactable = true;
+
+        LMotion.Create(promptInstructionGroup.alpha, 1, 0.2f)
+            .Bind(x => promptInstructionGroup.alpha = x);
+
+        LMotion.Create(promptInstructionGroup.GetComponent<RectTransform>().localScale, Vector3.one * .75f, 0.2f)
+            //.WithEase(Ease.InQuad)
+            .WithEase(Ease.InOutBack)
+            .Bind(x => promptInstructionGroup.GetComponent<RectTransform>().localScale = x);
+    }
+
+    private void HidePromptInstruction()
+    {
+        promptInstructionGroup.interactable = false;
+
+        LMotion.Create(promptInstructionGroup.alpha, 0, 0.2f)
+            .Bind(x => promptInstructionGroup.alpha = x);
+
+        LMotion.Create(promptInstructionGroup.GetComponent<RectTransform>().localScale, Vector3.zero, 0.2f)
+            .WithEase(Ease.OutQuad)
+            .Bind(x => promptInstructionGroup.GetComponent<RectTransform>().localScale = x);
+    }
 
     // Button functions
     public void ConfirmBuildStoreButton()
@@ -423,8 +463,7 @@ public class UIPromptManager : MonoBehaviour
     {
         HideMenuPrompt();
 
-        promptInstructionGroup.alpha = 1;
-        promptInstructionGroup.interactable = true;
+        ShowPromptInstruction();
 
         promptInstructionText.text = "Build a store on this space?";
 
@@ -438,8 +477,7 @@ public class UIPromptManager : MonoBehaviour
 
     private void OnBuildStore(EntityPiece ep)
     {
-        promptInstructionGroup.alpha = 0;
-        promptInstructionGroup.interactable = false;
+        HidePromptInstruction();
 
         StrikethroughBuildPrompt();
     }
@@ -448,8 +486,7 @@ public class UIPromptManager : MonoBehaviour
     {
         ShowMenuPrompt();
 
-        promptInstructionGroup.alpha = 0;
-        promptInstructionGroup.interactable = false;
+        HidePromptInstruction();
     }
 
     private void OnFinishStockingStore(EntityPiece ep)
@@ -460,6 +497,8 @@ public class UIPromptManager : MonoBehaviour
     private void OnEnterLevelUp(EntityPiece ep)
     {
         ClearInputText();
+
+        HideMenuPrompt();
     }
 
     private void OnExitLevelUp()

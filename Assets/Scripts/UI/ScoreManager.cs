@@ -5,11 +5,13 @@ using TMPro;
 using Febucci.UI.Core;
 using LitMotion;
 using LitMotion.Extensions;
-using System;
-using UnityEngine.EventSystems;
+using System.Linq;
+using Unity.VisualScripting;
 
 public class ScoreManager : MonoBehaviour
 {
+    private MotionHandle currentMotion;
+
     [SerializeField] private EntityPiece currentPlayer;
     [SerializeField] private List<EntityPiece> players;
 
@@ -31,10 +33,16 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private Color blueStampColor;
     [SerializeField] private Color orangeStampColor;
 
+    [Header("Color Gradients")]
     [SerializeField] private List<TMP_ColorGradient> levelColorGradients;
+    [SerializeField] private List<TMP_ColorGradient> actionTypeGradients;
 
     [Header("UI Elements")]
     [SerializeField] private Canvas scoreCanvas;
+
+    [SerializeField] private RectTransform scoreContainerTransform;
+
+    [Space]
     [SerializeField] private List<TextMeshProUGUI> playerNames;
     [SerializeField] private List<TextMeshProUGUI> playerLevels;
     [SerializeField] private List<TextMeshProUGUI> playerExps;
@@ -57,6 +65,13 @@ public class ScoreManager : MonoBehaviour
     [SerializeField] private List<Image> blueStamps;
     [SerializeField] private List<Image> orangeStamps;
 
+    [Header("\"More Info\" UI Elements")]
+    [SerializeField] private List<GameObject> playerInfoDiceHolder;
+    [SerializeField] private List<List<TextMeshProUGUI>> playerInfoDiceNumbers = new List<List<TextMeshProUGUI>>();
+
+    [SerializeField] private List<GameObject> playerInfoInvHolder;
+    [SerializeField] private List<List<Image>> playerInfoInvItems = new List<List<Image>>();
+
     [Header("Broadcast On Event Channels")]
     public PlayerEventChannelSO m_CheerForPlayer;
 
@@ -66,6 +81,11 @@ public class ScoreManager : MonoBehaviour
     public IntEventChannelSO m_PlayerScoreIncreased;
 
     public PlayerEventChannelSO m_NextPlayerTurn;
+
+    public VoidEventChannelSO m_HoldPlayerInfo;
+    public VoidEventChannelSO m_ReleasePlayerInfo;
+
+    public PlayerEventChannelSO m_FinishStockingStore;
 
     public PlayerEventChannelSO m_PassedByStamp;
     public StampEventChannelSO m_UndoPassByStamp;
@@ -87,6 +107,12 @@ public class ScoreManager : MonoBehaviour
 
         m_NextPlayerTurn.OnEventRaised += ChangeCurrentPlayer;
         m_NextPlayerTurn.OnEventRaised += UpdateHeldStamps;
+
+        m_HoldPlayerInfo.OnEventRaised += OnHoldPlayerInfo;
+        m_ReleasePlayerInfo.OnEventRaised += OnReleasePlayerInfo;
+
+        m_FinishStockingStore.OnEventRaised += OnFinishStockingStore;
+
         m_PassedByStamp.OnEventRaised += UpdateHeldStamps;
         m_UndoPassByStamp.OnEventRaised += HideObtainedStamps;
 
@@ -108,6 +134,12 @@ public class ScoreManager : MonoBehaviour
 
         m_NextPlayerTurn.OnEventRaised -= ChangeCurrentPlayer;
         m_NextPlayerTurn.OnEventRaised -= UpdateHeldStamps;
+
+        m_HoldPlayerInfo.OnEventRaised -= OnHoldPlayerInfo;
+        m_ReleasePlayerInfo.OnEventRaised -= OnReleasePlayerInfo;
+
+        m_FinishStockingStore.OnEventRaised -= OnFinishStockingStore;
+
         m_PassedByStamp.OnEventRaised -= UpdateHeldStamps;
         m_UndoPassByStamp.OnEventRaised -= HideObtainedStamps;
 
@@ -123,6 +155,8 @@ public class ScoreManager : MonoBehaviour
 
     void Start()
     {
+        //playerInfoDiceNumbers.Add("1");
+
         // Initial Setup
         for (int i = 0; i < players.Count; i++)
         {
@@ -134,6 +168,25 @@ public class ScoreManager : MonoBehaviour
 
             playerScoreNumbers[i] = players[i].heldPoints;
             playerHPNumbers[i] = players[i].health;
+
+            //Debug.Log($"playerInfoDiceNumbers[{i}] = {playerInfoDiceHolder[i]}");
+            
+            playerInfoDiceNumbers.Add(null);
+            var tempDiceList = new List<TextMeshProUGUI>();
+
+            foreach (Transform child in playerInfoDiceHolder[i].transform)
+            {
+                tempDiceList.Add(child.gameObject.GetComponentInChildren<TextMeshProUGUI>());
+            }
+            playerInfoDiceNumbers[i] = tempDiceList;
+
+            playerInfoInvItems.Add(null);
+            var tempInvList = new List<Image>();
+            foreach (Transform child in playerInfoInvHolder[i].transform)
+            {
+                tempInvList.Add(child.GetComponentInChildren<Image>());
+            }
+            playerInfoInvItems[i] = tempInvList;
 
             UpdateScoreForPlayer(i);
 
@@ -169,13 +222,16 @@ public class ScoreManager : MonoBehaviour
 
     private void UpdateScoreForPlayer(int id)
     {
-        // Debug.Log("updating player {id} score");
         // Update specific player score on the scoreboard based on their ID.
         UpdateLevelForPlayer(id);
 
         UpdateMoneyForPlayer(id);
 
         UpdateHealthForPlayer(id);
+
+        UpdateInfoDiceNumbersForPlayer(id);
+
+        UpdateInfoInvItemsForPlayer(id);
     }
 
     private void SetMoneyForPlayer(int id)
@@ -205,7 +261,7 @@ public class ScoreManager : MonoBehaviour
     {
         if (playerScoreNumbers[id] == players[id].heldPoints)
         {
-            Debug.Log($"!! Money is the same.");
+            //Debug.Log($"!! Money is the same.");
             return;
         }
 
@@ -262,7 +318,7 @@ public class ScoreManager : MonoBehaviour
 
         if (playerHPNumbers[id] == players[id].health)
         {
-            Debug.Log($"!! Health is the same.");
+            //Debug.Log($"!! Health is the same.");
             return;
         }
 
@@ -289,6 +345,85 @@ public class ScoreManager : MonoBehaviour
         playerCurrentHPs[id].text = $"<color=#4DCF56>HP</color> {players[id].health}<size=18>/" +
             $"{players[id].maxHealth * players[id].currentStatsModifier.maxHealthMultModifier + players[id].currentStatsModifier.maxHealthFlatModifier}</size>";
         */
+    }
+
+    // "More Info" stuffs
+    private void UpdateInfoDiceNumbersForPlayer(int id)
+    {
+        UpdateDiceStat(id, Action.WeaponTypes.Melee);
+        UpdateDiceStat(id, Action.WeaponTypes.Gun);
+        UpdateDiceStat(id, Action.WeaponTypes.Magic);
+    }
+
+    private void UpdateDiceStat(int id, Action.WeaponTypes type)
+    {
+        var player = players[id];
+        var ti = (int)type; // type index
+
+        var statDieFlatMod = player.currentStatsModifier.dieModifiers[ti].finalResultFlatModifier;
+        var statDieMultMod = player.currentStatsModifier.dieModifiers[ti].finalResultMultModifier;
+        var diceGradient = actionTypeGradients[ti];
+
+        // Buffed gradient
+        if (!(statDieFlatMod == 0 && statDieMultMod == 1)) diceGradient = actionTypeGradients[3];
+
+        DieConfig die = player.entityStats.dieConfigs[(int)type];
+
+        var start = 0;
+        var end = 0;
+
+        switch (type)
+        {
+            case Action.WeaponTypes.Melee:
+                die = player.strDie;
+                start = 0;
+                end = 6;
+                break;
+            case Action.WeaponTypes.Gun:
+                die = player.dexDie;
+                start = 6;
+                end = 12;
+                break;
+            case Action.WeaponTypes.Magic:
+                die = player.intDie;
+                start = 12;
+                end = 18;
+                break;
+        }
+
+        var faceIndex = 0;
+        int finalFaceValue;
+
+        for (int i = start; i < end; i++)
+        {
+            finalFaceValue = (int) ((die[faceIndex] * statDieMultMod) + statDieFlatMod);
+
+            playerInfoDiceNumbers[id][i].colorGradientPreset = diceGradient;
+            playerInfoDiceNumbers[id][i].text = $"{finalFaceValue}";
+
+            faceIndex++;
+        }
+
+    }
+
+    private void UpdateInfoInvItemsForPlayer(int id)
+    {
+        var player = players[id];
+        Sprite playerItemSprite;
+
+        for (int i = 0; i < player.inventoryLimit; i++)
+        {
+            //Debug.Log($"updating glance inventory {i}");
+            if(i < player.inventory.Count && player.inventory[i] != null)
+            {
+                playerItemSprite = player.inventory[i].itemSprite;
+
+                playerInfoInvItems[id][i].sprite = playerItemSprite;
+                playerInfoInvItems[id][i].enabled = true;
+            }
+            else
+                playerInfoInvItems[id][i].enabled = false;
+        }
     }
 
     private void ChangeCurrentPlayer(EntityPiece ps)
@@ -365,6 +500,31 @@ public class ScoreManager : MonoBehaviour
     {
         ClearHeldStamps();
         UpdateHeldStamps(ps);
+    }
+
+    private void OnHoldPlayerInfo()
+    {
+        // Lift up scoreboard to show additional info
+        currentMotion = LMotion.Create(scoreContainerTransform.anchoredPosition, new Vector2(0, 150), 0.25f)
+            //.WithEase(Ease.InQuad)
+            .WithEase(Ease.OutBack)
+            .BindToAnchoredPosition(scoreContainerTransform);
+    }
+
+    private void OnReleasePlayerInfo()
+    {
+        // Bring scoreboard back down to normal
+        if (currentMotion.IsActive()) currentMotion.Cancel();
+
+        currentMotion = LMotion.Create(scoreContainerTransform.anchoredPosition, new Vector2(0, 4), 0.25f)
+            .WithEase(Ease.OutQuad)
+            .WithEase(Ease.OutBack)
+            .BindToAnchoredPosition(scoreContainerTransform);
+    }
+
+    private void OnFinishStockingStore(EntityPiece ps)
+    {
+        UpdateInfoInvItemsForPlayer(ps.id);
     }
 
     private void OnExitLevelUp()

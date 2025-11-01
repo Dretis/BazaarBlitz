@@ -19,17 +19,27 @@ public class TestingEvents : MonoBehaviour
 
     private void Start()
     {
-        DontDestroyOnLoad(this);
-        if (debugPlayerInputOn)
-        {
-            debugPlayerInput.SetActive(true);
-            DontDestroyOnLoad(debugPlayerInput);
-        }
+        //DontDestroyOnLoad(this);
     }
 
+#if UNITY_EDITOR
     // Update is called once per frame
     void Update()
     {
+        if (debugPlayerInputOn &&
+            Input.GetKeyDown(KeyCode.KeypadEnter))
+        {
+            Debug.Log("DEBUG | Turning on P1 test input");
+            debugPlayerInput.SetActive(true);
+            debugPlayerInput.transform.GetChild(0).gameObject.SetActive(true);
+            DontDestroyOnLoad(debugPlayerInput);
+        }
+        if (debugPlayerInputOn &&
+            Input.GetKeyDown(KeyCode.Keypad2))
+        {
+            Debug.Log("DEBUG | Turning on P2 test input");
+            debugPlayerInput.transform.GetChild(1).gameObject.SetActive(true);
+        }
         /*
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
@@ -45,7 +55,7 @@ public class TestingEvents : MonoBehaviour
         }
         */
     }
-
+#endif
     public void RaiseChannelVoid(VoidEventChannelSO voidEvent)
     {
         voidEvent.RaiseEvent();

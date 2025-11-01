@@ -22,7 +22,7 @@ public class SoundManager : MonoBehaviour
     [Header("Listen on Event Channels")]
     public VoidEventChannelSO m_EnteredOverworldScene;
     public VoidEventChannelSO m_EnteredCombatScene;
-
+    [Space]
     public VoidEventChannelSO m_PlayerMovedOnBoard;
     public VoidEventChannelSO m_PlayerUndidSomething;
     public PlayerEventChannelSO m_PassByStamp;
@@ -30,33 +30,44 @@ public class SoundManager : MonoBehaviour
     public IntEventChannelSO m_RollForMovement;
     public PlayerEventChannelSO m_DiceRollUndo;
 
+    [Space]
     public VoidEventChannelSO m_EnableFreeview;
     public VoidEventChannelSO m_DisableFreeview;
 
+    [Space]
     public PlayerEventChannelSO m_OpenInventory;
     public VoidEventChannelSO m_ExitInventory;
     public ItemEventChannelSO m_ItemSelected;
 
+    [Space]
+    public PlayerEventChannelSO m_TryBuildStore;
+    public VoidEventChannelSO m_CancelBuildStore;
 
+    [Space]
     public Vector2EventChannelSO m_TryExamineTile;
     public IntEventChannelSO m_PlayerScoreIncreased;
     public IntEventChannelSO m_PlayerScoreDecreased;
     public IntEventChannelSO m_ItemUsed;
     public IntEventChannelSO m_ItemBought;
 
+    [Space]
     public NodeEventChannelSO m_LandOnStorefront;
 
+    [Space]
     public PlayerEventChannelSO m_EnterLevelUp;
     public VoidEventChannelSO m_AugmentedDieFaceValue;
     public VoidEventChannelSO m_FailAugmentDieFaceValue;
 
+    [Space]
     public PlayerEventChannelSO m_ShowCombatBanner;
     public PlayerEventChannelSO m_NextPlayerTurn;
 
+    [Space]
     public VoidEventChannelSO m_UsedMeleeAttack;
     public VoidEventChannelSO m_UsedMagicAttack;
     public VoidEventChannelSO m_UsedGunAttack;
 
+    [Space]
     public VoidEventChannelSO m_IneffectiveAttack;
     public VoidEventChannelSO m_EffectiveAttack;
     public VoidEventChannelSO m_SuperEffectiveAttack;
@@ -64,6 +75,7 @@ public class SoundManager : MonoBehaviour
 
     public VoidEventChannelSO m_AttackImpact;
 
+    [Space]
     public EntityItemEventChannelSO m_EntityDied;
     public EntityActionPhaseEventChannelSO m_ActionSelected;
     public DamageEventChannelSO m_DamageTaken;
@@ -111,6 +123,8 @@ public class SoundManager : MonoBehaviour
         m_ExitInventory.OnEventRaised += OnExitInventory;
         m_ItemSelected.OnEventRaised += OnItemSelected;
 
+        m_TryBuildStore.OnEventRaised += OnTryBuildStore;
+        m_CancelBuildStore.OnEventRaised += OnCancelBuildStore;
 
         m_TryExamineTile.OnEventRaised += PlayMoveSoundWithVector2;
 
@@ -155,6 +169,9 @@ public class SoundManager : MonoBehaviour
         m_OpenInventory.OnEventRaised -= OnOpenInventory;
         m_ExitInventory.OnEventRaised -= OnExitInventory;
         m_ItemSelected.OnEventRaised -= OnItemSelected;
+
+        m_TryBuildStore.OnEventRaised -= OnTryBuildStore;
+        m_CancelBuildStore.OnEventRaised -= OnCancelBuildStore;
 
         m_TryExamineTile.OnEventRaised -= PlayMoveSoundWithVector2;
 
@@ -375,6 +392,18 @@ public class SoundManager : MonoBehaviour
     private void OnItemSelected(ItemStats item)
     {
         PlayMoveSound();
+    }
+
+    private void OnTryBuildStore(EntityPiece entity)
+    {
+        PlayMoveSound();
+        FMODUnity.RuntimeManager.StudioSystem.setParameterByName("GameState", 2);
+    }
+
+    private void OnCancelBuildStore()
+    {
+        PlayUndoSound();
+        FMODUnity.RuntimeManager.StudioSystem.setParameterByName("GameState", 0);
     }
 
     private void OnLandOnStorefront(MapNode node)

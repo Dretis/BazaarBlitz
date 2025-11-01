@@ -126,6 +126,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Info"",
+                    ""type"": ""Button"",
+                    ""id"": ""7904a3b5-0ed3-4908-855b-7f8285078a65"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""Press(behavior=2)"",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -260,6 +269,28 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""Build"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f5368ded-fb51-497c-b7a4-e8703645de84"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Info"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1be5c6a4-a168-46f7-9640-4a58f3985775"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""Info"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -280,7 +311,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""name"": ""ToggleFreeview"",
                     ""type"": ""Button"",
                     ""id"": ""62c0726e-b283-42d1-ba92-55b65bdca438"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -293,6 +324,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Info"",
+                    ""type"": ""Button"",
+                    ""id"": ""fa57b2a4-c0e8-4ad7-b835-ebf48e8a24e1"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""Press(behavior=2)"",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -300,8 +340,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""name"": """",
                     ""id"": ""07dcb913-3450-419d-adb0-659b9e82664a"",
                     ""path"": ""<Gamepad>/leftStick"",
-                    ""interactions"": """",
-                    ""processors"": """",
+                    ""interactions"": ""PressAndRepeat(holdTime=0.2,press=true)"",
+                    ""processors"": ""NormalizeVector2"",
                     ""groups"": ""Gamepad"",
                     ""action"": ""Move"",
                     ""isComposite"": false,
@@ -311,7 +351,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""name"": """",
                     ""id"": ""a09ed234-42c6-40a8-bc34-e3c8374929f4"",
                     ""path"": ""<Gamepad>/dpad"",
-                    ""interactions"": """",
+                    ""interactions"": ""PressAndRepeat(holdTime=0.2,press=true)"",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
                     ""action"": ""Move"",
@@ -322,7 +362,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""name"": ""WASD"",
                     ""id"": ""1c3abb7d-6d08-4bff-9272-3a352bf2e5cb"",
                     ""path"": ""Dpad"",
-                    ""interactions"": """",
+                    ""interactions"": ""PressAndRepeat(holdTime=0.2,press=true)"",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Move"",
@@ -441,6 +481,28 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""e3c77543-f6ef-4727-a9f2-cf7b79fc0b5c"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Info"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b91770b5-f237-4782-98bd-22a699d01fab"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""Info"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""28bf83c3-05b3-4426-93e4-73256e625b01"",
                     ""path"": ""<Gamepad>/buttonNorth"",
                     ""interactions"": """",
@@ -453,7 +515,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""db7ca1e2-fda0-4e63-9d31-ae6740a9a477"",
-                    ""path"": ""<Keyboard>/tab"",
+                    ""path"": ""<Keyboard>/shift"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
@@ -514,6 +576,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Info"",
+                    ""type"": ""Button"",
+                    ""id"": ""40e92f92-390e-433e-b529-af39528d9d92"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""Press(behavior=2)"",
                     ""initialStateCheck"": false
                 }
             ],
@@ -658,6 +729,28 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Joystick"",
                     ""action"": ""FreeviewMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e92a5cd3-41b1-49fe-9b69-a1d855d30667"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Info"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8815fef0-ba96-495b-a14d-f441e4471dd2"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""Info"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -1665,16 +1758,19 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_InitialTurnMenu_Roll = m_InitialTurnMenu.FindAction("Roll", throwIfNotFound: true);
         m_InitialTurnMenu_Inv = m_InitialTurnMenu.FindAction("Inv", throwIfNotFound: true);
         m_InitialTurnMenu_Build = m_InitialTurnMenu.FindAction("Build", throwIfNotFound: true);
+        m_InitialTurnMenu_Info = m_InitialTurnMenu.FindAction("Info", throwIfNotFound: true);
         // Moving
         m_Moving = asset.FindActionMap("Moving", throwIfNotFound: true);
         m_Moving_Move = m_Moving.FindAction("Move", throwIfNotFound: true);
         m_Moving_ToggleFreeview = m_Moving.FindAction("ToggleFreeview", throwIfNotFound: true);
         m_Moving_Confirm = m_Moving.FindAction("Confirm", throwIfNotFound: true);
+        m_Moving_Info = m_Moving.FindAction("Info", throwIfNotFound: true);
         // Freeview
         m_Freeview = asset.FindActionMap("Freeview", throwIfNotFound: true);
         m_Freeview_FreeviewMove = m_Freeview.FindAction("FreeviewMove", throwIfNotFound: true);
         m_Freeview_FreeviewExamine = m_Freeview.FindAction("FreeviewExamine", throwIfNotFound: true);
         m_Freeview_FreeviewExit = m_Freeview.FindAction("FreeviewExit", throwIfNotFound: true);
+        m_Freeview_Info = m_Freeview.FindAction("Info", throwIfNotFound: true);
         // Confirmation
         m_Confirmation = asset.FindActionMap("Confirmation", throwIfNotFound: true);
         m_Confirmation_Yes = m_Confirmation.FindAction("Yes", throwIfNotFound: true);
@@ -1789,6 +1885,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_InitialTurnMenu_Roll;
     private readonly InputAction m_InitialTurnMenu_Inv;
     private readonly InputAction m_InitialTurnMenu_Build;
+    private readonly InputAction m_InitialTurnMenu_Info;
     /// <summary>
     /// Provides access to input actions defined in input action map "Initial Turn Menu".
     /// </summary>
@@ -1816,6 +1913,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "InitialTurnMenu/Build".
         /// </summary>
         public InputAction @Build => m_Wrapper.m_InitialTurnMenu_Build;
+        /// <summary>
+        /// Provides access to the underlying input action "InitialTurnMenu/Info".
+        /// </summary>
+        public InputAction @Info => m_Wrapper.m_InitialTurnMenu_Info;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1854,6 +1955,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Build.started += instance.OnBuild;
             @Build.performed += instance.OnBuild;
             @Build.canceled += instance.OnBuild;
+            @Info.started += instance.OnInfo;
+            @Info.performed += instance.OnInfo;
+            @Info.canceled += instance.OnInfo;
         }
 
         /// <summary>
@@ -1877,6 +1981,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Build.started -= instance.OnBuild;
             @Build.performed -= instance.OnBuild;
             @Build.canceled -= instance.OnBuild;
+            @Info.started -= instance.OnInfo;
+            @Info.performed -= instance.OnInfo;
+            @Info.canceled -= instance.OnInfo;
         }
 
         /// <summary>
@@ -1917,6 +2024,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Moving_Move;
     private readonly InputAction m_Moving_ToggleFreeview;
     private readonly InputAction m_Moving_Confirm;
+    private readonly InputAction m_Moving_Info;
     /// <summary>
     /// Provides access to input actions defined in input action map "Moving".
     /// </summary>
@@ -1940,6 +2048,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Moving/Confirm".
         /// </summary>
         public InputAction @Confirm => m_Wrapper.m_Moving_Confirm;
+        /// <summary>
+        /// Provides access to the underlying input action "Moving/Info".
+        /// </summary>
+        public InputAction @Info => m_Wrapper.m_Moving_Info;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1975,6 +2087,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Confirm.started += instance.OnConfirm;
             @Confirm.performed += instance.OnConfirm;
             @Confirm.canceled += instance.OnConfirm;
+            @Info.started += instance.OnInfo;
+            @Info.performed += instance.OnInfo;
+            @Info.canceled += instance.OnInfo;
         }
 
         /// <summary>
@@ -1995,6 +2110,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Confirm.started -= instance.OnConfirm;
             @Confirm.performed -= instance.OnConfirm;
             @Confirm.canceled -= instance.OnConfirm;
+            @Info.started -= instance.OnInfo;
+            @Info.performed -= instance.OnInfo;
+            @Info.canceled -= instance.OnInfo;
         }
 
         /// <summary>
@@ -2035,6 +2153,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Freeview_FreeviewMove;
     private readonly InputAction m_Freeview_FreeviewExamine;
     private readonly InputAction m_Freeview_FreeviewExit;
+    private readonly InputAction m_Freeview_Info;
     /// <summary>
     /// Provides access to input actions defined in input action map "Freeview".
     /// </summary>
@@ -2058,6 +2177,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Freeview/FreeviewExit".
         /// </summary>
         public InputAction @FreeviewExit => m_Wrapper.m_Freeview_FreeviewExit;
+        /// <summary>
+        /// Provides access to the underlying input action "Freeview/Info".
+        /// </summary>
+        public InputAction @Info => m_Wrapper.m_Freeview_Info;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -2093,6 +2216,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @FreeviewExit.started += instance.OnFreeviewExit;
             @FreeviewExit.performed += instance.OnFreeviewExit;
             @FreeviewExit.canceled += instance.OnFreeviewExit;
+            @Info.started += instance.OnInfo;
+            @Info.performed += instance.OnInfo;
+            @Info.canceled += instance.OnInfo;
         }
 
         /// <summary>
@@ -2113,6 +2239,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @FreeviewExit.started -= instance.OnFreeviewExit;
             @FreeviewExit.performed -= instance.OnFreeviewExit;
             @FreeviewExit.canceled -= instance.OnFreeviewExit;
+            @Info.started -= instance.OnInfo;
+            @Info.performed -= instance.OnInfo;
+            @Info.canceled -= instance.OnInfo;
         }
 
         /// <summary>
@@ -2710,6 +2839,13 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnBuild(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Info" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnInfo(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Moving" which allows adding and removing callbacks.
@@ -2739,6 +2875,13 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnConfirm(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Info" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnInfo(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Freeview" which allows adding and removing callbacks.
@@ -2768,6 +2911,13 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnFreeviewExit(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Info" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnInfo(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Confirmation" which allows adding and removing callbacks.

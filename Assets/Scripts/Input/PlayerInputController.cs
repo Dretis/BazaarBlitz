@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
@@ -43,19 +41,26 @@ public class PlayerInputController : MonoBehaviour
     public VoidEventChannelSO m_DisableFreeview;
     public Vector2EventChannelSO m_TryExamineTile;
     public Vector2EventChannelSO m_FreeviewReticleMove;
+
     public PlayerEventChannelSO m_DiceRollUndo;
     public PlayerEventChannelSO m_DiceRollPrep;
+    public PlayerEventChannelSO m_TryDiceRollPrep;
+
     public VoidEventChannelSO m_DiceRolled;
     public IntEventChannelSO m_RollForMovement;
     public PlayerEventChannelSO m_OpenInventory;
 
     public PlayerEventChannelSO m_TryBuildStore;
     public PlayerEventChannelSO m_BuildStore; 
-    public PlayerEventChannelSO m_FinishStockingStore; 
+    public PlayerEventChannelSO m_FinishStockingStore;
+    public VoidEventChannelSO m_CancelRestockStore; // also listening
     public NodeEventChannelSO m_RestockStore; // also listening
 
     public VoidEventChannelSO m_ExitInventory; // also listening
     public VoidEventChannelSO m_ExitLevelUp;
+
+    public VoidEventChannelSO m_HoldPlayerInfo;
+    public VoidEventChannelSO m_ReleasePlayerInfo;
 
     public PlayerEventChannelSO m_BuyFromVendor;
     public VoidEventChannelSO m_ExitVendor;
@@ -69,6 +74,8 @@ public class PlayerInputController : MonoBehaviour
 
     // Store-based Event Channels
     public VoidEventChannelSO m_CancelBuildStore;
+    public PlayerEventChannelSO m_AskRestockStore;
+    public PlayerEventChannelSO m_TryRestockStore;
 
     public NodeEventChannelSO m_LandOnStorefront;
     public VoidEventChannelSO m_ExitStorefront;
@@ -94,41 +101,9 @@ public class PlayerInputController : MonoBehaviour
         //playerConfig.Input.onActionTriggered
     }
 
-    private void Awake()
-    {
-        //playerInputActions = new PlayerInputActions();
-        //playerConfigs = PlayerConfigurationManager.instance.GetPlayerConfigs();
-        //Debug.Log("hello"+playerConfigs);
-
-        //var players = FindObjectsOfType<EntityPiece>();
-        //var index = playerInput.playerIndex;
-        //currentPlayer = players.FirstOrDefault(m => m.id == index);
-        //playerInput = playerConfigs.FirstOrDefault(m => m.PlayerIndex == index).Input;
-        //playerInput = playerConfigs[currentPlayer.id].Input;
-
-        //freeviewReticle = GameObject.FindWithTag("FreeviewReticle");
-        //freeviewRb = freeviewReticle.GetComponent<Rigidbody2D>();
-    }
-    // Start is called before the first frame update
     private void Start()
     {
-        //Debug.Log("hello" + playerConfigs[0].PlayerIndex);
-        //playerInput = GetComponent<PlayerInput>();
-        //var players = FindObjectsOfType<EntityPiece>();
-        //var index = playerInput.playerIndex;
-
-        //currentPlayer = players.FirstOrDefault(m => m.id == index);
-        //playerInput = playerConfigs[0].Input;
         playerInput = GetComponent<PlayerInput>();
-
-        //Debug.Log($"Player [{playerInput.playerIndex}] Control Scheme: " + playerInput.currentControlScheme);
-        //Debug.Log($"Player [{playerInput.playerIndex}] Device: " + playerInput.GetDevice<Gamepad>());
-
-        // Fuck ass work around to disable the UI action map
-        //playerInput.SwitchCurrentActionMap("UI"); // FUCK YOU
-        //playerInput.currentActionMap.Disable();
-        //playerInput.SwitchCurrentActionMap("Initial Turn Menu");
-        //playerInput.currentActionMap.Enable();
 
         Debug.Log(playerInput.currentActionMap);
         currActionMap = playerInput.currentActionMap;
@@ -136,7 +111,8 @@ public class PlayerInputController : MonoBehaviour
 
     private void OnEnable()
     {
-        //freeviewReticle.SetActive(false);
+        m_DiceRollPrep.OnEventRaised += OnDiceRollPrep;
+
         m_EnableFreeview.OnEventRaised += FreeviewEnabled;
         m_DisableFreeview.OnEventRaised += FreeviewDisabled;
 
@@ -145,6 +121,10 @@ public class PlayerInputController : MonoBehaviour
 
         m_CancelBuildStore.OnEventRaised += OnCancelBuildStore;
 
+        m_AskRestockStore.OnEventRaised += OnAskRestockStore;
+        m_TryRestockStore.OnEventRaised += OnTryRestockStore;
+
+        m_CancelRestockStore.OnEventRaised += OnCancelRestockStore;
         m_RestockStore.OnEventRaised += OnRestockStore;
         m_FinishStockingStore.OnEventRaised += OnFinishStockingStore;
 
@@ -172,6 +152,8 @@ public class PlayerInputController : MonoBehaviour
 
     private void OnDisable()
     {
+        m_DiceRollPrep.OnEventRaised -= OnDiceRollPrep;
+
         m_EnableFreeview.OnEventRaised -= FreeviewEnabled;
         m_DisableFreeview.OnEventRaised -= FreeviewDisabled;
 
@@ -180,6 +162,10 @@ public class PlayerInputController : MonoBehaviour
 
         m_CancelBuildStore.OnEventRaised -= OnCancelBuildStore;
 
+        m_AskRestockStore.OnEventRaised -= OnAskRestockStore;
+        m_TryRestockStore.OnEventRaised -= OnTryRestockStore;
+
+        m_CancelRestockStore.OnEventRaised -= OnCancelRestockStore;
         m_RestockStore.OnEventRaised -= OnRestockStore;
         m_FinishStockingStore.OnEventRaised -= OnFinishStockingStore;
 
@@ -223,8 +209,8 @@ public class PlayerInputController : MonoBehaviour
     {
         Debug.Log("roll pressed as message");
         previousGamePhase = GamePhase.InitialTurnMenu;
-        m_DiceRollPrep.RaiseEvent(currentPlayer);
-        SwitchActionMap(GamePhase.RollDice);
+        m_TryDiceRollPrep.RaiseEvent(currentPlayer);
+        //SwitchActionMap(GamePhase.RollDice);
     }
 
     private void OnInv()
@@ -273,6 +259,22 @@ public class PlayerInputController : MonoBehaviour
         }
 
     }
+
+    // This function is used in the following Action Maps (Moving, Freeview)
+    private void OnInfo(InputValue value)
+    {
+        var hold = value.isPressed;
+        if (hold)
+        {
+            // Lift up scoreboard to show additional info
+            m_HoldPlayerInfo.RaiseEvent();
+        }
+        else
+        {
+            // Bring scoreboard back down to normal
+            m_ReleasePlayerInfo.RaiseEvent();
+        }
+    }
     #endregion
 
     # region 'UI' Action Map
@@ -285,6 +287,9 @@ public class PlayerInputController : MonoBehaviour
                 break;
             case GamePhase.Inventory:
                 m_ExitInventory.RaiseEvent();
+                break;
+            case GamePhase.PreStockStore:
+                m_CancelRestockStore.RaiseEvent();
                 break;
             case GamePhase.BuildingStore:
                 m_CancelBuildStore.RaiseEvent();
@@ -303,28 +308,38 @@ public class PlayerInputController : MonoBehaviour
     {
         var gp = GameplayTest.instance;
         var p = currentPlayer;
-        Debug.Log($"{value.Get<Vector2>()}");
+
         var x = value.Get<Vector2>().x;
         var y = value.Get<Vector2>().y;
 
-        switch (x, y)
-        {
-            case (0, 1):
-                gp.wantedNode = p.occupiedNode.north;
-                break;
-            case (1, 0):
-                gp.wantedNode = p.occupiedNode.east;
-                currentPlayer.playerSprite.flipX = true;
-                break;
-            case (0, -1):
-                gp.wantedNode = p.occupiedNode.south;
-                break;
-            case (-1, 0):
-                gp.wantedNode = p.occupiedNode.west;
-                currentPlayer.playerSprite.flipX = false;
-                break;
+        float angle = Mathf.Atan2(y, x) * Mathf.Rad2Deg;
 
+        Debug.Log($"MOVING | {value.Get<Vector2>()} | Angle: {angle}\'");
+        // Angles | 0 = Right, 90 = Up, 180 = Left, -90 = Down
+
+        if (angle <= 135 && angle >= 45)
+        {
+            //Debug.Log("MOVE UP/NORTH");
+            gp.wantedNode = p.occupiedNode.north;
         }
+        else if (angle < 45 && angle > -45 && x != 0)
+        {
+            //Debug.Log("MOVE RIGHT/EAST");
+            gp.wantedNode = p.occupiedNode.east;
+            currentPlayer.playerSprite.flipX = true;
+        }
+        else if (angle <= -45 && angle >= -135)
+        {
+            //Debug.Log("MOVE DOWN/SOUTH");
+            gp.wantedNode = p.occupiedNode.south;
+        }
+        else if (angle < -135 || angle > 135)
+        {
+            //Debug.Log("MOVE LEFT/WEST");
+            gp.wantedNode = p.occupiedNode.west;
+            currentPlayer.playerSprite.flipX = false;
+        }
+
         if(gp.wantedNode != null && !(gp.wantedNode == p.previousNode && p.traveledNodes.Count <= 1))
         {
             GameplayTest.instance.phase = GamePhase.MoveAround;
@@ -466,6 +481,8 @@ public class PlayerInputController : MonoBehaviour
     {
         if (!playerInput.inputIsActive) return;
 
+        m_ReleasePlayerInfo.RaiseEvent(); //temporary fix for holding down
+
         playerInput.currentActionMap.Disable();
         GameplayTest.instance.phase = phase;
         switch (phase)
@@ -506,6 +523,10 @@ public class PlayerInputController : MonoBehaviour
                 break;
 
             case GamePhase.InStore:
+                playerInput.SwitchCurrentActionMap("UI");
+                break;
+
+            case GamePhase.PreStockStore:
                 playerInput.SwitchCurrentActionMap("UI");
                 break;
 
@@ -599,6 +620,13 @@ public class PlayerInputController : MonoBehaviour
         gamepad.SetMotorSpeeds(0, 0);
     }
 
+    private void OnDiceRollPrep(EntityPiece player)
+    {
+        if (!playerInput.inputIsActive) return;
+
+        SwitchActionMap(GamePhase.RollDice);
+    }
+
     private void FreeviewEnabled()
     {
         if (!playerInput.inputIsActive) return;
@@ -621,6 +649,38 @@ public class PlayerInputController : MonoBehaviour
         SwitchActionMap(previousGamePhase);
     }
 
+    private void OnAskRestockStore(EntityPiece ps)
+    {
+        if (!playerInput.inputIsActive) return;
+
+        playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
+        playerInput.uiInputModule.actionsAsset = playerInput.actions;
+
+        if (previousGamePhase == GamePhase.PreStockStore) previousGamePhase = GamePhase.EncounterTime;
+        else previousGamePhase = instance.phase;
+
+        Debug.Log("prev phase = " + previousGamePhase);
+        SwitchActionMap(GamePhase.PreStockStore);
+    }
+
+    private void OnTryRestockStore(EntityPiece ps)
+    {
+        previousGamePhase = GamePhase.PreStockStore;
+    }
+
+    private void OnCancelRestockStore()
+    {
+        if (!playerInput.inputIsActive) return;
+
+        if (previousGamePhase == GamePhase.PreStockStore)
+        {
+            // undo to ask after already tring to restock
+            m_AskRestockStore.RaiseEvent(currentPlayer);
+        }
+        else
+            GameplayTest.instance.phase = GamePhase.EndTurn;
+    }
+
     private void OnRestockStore(MapNode node)
     {
         if (!playerInput.inputIsActive) return;
@@ -637,7 +697,8 @@ public class PlayerInputController : MonoBehaviour
     {
         if (!playerInput.inputIsActive) return;
 
-        if (previousGamePhase == GamePhase.EncounterTime)
+        if (previousGamePhase == GamePhase.EncounterTime ||
+            previousGamePhase == GamePhase.PreStockStore)
         {
             Debug.Log("What the fc");
             GameplayTest.instance.phase = GamePhase.EndTurn;
@@ -645,6 +706,9 @@ public class PlayerInputController : MonoBehaviour
             //SwitchActionMap(GamePhase.StockStore);
             return;
         }
+
+        Debug.Log("finish stocking, go back to ITM plz");
+        previousGamePhase = GamePhase.InitialTurnMenu;
         SwitchActionMap(GamePhase.InitialTurnMenu);
         //SwitchActionMap(previousGamePhase);
     }

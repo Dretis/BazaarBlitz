@@ -47,6 +47,7 @@ public class CameraObserver : MonoBehaviour
 
     public VoidEventChannelSO m_EnteredCombatScene;
 
+    public NodeEventChannelSO m_FocusOnNode;
     public NodeEventChannelSO m_LandedOnVendor;
     public PlayerListEventChannelSO m_LandedOnMultipleEntities;
 
@@ -75,6 +76,7 @@ public class CameraObserver : MonoBehaviour
 
         m_EnteredCombatScene.OnEventRaised += OnEnteredCombatScene;
 
+        m_FocusOnNode.OnEventRaised += OnFocusOnNode;
         m_LandedOnVendor.OnEventRaised += OnLandedOnVendor;
         m_LandedOnMultipleEntities.OnEventRaised += OnLandedOnMultipleEntities;
 
@@ -103,6 +105,7 @@ public class CameraObserver : MonoBehaviour
 
         m_EnteredCombatScene.OnEventRaised -= OnEnteredCombatScene;
 
+        m_FocusOnNode.OnEventRaised -= OnFocusOnNode;
         m_LandedOnVendor.OnEventRaised -= OnLandedOnVendor;
         m_LandedOnMultipleEntities.OnEventRaised -= OnLandedOnMultipleEntities;
 
@@ -215,6 +218,11 @@ public class CameraObserver : MonoBehaviour
     {
         combatZoomCam.Follow = currentPlayer.transform;
         combatZoomCam.enabled = true;
+    }
+
+    private void OnFocusOnNode(MapNode node)
+    {
+        vcam.Follow = node.transform;
     }
 
     private void OnLandedOnVendor(MapNode node)

@@ -29,6 +29,7 @@ public class GameplayTest : MonoBehaviour
     public EntityPiece currentPlayer;
     public MapNode currentPlayerInitialNode;
     [SerializeField] private List<EntityPiece> playersOnCurrentNode = new List<EntityPiece>();
+    private MapNode currentRestockNode;
 
     //public Dictionary<Vector2Int, GameObject> map = new Dictionary<Vector2Int, GameObject>();
     //public Dictionary<Vector2Int, GameObject> unitPos = new Dictionary<Vector2Int, GameObject>();
@@ -57,6 +58,7 @@ public class GameplayTest : MonoBehaviour
 
         BuildingStore,
         InStore, // new for input system
+        PreStockStore,
         StockStore,
         OverturnStore,
 
@@ -132,7 +134,7 @@ public class GameplayTest : MonoBehaviour
     //public TextMeshProUGUI upgradeTooltip;
     //public GameObject diceStats;
     //public List<DiceStatSelectionHandler> playerDiceNumbers = new List<DiceStatSelectionHandler>();
-    public TextMeshProUGUI storestockTooltip;
+    //public TextMeshProUGUI storestockTooltip;
     public int[] costArray = { 0, 1, 1, 2, 2, 2, 3, 3, 3, 4, 5, 999 };
 
     public Canvas howToPlayScreen;
@@ -165,7 +167,7 @@ public class GameplayTest : MonoBehaviour
 
     [Header("BC - ITM Events")]
     public VoidEventChannelSO m_EnableFreeview;
-    public PlayerEventChannelSO m_DiceRollUndo;
+    //public PlayerEventChannelSO m_DiceRollUndo;
     public PlayerEventChannelSO m_DiceRollPrep;
     public IntEventChannelSO m_RollForMovement;
 
@@ -174,7 +176,8 @@ public class GameplayTest : MonoBehaviour
     public PlayerEventChannelSO m_RefreshInventory;
     public PlayerEventChannelSO m_FullInventory;
 
-    public NodeEventChannelSO m_RestockStore;
+    //public NodeEventChannelSO m_RestockStore;
+
     public VoidEventChannelSO m_ExitInventory;
 
     [Header("BC - Board Moving Events")]
@@ -195,6 +198,7 @@ public class GameplayTest : MonoBehaviour
     public NodeEventChannelSO m_LandOnVendor;
 
     public PlayerListEventChannelSO m_LandOnMultipleEntities;
+    public PlayerEventChannelSO m_AskRestockStore;
 
     // Pass-by Event Channels
     [Header("BC - Board Passby Events")]
@@ -213,6 +217,7 @@ public class GameplayTest : MonoBehaviour
     //public PlayerEventChannelSO m_TransitionIntoCombat;
 
     [Header("Listen on Event Channels")]
+    public PlayerEventChannelSO m_TryDiceRollPrep;
     public VoidEventChannelSO m_DiceRolled;
 
     [Header("LS - Item Usage Events")]
@@ -228,6 +233,7 @@ public class GameplayTest : MonoBehaviour
 
     [Header("LS - ITM Events")]
     public PlayerEventChannelSO m_BuildStore; //Listening to this one
+    public NodeEventChannelSO m_RestockStore;
     public PlayerEventChannelSO m_FinishStockingStore;
 
     public VoidEventChannelSO m_ExitRaycastedTile; //Listening to this one
@@ -244,6 +250,7 @@ public class GameplayTest : MonoBehaviour
     {
         m_NextTurnRound.OnEventRaised += OnNextTurnRound;
 
+        m_TryDiceRollPrep.OnEventRaised += OnTryDiceRollPrep;
         m_DiceRolled.OnEventRaised += CalculateDiceRoll;
         m_ItemBought.OnEventRaised += ConfirmPurchase;
 
@@ -281,6 +288,7 @@ public class GameplayTest : MonoBehaviour
     {
         m_NextTurnRound.OnEventRaised -= OnNextTurnRound;
 
+        m_TryDiceRollPrep.OnEventRaised -= OnTryDiceRollPrep;
         m_DiceRolled.OnEventRaised -= CalculateDiceRoll;
         m_ItemBought.OnEventRaised -= ConfirmPurchase;
 
@@ -360,6 +368,13 @@ public class GameplayTest : MonoBehaviour
 #if UNITY_EDITOR
         debugPhaseText.text = "" + phase;
 
+        if (Input.GetKeyDown(KeyCode.BackQuote))
+        {
+            if (turnOffMonsterEncounters) turnOffMonsterEncounters = false;
+            else turnOffMonsterEncounters = true;
+
+            Debug.Log($"Toggling | Monster Enounters off is {turnOffMonsterEncounters}");
+        }
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             currentPlayer.movementLeft = 1;
@@ -398,7 +413,7 @@ public class GameplayTest : MonoBehaviour
 
             // Roll Phase 
             case GamePhase.RollDice:
-                RollDice(currentPlayer);
+                //RollDice(currentPlayer);
                 break;
 
             // Pick Direction to Go Phase
@@ -543,7 +558,7 @@ public class GameplayTest : MonoBehaviour
             phase = GamePhase.Inventory;
         }
         */
-
+        /*
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             howToPlayScreen.enabled = true;
@@ -552,6 +567,7 @@ public class GameplayTest : MonoBehaviour
         {
             howToPlayScreen.enabled = false;
         }
+        */
     }
 
     private void OpenInventory(EntityPiece p)
@@ -569,59 +585,18 @@ public class GameplayTest : MonoBehaviour
         */
     }
 
-    // THIS FUNCTION NEEDS A WHOLE REWORK
-    void RollDice(EntityPiece p)
+    //ORIGINALLY: void RollDice(EntityPiece p)
+    private void OnTryDiceRollPrep(EntityPiece p)
     {
         // For now level up happens right before you roll dice
         if (p.canLevelUp() && !ThisPlayerMustFight(p)) {
 
             m_EnterLevelUp.RaiseEvent(p);
         }
-        if (!ThisPlayerMustFight(p))
+        else if (!ThisPlayerMustFight(p))
         {
-            /*
-            if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Mouse0))
-            {
-                diceRoll = Random.Range(1, 7); // Roll from 1 to 6
-
-                var rollsRemaining = currentPlayer.currentStatsModifier.rollModifier;
-                while (rollsRemaining > 0)
-                {
-                    Debug.Log($"Rolls Left{rollsRemaining}");
-                    diceRoll += Random.Range(1, 7); // roll again until there's no more
-                    rollsRemaining--;
-                }
-
-                // Apply movement item effects.
-                diceRoll *= currentPlayer.currentStatsModifier.movementMultModifier;
-                diceRoll += currentPlayer.currentStatsModifier.movementFlatModifier;    
-
-                
-                //diceRoll += 10;   
-
-                // We just rolled for movement, tell listeners about it
-                m_RollForMovement.RaiseEvent(diceRoll);
-
-                // Put these in their own listener script
-                rollText.text = "" + diceRoll;
-                p.movementTotal = p.movementLeft = diceRoll;
-
-                m_PlayerMovedOnBoard.RaiseEvent();
-
-                // End of listener code
-
-                phase = GamePhase.PickDirection;
-            }
-            if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.Mouse1))
-            {
-                // Undo rolling, back to menu
-                m_DiceRollUndo.RaiseEvent(p);
-
-                m_PlayerUndidSomething.RaiseEvent();
-
-                phase = GamePhase.InitialTurnMenu;
-            }
-            */
+            // Regular behavior, roll for movement
+            m_DiceRollPrep.RaiseEvent(p);
         }
         else
         {
@@ -990,12 +965,12 @@ public class GameplayTest : MonoBehaviour
                     // Have the node be occupied by the current player.
                     //m.playersOccupied.Add(p);
 
-                    Debug.Log("Restock the store on landing on it plaz");
-                    isStockingStore = true;
-                    m_RestockStore.RaiseEvent(m);
+                    Debug.Log($"Ask if {p.entityName} wants to restock");
+                    m_AskRestockStore.RaiseEvent(p);
+                    //m_RestockStore.RaiseEvent(m);
                     //m_OpenInventory.RaiseEvent(p); // COMMENT THIS OUT WHEN RAISING THE RESTOCK EVENT
-                    storestockTooltip.enabled = true; // PROBABLY PUT THIS IN UI AS WELL
-                    phase = GamePhase.StockStore;
+                    //storestockTooltip.enabled = true; // PROBABLY PUT THIS IN UI AS WELL
+                    //phase = GamePhase.StockStore;
                 }
             }
             else if (m.CompareTag("Castle"))
@@ -1622,10 +1597,10 @@ public class GameplayTest : MonoBehaviour
                 turnsRemaining = currentPlayer.inventory[index].Duration - 1
             });
 
-            ApplyItemEffectsOnTurnStart(currentPlayer);
-
             currentPlayer.inventory.RemoveAt(index);
             playerUsedItem = true;
+
+            ApplyItemEffectsOnTurnStart(currentPlayer);
 
             if (currentPlayer.currentStatsModifier.warpMode != EntityStatsModifiers.WarpMode.None)
             {
@@ -1648,14 +1623,6 @@ public class GameplayTest : MonoBehaviour
                 m_ExitInventory.RaiseEvent();
             }
         }
-    }
-
-    private void DropItemInPlayerInventory(int index)
-    {
-        // FOR NAM, to remove item from inventory upon click.
-        // probably want to track how many items have been removed too and close the drop item UI
-        // when it reaches the necessary amount.
-        currentPlayer.inventory.RemoveAt(index);
     }
 
     private void ApplyItemEffectsOnTurnStart(EntityPiece p)
@@ -1752,19 +1719,21 @@ public class GameplayTest : MonoBehaviour
         node.stockGroup.alpha = 1;
         node.stockGroup.GetComponent<Image>().color = p.playerColor;
         node.stockGroup.GetComponent<Image>().color -= new Color(0, 0, 0, .25f);
-
+        p.ownedStores.Add(store);
 
         isStockingStore = true;
 
         //m_RestockStore.RaiseEvent(p.occupiedNode);
 
-        storestockTooltip.enabled = true;
+        //storestockTooltip.enabled = true;
     }
 
     public void OnRestockStore(MapNode node)
     {
         emptyStockCount = 0;
         var storeInventory = node.GetComponent<StoreManager>().storeInventory;
+
+        currentRestockNode = node;
         foreach (ItemStats item in storeInventory)
         {
             if (item == null)
@@ -1788,30 +1757,14 @@ public class GameplayTest : MonoBehaviour
 
     public void AddRecentStockIntoStore(EntityPiece player)
     {
-        StoreManager store = player.occupiedNode.GetComponent<StoreManager>();
+        StoreManager store = currentRestockNode.GetComponent<StoreManager>();
         foreach (ItemStats item in recentStockedItems)
         {
             store.AddItem(item);
         }
 
         // Visual Item Stock Indicator Update
-        MapNode node = player.occupiedNode.GetComponent<MapNode>();
-
-        UpdateStorefrontVisual(node);
-        /*
-        for (int i = 0; i < 3; i++)
-        {
-            if(i < recentStockedItems.Count)
-            {
-                node.stockItems[i].gameObject.SetActive(true);
-                node.stockItems[i].sprite = recentStockedItems[i].itemSprite;
-            }
-            else
-            {
-                node.stockItems[i].gameObject.SetActive(false);
-            }
-        }
-        */
+        UpdateStorefrontVisual(currentRestockNode);
 
         isStockingStore = false;
 

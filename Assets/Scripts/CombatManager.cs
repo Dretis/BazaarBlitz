@@ -470,13 +470,8 @@ public class CombatManager : MonoBehaviour
         //Raise event when moving back to overworld scene
         m_EnteredOverworldScene.RaiseEvent();
         pausingLock = false;
+
         // Mostly scene management stuff here
-
-        sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(player1.id);
-        if (!player2.isEnemy) {
-            sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(player2.id);
-        }
-
         sceneManager.UnloadCombatScene(SceneManager.GetSceneAt(combatSceneIndex), combatSceneIndex);
 
         // Pause combat scene and re-enable overworld scene
@@ -485,6 +480,11 @@ public class CombatManager : MonoBehaviour
         //sceneManager.DisableScene(combatSceneIndex);
         sceneManager.EnableScene(0);
 
+        sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(player1.id);
+        if (!player2.isEnemy)
+        {
+            sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(player2.id);
+        }
         // This changes the game phase in gameplay test remotely.
         sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
     }
@@ -610,16 +610,18 @@ public class CombatManager : MonoBehaviour
         */
 
         // Update player scores.
-        sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(player1.id);
-        if (!player2.isEnemy)
-        {
-            sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(player2.id);
-        }
 
         sceneManager.UnloadCombatScene(SceneManager.GetSceneAt(combatSceneIndex), combatSceneIndex);
 
         // Re-enable scene
         sceneManager.EnableScene(0);
+
+        // Update player scores.
+        sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(player1.id);
+        if (!player2.isEnemy)
+        {
+            sceneManager.overworldScene.m_UpdatePlayerScore.RaiseEvent(player2.id);
+        }
 
         sceneManager.ChangeGamePhase(GameplayTest.GamePhase.EndTurn);
     }

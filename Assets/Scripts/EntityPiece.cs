@@ -52,6 +52,8 @@ public class EntityPiece : MonoBehaviour
     public int unspentLevelUpPoints = 0;
     public List<MapNode> traveledNodes = new List<MapNode>(); // Tracks the nodes the player has gone to
 
+    public List<StoreManager> ownedStores = new List<StoreManager>();
+
     [Header("Particle Effects")]
     public ParticleSystem dustCloud;
     public ParticleSystem coinDrop;

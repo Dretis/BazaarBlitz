@@ -40,6 +40,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Info",
+                    "type": "Button",
+                    "id": "7904a3b5-0ed3-4908-855b-7f8285078a65",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "Press(behavior=2)",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -174,6 +183,28 @@
                     "action": "Build",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f5368ded-fb51-497c-b7a4-e8703645de84",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Info",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1be5c6a4-a168-46f7-9640-4a58f3985775",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Info",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -194,7 +225,7 @@
                     "name": "ToggleFreeview",
                     "type": "Button",
                     "id": "62c0726e-b283-42d1-ba92-55b65bdca438",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -207,6 +238,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Info",
+                    "type": "Button",
+                    "id": "fa57b2a4-c0e8-4ad7-b835-ebf48e8a24e1",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "Press(behavior=2)",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -214,8 +254,8 @@
                     "name": "",
                     "id": "07dcb913-3450-419d-adb0-659b9e82664a",
                     "path": "<Gamepad>/leftStick",
-                    "interactions": "",
-                    "processors": "",
+                    "interactions": "PressAndRepeat(holdTime=0.2,press=true)",
+                    "processors": "NormalizeVector2",
                     "groups": "Gamepad",
                     "action": "Move",
                     "isComposite": false,
@@ -225,7 +265,7 @@
                     "name": "",
                     "id": "a09ed234-42c6-40a8-bc34-e3c8374929f4",
                     "path": "<Gamepad>/dpad",
-                    "interactions": "",
+                    "interactions": "PressAndRepeat(holdTime=0.2,press=true)",
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "Move",
@@ -236,7 +276,7 @@
                     "name": "WASD",
                     "id": "1c3abb7d-6d08-4bff-9272-3a352bf2e5cb",
                     "path": "Dpad",
-                    "interactions": "",
+                    "interactions": "PressAndRepeat(holdTime=0.2,press=true)",
                     "processors": "",
                     "groups": "",
                     "action": "Move",
@@ -355,6 +395,28 @@
                 },
                 {
                     "name": "",
+                    "id": "e3c77543-f6ef-4727-a9f2-cf7b79fc0b5c",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Info",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b91770b5-f237-4782-98bd-22a699d01fab",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Info",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "28bf83c3-05b3-4426-93e4-73256e625b01",
                     "path": "<Gamepad>/buttonNorth",
                     "interactions": "",
@@ -367,7 +429,7 @@
                 {
                     "name": "",
                     "id": "db7ca1e2-fda0-4e63-9d31-ae6740a9a477",
-                    "path": "<Keyboard>/tab",
+                    "path": "<Keyboard>/shift",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
@@ -428,6 +490,15 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Info",
+                    "type": "Button",
+                    "id": "40e92f92-390e-433e-b529-af39528d9d92",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "Press(behavior=2)",
                     "initialStateCheck": false
                 }
             ],
@@ -572,6 +643,28 @@
                     "processors": "",
                     "groups": "Joystick",
                     "action": "FreeviewMove",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e92a5cd3-41b1-49fe-9b69-a1d855d30667",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Info",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8815fef0-ba96-495b-a14d-f441e4471dd2",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Info",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
