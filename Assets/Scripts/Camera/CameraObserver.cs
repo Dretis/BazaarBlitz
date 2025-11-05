@@ -20,6 +20,7 @@ public class CameraObserver : MonoBehaviour
     private CinemachineVirtualCamera vcam;
 
     [Header("Extra Cameras")]
+    [SerializeField] private CinemachineVirtualCamera freeviewCam;
     [SerializeField] private CinemachineVirtualCamera zoomedInCam;
     [SerializeField] private CinemachineVirtualCamera levelUpCam;
     [SerializeField] private CinemachineVirtualCamera combatZoomCam;
@@ -124,6 +125,7 @@ public class CameraObserver : MonoBehaviour
 
     void SwitchTargetFocus(EntityPiece entity)
     {
+        freeviewCam.enabled = false;
         zoomedInCam.enabled = false;
         combatZoomCam.enabled = false;
         focusZoomCam.enabled = false;
@@ -144,26 +146,30 @@ public class CameraObserver : MonoBehaviour
     {
         Debug.Log("focus on reticle");
         freeviewReticle.SetActive(true);
-        freeviewReticle.transform.position = GameplayTest.instance.currentPlayer.transform.position + new Vector3(0, 0.5f, 0);
-        vcam.Follow = freeviewReticle.transform;
+        freeviewReticle.transform.position = GameplayTest.instance.currentPlayer.transform.position + new Vector3(0, 0.25f, 0);
+
+        freeviewCam.enabled = true;
+        freeviewCam.Follow = freeviewReticle.transform;
+        //vcam.Follow = freeviewReticle.transform;
         //var composer = vcam.GetCinemachineComponent<CinemachineComposer>();
         //composer.m_TrackedObjectOffset = Vector3.zero;
     }
 
     void OnEnterRaycastedTile(MapNode node)
     {
-        freeviewReticle.transform.position = node.transform.position + selectedNodeOffset;
+        //freeviewReticle.transform.position = node.transform.position + selectedNodeOffset;
     }
 
     void OnExitRaycastedTile()
     {
         // follow the freeview reticle again after de-selecting tile
-        vcam.Follow = freeviewReticle.transform;
+        //vcam.Follow = freeviewReticle.transform;
     }
 
     void ReturnTargetFocusToCurrentPlayer()
     {
         Debug.Log("Back to player focus");
+        freeviewCam.enabled = false;
         freeviewReticle.SetActive(false);
         vcam.Follow = GameplayTest.instance.currentPlayer.transform;
     }

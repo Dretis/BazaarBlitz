@@ -15,6 +15,8 @@ public class RaycastTiles : MonoBehaviour
 
     public static MapNode tileSelected = null;
 
+    [SerializeField] private float raycastRadius;
+
     [Header("Broadcast on Event Channels")]
     public NodeEventChannelSO m_EnterRaycastedTile;
     public VoidEventChannelSO m_ExitRaycastedTile;
@@ -92,7 +94,8 @@ public class RaycastTiles : MonoBehaviour
     {
         Debug.Log(rayPos);
         //Vector2 rayPos = new Vector2(cam.ScreenToWorldPoint(Input.mousePosition).x, cam.ScreenToWorldPoint(Input.mousePosition).y);
-        RaycastHit2D hit = Physics2D.Raycast(rayPos, Vector2.zero, 0f);
+        //RaycastHit2D hit = Physics2D.Raycast(rayPos, Vector2.zero, raycastDistance);
+        RaycastHit2D hit = Physics2D.CircleCast(rayPos, raycastRadius, Vector2.zero);
 
         if (hit)
         {

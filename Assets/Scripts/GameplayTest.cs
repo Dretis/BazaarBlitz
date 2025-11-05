@@ -1950,11 +1950,13 @@ public class GameplayTest : MonoBehaviour
                 RaycastTiles.tileSelected.flowerTrapVisual.sprite = RaycastTiles.tileSelected.flowerTrapSprites[0];
                 PlantConfirmed(currentPlayer, MapNode.Modifier.Marigold);
             }
+            /*
             else
             {
                 m_ExitRaycastTargetSelection.RaiseEvent(); // prevents getting stuck, but we should probably add a warning
                 phase = GamePhase.InitialTurnMenu;
             }
+            */
         }
         else if (currentPlayer.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Rafflesia)
         {
