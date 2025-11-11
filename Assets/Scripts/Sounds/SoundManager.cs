@@ -78,10 +78,11 @@ public class SoundManager : MonoBehaviour
     [Space]
     public EntityItemEventChannelSO m_EntityDied;
     public EntityActionPhaseEventChannelSO m_ActionSelected;
+    public PlayerFloatActionTypeEventChannelSO m_StoreDiceRolled;
     public DamageEventChannelSO m_DamageTaken;
 
     private bool startedBattleMusic = false;
-    
+
 
     private void Awake()
     {
@@ -137,7 +138,10 @@ public class SoundManager : MonoBehaviour
         //Combat Events
         m_EnteredCombatScene.OnEventRaised += PlayCombatMusic;
         m_EnteredOverworldScene.OnEventRaised += StopCombatMusic;
+
         m_ActionSelected.OnEventRaised += PlaySelectCombatActionSound;
+        m_StoreDiceRolled.OnEventRaised += OnStoreDiceRolled;
+
         m_UsedMeleeAttack.OnEventRaised += PlayMeleeAttackSound;
         m_UsedMagicAttack.OnEventRaised += PlayMagicAttackSound;
         m_UsedGunAttack.OnEventRaised += PlayGunAttackSound;
@@ -184,7 +188,10 @@ public class SoundManager : MonoBehaviour
         //Combat Events
         m_EnteredCombatScene.OnEventRaised -= PlayCombatMusic;
         m_EnteredOverworldScene.OnEventRaised -= StopCombatMusic;
+
         m_ActionSelected.OnEventRaised -= PlaySelectCombatActionSound;
+        m_StoreDiceRolled.OnEventRaised -= OnStoreDiceRolled;
+
         m_UsedMeleeAttack.OnEventRaised -= PlayMeleeAttackSound;
         m_UsedMagicAttack.OnEventRaised -= PlayMagicAttackSound;
         m_UsedGunAttack.OnEventRaised -= PlayGunAttackSound;
@@ -262,7 +269,8 @@ public class SoundManager : MonoBehaviour
     {
         diceRollInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
         diceRollInstance.release();
-        AudioHelper.PlayOneShotWithParameters("event:/HitDice", this.transform.position, ("SoundVolume", SFXVolume));
+        
+        AudioHelper.PlayOneShotWithParameters("event:/HitDice", this.transform.position, ("SoundVolume", SFXVolume), ("RolledNumber", Mathf.Min(diceValue,15)));
     }
 
     private void PlayCurrencyDecreasedSound(int scoreDifference)
@@ -332,7 +340,7 @@ public class SoundManager : MonoBehaviour
         AudioHelper.PlayOneShotWithParameters("event:/Undo", this.transform.position, ("SoundVolume", SFXVolume));
     }
 
-        private void PlayMeleeAttackSound()
+    private void PlayMeleeAttackSound()
     {
         AudioHelper.PlayOneShotWithParameters("event:/MeleeWindup", this.transform.position, ("SoundVolume", SFXVolume));
     }
@@ -417,5 +425,20 @@ public class SoundManager : MonoBehaviour
         StopDiceRollSound(entity);
         //PlayCurrencyIncreasedSound(0);
         PlayLevelUpSound();
+    }
+    /*
+    private void OnCombatDiceRolled(EntityPiece entity)
+    {
+        // dont play sound if enemy rolls, prevents 2x volume
+        if (entity.isEnemy) return;
+
+        PlayDiceHitSound(0);
+    }
+    */
+    private void OnStoreDiceRolled(EntityPiece entity, float rolledNumber, Action.WeaponTypes type)
+    {
+        if (entity.isEnemy) return;
+
+        PlayDiceHitSound((int)rolledNumber);
     }
 }

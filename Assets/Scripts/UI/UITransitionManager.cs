@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.UI;
-using AllIn1SpriteShader;
 
 public class UITransitionManager : MonoBehaviour
 {
@@ -67,7 +66,7 @@ public class UITransitionManager : MonoBehaviour
 
     private void OnEnteredCombatScene()
     {
-        FadeInInkTransition(.45f);
+        FadeInInkTransition(.40f);
     }
 
     private void OnTransitionIntoCombat(EntityPiece player)

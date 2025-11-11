@@ -55,10 +55,16 @@ public class EntityPiece : MonoBehaviour
     public List<StoreManager> ownedStores = new List<StoreManager>();
 
     [Header("Particle Effects")]
-    public ParticleSystem dustCloud;
+    public GameObject dustCloud;
     public ParticleSystem coinDrop;
     public ParticleSystem coinSucking;
     public ParticleSystem levelUpRays;
+
+    [Header("Cosmetic Dice")]
+    public GameObject moveDieCosmeticPrefab;
+    public GameObject strDieCosmeticPrefab;
+    public GameObject dexDieCosmeticPrefab;
+    public GameObject intDieCosmeticPrefab;
 
     // Dice faces initialization.
     public DieConfig strDie => entityStats.dieConfigs[(int)EntityBaseStats.DieTypes.Strength];
@@ -82,13 +88,16 @@ public class EntityPiece : MonoBehaviour
     private void OnEnable()
     {
         //if (!isEnemy && combatSceneIndex > -1)
-        if (!isEnemy && 
-            (currentStates.Contains(State.Fighting) || currentStates.Contains(State.FightingParty)))
+        if (!isEnemy)
         {
-            // In combat, dust cloud around players
-            Debug.Log($"{entityName} is still in combat");
-            dustCloud.gameObject.SetActive(true);
-            dustCloud.Play();
+            if (currentStates.Contains(State.Fighting) || currentStates.Contains(State.FightingParty))
+            {
+                // In combat, dust cloud around players
+                Debug.Log($"{entityName} is still in combat");
+                dustCloud.gameObject.SetActive(true);
+                //dustCloud.Play();
+            }
+            else dustCloud.gameObject.SetActive(false);
         }
     }
 

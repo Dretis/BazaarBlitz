@@ -42,10 +42,13 @@ public class CombatAnimationManager : MonoBehaviour
     [Header("Listen on Event Channels")]
     //public PlayerEventChannelSO m_DecidedTurnOrder; // pass in the attacker
     public PlayerEventChannelSO m_SwapPhase; // void event
+
     public EntityActionPhaseEventChannelSO m_ActionSelected; // Entity, check side and phase | Either the attacker or defender picked an action
     public EntityActionEventChannelSO m_BothActionsSelected; // prep time to show what they picked, follow with the dice roll too
-    public DamageEventChannelSO m_DiceRolled; // 2 floats
+
+    public PlayerEventChannelSO m_CombatDiceRolled;
     public PlayerEventChannelSO m_PlayOutCombat; // play attack anim and defend anim
+
     public DamageEventChannelSO m_DamageTaken; //upon attack anim finishing, show floating dmg ontop of defender, play hurt anim
     public EntityItemEventChannelSO m_EntityDied; // someone's HP dropped to 0, Victory, show rewards
     //public VoidEventChannelSO m_Stalemate; // Combat is suspended, no one died this time
@@ -54,9 +57,13 @@ public class CombatAnimationManager : MonoBehaviour
     private void OnEnable()
     {
         m_SwapPhase.OnEventRaised += OnSwapPhase;
+
         m_ActionSelected.OnEventRaised += OnActionSelected;
         m_BothActionsSelected.OnEventRaised += OnBothActionsSelected;
+
+        m_CombatDiceRolled.OnEventRaised += OnCombatDiceRolled;
         m_PlayOutCombat.OnEventRaised += OnPlayOutCombat;
+
         m_DamageTaken.OnEventRaised += OnDamageTaken;
         m_EntityDied.OnEventRaised += OnEntityDied;
     }
@@ -64,9 +71,13 @@ public class CombatAnimationManager : MonoBehaviour
     private void OnDisable()
     {
         m_SwapPhase.OnEventRaised -= OnSwapPhase;
+
         m_ActionSelected.OnEventRaised -= OnActionSelected;
         m_BothActionsSelected.OnEventRaised -= OnBothActionsSelected;
+
+        m_CombatDiceRolled.OnEventRaised -= OnCombatDiceRolled;
         m_PlayOutCombat.OnEventRaised -= OnPlayOutCombat;
+
         m_DamageTaken.OnEventRaised -= OnDamageTaken;
         m_EntityDied.OnEventRaised -= OnEntityDied;
     }
@@ -87,6 +98,7 @@ public class CombatAnimationManager : MonoBehaviour
         animator.SetTrigger("ToIdle");
         animator.SetBool("Action Picked", false);
         animator.SetBool("IsAttacking", false);
+        animator.ResetTrigger("Reveal Roll");
 
         //.transform.position = boatInitialPos;
         ResetBoatPosition(.2f);
@@ -112,7 +124,7 @@ public class CombatAnimationManager : MonoBehaviour
         if (entity.fightingPosition != fightingPosition) return;
 
         // play reveal roll anim
-        animator.SetTrigger("Reveal Roll");
+        //animator.SetTrigger("Reveal Roll");
 
         Debug.Log(entity + " | " + action + " | " + action.type);
 
@@ -132,6 +144,46 @@ public class CombatAnimationManager : MonoBehaviour
 
         // Find out what the action anim to play
         animator.SetInteger("Weapon ID", action.weaponID);
+
+        // spawn associated dice by type
+        SpawnCombatDie(entity, action);
+    }
+
+    private void SpawnCombatDie(EntityPiece entity, Action action)
+    {
+        GameObject diePrefab;
+        switch (action.type)
+        {
+            case Action.WeaponTypes.Melee:
+                diePrefab = entity.strDieCosmeticPrefab;
+                break;
+
+            case Action.WeaponTypes.Gun:
+                diePrefab = entity.dexDieCosmeticPrefab;
+                break;
+
+            case Action.WeaponTypes.Magic:
+                diePrefab = entity.intDieCosmeticPrefab;
+                break;
+
+            default:
+                Debug.Log("??? action is special or not any type | defaulting to melee die");
+                diePrefab = entity.strDieCosmeticPrefab;
+                break;
+        }
+
+        var die = Instantiate(diePrefab, transform);
+        die.transform.position += new Vector3(0, 5, -0.5f);
+        die.transform.localScale = Vector3.zero;
+        die.GetComponent<CombatDiceInfoHolder>().SetupCombatDice(entity, action);
+    }
+
+    private void OnCombatDiceRolled(EntityPiece entity)
+    {
+        if (entity.fightingPosition != fightingPosition) return;
+
+        animator.SetTrigger("Reveal Roll");
+        //animator.ResetTrigger("Reveal Roll");
     }
 
     private IEnumerator DelayActionAnimation(float duration)

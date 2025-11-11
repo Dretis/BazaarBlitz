@@ -757,7 +757,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""574445bb-b7cd-45c5-b75c-452a2f4dd992"",
-                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""path"": ""<Gamepad>/{Submit}"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
@@ -779,7 +779,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""b5ccc6f9-a59d-41aa-a6ae-29fb5181798a"",
-                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""path"": ""<Gamepad>/{Cancel}"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
@@ -827,7 +827,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""b7a2131c-4f67-4f90-bd4f-2ff086eb893c"",
-                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""path"": ""<Gamepad>/{Submit}"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
@@ -838,7 +838,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""c0899556-8341-44ce-841a-79968a4dc188"",
-                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""path"": ""<Gamepad>/{Cancel}"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
@@ -1480,7 +1480,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""name"": ""RightAction"",
                     ""type"": ""Button"",
                     ""id"": ""a113fa53-daac-4e59-897a-c59ff1b36e50"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -1687,6 +1687,45 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Combat Roll"",
+            ""id"": ""74158db3-56d5-4817-aa9c-f7e246d6e090"",
+            ""actions"": [
+                {
+                    ""name"": ""CombatRoll"",
+                    ""type"": ""Button"",
+                    ""id"": ""e218eed1-1ac9-427c-8e3c-f7b8d17d3e84"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""ab39e7ca-8416-4ecb-80a1-be3b0f0502d8"",
+                    ""path"": ""<Gamepad>/{Submit}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""CombatRoll"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5efaf95f-d9f4-462c-a3e0-f00eb8bcbc13"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""CombatRoll"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -1796,6 +1835,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Combat_UpActionP2 = m_Combat.FindAction("UpActionP2", throwIfNotFound: true);
         m_Combat_RightActionP2 = m_Combat.FindAction("RightActionP2", throwIfNotFound: true);
         m_Combat_DownActionP2 = m_Combat.FindAction("DownActionP2", throwIfNotFound: true);
+        // Combat Roll
+        m_CombatRoll = asset.FindActionMap("Combat Roll", throwIfNotFound: true);
+        m_CombatRoll_CombatRoll = m_CombatRoll.FindAction("CombatRoll", throwIfNotFound: true);
     }
 
     ~@PlayerInputActions()
@@ -1806,6 +1848,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         UnityEngine.Debug.Assert(!m_Confirmation.enabled, "This will cause a leak and performance issues, PlayerInputActions.Confirmation.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, PlayerInputActions.UI.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Combat.enabled, "This will cause a leak and performance issues, PlayerInputActions.Combat.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_CombatRoll.enabled, "This will cause a leak and performance issues, PlayerInputActions.CombatRoll.Disable() has not been called.");
     }
 
     /// <summary>
@@ -2739,6 +2782,102 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="CombatActions" /> instance referencing this action map.
     /// </summary>
     public CombatActions @Combat => new CombatActions(this);
+
+    // Combat Roll
+    private readonly InputActionMap m_CombatRoll;
+    private List<ICombatRollActions> m_CombatRollActionsCallbackInterfaces = new List<ICombatRollActions>();
+    private readonly InputAction m_CombatRoll_CombatRoll;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Combat Roll".
+    /// </summary>
+    public struct CombatRollActions
+    {
+        private @PlayerInputActions m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public CombatRollActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "CombatRoll/CombatRoll".
+        /// </summary>
+        public InputAction @CombatRoll => m_Wrapper.m_CombatRoll_CombatRoll;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_CombatRoll; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="CombatRollActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(CombatRollActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="CombatRollActions" />
+        public void AddCallbacks(ICombatRollActions instance)
+        {
+            if (instance == null || m_Wrapper.m_CombatRollActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_CombatRollActionsCallbackInterfaces.Add(instance);
+            @CombatRoll.started += instance.OnCombatRoll;
+            @CombatRoll.performed += instance.OnCombatRoll;
+            @CombatRoll.canceled += instance.OnCombatRoll;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="CombatRollActions" />
+        private void UnregisterCallbacks(ICombatRollActions instance)
+        {
+            @CombatRoll.started -= instance.OnCombatRoll;
+            @CombatRoll.performed -= instance.OnCombatRoll;
+            @CombatRoll.canceled -= instance.OnCombatRoll;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="CombatRollActions.UnregisterCallbacks(ICombatRollActions)" />.
+        /// </summary>
+        /// <seealso cref="CombatRollActions.UnregisterCallbacks(ICombatRollActions)" />
+        public void RemoveCallbacks(ICombatRollActions instance)
+        {
+            if (m_Wrapper.m_CombatRollActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="CombatRollActions.AddCallbacks(ICombatRollActions)" />
+        /// <seealso cref="CombatRollActions.RemoveCallbacks(ICombatRollActions)" />
+        /// <seealso cref="CombatRollActions.UnregisterCallbacks(ICombatRollActions)" />
+        public void SetCallbacks(ICombatRollActions instance)
+        {
+            foreach (var item in m_Wrapper.m_CombatRollActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_CombatRollActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="CombatRollActions" /> instance referencing this action map.
+    /// </summary>
+    public CombatRollActions @CombatRoll => new CombatRollActions(this);
     private int m_KeyboardMouseSchemeIndex = -1;
     /// <summary>
     /// Provides access to the input control scheme.
@@ -3075,5 +3214,20 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnDownActionP2(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Combat Roll" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="CombatRollActions.AddCallbacks(ICombatRollActions)" />
+    /// <seealso cref="CombatRollActions.RemoveCallbacks(ICombatRollActions)" />
+    public interface ICombatRollActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "CombatRoll" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCombatRoll(InputAction.CallbackContext context);
     }
 }

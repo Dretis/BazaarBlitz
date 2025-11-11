@@ -82,6 +82,11 @@ public class PlayerConfigurationManager : MonoBehaviour
         }
     }
 
+    public void UnreadyPlayer(int index)
+    {
+        playerConfigs[index].IsReady = false;
+    }
+
     public void EnablePlayer(int index)
     {
         playerConfigs[index].IsReady = true;

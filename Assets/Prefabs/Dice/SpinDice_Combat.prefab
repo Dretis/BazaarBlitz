@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2921475310504312463}
   - component: {fileID: 1112350732909939269}
   - component: {fileID: 1778438861089017267}
+  - component: {fileID: 3675063511053255503}
   m_Layer: 0
   m_Name: SpinDice_Combat
   m_TagString: Untagged
@@ -26,9 +27,10 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1472432338734525328}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -2}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.6, y: 0.6, z: 0.6}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1778438862125978180}
@@ -38,7 +40,6 @@ Transform:
   - {fileID: 1778438861335006489}
   - {fileID: 1778438861333730783}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &2921475310504312463
 MeshFilter:
@@ -107,6 +108,37 @@ MonoBehaviour:
   ySpeed: 300
   zSpeed: -150
   frameSkip: 1
+--- !u!114 &3675063511053255503
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1472432338734525328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d622444fa4e01a47b60087ee86ee698, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isChildDie: 0
+  yOffset: 2
+  zOffset: -2
+  scaleDuration: 0.2
+  endScale: 0.6
+  statType: 3
+  defaultStatGradient: {fileID: 11400000, guid: eafcb58d66976ce489e3d89be2e863e9, type: 2}
+  buffedStatGradient: {fileID: 11400000, guid: f25b05b0fcb78f847ae57a08f4783412, type: 2}
+  diceStatNumbers:
+  - {fileID: 1778438862125978181}
+  - {fileID: 1778438861327047511}
+  - {fileID: 1778438861921037218}
+  - {fileID: 1778438861882313233}
+  - {fileID: 1778438861335006494}
+  - {fileID: 1778438861333730780}
+  effectUsePrefab: {fileID: 4568632827120603810, guid: af75fb0ff141ccf4bb2ab85c4a605c90, type: 3}
+  associatedEntity: {fileID: 0}
+  m_CombatDiceRolled: {fileID: 11400000, guid: a1da45c0bec1bef45a082dbe65fd1548, type: 2}
+  m_StoreDiceRolled: {fileID: 11400000, guid: 8cbd34e4453c0ac46a2cc3fb10814cf8, type: 2}
 --- !u!1 &1778438861327047505
 GameObject:
   m_ObjectHideFlags: 0
@@ -138,7 +170,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2244184345711604010}
-  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -310,7 +341,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2244184345711604010}
-  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -482,7 +512,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2244184345711604010}
-  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -654,7 +683,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2244184345711604010}
-  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -826,7 +854,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2244184345711604010}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -998,7 +1025,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2244184345711604010}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}

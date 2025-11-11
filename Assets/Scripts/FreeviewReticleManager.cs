@@ -2,6 +2,7 @@ using LitMotion;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static GameplayTest;
 
 public class FreeviewReticleManager : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class FreeviewReticleManager : MonoBehaviour
     [Space]
     [SerializeField] private SpriteRenderer reticle;
     [SerializeField] private Color untargetedColor;
+    [SerializeField] private Color invalidTargetColor;
     [SerializeField] private Color targetedColor;
 
     //[SerializeField] private CircleCollider2D cc;
@@ -49,13 +51,45 @@ public class FreeviewReticleManager : MonoBehaviour
     {
         if (collision.TryGetComponent<MapNode>(out MapNode node))
         {
-            //m_EnterRaycastedTile.RaiseEvent(node);
-            reticle.color = targetedColor;
+            // Raycast Target - Reticle QOL *update this code later
+            if (instance.phase == GamePhase.RaycastTargetSelection)
+            {
+                var p = instance.currentPlayer;
+                var wm = p.currentStatsModifier.warpMode;
+
+                if (wm == EntityStatsModifiers.WarpMode.Tiles) // Banh Mi
+                {
+                    reticle.color = targetedColor;
+                }
+                else if (wm == EntityStatsModifiers.WarpMode.Players // Banh Mi Sandwich
+                    && node.playersOccupied.Count != 0)
+                {
+                        reticle.color = targetedColor;
+                }
+                else if (wm == EntityStatsModifiers.WarpMode.Marigold // Hoa Mai
+                    && node.CompareTag("Store") && node.modifier == MapNode.Modifier.None)
+                {
+                        reticle.color = targetedColor;
+                }
+                else if (wm == EntityStatsModifiers.WarpMode.Rafflesia // Rafflesia duh
+                    && node.modifier == MapNode.Modifier.None)
+                {
+                    reticle.color = targetedColor;
+                }
+                else 
+                    reticle.color = invalidTargetColor;
+            }
+            else
+                reticle.color = targetedColor;
 
             var o = collision.gameObject.transform.position + selectedNodeOffset;
             LMotion.Create(transform.position, o, 0.10f)
                 .WithEase(Ease.InQuad)
                 .Bind(x => transform.position = x);
+
+            LMotion.Create(reticle.transform.localScale, Vector3.one, 0.10f)
+                .WithEase(Ease.InOutBounce)
+                .Bind(x => reticle.transform.localScale = x);
 
             m_EnterRaycastedTile.RaiseEvent(node);
         }
@@ -73,6 +107,10 @@ public class FreeviewReticleManager : MonoBehaviour
             }
 
             reticle.color = untargetedColor;
+
+            LMotion.Create(reticle.transform.localScale, Vector3.one * .75f, 0.10f)
+                .WithEase(Ease.InOutBounce)
+                .Bind(x => reticle.transform.localScale = x);
         }
     }
 }

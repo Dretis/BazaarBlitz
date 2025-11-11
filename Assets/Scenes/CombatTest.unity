@@ -894,7 +894,7 @@ GameObject:
   - component: {fileID: 34144075}
   m_Layer: 0
   m_Name: Test Shit (DELETE THIS LATER)
-  m_TagString: Untagged
+  m_TagString: EditorOnly
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -11280,12 +11280,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   turnCount: 0
+  associatedNode: {fileID: 0}
   player1: {fileID: 0}
   player2: {fileID: 1239771809}
   attacker: {fileID: 0}
   defender: {fileID: 0}
   player1Attacking: 0
   player2Attacking: 0
+  attackerRolled: 0
+  defenderRolled: 0
   waitingForSelection: 0
   pausingLock: 0
   combatSceneIndex: 1
@@ -11303,6 +11306,7 @@ MonoBehaviour:
   m_Stalemate: {fileID: 11400000, guid: 46592635a96967f4ab8e8dfbf5f7379d, type: 2}
   m_VictoryAgainstEnemy: {fileID: 11400000, guid: 4187e534415a55941bee01f98a6ca280, type: 2}
   m_DefeatAgainstEnemy: {fileID: 11400000, guid: c04981388f9013743bd0c0360c0cf81f, type: 2}
+  m_CombatDiceRolled: {fileID: 11400000, guid: a1da45c0bec1bef45a082dbe65fd1548, type: 2}
   m_AttackImpact: {fileID: 11400000, guid: 9e5c549844a53f2479ba5224defc75a9, type: 2}
 --- !u!114 &373411699
 MonoBehaviour:
@@ -28135,7 +28139,7 @@ MonoBehaviour:
   m_SwapPhase: {fileID: 11400000, guid: 5fe2f16d1a7ee994d93f14d183b3029b, type: 2}
   m_ActionSelected: {fileID: 11400000, guid: fc7127886f7f7ed458771b3e118932a0, type: 2}
   m_BothActionsSelected: {fileID: 11400000, guid: 5e6e7809c5de840469b11fa61d18be8f, type: 2}
-  m_DiceRolled: {fileID: 11400000, guid: ef8018f7217679c479e9e86e849b14c8, type: 2}
+  m_CombatDiceRolled: {fileID: 11400000, guid: a1da45c0bec1bef45a082dbe65fd1548, type: 2}
   m_PlayOutCombat: {fileID: 11400000, guid: 92bd6a37ff6a3344cb44842875da70ca, type: 2}
   m_DamageTaken: {fileID: 11400000, guid: 21e2d2c157c4e564db136dc7709f07b4, type: 2}
   m_EntityDied: {fileID: 11400000, guid: 8d61128e2ea86d248a5d122114fb8c8e, type: 2}
@@ -28689,7 +28693,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3090161012776482757, guid: 10bd3957932239e45803fd2df6da47a9, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8420388914520790530, guid: 10bd3957932239e45803fd2df6da47a9, type: 3}
       propertyPath: m_RootOrder
@@ -32969,7 +32973,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3090161012776482757, guid: 10bd3957932239e45803fd2df6da47a9, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8420388914520790530, guid: 10bd3957932239e45803fd2df6da47a9, type: 3}
       propertyPath: m_RootOrder
@@ -39259,7 +39263,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3090161012776482757, guid: 10bd3957932239e45803fd2df6da47a9, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8420388914520790530, guid: 10bd3957932239e45803fd2df6da47a9, type: 3}
       propertyPath: m_RootOrder
@@ -45059,7 +45063,7 @@ MonoBehaviour:
   m_SwapPhase: {fileID: 11400000, guid: 5fe2f16d1a7ee994d93f14d183b3029b, type: 2}
   m_ActionSelected: {fileID: 11400000, guid: fc7127886f7f7ed458771b3e118932a0, type: 2}
   m_BothActionsSelected: {fileID: 11400000, guid: 5e6e7809c5de840469b11fa61d18be8f, type: 2}
-  m_DiceRolled: {fileID: 11400000, guid: ef8018f7217679c479e9e86e849b14c8, type: 2}
+  m_CombatDiceRolled: {fileID: 11400000, guid: a1da45c0bec1bef45a082dbe65fd1548, type: 2}
   m_PlayOutCombat: {fileID: 11400000, guid: 92bd6a37ff6a3344cb44842875da70ca, type: 2}
   m_DamageTaken: {fileID: 11400000, guid: 21e2d2c157c4e564db136dc7709f07b4, type: 2}
   m_EntityDied: {fileID: 11400000, guid: 8d61128e2ea86d248a5d122114fb8c8e, type: 2}
@@ -51673,7 +51677,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 66979176998032266, guid: f6b7ae9a2297d05499e3d71bab3f0805, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6833292416934179405, guid: f6b7ae9a2297d05499e3d71bab3f0805, type: 3}
       propertyPath: m_RootOrder

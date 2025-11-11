@@ -6,6 +6,7 @@ using Febucci.UI.Core;
 using UnityEngine.EventSystems;
 using UnityEditor;
 using UnityEngine.UI;
+using static UnityEditor.Progress;
 
 public class UILevelUpManager : MonoBehaviour
 {
@@ -134,6 +135,7 @@ public class UILevelUpManager : MonoBehaviour
     }
     private void OnExitLevelUp()
     {
+        EventSystem.current.SetSelectedGameObject(null);
         levelUpGroup.alpha = 0f;
         levelUpGroup.interactable = false;
     }

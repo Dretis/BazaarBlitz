@@ -38,11 +38,16 @@ public class CombatManager : MonoBehaviour
     private Action attackerAction; // Temporarily stores either fighter's action until the phase can progress
     private Action defenderAction; // We receive this from the listener to combatInputManager and reset it next turn (when it corresponds to swapped players)
 
+    [SerializeField] private bool attackerRolled = false;
+    [SerializeField] private bool defenderRolled = false;
+
     public bool waitingForSelection = false; // If true, players need to select their actions still. If not, combat's running and the input listener is ignored.
     public bool pausingLock = false; // Like the above, if true input is ignored. Is enabled in the waiting period while combat ends / is paused, disabled last frame.
     private bool isFirstPhase; // If true, is true, then false for every combat. Mostly for convenience.
     private bool onePlayerSelected = false; // Set to true when someone chooses an action. Next time an animation finishes, progress combat till next phase
 
+    private int damageRoll;
+    private int defenseRoll;
     private int finalDamage;
 
 
@@ -59,7 +64,7 @@ public class CombatManager : MonoBehaviour
     public VoidEventChannelSO m_EnteredOverworldScene; 
     public EntityActionPhaseEventChannelSO m_ActionSelected; // Entity, check side and phase | Either the attacker or defender picked an action
     public EntityActionEventChannelSO m_BothActionsSelected; // prep time to show what they picked, follow with the dice roll too
-    public PlayerFloatActionTypeEventChannelSO m_StoreDiceRolled;
+    public PlayerFloatActionTypeEventChannelSO m_StoreDiceRolled; // also listening
     public PlayerEventChannelSO m_PlayOutCombat; // play attack anim and defend anim
     public DamageEventChannelSO m_DamageTaken; //upon attack anim finishing, show floating dmg ontop of defender, play hurt anim
     public EntityItemEventChannelSO m_EntityDied; // someone's HP dropped to 0, Victory, show rewards
@@ -71,6 +76,7 @@ public class CombatManager : MonoBehaviour
     // For now, a debug implementation with WASD and arrowkeys is in place that I'll soon replace. (I also had 1 controller so I couldn't debug at home)
 
     [Header("Listen on Event Channels")]
+    public PlayerEventChannelSO m_CombatDiceRolled; // also broadcasting
     public VoidEventChannelSO m_AttackImpact;
 
     private void OnEnable()
@@ -83,11 +89,16 @@ public class CombatManager : MonoBehaviour
 
         combatUIManager.UpdateActionText(attacker, Action.PhaseTypes.Attack);
         combatUIManager.UpdateActionText(defender, Action.PhaseTypes.Defend);
+
+        m_CombatDiceRolled.OnEventRaised += OnCombatDiceRolled;
+        m_StoreDiceRolled.OnEventRaised += OnStoreDiceRolled;
         m_AttackImpact.OnEventRaised += OnAttackImpact;
     }
 
     private void OnDisable()
     {
+        m_CombatDiceRolled.OnEventRaised -= OnCombatDiceRolled;
+        m_StoreDiceRolled.OnEventRaised -= OnStoreDiceRolled;
         m_AttackImpact.OnEventRaised -= OnAttackImpact;
     }
     // Code from the old combat manager to set things up. Russell wrote most of this so I mostly copied over in the revamp, with slight edits.
@@ -230,7 +241,7 @@ public class CombatManager : MonoBehaviour
 
         // float animationLength = some constant probably;
 
-        StartCoroutine(ShowChoiceAnimation(0.25f));
+        //StartCoroutine(ShowChoiceAnimation(0.25f));
 
     }
     
@@ -378,6 +389,124 @@ public class CombatManager : MonoBehaviour
 
     }
 
+    private int CalculateAttackerCombatRoll()
+    {
+        int rolledFaceIndex;// = Random.Range(0, 6) // Which dice index was selected
+        int baseRollValue = 0; // Intermediate value used to get the damage dice total
+        int damage = 0; // total dice pips rolled after counting effects
+
+        Action attack = attackerAction;
+        var ti = (int)attack.type; // type index
+
+        DieConfig die = attacker.entityStats.dieConfigs[ti];
+
+        var statDieFlatMod = attacker.currentStatsModifier.dieModifiers[ti].finalResultFlatModifier;
+        var statDieMultMod = attacker.currentStatsModifier.dieModifiers[ti].finalResultMultModifier;
+
+        var addRollMod = attacker.currentStatsModifier.rollModifier;
+        var timesToRoll = 1 + addRollMod + attack.diesToRoll;
+
+        for(int i = 0; i < timesToRoll; i++)
+        {
+            rolledFaceIndex = Random.Range(0, 6);
+
+            baseRollValue = die[rolledFaceIndex];
+
+            damage += (int)((baseRollValue * statDieMultMod) + statDieFlatMod);
+        }
+
+        damage += (attack.bonusDamage);
+
+        damageRoll = damage;
+        m_StoreDiceRolled.RaiseEvent(attacker, damage, attackerAction.type);
+        return damage;
+        // StartCoroutine(DiceRollAnimation(0.5f, damage, (int)defenseScore));
+    }
+
+    private int CalculateDefenderCombatRoll()
+    {
+        int rolledFaceIndex = Random.Range(0, 6); // Which dice index was selected
+
+        Action defend = defenderAction;
+
+        int defenseScore = 0; // Every point of this reduces damage by 10%. Can be increased by items or dice pips
+        switch (defend.type)
+        {
+            case Action.WeaponTypes.Melee:
+                defenseScore = defender.strDie[rolledFaceIndex];
+                break;
+            case Action.WeaponTypes.Gun:
+                defenseScore = defender.dexDie[rolledFaceIndex];
+                //Debug.Log("GunDefense");
+                break;
+            case Action.WeaponTypes.Magic:
+                defenseScore = defender.intDie[rolledFaceIndex];
+                //Debug.Log("MagicDefense");
+                break;
+            default:
+                defenseScore = 0;
+                break;
+        }
+        Debug.Log($"defenseScore = {defenseScore}");
+        defenseRoll = defenseScore;
+        // Send events so that everyone can see what was rolled on either side after a moment. Assumed to start the animation
+        m_StoreDiceRolled.RaiseEvent(defender, defenseScore, defenderAction.type);
+        return defenseScore;
+        // float animationLength = some constant probably;
+
+        //StartCoroutine(DiceRollAnimation(0.5f, damage, (int)defenseScore));
+    }
+
+    private void OnCombatDiceRolled(EntityPiece entity)
+    {
+        if (entity == attacker)
+        {
+            CalculateAttackerCombatRoll();
+
+            // Enemy also rolls when player rolls
+            if (defender.isEnemy)
+            {
+                m_CombatDiceRolled.RaiseEvent(defender);
+                //CalculateDefenderCombatRoll();
+            }
+        }
+        else if (entity == defender)
+        {
+            CalculateDefenderCombatRoll();
+
+            if (attacker.isEnemy)
+            {
+                m_CombatDiceRolled.RaiseEvent(attacker);
+                //CalculateAttackerCombatRoll();
+            }
+        }
+        else
+        {
+            Debug.Log($"??? {entity} IS NOT IN THIS COMBAT! SOMETHING WENT WRONG");
+        }
+    }
+
+    private void OnStoreDiceRolled(EntityPiece entity, float rolledNumber, Action.WeaponTypes type)
+    {
+        if (entity == attacker)
+        {
+            attackerRolled = true;
+        }
+        else if (entity == defender)
+        {
+            defenderRolled = true;
+        }
+        else
+        {
+            Debug.Log($"STOREDICEROLLED | ??? {entity} IS NOT IN THIS COMBAT! SOMETHING WENT WRONG");
+        }
+
+        if(attackerRolled && defenderRolled)
+        {
+            StartCoroutine(DiceRollAnimation(0.7f, damageRoll, defenseRoll));
+        }
+    }
+
     private void OnAttackImpact()
     {
         Debug.Log("animation attack heard and calling damamge deal");
@@ -430,6 +559,10 @@ public class CombatManager : MonoBehaviour
         if (isFirstPhase == true) 
         { // iterate to next phase
             isFirstPhase = false;
+
+            attackerRolled = false;
+            defenderRolled = false;
+
             m_SwapPhase.RaiseEvent(attacker);
         } 
         else 
@@ -437,6 +570,8 @@ public class CombatManager : MonoBehaviour
             isFirstPhase = true;
             pausingLock = true;
 
+            attackerRolled = false;
+            defenderRolled = false;
             /*
             if (!isFightingAI) 
             {
@@ -687,9 +822,10 @@ public class CombatManager : MonoBehaviour
         Debug.Log($"Defend: {defenderAction.type}");
     
         
-        DiceRolls(); // Acts out the turn (most of the combat logic here, takes a while to get back)
+        //DiceRolls(); // Acts out the turn (most of the combat logic here, takes a while to get back)
     }
 
+    // PLZ CHANGE THIS FUNCTION NAME IT MAKES NO SENSE (DelayCombatSequence?)
     public IEnumerator DiceRollAnimation(float animationTime, int damageRoll, int defenseRoll)
     {
         //Play your dice rolling animation here (assuming they were started by the event)
@@ -740,7 +876,7 @@ public class CombatManager : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
         // Set up P1 to attacker and P2 defender again before leaving combat scene
-        m_SwapPhase.RaiseEvent(attacker);
+        //m_SwapPhase.RaiseEvent(attacker);
 
         if (!isFightingAI) // PvP
         {
@@ -760,7 +896,7 @@ public class CombatManager : MonoBehaviour
                 player2Attacking = false;
             }
 
-            m_SwapPhase.RaiseEvent(attacker);
+            //m_SwapPhase.RaiseEvent(attacker);
         }
         yield return new WaitForSeconds(.25f);
 

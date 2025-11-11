@@ -732,7 +732,7 @@ GameObject:
   - component: {fileID: 702291478619277960}
   - component: {fileID: 702291478619277963}
   m_Layer: 0
-  m_Name: Dust Cloud
+  m_Name: Dust Cloud (OLD)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5608,6 +5608,137 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!1 &799220025096136577
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8847776099873904039}
+  - component: {fileID: 952669668298815949}
+  - component: {fileID: 5057971633563380653}
+  - component: {fileID: 2757406447570263162}
+  m_Layer: 0
+  m_Name: Fighting_DustCloud
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8847776099873904039
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 799220025096136577}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.06, y: -0.4, z: -0.25}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 4417366597530174614}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &952669668298815949
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 799220025096136577}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: cbafc000fd785b942882d3f508ff5b43, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 3
+  m_Sprite: {fileID: -1794553971, guid: 2b43b45e2c80ff145a9b4a7889a11ba2, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
+--- !u!95 &5057971633563380653
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 799220025096136577}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 8fe95b3d1ae487e468b1ffe6a92e89da, type: 2}
+  m_CullingMode: 2
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &2757406447570263162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 799220025096136577}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7fc4f58c23ba4f4da0603439119ed01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ren: {fileID: 952669668298815949}
+  paletteColorCount: 8
+  useInspectorPalette: 1
+  inspectorPalette:
+  - {r: 1, g: 0.96862745, b: 0.7882353, a: 1}
+  - {r: 0.7725491, g: 0.61960787, b: 0.4784314, a: 1}
+  - {r: 0.735849, g: 0.17007832, b: 0.52207065, a: 1}
+  - {r: 0.77254903, g: 0.61960787, b: 0.47843137, a: 1}
+  - {r: 0.98039216, g: 0.7411765, b: 0.5803922, a: 1}
+  - {r: 0.9490196, g: 0.42352942, b: 0.4862745, a: 1}
+  - {r: 0.42745098, g: 0.62352943, b: 0.9490196, a: 1}
+  - {r: 0.88235295, g: 0.5568628, b: 1, a: 1}
 --- !u!1 &1057405159264066835
 GameObject:
   m_ObjectHideFlags: 0
@@ -6567,11 +6698,15 @@ MonoBehaviour:
   previousNode: {fileID: 0}
   unspentLevelUpPoints: 0
   traveledNodes: []
-  dustCloud: {fileID: 702291478619277960}
+  ownedStores: []
+  dustCloud: {fileID: 799220025096136577}
   coinDrop: {fileID: 2686018656653136483}
   coinSucking: {fileID: 2507317801518608468}
   levelUpRays: {fileID: 440457167150713358}
-  combatSceneIndex: -1
+  moveDieCosmeticPrefab: {fileID: 5585022736157667931, guid: 486f96b49c27bd641a2d57a470309018, type: 3}
+  strDieCosmeticPrefab: {fileID: 9101131634749363289, guid: e0f7a7c075c01fa4196cf3ce44570102, type: 3}
+  dexDieCosmeticPrefab: {fileID: 9101131634749363289, guid: 5993f324723ef4b44afd56c01bbb7d0e, type: 3}
+  intDieCosmeticPrefab: {fileID: 9101131634749363289, guid: 4a99a98bdcb3ad4459980f7506cf4f09, type: 3}
   isEnemy: 0
   favoredAttack: 0
   spawnRarityModifier: 1
@@ -12777,8 +12912,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: 0.011300027, y: 0.00395, z: 0}
-    m_Extent: {x: 0.7579, y: 0.52675, z: 0}
+    m_Center: {x: 0.0097, y: 0.006850004, z: 0}
+    m_Extent: {x: 0.7618, y: 0.52365, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0.03
@@ -12898,6 +13033,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 702291478619277962}
+  - {fileID: 8847776099873904039}
   - {fileID: 1964952215365681796}
   - {fileID: 7739022991016924009}
   - {fileID: 790255458518495560}

@@ -20,15 +20,31 @@ public class PlayerSetupMenuController : MonoBehaviour
     [SerializeField] private Image baggieVisual;
     [SerializeField] private TypewriterCore baggieVisualName;
 
+    [Header("UI Elements")]
+    [SerializeField] private CanvasGroup menuPanel;
+    [SerializeField] private GameObject colorButtonContainer;
+    [SerializeField] private List<Button> colorButtons = new List<Button>();
+    private Button colorButtonSelected;
 
-    [SerializeField] private GameObject menuPanel;
-    [SerializeField] private GameObject readyPanel;
+    [SerializeField] private CanvasGroup readyPanel;
     [SerializeField] private Button readyButton;
     [SerializeField] private TypewriterCore readyText;
 
     private float ignoreInputTime = 1.5f;
     private bool inputEnabled = true;
 
+    private void Start()
+    {
+        foreach (Transform child in colorButtonContainer.transform)
+        {
+            colorButtons.Add(child.GetComponentInChildren<Button>());
+        }
+    }
+
+    public void SetSelectedColorButton(Button b)
+    {
+        colorButtonSelected = b;
+    }
 
     public void SetPlayerIndex(int pi)
     {
@@ -42,9 +58,13 @@ public class PlayerSetupMenuController : MonoBehaviour
         if(!inputEnabled) return;
 
         PlayerConfigurationManager.instance.SetPlayerColor(playerIndex, playerPrimaryColors[colorIndex]);
-        readyPanel.SetActive(true);
+
+        menuPanel.alpha = 0;
+        menuPanel.interactable = false;
+
+        //readyPanel.SetActive(true);
+
         readyButton.Select();
-        menuPanel.SetActive(false);
     }
 
     public void SetColor(Color color)
@@ -52,9 +72,14 @@ public class PlayerSetupMenuController : MonoBehaviour
         if (!inputEnabled) return;
 
         PlayerConfigurationManager.instance.SetPlayerColor(playerIndex, color);
-        readyPanel.SetActive(true);
+
+        menuPanel.alpha = 0;
+        menuPanel.interactable = false;
+
+        readyPanel.alpha = 1;
+        readyPanel.interactable = true;
+
         readyButton.Select();
-        menuPanel.SetActive(false);
     }
 
     public void SetPalette(List<Color> palette)
@@ -94,8 +119,25 @@ public class PlayerSetupMenuController : MonoBehaviour
         if (!inputEnabled) return;
 
         PlayerConfigurationManager.instance.ReadyPlayer(playerIndex);
-        readyButton.gameObject.SetActive(false);
+
+        readyPanel.alpha = 0;
+        readyPanel.interactable = false;
+
         readyText.ShowText("Ready!");
+    }
+
+    public void UnreadyPlayer()
+    {
+        PlayerConfigurationManager.instance.UnreadyPlayer(playerIndex);
+
+        readyPanel.alpha = 0;
+        readyPanel.interactable = false;
+
+        menuPanel.alpha = 1;
+        menuPanel.interactable = true;
+
+        colorButtonSelected.Select();
+        //colorButtons[0].Select();
     }
 
     public IEnumerator PauseInputTimeFor(float delay)

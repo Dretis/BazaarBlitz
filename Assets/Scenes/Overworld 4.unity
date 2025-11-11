@@ -7617,7 +7617,7 @@ MonoBehaviour:
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
-    - position: {x: 4.5112967, y: -6.2885823, z: 0}
+    - position: {x: 4.4851203, y: -6.367111, z: 0}
       leftTangent: {x: 0.9774895, y: 0.00041913986, z: 0}
       rightTangent: {x: -1.6681957, y: -0.0008239746, z: 0}
       mode: 1
@@ -7625,7 +7625,7 @@ MonoBehaviour:
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
-    - position: {x: 0.97095877, y: -6.4543223, z: 0}
+    - position: {x: 1.2196343, y: -6.6244683, z: 0}
       leftTangent: {x: 0.98553073, y: 0.019355774, z: 0}
       rightTangent: {x: -0.6357881, y: -0.012486845, z: -0}
       mode: 1
@@ -7633,23 +7633,31 @@ MonoBehaviour:
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
-    - position: {x: -1.5646977, y: -6.3550367, z: 0}
+    - position: {x: -1.4861685, y: -6.603712, z: 0}
       leftTangent: {x: 0.64232904, y: -0.15580893, z: 0}
-      rightTangent: {x: -0.66149366, y: 0.16045767, z: -0}
+      rightTangent: {x: -0.5004121, y: 0.121384144, z: 0}
       mode: 1
       height: 0.49
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
-    - position: {x: -3.6811442, y: -6.167086, z: 0}
-      leftTangent: {x: 0.88426113, y: -0.09177494, z: 0}
-      rightTangent: {x: -0.098505974, y: 0.010198116, z: 0}
+    - position: {x: -3.94446, y: -6.4716387, z: 0}
+      leftTangent: {x: 0.89938927, y: 0.025512218, z: 0}
+      rightTangent: {x: -0.29011917, y: -0.008466721, z: 0}
+      mode: 1
+      height: 0.45
+      spriteIndex: 0
+      corner: 1
+      m_CornerMode: 1
+    - position: {x: -4.780552, y: -6.612084, z: 0}
+      leftTangent: {x: 0.32003403, y: 0.17397451, z: 0}
+      rightTangent: {x: -0.08700742, y: -0.047298323, z: -0}
       mode: 1
       height: 0.62
       spriteIndex: 0
       corner: 1
       m_CornerMode: 1
-    - position: {x: -4.701468, y: -6.2761445, z: 0}
+    - position: {x: -5.6176405, y: -7.126877, z: 0}
       leftTangent: {x: 0.097925186, y: -0.008588314, z: 0}
       rightTangent: {x: -1.9788795, y: 0.18414545, z: 0}
       mode: 1
@@ -7746,8 +7754,8 @@ SpriteShapeRenderer:
   - {fileID: 21300000, guid: 608e61deb05c54660bebf5a4dd2ee02d, type: 3}
   - {fileID: 21300000, guid: 608e61deb05c54660bebf5a4dd2ee02d, type: 3}
   m_LocalAABB:
-    m_Center: {x: -0.6119938, y: -0.4329009, z: 0}
-    m_Extent: {x: 23.402424, y: 7.0304213, z: 0}
+    m_Center: {x: -0.6119938, y: -0.4329381, z: 0}
+    m_Extent: {x: 23.402424, y: 7.0304575, z: 0}
   m_SpriteSortPoint: 0
 --- !u!4 &585389171
 Transform:
@@ -19901,7 +19909,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Train passes\nevery \n<size=3><color=yellow>5</size></color> turns!"
+  m_text: "Train passes\nevery \n<size=2><color=yellow>6th</size></color> turn!"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1fb807301344d164797d565fdea727d0, type: 2}
   m_sharedMaterial: {fileID: 2674762156599226005, guid: 1fb807301344d164797d565fdea727d0, type: 2}
@@ -19940,7 +19948,7 @@ MonoBehaviour:
   m_textAlignment: 65535
   m_characterSpacing: -5.94
   m_wordSpacing: 0
-  m_lineSpacing: 4
+  m_lineSpacing: 43.6
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
@@ -21078,7 +21086,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8184592382734835337, guid: 55735af4b26789a4094dea8489060239, type: 3}
       propertyPath: device
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8184592382734835337, guid: 55735af4b26789a4094dea8489060239, type: 3}
       propertyPath: m_Enabled
@@ -37765,7 +37773,7 @@ PrefabInstance:
     - target: {fileID: 6143496330825871140, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: occupiedNode
       value: 
-      objectReference: {fileID: 1903819918}
+      objectReference: {fileID: 1888144212}
     - target: {fileID: 6143496330825871140, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: inventory.Array.size
       value: 6
@@ -39233,7 +39241,7 @@ PrefabInstance:
     - target: {fileID: 6700546163865522836, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: occupiedNode
       value: 
-      objectReference: {fileID: 1163375463}
+      objectReference: {fileID: 1374260970}
     - target: {fileID: 6700546163865522836, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: playerColor.b
       value: 0.3254902
@@ -39247,8 +39255,12 @@ PrefabInstance:
       value: 0.7372549
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163865522836, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: stamps.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6700546163865522836, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: inventory.Array.size
-      value: 7
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163865522836, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: inventory.Array.data[0]
@@ -39278,6 +39290,10 @@ PrefabInstance:
       propertyPath: inventory.Array.data[6]
       value: 
       objectReference: {fileID: 11400000, guid: 565f28de6056f2b4cae33d9619b7f5d8, type: 2}
+    - target: {fileID: 6700546163865522836, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: inventory.Array.data[7]
+      value: 
+      objectReference: {fileID: 11400000, guid: 1178c93ae11a11e40b1c45d2c62fc845, type: 2}
     - target: {fileID: 6700546163865522836, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: attackActions.Array.data[2]
       value: 
@@ -39945,6 +39961,10 @@ PrefabInstance:
     - target: {fileID: 7174964890916910483, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7262233206935041622, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7323759866127493395, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: m_AnchorMax.y

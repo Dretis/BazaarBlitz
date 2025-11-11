@@ -1,9 +1,9 @@
 fileFormatVersion: 2
-guid: 3eb884c20bf4ccf4c998c0de17a982eb
+guid: 12afbaa8a2869ed459e37f30986453ad
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
-  serializedVersion: 12
+  serializedVersion: 13
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -20,11 +20,12 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: 0.25
     normalMapFilter: 0
+    flipGreenChannel: 0
   isReadable: 0
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
-  ignoreMasterTextureLimit: 0
+  ignoreMipmapLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -47,7 +48,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 256
+  spritePixelsToUnits: 128
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -63,6 +64,7 @@ TextureImporter:
   textureFormatSet: 0
   ignorePngGamma: 0
   applyGammaDecoding: 0
+  swizzle: 50462976
   cookieLightType: 0
   platformSettings:
   - serializedVersion: 3
@@ -75,6 +77,7 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
@@ -87,6 +90,7 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
@@ -99,6 +103,7 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
@@ -111,6 +116,7 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
@@ -123,6 +129,7 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
@@ -135,259 +142,176 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: item_7
+      name: pipedream_0
       rect:
         serializedVersion: 2
-        x: 2975
-        y: 1741
-        width: 190
-        height: 190
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        x: 109
+        y: 898
+        width: 333
+        height: 440
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5d113461cdf75104d99da57c87490e52
-      internalID: -858666020
+      spriteID: 3d80537165da1f34cb3fad0923cdb0fb
+      internalID: 1604253487
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: item_8
+      name: pipedream_1
       rect:
         serializedVersion: 2
-        x: 3244
-        y: 1749
-        width: 164
-        height: 164
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 38f1716d30d07324c91ac385adec7254
-      internalID: 957594738
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: item_9
-      rect:
-        serializedVersion: 2
-        x: 3446
-        y: 1741
-        width: 210
-        height: 210
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 39ccf1b3177c4ef45a89b5ff15b83b10
-      internalID: 1858180030
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: item_4
-      rect:
-        serializedVersion: 2
-        x: 1448
-        y: 1044
-        width: 164
-        height: 164
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: c2d1c70a9b75e544784dc565fba0c882
-      internalID: 1948437937
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: item_5
-      rect:
-        serializedVersion: 2
-        x: 1670
-        y: 1064
-        width: 164
-        height: 164
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: cda6c1c66d6094046aba8b4568c8ae06
-      internalID: 1917305474
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: item_6
-      rect:
-        serializedVersion: 2
-        x: 1939
-        y: 1085
-        width: 168
-        height: 151
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: c018c255ea7e2094cb82fc420826d635
-      internalID: -190423490
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: enemy_3
-      rect:
-        serializedVersion: 2
-        x: 2647
-        y: 134
-        width: 1156
-        height: 1533
+        x: 592
+        y: 892
+        width: 1127
+        height: 475
       alignment: 9
-      pivot: {x: 0.5, y: 0.3}
+      pivot: {x: 0.1, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2c7aadc6d937da241b27effd4caf4731
-      internalID: -647414426
+      spriteID: 82716e05d84cb9440952ae23d6c65c2c
+      internalID: -1102437776
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: item_1
+      name: pipedream_2
       rect:
         serializedVersion: 2
-        x: 341
-        y: 687
-        width: 164
-        height: 164
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: e0c2a1c2de28a8147a250a4c00ea4c70
-      internalID: 1420039512
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: item_2
-      rect:
-        serializedVersion: 2
-        x: 541
-        y: 688
-        width: 164
-        height: 164
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 3ef2b9a61950f4f4c8a88dc4495017bd
-      internalID: -1029905794
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: item_3
-      rect:
-        serializedVersion: 2
-        x: 737
-        y: 692
-        width: 164
-        height: 164
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 7053642838b934d4dbab0fd7856bfc0f
-      internalID: -2022724135
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: enemy_2
-      rect:
-        serializedVersion: 2
-        x: 1253
-        y: 128
+        x: 1727
+        y: 889
         width: 1080
-        height: 869
+        height: 475
       alignment: 9
-      pivot: {x: 0.5, y: 0.1}
+      pivot: {x: 0.1, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 17b638dfceb3cde4e864785033c21285
-      internalID: 826164932
+      spriteID: 8a7c3e615ab41934ebbd57d5d75866a6
+      internalID: -1310201866
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: enemy_1
+      name: pipedream_3
       rect:
         serializedVersion: 2
-        x: 461
-        y: 123
-        width: 428
-        height: 466
+        x: 2925
+        y: 889
+        width: 1180
+        height: 475
       alignment: 9
-      pivot: {x: 0.5, y: 0.15}
+      pivot: {x: 0.1, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fa9b6d4c742e1e447b8a72fa1f3caf6c
-      internalID: -244895370
+      spriteID: e735b41c2c0804140a5e600823835831
+      internalID: -1247120554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pipedream_4
+      rect:
+        serializedVersion: 2
+        x: 4216
+        y: 772
+        width: 1482
+        height: 600
+      alignment: 9
+      pivot: {x: 0, y: 0.2}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 16f7f72343d0e15488e0eac967e8a15f
+      internalID: -364460833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pipedream_5
+      rect:
+        serializedVersion: 2
+        x: 233
+        y: 81
+        width: 1531
+        height: 713
+      alignment: 9
+      pivot: {x: 0, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1f7b94188922c544a8167bc2d93c273b
+      internalID: -724085262
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pipedream_6
+      rect:
+        serializedVersion: 2
+        x: 1936
+        y: 128
+        width: 1350
+        height: 500
+      alignment: 9
+      pivot: {x: 0, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b46fb63685a4ffe43be4897cb308c23f
+      internalID: 4380163
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: pipedream_7
+      rect:
+        serializedVersion: 2
+        x: 3453
+        y: 127
+        width: 1350
+        height: 430
+      alignment: 9
+      pivot: {x: 0, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc4f68cacc09bee46bfdfe76c7075e46
+      internalID: 44549330
       vertices: []
       indices: 
       edges: []
@@ -403,26 +327,28 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      enemies_10: -2114406742
-      enemies_2: -1777149097
-      enemies_4: 997366235
-      enemies_5: -2082587465
-      enemies_9: 2072286881
-      enemy_1: -244895370
-      enemy_2: 826164932
-      enemy_3: -647414426
-      item_1: 1420039512
-      item_2: -1029905794
-      item_3: -2022724135
-      item_4: 1948437937
-      item_5: 1917305474
-      item_6: -190423490
-      item_7: -858666020
-      item_8: 957594738
-      item_9: 1858180030
-  spritePackingTag: 
+      pipedream_0: 1604253487
+      pipedream_1: -1102437776
+      pipedream_10: -2118688366
+      pipedream_12: 156569393
+      pipedream_13: -170372210
+      pipedream_14: 531482506
+      pipedream_16: -225227575
+      pipedream_18: -1188115743
+      pipedream_19: 1605543283
+      pipedream_2: -1310201866
+      pipedream_20: 1228189981
+      pipedream_21: 902813215
+      pipedream_22: -1605661256
+      pipedream_23: 1263079293
+      pipedream_3: -1247120554
+      pipedream_4: -364460833
+      pipedream_5: -724085262
+      pipedream_6: 4380163
+      pipedream_7: 44549330
+      pipedream_9: 1247877179
+  mipmapLimitGroupName: 
   pSDRemoveMatte: 0
-  pSDShowRemoveMatteOption: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 

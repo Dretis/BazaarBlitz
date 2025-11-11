@@ -9,6 +9,8 @@ using Febucci.UI.Core;
 public class PlayerColorSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler
 {
     private Image buttonImage;
+    private Button button;
+    private RectTransform rect;
 
     [SerializeField] private PlayerSetupMenuController setup;
     //[SerializeField] private Image baggieVisual;
@@ -21,7 +23,9 @@ public class PlayerColorSelectionHandler : MonoBehaviour, ISubmitHandler, IPoint
     // Start is called before the first frame update
     void Start()
     {
+        button = GetComponent<Button>();
         buttonImage = GetComponent<Image>();
+        rect = GetComponent<RectTransform>();
         buttonImage.color = colorPreset.mainColor;
     }
 
@@ -45,6 +49,7 @@ public class PlayerColorSelectionHandler : MonoBehaviour, ISubmitHandler, IPoint
         setup.SetColor(colorPreset.mainColor);
         setup.SetPalette(colorPreset.baggieColorPalette);
         setup.SetName(colorPreset.presetName);
+        setup.SetSelectedColorButton(button);
         // set Baggie name here too with baggieColorName
     }
 
@@ -54,9 +59,12 @@ public class PlayerColorSelectionHandler : MonoBehaviour, ISubmitHandler, IPoint
         setup.SetSelectedColor(colorPreset.mainColor);
         //setup.SetSelectedPalette(colorPreset.baggieColorPalette);
         setup.SetSelectedName(colorPreset.presetName);
+
+        rect.localScale = Vector3.one * 1.15f;
     }
     public void OnDeselect(BaseEventData eventData)
     {
         //
+        rect.localScale = Vector3.one;
     }
 }

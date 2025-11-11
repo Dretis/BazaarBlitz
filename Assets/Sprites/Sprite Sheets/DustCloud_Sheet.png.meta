@@ -1,9 +1,9 @@
 fileFormatVersion: 2
-guid: b9001f720332a504c9dc3a58beaa6c78
+guid: 2b43b45e2c80ff145a9b4a7889a11ba2
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
-  serializedVersion: 12
+  serializedVersion: 13
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -20,11 +20,12 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: 0.25
     normalMapFilter: 0
+    flipGreenChannel: 0
   isReadable: 0
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
-  ignoreMasterTextureLimit: 0
+  ignoreMipmapLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -47,7 +48,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 512
+  spritePixelsToUnits: 384
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -63,6 +64,7 @@ TextureImporter:
   textureFormatSet: 0
   ignorePngGamma: 0
   applyGammaDecoding: 0
+  swizzle: 50462976
   cookieLightType: 0
   platformSettings:
   - serializedVersion: 3
@@ -75,6 +77,7 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
@@ -87,42 +90,7 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
-    buildTarget: Server
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
-    buildTarget: Android
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
-    buildTarget: iPhone
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
+    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
@@ -135,196 +103,134 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: backoff_0
+      name: DustCloud_Sheet_0
       rect:
         serializedVersion: 2
-        x: 229
-        y: 1318
-        width: 333
-        height: 441
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 421ac7a78d2b4b34e84c25d728b6bcdb
-      internalID: 1160533096
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: backoff_2
-      rect:
-        serializedVersion: 2
-        x: 1348
-        y: 1325
-        width: 960
-        height: 844
+        x: 0
+        y: 978
+        width: 1022
+        height: 489
       alignment: 9
-      pivot: {x: 0.85, y: 0}
+      pivot: {x: 0.5, y: 0.25}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9d0b6058ea187ec42a138898c064918b
-      internalID: 1388706853
+      spriteID: 1e785be366f102a4ea68636b0affb08e
+      internalID: -1794553971
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: backoff_5
+      name: DustCloud_Sheet_1
       rect:
         serializedVersion: 2
-        x: 4166
-        y: 1273
-        width: 855
-        height: 1045
+        x: 1022
+        y: 978
+        width: 1022
+        height: 489
       alignment: 9
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.25}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d1b0dbe60df1dcb4cb903ebc2f64d50b
-      internalID: -1473915033
+      spriteID: 548f4f43fc77e0d4cbfed186feee784c
+      internalID: 136674221
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: backoff_1
+      name: DustCloud_Sheet_2
       rect:
         serializedVersion: 2
-        x: 785
-        y: 1318
-        width: 332
-        height: 421
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 4bfe3f22bbef6094e90ccff2a617a8f0
-      internalID: 250857283
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: backoff_4
-      rect:
-        serializedVersion: 2
-        x: 2538
-        y: 1365
-        width: 1375
-        height: 286
+        x: 0
+        y: 489
+        width: 1022
+        height: 489
       alignment: 9
-      pivot: {x: 0.1, y: 0}
+      pivot: {x: 0.5, y: 0.25}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d0691b6f20ac58847a52dedb25e609d7
-      internalID: 1449103674
+      spriteID: b86c478ec49a16740a795205e9f242bb
+      internalID: 421560837
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: backoff_6
+      name: DustCloud_Sheet_3
       rect:
         serializedVersion: 2
-        x: 322
-        y: 153
-        width: 869
-        height: 952
+        x: 1022
+        y: 489
+        width: 1022
+        height: 489
       alignment: 9
-      pivot: {x: 0.2, y: 0}
+      pivot: {x: 0.5, y: 0.25}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7bba318a364a26c45954ac3fa11dee0b
-      internalID: -1228624157
+      spriteID: 6f9727e6dc53641428c1e0bf4337ab72
+      internalID: 1207058341
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: backoff_7
+      name: DustCloud_Sheet_4
       rect:
         serializedVersion: 2
-        x: 1553
-        y: 153
-        width: 869
-        height: 1035
+        x: 0
+        y: 0
+        width: 1022
+        height: 489
       alignment: 9
-      pivot: {x: 0.2, y: 0}
+      pivot: {x: 0.5, y: 0.25}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fe7ef29053fe46e4cbeff6afe9db1f60
-      internalID: -1438876380
+      spriteID: 3de7f1ed881d5be499d3beb326600cae
+      internalID: 557988544
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: backoff_8
+      name: DustCloud_Sheet_5
       rect:
         serializedVersion: 2
-        x: 2763
-        y: 158
-        width: 890
-        height: 955
+        x: 1022
+        y: 0
+        width: 1022
+        height: 489
       alignment: 9
-      pivot: {x: 0.2, y: 0}
+      pivot: {x: 0.5, y: 0.25}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e274272af4a158b4b93dea6e4a0dee9f
-      internalID: 1940376162
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: backoff_9
-      rect:
-        serializedVersion: 2
-        x: 3984
-        y: 160
-        width: 851
-        height: 955
-      alignment: 9
-      pivot: {x: 0.2, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: ac40dee202f148646b5e055176ac380b
-      internalID: -1435638853
+      spriteID: 873d6d237ac277d48854e4bd1aec0892
+      internalID: -1635599522
       vertices: []
       indices: 
       edges: []
@@ -338,20 +244,18 @@ TextureImporter:
     indices: 
     edges: []
     weights: []
-    secondaryTextures: []
+    secondaryTextures:
+    - texture: {fileID: 2800000, guid: 85774b68e1aea1e478ee868df6efdb43, type: 3}
+      name: _PaletteMap
     nameFileIdTable:
-      backoff_0: 1160533096
-      backoff_1: 250857283
-      backoff_2: 1388706853
-      backoff_4: 1449103674
-      backoff_5: -1473915033
-      backoff_6: -1228624157
-      backoff_7: -1438876380
-      backoff_8: 1940376162
-      backoff_9: -1435638853
-  spritePackingTag: 
+      DustCloud_Sheet_0: -1794553971
+      DustCloud_Sheet_1: 136674221
+      DustCloud_Sheet_2: 421560837
+      DustCloud_Sheet_3: 1207058341
+      DustCloud_Sheet_4: 557988544
+      DustCloud_Sheet_5: -1635599522
+  mipmapLimitGroupName: 
   pSDRemoveMatte: 0
-  pSDShowRemoveMatteOption: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 

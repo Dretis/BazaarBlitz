@@ -671,7 +671,7 @@
                 {
                     "name": "",
                     "id": "574445bb-b7cd-45c5-b75c-452a2f4dd992",
-                    "path": "<Gamepad>/buttonSouth",
+                    "path": "<Gamepad>/{Submit}",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
@@ -693,7 +693,7 @@
                 {
                     "name": "",
                     "id": "b5ccc6f9-a59d-41aa-a6ae-29fb5181798a",
-                    "path": "<Gamepad>/buttonEast",
+                    "path": "<Gamepad>/{Cancel}",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
@@ -741,7 +741,7 @@
                 {
                     "name": "",
                     "id": "b7a2131c-4f67-4f90-bd4f-2ff086eb893c",
-                    "path": "<Gamepad>/buttonSouth",
+                    "path": "<Gamepad>/{Submit}",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
@@ -752,7 +752,7 @@
                 {
                     "name": "",
                     "id": "c0899556-8341-44ce-841a-79968a4dc188",
-                    "path": "<Gamepad>/buttonEast",
+                    "path": "<Gamepad>/{Cancel}",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
@@ -1394,7 +1394,7 @@
                     "name": "RightAction",
                     "type": "Button",
                     "id": "a113fa53-daac-4e59-897a-c59ff1b36e50",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -1597,6 +1597,45 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "UpActionP2",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Combat Roll",
+            "id": "74158db3-56d5-4817-aa9c-f7e246d6e090",
+            "actions": [
+                {
+                    "name": "CombatRoll",
+                    "type": "Button",
+                    "id": "e218eed1-1ac9-427c-8e3c-f7b8d17d3e84",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "ab39e7ca-8416-4ecb-80a1-be3b0f0502d8",
+                    "path": "<Gamepad>/{Submit}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "CombatRoll",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5efaf95f-d9f4-462c-a3e0-f00eb8bcbc13",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "CombatRoll",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

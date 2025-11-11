@@ -121,6 +121,7 @@ public class GameplayTest : MonoBehaviour
 
     [SerializeField] private List<Stamp.StampType> oldStamps = new List<Stamp.StampType>();
     private int oldPoints = 0;
+    private float oldRep = 0;
 
     // ui stuff for levelup;
     private int attSelected = 1;
@@ -359,6 +360,7 @@ public class GameplayTest : MonoBehaviour
     private void Start()
     {
         m_NextPlayerTurn.RaiseEvent(currentPlayer);
+        currentPlayer.playerSprite.GetComponentInParent<SpriteMask>().transform.position -= new Vector3(0, 0, .05f);
         //m_NextTurnRound.RaiseEvent(turnRound);
     }
 
@@ -668,6 +670,7 @@ public class GameplayTest : MonoBehaviour
             {
                 p.stamps = new List<Stamp.StampType>(oldStamps);
                 p.heldPoints = oldPoints;
+                p.ReputationPoints = oldRep;
                 p.health = currentPlayerInitialHealth; // revert healing back
 
                 //oldStamps.Remove(stampCollected.stampType);
@@ -773,15 +776,19 @@ public class GameplayTest : MonoBehaviour
         // Cash in Stamps
         if (m.CompareTag("Castle"))
         {
+            oldRep = p.ReputationPoints;
             oldPoints = p.heldPoints;
             oldStamps = new List<Stamp.StampType>(p.stamps);
 
+            var repGained = 75 * Mathf.Pow(1.5f, p.stamps.Count - 1);
+            var pointsGained = (int)(150 * Mathf.Pow(2, p.stamps.Count - 1));
+
             if (p.stamps.Count != 0)
             {
-                p.ReputationPoints += (75 * Mathf.Pow(1.5f, p.stamps.Count - 1));
-                p.heldPoints += (int)(150 * Mathf.Pow(2, p.stamps.Count - 1));
+                p.ReputationPoints += repGained;
+                p.heldPoints += pointsGained;
                 //m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
-                m_PlayerScoreIncreased.RaiseEvent((int)(150 * Mathf.Pow(2, p.stamps.Count - 1)));
+                m_PlayerScoreIncreased.RaiseEvent(pointsGained);
                 m_PassByPawnShop.RaiseEvent(); // change this later
 
                 p.stamps.Clear();
@@ -1376,6 +1383,7 @@ public class GameplayTest : MonoBehaviour
             // Reset temp values.
             oldStamps.Clear();
             oldPoints = 0;
+            oldRep = 0;
 
             p.occupiedNode.playersOccupied.Add(p); // update to have that player in that node now
             p.occupiedNodeCopy = p.occupiedNode;
@@ -1449,6 +1457,8 @@ public class GameplayTest : MonoBehaviour
 
     public void SetupNextPlayer()
     {
+        // Put current player back to normal pos
+        currentPlayer.playerSprite.GetComponentInParent<SpriteMask>().transform.position += new Vector3(0, 0, .05f);
         // Change to the next player in the list.
         nextPlayers.Remove(currentPlayer);
         nextPlayers.Add(currentPlayer);
@@ -1466,7 +1476,12 @@ public class GameplayTest : MonoBehaviour
         {
             Debug.Log($"Wait {currentPlayer.entityName} is actually goated wtf?");
             currentPlayer.currentStates.Remove(EntityPiece.State.FightingParty);
+
+            currentPlayer.dustCloud.gameObject.SetActive(false);
         }
+
+        // put next player's sprite in front of the others
+        currentPlayer.playerSprite.GetComponentInParent<SpriteMask>().transform.position -= new Vector3(0,0,.05f);
 
         m_NextPlayerTurn.RaiseEvent(currentPlayer);
 

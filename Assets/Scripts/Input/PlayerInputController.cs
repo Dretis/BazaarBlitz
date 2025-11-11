@@ -66,6 +66,7 @@ public class PlayerInputController : MonoBehaviour
     public VoidEventChannelSO m_ExitVendor;
 
     public EntityIntEventChannelSO m_PlayerActionSelected;
+    public PlayerEventChannelSO m_CombatDiceRolled;
 
     [Header("Listen on Event Channels")]
     public PlayerEventChannelSO m_AssignPlayerToController;
@@ -91,6 +92,10 @@ public class PlayerInputController : MonoBehaviour
     public PlayerEventChannelSO m_InitiateCombatOnPassBy;
 
     public PlayerEventChannelSO m_EnterLevelUp;
+
+    public EntityActionEventChannelSO m_BothActionsSelected;
+    public PlayerEventChannelSO m_SwapPhase;
+    //public PlayerEventChannelSO m_CombatDiceRolled;
 
     public PlayerEventChannelSO m_PlayerWon;
 
@@ -147,6 +152,9 @@ public class PlayerInputController : MonoBehaviour
         m_ExitInventory.OnEventRaised += OnExitInventory;
         m_FullInventory.OnEventRaised += OnFullInventory;
 
+        m_BothActionsSelected.OnEventRaised += OnBothActionsSelected;
+        m_SwapPhase.OnEventRaised += OnSwapPhase;
+        
         m_PlayerWon.OnEventRaised += OnPlayerWon;
     }
 
@@ -187,6 +195,9 @@ public class PlayerInputController : MonoBehaviour
 
         m_ExitInventory.OnEventRaised -= OnExitInventory;
         m_FullInventory.OnEventRaised -= OnFullInventory;
+
+        m_BothActionsSelected.OnEventRaised -= OnBothActionsSelected;
+        m_SwapPhase.OnEventRaised -= OnSwapPhase;
 
         m_PlayerWon.OnEventRaised -= OnPlayerWon;
     }
@@ -280,6 +291,8 @@ public class PlayerInputController : MonoBehaviour
     # region 'UI' Action Map
     private void OnCancel()
     {
+        if (GameplayTest.instance == null) return;
+
         switch (GameplayTest.instance.phase)
         {
             case GamePhase.StockStore:
@@ -475,6 +488,44 @@ public class PlayerInputController : MonoBehaviour
         m_PlayerActionSelected.RaiseEvent(assignedPlayer, 2);
         //sendAction(false, 2); // Player 2 first element (magic)
     }
+    #endregion
+
+    #region 'Combat Roll' Action Map
+    private void OnCombatRoll()
+    {
+        Debug.Log("CONFIG[" + playerInput.playerIndex + "] | " + " Rolling combat die");
+        m_CombatDiceRolled.RaiseEvent(assignedPlayer);
+        playerInput.currentActionMap.Disable();
+        TryRumbling(0.5f, .25f, .15f);
+    }
+
+    // This is not apart of the action map but its an event func
+    private void OnBothActionsSelected(EntityPiece entity, Action action)
+    {
+        if (entity != assignedPlayer) return;
+        //if (!playerInput.inputIsActive) return;
+
+        // shitter switch action map w/o the phase change
+        playerInput.currentActionMap.Disable();
+        playerInput.SwitchCurrentActionMap("Combat Roll");
+
+        playerInput.currentActionMap.Enable();
+        currActionMap = playerInput.currentActionMap;
+    }
+
+    private void OnSwapPhase(EntityPiece entity)
+    {
+        //if (entity != assignedPlayer) return;
+        if (!(assignedPlayer == CombatManager.Instance.attacker
+            || assignedPlayer == CombatManager.Instance.defender))
+            return;
+
+        //playerInput.currentActionMap.Disable();
+        playerInput.SwitchCurrentActionMap("Combat");
+        playerInput.currentActionMap.Enable();
+        currActionMap = playerInput.currentActionMap;
+    }
+
     #endregion
 
     public void SwitchActionMap(GameplayTest.GamePhase phase)
@@ -837,7 +888,10 @@ public class PlayerInputController : MonoBehaviour
             //assignedPlayer.gameObject.GetComponent<PlayerPaletteLoader>().SetInspectorPaletteColor(0, playerConfig.PlayerColor);
 
             var playerCosmeticManager = PlayerConfigurationManager.instance.GetPlayerCosmeticManager(playerInput.playerIndex);
-            assignedPlayer.gameObject.GetComponent<PlayerPaletteLoader>().SetInspectorPalette(playerCosmeticManager.baggieColorPalette);
+            var colorPal = new List<Color>(playerCosmeticManager.baggieColorPalette);
+
+            assignedPlayer.gameObject.GetComponent<PlayerPaletteLoader>().SetInspectorPalette(colorPal);
+            assignedPlayer.dustCloud.GetComponent<PlayerPaletteLoader>().SetInspectorPalette(colorPal);
         }
     }
 
