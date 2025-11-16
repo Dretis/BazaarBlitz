@@ -13,6 +13,7 @@ public class InventorySelectionHandler : MonoBehaviour, ISubmitHandler, IPointer
     [SerializeField] private Image itemIcon;
     [SerializeField] private TextMeshProUGUI itemName;
     [SerializeField] private TextMeshProUGUI itemPrice;
+    [SerializeField] private bool itemIsUnusable = false;
 
     [Header("Broadcast On Event")]
     public IntItemEventChannelSO m_TryUseItemAt; // aka m_ItemUsed or "I want to Use Inventory Item At"
@@ -25,6 +26,9 @@ public class InventorySelectionHandler : MonoBehaviour, ISubmitHandler, IPointer
         set { heldItem = value; }
     }
 
+    
+    [Header("UI Elements")]
+    [SerializeField] private Image heldItemContainer;
     [SerializeField] private float verticalMoveAmount = 30f;
     [SerializeField] private float moveTime = 0.1f;
     [Range(0f, 2f), SerializeField] private float scaleAmount = 1.1f;
@@ -38,9 +42,17 @@ public class InventorySelectionHandler : MonoBehaviour, ISubmitHandler, IPointer
         startScale = transform.localScale;
     }
 
-    public void UpdateItemInfo(ItemStats item)
+    public void UpdateItemInfo(EntityPiece entity, ItemStats item)
     {
         heldItem = item;
+
+        bool playerInCombat = GameplayTest.instance.phase == GameplayTest.GamePhase.Inventory &&
+            (entity.currentStates.Contains(EntityPiece.State.Fighting) || entity.currentStates.Contains(EntityPiece.State.FightingParty));
+
+        //Debug.Log($"{item} | playerInCombat = {playerInCombat}");
+        //Debug.Log($"{item} | Inventory Phase = {GameplayTest.instance.phase == GameplayTest.GamePhase.Inventory}");
+        //Debug.Log($"{item} | fighting state = {entity.currentStates.Contains(EntityPiece.State.Fighting)}");
+
         if (item == null)
         {
             itemIcon.sprite = null;
@@ -49,6 +61,25 @@ public class InventorySelectionHandler : MonoBehaviour, ISubmitHandler, IPointer
             itemPrice.text = "";
 
             GetComponent<Button>().interactable = false;
+        }
+        else if (playerInCombat && !item.usableInCombat)
+        {
+            // Cannot use this item atm, grey it out
+            itemIcon.sprite = item.itemSprite;
+            itemIcon.color = Color.grey;
+            itemIcon.enabled = true;
+
+            itemName.text = $"{item.itemName}";
+            itemName.color = Color.grey;
+
+            itemPrice.text = $"<sprite=\"Coin Icon\" index=0 tint=1>{item.basePrice}";
+            itemPrice.color = Color.grey;   
+
+            itemIsUnusable = true;
+
+            heldItemContainer.color = Color.grey;
+
+            GetComponent<Button>().interactable = true;
         }
         else
         {
@@ -88,6 +119,10 @@ public class InventorySelectionHandler : MonoBehaviour, ISubmitHandler, IPointer
 
             GetComponent<Button>().interactable = false;
             m_ItemDiscarded.RaiseEvent(itemIndex, heldItem);
+        }
+        else if (itemIsUnusable)
+        {
+            Debug.Log($"{heldItem.name} cannot be used right now!");
         }
         else
         {

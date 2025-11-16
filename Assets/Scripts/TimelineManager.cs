@@ -1,22 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Playables;
-using static UnityEngine.EventSystems.EventTrigger;
 
 public class TimelineManager : MonoBehaviour
 {
     // script includes handling Timelines
 
-    [SerializeField] private PlayableDirector currentDirector; // Current player's director to play timelines
+    [SerializeField] private TimelineSignalResponder currentResponder; // Current player's director to play timelines
     [SerializeField] private SpriteRenderer usedItemSprite; // Current player's director to play timelines
 
     [Header("Listen On Event Channels")]
     public PlayerEventChannelSO m_NextPlayerTurn;
     //public IntEventChannelSO m_UseItemAt; // aka m_ItemUsed or "I want to Use Inventory Item At"
     public IntItemEventChannelSO m_ItemUsed; // aka m_ItemUsed or "I want to Use Inventory Item At"
-
-    public PlayerEventChannelSO m_ResetToIdle;
+    public PlayerEventChannelSO m_ConfirmBuildStore;
+    //public PlayerEventChannelSO m_ResetToIdle;
     public PlayerEventChannelSO m_PlayerWon;
 
     private void OnEnable()
@@ -24,6 +22,7 @@ public class TimelineManager : MonoBehaviour
         m_NextPlayerTurn.OnEventRaised += OnNextPlayerTurn;
         //m_UseItemAt.OnEventRaised += OnUseItemAt;
         m_ItemUsed.OnEventRaised += OnItemUsed;
+        m_ConfirmBuildStore.OnEventRaised += OnConfirmBuildStore;
         m_PlayerWon.OnEventRaised += OnPlayerWon;
         //m_ResetToIdle.OnEventRaised += ResetToIdleAnim;
     }
@@ -33,6 +32,7 @@ public class TimelineManager : MonoBehaviour
         m_NextPlayerTurn.OnEventRaised -= OnNextPlayerTurn;
         //m_UseItemAt.OnEventRaised -= OnUseItemAt;
         m_ItemUsed.OnEventRaised -= OnItemUsed;
+        m_ConfirmBuildStore.OnEventRaised -= OnConfirmBuildStore;
         m_PlayerWon.OnEventRaised -= OnPlayerWon;
         //m_ResetToIdle.OnEventRaised -= ResetToIdleAnim;
     }
@@ -40,8 +40,8 @@ public class TimelineManager : MonoBehaviour
     {
         if (entity.TryGetComponent<TimelineSignalResponder>(out TimelineSignalResponder responder))
         {
-            currentDirector = responder.pd_UseItem;
-            usedItemSprite = currentDirector.GetComponentInChildren<SpriteRenderer>();
+            currentResponder = responder;
+            usedItemSprite = responder.pd_UseItem.GetComponentInChildren<SpriteRenderer>();
         }
 
         //currentDirector = entity.GetComponentInChildren<PlayableDirector>();
@@ -58,8 +58,18 @@ public class TimelineManager : MonoBehaviour
         //var usedItemSprite = currentDirector.gameObject.GetComponentInChildren<SpriteRenderer>();
         usedItemSprite.sprite = item.itemSprite;
 
-        // Make sure this plays PD_UseItem!
-        currentDirector.Play();
+        currentResponder.pd_UseItem.Play();
+        usedItemSprite = currentResponder.pd_UseItem.GetComponentInChildren<SpriteRenderer>();
+
+    }
+
+    private void OnConfirmBuildStore(EntityPiece currentPlayer)
+    {
+        if (currentPlayer.TryGetComponent<TimelineSignalResponder>(out TimelineSignalResponder responder))
+        {
+            Debug.Log($"{currentPlayer} is building a store");
+            responder.pd_BuildStore.Play();
+        }
     }
 
     private void OnPlayerWon(EntityPiece winner)

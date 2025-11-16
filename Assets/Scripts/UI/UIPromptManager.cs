@@ -42,7 +42,7 @@ public class UIPromptManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI buildLimitText;
 
     [Header("Broadcast on Event Channels")]
-    public PlayerEventChannelSO m_BuildStore; // also listening
+    public PlayerEventChannelSO m_ConfirmBuildStore;
     public VoidEventChannelSO m_CancelBuildStore; // also listening
     public NodeEventChannelSO m_RestockStore; // also listening
 
@@ -65,6 +65,7 @@ public class UIPromptManager : MonoBehaviour
     public VoidEventChannelSO m_ExitInventory;
 
     public PlayerEventChannelSO m_TryBuildStore;
+    public PlayerEventChannelSO m_BuildStore; // also listening
     public PlayerEventChannelSO m_FinishStockingStore;
 
     public PlayerEventChannelSO m_OverturnOpportunity;
@@ -449,8 +450,11 @@ public class UIPromptManager : MonoBehaviour
     // Button functions
     public void ConfirmBuildStoreButton()
     {
-        m_BuildStore.RaiseEvent(currentPlayer);
-        m_RestockStore.RaiseEvent(currentPlayer.occupiedNode);
+        m_ConfirmBuildStore.RaiseEvent(currentPlayer);
+
+        HidePromptInstruction();
+        StrikethroughBuildPrompt();
+        //m_RestockStore.RaiseEvent(currentPlayer.occupiedNode);
     }
 
     public void CancelBuildStoreButton()

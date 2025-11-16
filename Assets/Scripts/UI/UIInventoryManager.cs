@@ -132,8 +132,9 @@ public class UIInventoryManager : MonoBehaviour
         m_FullInventory.OnEventRaised -= OnFullInventory;
     }
 
-    private void SpawnItemsInInventory(List<ItemStats> playerInventory)
+    private void SpawnItemsInInventory(EntityPiece entity)
     {
+        List<ItemStats> playerInventory = entity.inventory;
         Debug.Log("spawning");
         heldItemHolders.Clear();
         var inventoryParentTransform = inventoryGridContainer.transform;
@@ -161,7 +162,7 @@ public class UIInventoryManager : MonoBehaviour
             }
 
             var item = Instantiate(heldItemPrefab, inventoryParentTransform);
-            item.GetComponent<InventorySelectionHandler>().UpdateItemInfo(itemToSpawn);
+            item.GetComponent<InventorySelectionHandler>().UpdateItemInfo(entity, itemToSpawn);
             item.GetComponent<InventorySelectionHandler>().itemIndex = i;
 
             heldItemHolders.Add(item);
@@ -185,7 +186,7 @@ public class UIInventoryManager : MonoBehaviour
         //inventoryCanvas.enabled = true;
         HideSelectedItemDetails();
 
-        SpawnItemsInInventory(entity.inventory);
+        SpawnItemsInInventory(entity);
         currentPlayerIndex = entity.id;
         /*
         playerInventory.Clear();
@@ -271,7 +272,7 @@ public class UIInventoryManager : MonoBehaviour
                 itemToSpawn = null;
             }
 
-            heldItemHolders[i].GetComponent<InventorySelectionHandler>().UpdateItemInfo(itemToSpawn);
+            heldItemHolders[i].GetComponent<InventorySelectionHandler>().UpdateItemInfo(entity, itemToSpawn);
         }
         EventSystem.current.SetSelectedGameObject(heldItemHolders[0]);
     }

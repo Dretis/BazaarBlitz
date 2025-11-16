@@ -1736,15 +1736,23 @@ public class GameplayTest : MonoBehaviour
         node.stockGroup.GetComponent<Image>().color -= new Color(0, 0, 0, .25f);
         p.ownedStores.Add(store);
 
-        isStockingStore = true;
+        //isStockingStore = true;
 
+        StartCoroutine(DelayRestockStore(p, 1f));
         //m_RestockStore.RaiseEvent(p.occupiedNode);
+    }
 
-        //storestockTooltip.enabled = true;
+    private IEnumerator DelayRestockStore(EntityPiece p, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        m_RestockStore.RaiseEvent(p.occupiedNode);
     }
 
     public void OnRestockStore(MapNode node)
     {
+        isStockingStore = true;
+
         emptyStockCount = 0;
         var storeInventory = node.GetComponent<StoreManager>().storeInventory;
 

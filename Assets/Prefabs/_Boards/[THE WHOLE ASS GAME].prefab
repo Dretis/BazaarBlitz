@@ -4115,11 +4115,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e1e52d22cb0e1c43bd196a097022d0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentDirector: {fileID: 0}
+  currentResponder: {fileID: 0}
   usedItemSprite: {fileID: 0}
   m_NextPlayerTurn: {fileID: 11400000, guid: 45e13c3cd9283b74989c51218c39f6c2, type: 2}
   m_ItemUsed: {fileID: 11400000, guid: 4c3e0ee6a8a2a4f4ea69a5202dd82790, type: 2}
-  m_ResetToIdle: {fileID: 0}
+  m_ConfirmBuildStore: {fileID: 11400000, guid: f4bf13c62fafdfa4da428cfbf244c5e3, type: 2}
   m_PlayerWon: {fileID: 11400000, guid: 30be4a0c1ed8bdc43b43a3dc867dd37d, type: 2}
 --- !u!1 &6700546163677273176
 GameObject:
@@ -5587,6 +5587,8 @@ MonoBehaviour:
   m_LandedOnVendor: {fileID: 11400000, guid: eb2649013aa7cbc41af4a7f3a5c359c8, type: 2}
   m_LandedOnMultipleEntities: {fileID: 11400000, guid: 29c82be8cac6c7342aff3ab44e4757eb, type: 2}
   m_IncidentStarted: {fileID: 11400000, guid: fbbbe6e31fced7641b6b92ac4a0ea4c9, type: 2}
+  m_ConfirmBuildStore: {fileID: 11400000, guid: f4bf13c62fafdfa4da428cfbf244c5e3, type: 2}
+  m_RestockStore: {fileID: 11400000, guid: 45d6b055127905e4cb2609426a521e19, type: 2}
   m_PlayerWon: {fileID: 11400000, guid: 30be4a0c1ed8bdc43b43a3dc867dd37d, type: 2}
 --- !u!114 &6700546163881176788
 MonoBehaviour:

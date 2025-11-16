@@ -6,7 +6,6 @@ using Febucci.UI.Core;
 using UnityEngine.EventSystems;
 using UnityEditor;
 using UnityEngine.UI;
-using static UnityEditor.Progress;
 
 public class UILevelUpManager : MonoBehaviour
 {

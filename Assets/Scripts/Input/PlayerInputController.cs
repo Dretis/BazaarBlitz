@@ -233,8 +233,9 @@ public class PlayerInputController : MonoBehaviour
             playerInput.uiInputModule.actionsAsset = playerInput.actions;
 
             previousGamePhase = GamePhase.InitialTurnMenu;
-            m_OpenInventory.RaiseEvent(currentPlayer);
+
             SwitchActionMap(GamePhase.Inventory);
+            m_OpenInventory.RaiseEvent(currentPlayer);
         }
         else
         {
