@@ -9,9 +9,12 @@ using System.Collections;
 
 public class GameplayTest : MonoBehaviour
 {
-    private EntityPiece winner;
+    [SerializeField] private int seed = -1;
+
+    [Space]
     public GameBoard board;
     public GamePhase phase = GamePhase.RollDice;
+    private EntityPiece winner;
 
     [Header("Debugging")]
     [SerializeField] private TextMeshProUGUI debugPhaseText;
@@ -247,6 +250,37 @@ public class GameplayTest : MonoBehaviour
 
     public PlayerEventChannelSO m_FighterSelected;
 
+    private void SetSeed(int seed)
+    {
+        if(seed == -1)
+        {
+            seed = System.DateTime.Now.Millisecond;
+        }
+
+        Random.InitState(seed);
+
+        Debug.Log($"Random State = {seed} ");//| (Seed) = {Random.seed}");
+
+        //SystemRandomUniTest(seed);
+    }
+
+    private void SystemRandomUniTest(int seed)
+    {
+        //int s = System.Random.Next(2,55);
+
+        var ran = new System.Random(seed);
+
+        Debug.Log($"** System.Random = {ran} | Seed = {seed} **");
+        for (int i = 1; i <= 100; i++)
+        {
+            Debug.Log($"Number #{i} = {ran.Next(0, 6)}");
+            //Debug.Log($"Number #{i} = {ran.Next(0, 121)}");
+            //Debug.Log($"Number #{i} = {ran.Next(1, 100)}");
+        }
+        //ran.
+        //System.Random.seed;
+    }
+
     private void OnEnable()
     {
         m_NextTurnRound.OnEventRaised += OnNextTurnRound;
@@ -326,6 +360,8 @@ public class GameplayTest : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        SetSeed(seed);
+
         debugPhaseText.text = "";
 
         instance = this;
@@ -1833,16 +1869,13 @@ public class GameplayTest : MonoBehaviour
 
     public void StealFromPlayer(EntityPiece otherPlayer)
     {
-        Debug.Log("StealFromPlayer");
+
         int indexToSteal = Random.Range(0, otherPlayer.inventory.Count);
         currentPlayer.inventory.Add(otherPlayer.inventory[indexToSteal]);
-
-        if (currentPlayer.inventory.Count > currentPlayer.inventoryLimit)
-        {
-            // Raise event to drop items.
-        }
-
-        otherPlayer.inventory.RemoveAt(indexToSteal);
+        Debug.Log($"Stole '{otherPlayer.inventory[indexToSteal]}' from {otherPlayer.entityName}");
+        // Only remove the item from a real player
+        if (!otherPlayer.isEnemy)
+            otherPlayer.inventory.RemoveAt(indexToSteal);
 
         // Raise event to show UI of item stolen. Not sure what to do if other player has no items to steal.
     }

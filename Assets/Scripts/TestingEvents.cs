@@ -27,7 +27,8 @@ public class TestingEvents : MonoBehaviour
     void Update()
     {
         if (debugPlayerInputOn &&
-            Input.GetKeyDown(KeyCode.KeypadEnter))
+            (Input.GetKeyDown(KeyCode.KeypadEnter) ||
+            Input.GetKeyDown(KeyCode.Backslash)))
         {
             Debug.Log("DEBUG | Turning on P1 test input");
             debugPlayerInput.SetActive(true);

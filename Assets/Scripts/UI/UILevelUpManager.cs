@@ -6,6 +6,7 @@ using Febucci.UI.Core;
 using UnityEngine.EventSystems;
 using UnityEditor;
 using UnityEngine.UI;
+using Unity.VisualScripting;
 
 public class UILevelUpManager : MonoBehaviour
 {
@@ -102,9 +103,9 @@ public class UILevelUpManager : MonoBehaviour
     private void OnEnterLevelUp(EntityPiece p)
     {
         currentPlayer = p;
-        p.unspentLevelUpPoints += 5;
-        p.maxHealth += 10;
-        p.health += 10;
+        p.unspentLevelUpPoints += 6;
+        p.maxHealth += 5;
+        p.health += 5;
         p.RenownLevel += 1;
         p.levelThreshold = (p.RenownLevel * 100) * (Mathf.Pow(1.15f, p.RenownLevel - 1));
 
@@ -188,8 +189,12 @@ public class UILevelUpManager : MonoBehaviour
             m_AugmentedDieFaceValue.RaiseEvent();
             UpdatePlayerDiceStatsInLevelUp(currentPlayer);
             remainingSP.text = $"Remaining SP: {currentPlayer.unspentLevelUpPoints}";
-            tooltipText.text = $"Increase  <sprite={(int)diceType}> <color=white>[{selectedDie+1}]</color> to <color=white>[{selectedDie + 2}]</color> " +
-                $"for <color=#8AEFFF>{GameplayTest.instance.costArray[selectedDie+1]} SP</color>.";  
+            tooltipText.text = $"Increase  <sprite={(int)diceType}> <color=white>[{selectedDie + 1}]</color> to <color=white>[{selectedDie + 2}]</color> for ";
+            
+            if(currentPlayer.unspentLevelUpPoints < GameplayTest.instance.costArray[selectedDie + 1])
+                tooltipText.text += $"<color=red>{GameplayTest.instance.costArray[selectedDie+1]} SP</color>.";  
+            else
+                tooltipText.text += $"<color=#8AEFFF>{GameplayTest.instance.costArray[selectedDie + 1]} SP</color>.";
 
             if (currentPlayer.unspentLevelUpPoints <= 0)
             {

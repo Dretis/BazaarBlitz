@@ -14,7 +14,7 @@ public class CombatManager : MonoBehaviour
         Strong
     }
 
-    private CombatManager.TypeAdvantage damageTypeAdvantage;
+    public TypeAdvantage damageTypeAdvantage;
 
     public int turnCount = 0;
 
@@ -235,6 +235,28 @@ public class CombatManager : MonoBehaviour
 
     public void ShowChoices() {
         waitingForSelection = false;
+
+        Action attack = attackerAction;
+        Action defend = defenderAction;
+
+        float damageTypeMultiplier = 1f; // Attacker deals this much times more damage
+        if (attack.type == defend.type)
+        {
+            damageTypeMultiplier = 1.5f; // Neutral
+            damageTypeAdvantage = TypeAdvantage.Neutral;
+        }
+        else if ((attack.type == Action.WeaponTypes.Melee && defend.type == Action.WeaponTypes.Gun)
+               || (attack.type == Action.WeaponTypes.Gun && defend.type == Action.WeaponTypes.Magic)
+               || (attack.type == Action.WeaponTypes.Magic && defend.type == Action.WeaponTypes.Melee))
+        {
+            damageTypeMultiplier = 1f; // Incorrect defense option
+            damageTypeAdvantage = TypeAdvantage.Resist;
+        }
+        else
+        {
+            damageTypeMultiplier = 2f; // Super effective
+            damageTypeAdvantage = TypeAdvantage.Strong;
+        }
 
         m_BothActionsSelected.RaiseEvent(attacker, attackerAction); // Call animation players to run through event
         m_BothActionsSelected.RaiseEvent(defender, defenderAction); // Call animation players to run through event

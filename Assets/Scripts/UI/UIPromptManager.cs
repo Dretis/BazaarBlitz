@@ -21,6 +21,11 @@ public class UIPromptManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI turnRoundIndicator;
 
     [SerializeField] private TextMeshProUGUI inputPrompt;
+    private RectTransform inputPromptTransform;
+    private Vector3 initialInputPromptPos;
+    [SerializeField] private Vector3 hiddenInputPromptPos;
+
+
     [SerializeField] private TextMeshProUGUI rolledNumber;
     [SerializeField] private TextMeshProUGUI movementRoll;
 
@@ -40,6 +45,9 @@ public class UIPromptManager : MonoBehaviour
     [Space]
     [SerializeField] private TextMeshProUGUI buildPromptText;
     [SerializeField] private TextMeshProUGUI buildLimitText;
+
+    [Header("Backseating Elements")]
+    [SerializeField] private CanvasGroup backseatGroup;
 
     [Header("Broadcast on Event Channels")]
     public PlayerEventChannelSO m_ConfirmBuildStore;
@@ -82,8 +90,16 @@ public class UIPromptManager : MonoBehaviour
 
     public PlayerEventChannelSO m_PlayerWon;
 
+    public VoidEventChannelSO m_HoldPlayerInfo;
+    public VoidEventChannelSO m_ReleasePlayerInfo;
+
     private void Start()
     {
+        inputPromptTransform = inputPrompt.GetComponent<RectTransform>();
+
+        backseatGroup.alpha = 0;
+        backseatGroup.interactable = false;
+
         rolledNumber.text = "";
         movementRoll.text = "-";
 
@@ -133,6 +149,9 @@ public class UIPromptManager : MonoBehaviour
         m_IncidentStarted.OnEventRaised += OnIncidentStarted;
 
         m_PlayerWon.OnEventRaised += OnPlayerWon;
+
+        m_HoldPlayerInfo.OnEventRaised += OnHoldPlayerInfo;
+        m_ReleasePlayerInfo.OnEventRaised += OnReleasePlayerInfo;
     }
 
     private void OnDisable()
@@ -176,6 +195,9 @@ public class UIPromptManager : MonoBehaviour
         m_IncidentStarted.OnEventRaised -= OnIncidentStarted;
 
         m_PlayerWon.OnEventRaised -= OnPlayerWon;
+
+        m_HoldPlayerInfo.OnEventRaised -= OnHoldPlayerInfo;
+        m_ReleasePlayerInfo.OnEventRaised -= OnReleasePlayerInfo;
     }
 
     private void OnNextPlayerTurn(EntityPiece ps)
@@ -522,5 +544,29 @@ public class UIPromptManager : MonoBehaviour
     {
         rolledNumber.enabled = false;
         turnTypewriter.ShowText("");
+    }
+
+    private void OnHoldPlayerInfo()
+    {
+        LMotion.Create(backseatGroup.alpha, 1, 0.2f)
+            .Bind(x => backseatGroup.alpha = x);
+
+        //LMotion.Create(initialInputPromptPos, hiddenInputPromptPos, 0.2f)
+        //    .BindToPosition(inputPromptTransform.transform);
+
+        //backseatGroup.alpha = 1;
+        //backseatGroup.interactable = true;
+    }
+
+    private void OnReleasePlayerInfo()
+    {
+        LMotion.Create(backseatGroup.alpha, 0, 0.2f)
+            .Bind(x => backseatGroup.alpha = x);
+
+        //LMotion.Create(hiddenInputPromptPos, initialInputPromptPos, 0.2f)
+        //    .BindToPosition(inputPromptTransform.transform);
+
+        //backseatGroup.alpha = 0;
+        //backseatGroup.interactable = false;
     }
 }

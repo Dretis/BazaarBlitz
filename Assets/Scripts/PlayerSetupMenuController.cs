@@ -4,6 +4,7 @@ using TMPro;
 using Febucci.UI.Core;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class PlayerSetupMenuController : MonoBehaviour
 {
@@ -32,9 +33,12 @@ public class PlayerSetupMenuController : MonoBehaviour
 
     private float ignoreInputTime = 1.5f;
     private bool inputEnabled = true;
+    private EventSystem setupEventSystem;
 
     private void Start()
     {
+        setupEventSystem = GetComponentInChildren<EventSystem>();
+
         foreach (Transform child in colorButtonContainer.transform)
         {
             colorButtons.Add(child.GetComponentInChildren<Button>());
@@ -124,6 +128,8 @@ public class PlayerSetupMenuController : MonoBehaviour
         readyPanel.interactable = false;
 
         readyText.ShowText("Ready!");
+
+        setupEventSystem.enabled = false;
     }
 
     public void UnreadyPlayer()

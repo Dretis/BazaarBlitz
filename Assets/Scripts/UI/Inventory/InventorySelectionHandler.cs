@@ -163,7 +163,7 @@ public class InventorySelectionHandler : MonoBehaviour, ISubmitHandler, IPointer
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        eventData.selectedObject = null;
+        //eventData.selectedObject = null;
     }
 
     public void OnSelect(BaseEventData eventData)

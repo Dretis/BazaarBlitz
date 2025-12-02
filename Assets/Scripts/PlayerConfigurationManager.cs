@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class PlayerConfigurationManager : MonoBehaviour
 {
+    private PlayerInputManager playerInputManager;
     private List<PlayerConfiguration> playerConfigs;
     [SerializeField] private List<PlayerCosmeticManager> playerCosmeticManagers;
 
@@ -36,6 +37,7 @@ public class PlayerConfigurationManager : MonoBehaviour
             DontDestroyOnLoad(instance);
             playerConfigs = new List<PlayerConfiguration>();
             playerCosmeticManagers = new List<PlayerCosmeticManager>();
+            playerInputManager = GetComponent<PlayerInputManager>();
         }
     }
 
@@ -76,7 +78,9 @@ public class PlayerConfigurationManager : MonoBehaviour
         playerConfigs[index].IsReady = true;
         if(playerConfigs.Count == maxPlayers && playerConfigs.All(p=>p.IsReady ==true))
         {
-            Debug.Log("All players ready, entering the match!");
+            Debug.Log("All players ready, going to the board select!");
+
+
             m_AllPlayersReady.RaiseEvent();
             //SceneManager.LoadScene("Overworld 2");
         }
@@ -118,7 +122,7 @@ public class PlayerConfigurationManager : MonoBehaviour
 
     public void OnAllPlayersReady()
     {
-        
+        playerInputManager.DisableJoining();
     }
 }
 

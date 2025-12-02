@@ -61,6 +61,7 @@ public class UICombatOverlayManager : MonoBehaviour
     [SerializeField] private CanvasGroup leftAttackPrompt;
     [SerializeField] private CanvasGroup leftDefendPrompt;
     [SerializeField] private CanvasGroup leftSelectedAction;
+    [SerializeField] private TextMeshProUGUI leftSelectedAdvantage;
     [SerializeField] private List<TextMeshProUGUI> leftSelectableActions;
 
 
@@ -68,7 +69,11 @@ public class UICombatOverlayManager : MonoBehaviour
     [SerializeField] private CanvasGroup rightAttackPrompt;
     [SerializeField] private CanvasGroup rightDefendPrompt;
     [SerializeField] private CanvasGroup rightSelectedAction;
+    [SerializeField] private TextMeshProUGUI rightSelectedAdvantage;
     [SerializeField] private List<TextMeshProUGUI> rightSelectableActions;
+
+    [Space]
+    [SerializeField] private CombatUIManager.FightingPosition advantageSide;
 
     [Header("Text")]
     [SerializeField] private TextMeshProUGUI leftHealthPoints;
@@ -279,6 +284,14 @@ public class UICombatOverlayManager : MonoBehaviour
         DOTween.To(()=> inputPrompt.alpha, x=> inputPrompt.alpha =  x, 1, duration); 
     }
 
+    public IEnumerator ShowAdvantageState(TextMeshProUGUI advantage, float duration) 
+    {
+        yield return new WaitForSeconds(duration);
+
+        //advantage.text = "Advantage!";
+        advantage.GetComponent<TypewriterCore>().ShowText("Advantage!");
+    }
+
     public void HideInputPrompt(CanvasGroup inputPrompt, float duration)
     {
         DOTween.To(() => inputPrompt.alpha, x => inputPrompt.alpha = x, 0, duration);
@@ -322,13 +335,18 @@ public class UICombatOverlayManager : MonoBehaviour
         //HideBothInutPrompts();
 
         CanvasGroup sideSelectedAction;
+        TextMeshProUGUI sideSelectedAdvantage;
+        bool hasAdvantage = false;
+
         if (entity.fightingPosition == CombatUIManager.FightingPosition.Left)
         {
             sideSelectedAction = leftSelectedAction;
+            sideSelectedAdvantage = leftSelectedAdvantage;
         }
         else
         {
             sideSelectedAction = rightSelectedAction;
+            sideSelectedAdvantage = rightSelectedAdvantage;
         }
             int typeIcon = 0;
         switch (action.type)
@@ -342,11 +360,28 @@ public class UICombatOverlayManager : MonoBehaviour
         {
             Debug.Log($"{entity.entityName} is attacking");
             sideSelectedAction.GetComponent<Image>().color = attackColor;
+            sideSelectedAdvantage.text = "";
+
+            if (CombatManager.Instance.damageTypeAdvantage == CombatManager.TypeAdvantage.Strong)
+            {
+                advantageSide = entity.fightingPosition;
+                hasAdvantage = true;
+                //sideSelectedAdvantage.text = "Advantage!";
+            }
         }
         else
         {
             Debug.Log($"{entity.entityName} is defending");
             sideSelectedAction.GetComponent<Image>().color = defendColor;
+            sideSelectedAdvantage.text = "";
+
+            if (CombatManager.Instance.damageTypeAdvantage == CombatManager.TypeAdvantage.Resist)
+            {
+                advantageSide = entity.fightingPosition;
+                hasAdvantage = true;
+                //sideSelectedAdvantage.text = "Advantage!";
+            }
+
         }
 
         if (entity.fightingPosition == CombatUIManager.FightingPosition.Left)
@@ -358,6 +393,11 @@ public class UICombatOverlayManager : MonoBehaviour
         {
             ShowInputPrompt(sideSelectedAction, 0.15f);
             sideSelectedAction.GetComponentInChildren<TextMeshProUGUI>().text = $"<sprite={typeIcon}>  {action.actionName}";
+        }
+
+        if (hasAdvantage)
+        {
+            StartCoroutine(ShowAdvantageState(sideSelectedAdvantage, 0.35f));
         }
     }
 

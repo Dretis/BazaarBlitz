@@ -5,18 +5,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Febucci.UI.Core;
+using LitMotion;
 
 public class DiceStatSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler
 {
     private Image buttonImage;
     private RectTransform rec;
     private float scaleMult = 1.2f;
-
-    //[SerializeField] private PlayerSetupMenuController setup;
-    //[SerializeField] private Image baggieVisual;
-    //[SerializeField] private TypewriterCore baggieVisualName;
-    //[SerializeField] private Color color;
-    //[SerializeField] private string baggieColorName;
 
     [SerializeField] private TypewriterCore diceFaceText;
     [SerializeField] private int diceFaceIndex;
@@ -49,7 +44,7 @@ public class DiceStatSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerC
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        eventData.selectedObject = null;
+        //eventData.selectedObject = null;
     }
     public void OnSubmit(BaseEventData eventData)
     {
@@ -64,8 +59,12 @@ public class DiceStatSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerC
         // Highlight selected die face
         // Show how much SP it costs to upgrade +1 Face Value
         diceFaceText.ShowText($"<incr>{diceFaceValue}");
-        tooltipText.text = $"Increase  <sprite={(int)diceType}> <color=white>[{diceFaceValue}]</color> to <color=white>[{diceFaceValue+1}]</color> " +
-            $"for <color=#8AEFFF>{GameplayTest.instance.costArray[diceFaceValue]} SP</color>.";
+        tooltipText.text = $"Increase  <sprite={(int)diceType}> <color=white>[{diceFaceValue}]</color> to <color=white>[{diceFaceValue + 1}]</color> for ";
+
+        if (GameplayTest.instance.currentPlayer.unspentLevelUpPoints < GameplayTest.instance.costArray[diceFaceValue + 1])
+            tooltipText.text += $"<color=red>{GameplayTest.instance.costArray[diceFaceValue + 1]} SP</color>.";
+        else
+            tooltipText.text += $"<color=#8AEFFF>{GameplayTest.instance.costArray[diceFaceValue + 1]} SP</color>.";
 
         rec.localScale = Vector3.one * scaleMult;
     }

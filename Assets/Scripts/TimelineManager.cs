@@ -68,6 +68,9 @@ public class TimelineManager : MonoBehaviour
         if (currentPlayer.TryGetComponent<TimelineSignalResponder>(out TimelineSignalResponder responder))
         {
             Debug.Log($"{currentPlayer} is building a store");
+
+            if (currentPlayer.playerSprite.flipX) currentPlayer.playerSprite.flipX = false;
+
             responder.pd_BuildStore.Play();
         }
     }

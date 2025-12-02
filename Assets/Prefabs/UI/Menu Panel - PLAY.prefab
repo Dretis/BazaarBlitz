@@ -134,7 +134,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.31092027, g: 0.4811321, b: 0.40539956, a: 0.7529412}
+  m_Color: {r: 0.31092027, g: 0.4811321, b: 0.40539956, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 0
@@ -164,6 +164,7 @@ GameObject:
   - component: {fileID: 5613114878903374572}
   - component: {fileID: 5613114878903374562}
   - component: {fileID: 1014884351678274355}
+  - component: {fileID: 2273527849230232475}
   m_Layer: 5
   m_Name: Menu Panel - PLAY
   m_TagString: Untagged
@@ -242,7 +243,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3312d7739989d2b4e91e6319e9a96d76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Padding: {x: 6, y: 120, z: 6, w: 6}
+  m_Padding: {x: 6, y: 6, z: 6, w: 6}
   m_Softness: {x: 36, y: 60}
 --- !u!114 &1014884351678274355
 MonoBehaviour:
@@ -300,6 +301,28 @@ MonoBehaviour:
           m_StringArgument: Overworld 2
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &2273527849230232475
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5613114878903374574}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bba3d1e0772239243bf28cc57e77fcb2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selectable: 1
+  helpInfo: This is a menu option. I tell you what this does.
+  helpText: {fileID: 0}
+  menuPanel: {fileID: 5613114878903374572}
+  menuVisual: {fileID: 5613114878548303166}
+  menuBumper: {fileID: 5613114878893535380}
+  menuBumperText: {fileID: 5613114879893324876}
+  baseMenuColor: {r: 0.30980393, g: 0.48235294, b: 0.40392157, a: 1}
+  unselectableMenuColor: {r: 0.2662424, g: 0.270561, b: 0.2924528, a: 1}
+  selectedMenuColor: {r: 0.32156864, g: 0.654902, b: 0.85882354, a: 1}
 --- !u!1 &5613114879893324878
 GameObject:
   m_ObjectHideFlags: 0
@@ -312,7 +335,7 @@ GameObject:
   - component: {fileID: 5613114879893324867}
   - component: {fileID: 5613114879893324876}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Bumper Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
