@@ -14,6 +14,7 @@ public class MenuSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClick
     public TextMeshProUGUI helpText;
     [Space]
     public RectTransform rect;
+    private Button butt;
 
     [Header("UI Elements")]
     public Image menuPanel;
@@ -30,18 +31,19 @@ public class MenuSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClick
     private void Start()
     {
         rect = GetComponent<RectTransform>();
+        butt = GetComponent<Button>();
 
         var help = GameObject.FindWithTag("HelpText");
 
         if(help != null)
             helpText = help.GetComponent<TextMeshProUGUI>();
 
-        if (!selectable)
+        if (!selectable || !butt.interactable)
         {
             menuVisual.color = Color.grey;
             menuBumper.color = unselectableMenuColor;
 
-            helpInfo += " [CURRENTLY UNAVAILABLE]";
+            helpInfo += " [UNAVAILABLE]";
         }
     }
 
@@ -69,8 +71,11 @@ public class MenuSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClick
         if(helpText != null)
             helpText.text = helpInfo;
 
-        if (!selectable) return;
-
+        if (!selectable || !butt.interactable)
+        {
+            menuBumper.color = unselectableMenuColor;
+            return;
+        }
         menuBumper.color = selectedMenuColor;
 
         //UIScreenManager.instance.selected = EventSystem.current.currentSelectedGameObject;
@@ -81,7 +86,11 @@ public class MenuSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClick
         if (helpText != null)
             helpText.text = "";
 
-        if (!selectable) return;
+        if (!selectable || !butt.interactable) 
+        {
+            menuBumper.color = unselectableMenuColor;
+            return; 
+        }
 
         menuBumper.color = baseMenuColor;
     }

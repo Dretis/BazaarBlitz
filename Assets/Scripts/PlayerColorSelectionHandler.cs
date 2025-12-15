@@ -60,11 +60,11 @@ public class PlayerColorSelectionHandler : MonoBehaviour, ISubmitHandler, IPoint
         //setup.SetSelectedPalette(colorPreset.baggieColorPalette);
         setup.SetSelectedName(colorPreset.presetName);
 
-        rect.localScale = Vector3.one * 1.15f;
+        //rect.localScale = Vector3.one * 1.15f;
     }
     public void OnDeselect(BaseEventData eventData)
     {
         //
-        rect.localScale = Vector3.one;
+        //rect.localScale = Vector3.one;
     }
 }

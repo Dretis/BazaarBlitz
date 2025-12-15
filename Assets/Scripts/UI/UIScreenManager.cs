@@ -30,6 +30,11 @@ public class UIScreenManager : MonoBehaviour
         if(currentScreen != null) screenStack.Add(currentScreen);
     }
 
+    public void GoToScene(string sceneName)
+    {
+        BootstrapLogic.GoToScene(sceneName);
+    }
+
     public void GoToScreen(UIScreen screen)
     {
         //priorSelectedObject = EventSystem.current.SetSelectedGameObject(items[0]);

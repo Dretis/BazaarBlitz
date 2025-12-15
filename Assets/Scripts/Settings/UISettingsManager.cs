@@ -120,9 +120,9 @@ public class UISettingsManager : MonoBehaviour
         // Set UI element values based on current settings
         resolutionDropdown.value = currentSettings.resolutionIndex;
         fullscreenToggle.isOn = currentSettings.isFullscreen;
-        masterVolumeSlider.value = currentSettings.masterVolume;
-        musicVolumeSlider.value = currentSettings.musicVolume;
-        effectsVolumeSlider.value = currentSettings.effectsVolume;
+        masterVolumeSlider.value = currentSettings.masterVolume * 100;
+        musicVolumeSlider.value = currentSettings.musicVolume * 100;
+        effectsVolumeSlider.value = currentSettings.effectsVolume * 100;
         //playerNameInputField.text = currentSettings.playerName;
 
         // Re-add listeners after updating UI
