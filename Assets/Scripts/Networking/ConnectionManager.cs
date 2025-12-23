@@ -3,7 +3,10 @@ using UnityEngine;
 
 public class ConnectionManager : MonoBehaviour
 {
-    [SerializeField] NetworkManager networkManager;
+    public static ConnectionManager Instance { get; private set; }
+
+    [SerializeField] private NetworkManager networkManager;
+    [SerializeField] private FishySteamworks.FishySteamworks fishySteamworks;
 
     // A host is simply a server and a client, so start them both.
     public void StartHost()

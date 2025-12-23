@@ -311,6 +311,13 @@ public class LobbySetupManager : MonoBehaviour
         // Make sure the lobby owner is the host/listen server
         // Assign a Network Object for each player that takes their inputs during gameplay
         // Once this is all setup correctly, send them into the real game board to play Cho Noi
+        var lobby = lobbyManager.Lobby;
+
+        // probably add lobby.Full here too?
+        if (lobby.AllPlayersNotReady) return;
+
+        lobby.SetJoinable(false);
+        lobby.SetGameServer();
     }
 
     public void HideGameStartText()

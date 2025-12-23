@@ -53,7 +53,8 @@ public class ScoreManager : MonoBehaviour
 
     [SerializeField] private List<TextMeshProUGUI> playerCurrentHPs;
     [SerializeField] private List<TextMeshProUGUI> playerMaxHPs;
-    [SerializeField] private List<Image> playerImages;
+    //[SerializeField] private List<Image> playerImages;
+    [SerializeField] private List<PlayerPaletteLoader> playerPaletteLoaders;
 
     [Header("Active Effects / Buffs Indicator")]
     [SerializeField] private GameObject effectIndicatorPrefab;
@@ -164,7 +165,10 @@ public class ScoreManager : MonoBehaviour
             playerNames[i].text = "" + players[i].entityName; 
 
             // Set Color of Baggie in score
-            playerImages[i].color = players[i].playerColor - new Color32(0, 0, 0, 0); // minus transparency
+            //playerImages[i].color = players[i].playerColor - new Color32(0, 0, 0, 0); // minus transparency
+
+            var palette = players[i].GetComponent<PlayerPaletteLoader>().GetInspectorPalette();
+            playerPaletteLoaders[i].SetInspectorPalette(palette);
 
             playerScoreNumbers[i] = players[i].heldPoints;
             playerHPNumbers[i] = players[i].health;
@@ -440,19 +444,23 @@ public class ScoreManager : MonoBehaviour
             {
                 case Stamp.StampType.Green:
                     //greenStamps[ps.id].enabled = true;
-                    greenStamps[ps.id].color = greenStampColor;
+                    //greenStamps[ps.id].color = greenStampColor;
+                    greenStamps[ps.id].color = Color.white;
                     break;
                 case Stamp.StampType.Red:
                     //redStamps[ps.id].enabled = true;
-                    redStamps[ps.id].color = redStampColor;
+                    //redStamps[ps.id].color = redStampColor;
+                    redStamps[ps.id].color = Color.white;
                     break;
                 case Stamp.StampType.Blue:
                     //blueStamps[ps.id].enabled = true;
-                    blueStamps[ps.id].color = blueStampColor;
+                    //blueStamps[ps.id].color = blueStampColor;
+                    blueStamps[ps.id].color = Color.white;
                     break;
                 case Stamp.StampType.Orange:
                     //orangeStamps[ps.id].enabled = true;
-                    orangeStamps[ps.id].color = orangeStampColor;
+                    //orangeStamps[ps.id].color = orangeStampColor;
+                    orangeStamps[ps.id].color = Color.white;
                     break;
             }
         }
