@@ -200,6 +200,34 @@ public class LobbySetupManager : MonoBehaviour
             }
         }
     }
+    #region Start Game
+    public void OnSessionConnectionUpdated(LobbyGameServer lobbyGameServer)
+    {
+        Debug.Log($"Session Connection Updated!");
+        Debug.Log($"lobbyGameServer | {lobbyGameServer}");
+
+        Debug.Log($"lobbyGameServer CSTEAMID = {lobbyGameServer.id}");
+        
+        testGameStartText.text = "Game should start now \r\ngo into network scene next :)";
+    }
+
+    public void StartOnlineGame()
+    {
+        Debug.Log($"Game is starting!!");
+
+        // Logic that takes all members in the lobby and gathers them into a network scene
+        // Make sure the lobby owner is the host/listen server
+        // Assign a Network Object for each player that takes their inputs during gameplay
+        // Once this is all setup correctly, send them into the real game board to play Cho Noi
+        var lobby = lobbyManager.Lobby;
+
+        // probably add lobby.Full here too?
+        if (lobby.AllPlayersNotReady) return;
+
+        lobby.SetJoinable(false);
+        lobby.SetGameServer();
+    }
+    #endregion
 
     public void ReportLobbyDetails(LobbyData lobbyData)
     {
@@ -300,24 +328,6 @@ public class LobbySetupManager : MonoBehaviour
 
         //Debug.Log($"{userData.Name} has unready'd up. man.");
         _lobbyUserPanels[userData].HideReadyText();
-    }
-
-    public void StartOnlineGame()
-    {
-        Debug.Log($"Game is starting!!");
-        testGameStartText.text = "Game should start now \r\ngo into network scene next :)";
-
-        // Logic that takes all members in the lobby and gathers them into a network scene
-        // Make sure the lobby owner is the host/listen server
-        // Assign a Network Object for each player that takes their inputs during gameplay
-        // Once this is all setup correctly, send them into the real game board to play Cho Noi
-        var lobby = lobbyManager.Lobby;
-
-        // probably add lobby.Full here too?
-        if (lobby.AllPlayersNotReady) return;
-
-        lobby.SetJoinable(false);
-        lobby.SetGameServer();
     }
 
     public void HideGameStartText()

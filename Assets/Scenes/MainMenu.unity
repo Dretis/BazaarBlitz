@@ -1996,7 +1996,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f314bc6f3466b54da82e29cdd36fe44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Delegates: 0300000006000000070000000a000000090000000c00000008000000
+  m_Delegates: 0300000006000000070000000a000000090000000c000000080000000d000000
   searchArguments:
     slots: -1
     distance: 1
@@ -2144,7 +2144,19 @@ MonoBehaviour:
       m_Calls: []
   evtGameCreated:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 252017909}
+        m_TargetAssemblyTypeName: LobbySetupManager, Assembly-CSharp
+        m_MethodName: OnSessionConnectionUpdated
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   evtUserJoined:
     m_PersistentCalls:
       m_Calls:
