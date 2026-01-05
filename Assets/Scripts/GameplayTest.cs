@@ -1895,7 +1895,7 @@ public class GameplayTest : MonoBehaviour
         while (lookingForTarget)
         {
             var monsterType = Random.Range(-8, 0); // int from -6 to -1
-
+            //monsterType = -9;
             sceneManager.player2ID = monsterType;
 
             enemy = sceneManager.entities.Find(entity => sceneManager.player2ID == entity.id);

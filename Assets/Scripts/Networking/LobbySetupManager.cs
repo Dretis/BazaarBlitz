@@ -1,3 +1,7 @@
+using FishNet;
+using FishNet.Managing;
+using FishNet.Managing.Transporting;
+using FishNet.Transporting.Multipass;
 using HeathenEngineering.SteamworksIntegration;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,10 +35,14 @@ public class LobbySetupManager : MonoBehaviour
     private Dictionary<UserData, LobbyUserPanel> _lobbyUserPanels = new Dictionary<UserData, LobbyUserPanel>();
     private Dictionary<LobbyData, LobbySearchPanel> _lobbySearchPanels = new Dictionary<LobbyData, LobbySearchPanel>();
 
+    [SerializeField] private NetworkManager _networkManager;
+
     // Start is called before the first frame update
     private void Awake()
     {
         HeathenEngineering.SteamworksIntegration.API.Overlay.Client.EventGameLobbyJoinRequested.AddListener(OverlayJoinButton);
+
+        _networkManager = InstanceFinder.NetworkManager;//FindAnyObjectByType<NetworkManager>(); // tempfind
     }
 
     public void OnLobbyCreated(LobbyData lobbyData)
@@ -56,8 +64,12 @@ public class LobbySetupManager : MonoBehaviour
         }
 
         Debug.Log($"!!! Game Board (default) = {lobbyData["game board"]}");
-        lobbyData["game board"] = "Central Market";
+        lobbyData["game board"] = "0";
         Debug.Log($"!!! Game Board (after) = {lobbyData["game board"]}");
+
+        Debug.Log($"!!! GameplayTest.GameBoard (0) = {(GameplayTest.GameBoard)0}");
+        Debug.Log($"!!! GameplayTest.GameBoard (1) = {(GameplayTest.GameBoard)1}");
+        Debug.Log($"!!! GameplayTest.GameBoard (2) = {(GameplayTest.GameBoard)2}");
 
         var me = lobbyData.Me;
         me["color palette"] = LobbyCosmeticManager.instance.currentIndex.ToString();
@@ -203,14 +215,42 @@ public class LobbySetupManager : MonoBehaviour
     #region Start Game
     public void OnSessionConnectionUpdated(LobbyGameServer lobbyGameServer)
     {
+        // Handle Game Server
         Debug.Log($"Session Connection Updated!");
         Debug.Log($"lobbyGameServer | {lobbyGameServer}");
 
         Debug.Log($"lobbyGameServer CSTEAMID = {lobbyGameServer.id}");
         
         testGameStartText.text = "Game should start now \r\ngo into network scene next :)";
+
+
+        Debug.Log($"\n-- [NETWORK MANAGER VARIABLES] --");
+        Debug.Log($"IsHost = {_networkManager.IsHost}");
+        Debug.Log($"IsHostStarted = {_networkManager.IsHostStarted}");
+
+        Debug.Log($"IsClient = {_networkManager.IsClient}");
+        Debug.Log($"IsClientOnly = {_networkManager.IsClientOnly}");
+        Debug.Log($"IsClientOnlyStarted = {_networkManager.IsClientOnlyStarted}");
+
+
+        if (_networkManager.IsClientOnlyStarted)
+        {
+            Debug.Log("I am a client, setting up the network connection");
+            BootstrapLogic.instance.SetClientConnection(lobbyGameServer.id);
+            //FishySteamworks.FishySteamworks fishyTransport = _networkManager.GetComponent<FishySteamworks.FishySteamworks>();
+            //fishyTransport.SetClientAddress(lobbyGameServer.id.ToString());
+            //fishyTransport.StartConnection(false);
+            //_networkManager.ClientManager.StartConnection();
+        }
+        else
+        {
+            Debug.Log("Clients have been notified of Server!");
+            //BootstrapLogic.instance.EnterOnlineGame(lobbyManager.Lobby["game board"]);
+            //_networkManager.ServerManager.GetAuthenticator();
+        }
     }
 
+    // Button function to 'start game'
     public void StartOnlineGame()
     {
         Debug.Log($"Game is starting!!");
@@ -225,6 +265,17 @@ public class LobbySetupManager : MonoBehaviour
         if (lobby.AllPlayersNotReady) return;
 
         lobby.SetJoinable(false);
+
+        //var n = NetworkManager.Instances;
+        BootstrapLogic.instance.SetHostConnection();
+        
+        //lobby.SetGameServer();
+    }
+
+
+    public void SetUpServerIsDone()
+    {
+        var lobby = lobbyManager.Lobby;
         lobby.SetGameServer();
     }
     #endregion

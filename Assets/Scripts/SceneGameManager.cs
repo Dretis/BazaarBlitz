@@ -15,18 +15,20 @@ public class SceneGameManager : MonoBehaviour
 
     // TODO: Change back to private.
     public GameplayTest overworldScene;
+    private string overworldSceneName;
 
     void Awake()
     {
         DontDestroyOnLoad(this.gameObject);
         entities.AddRange(FindObjectsOfType<EntityPiece>());
         overworldScene = GameObject.Find("Game Manager").GetComponent<GameplayTest>();
+        overworldSceneName = overworldScene.gameObject.scene.name;
     }
 
     public void LoadCombatScene()
     {
         // Disable overworld.
-        DisableScene(0);
+        DisableScene(overworldSceneName);
         SceneManager.LoadScene("CombatTest", LoadSceneMode.Additive);
         
         //SetActiveSceneAfterWait();
@@ -76,6 +78,19 @@ public class SceneGameManager : MonoBehaviour
             obj.SetActive(false);
         }
         Debug.Log(scene.name + " " + sceneIndex + " disabled!");
+    }
+
+    public void DisableScene(string sceneName)
+    {
+        Scene scene = SceneManager.GetSceneByName(sceneName);
+        List<GameObject> sceneObjects = new List<GameObject>();
+        scene.GetRootGameObjects(sceneObjects);
+
+        foreach (GameObject obj in sceneObjects)
+        {
+            obj.SetActive(false);
+        }
+        Debug.Log(scene.name + " " + sceneName + " disabled!");
     }
 
     public void ChangeGamePhase(GameplayTest.GamePhase phase)

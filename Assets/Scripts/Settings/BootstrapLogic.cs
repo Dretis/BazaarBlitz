@@ -6,13 +6,14 @@ using HeathenEngineering.SteamworksIntegration;
 using AppClient = HeathenEngineering.SteamworksIntegration.API.App.Client;
 using FishNet.Managing;
 using Steamworks;
+using FishNet.Transporting.Multipass;
 
 public class BootstrapLogic : MonoBehaviour
 {
-    private static BootstrapLogic instance;
+    public static BootstrapLogic instance;
 
-    [SerializeField] private NetworkManager networkManager;
-    [SerializeField] private FishySteamworks.FishySteamworks fishySteamworks;
+    [SerializeField] private NetworkManager _networkManager;
+    [SerializeField] private FishySteamworks.FishySteamworks _fishySteamworks;
 
     protected Callback<LobbyCreated_t> LobbyCreated;
     protected Callback<GameLobbyJoinRequested_t> JoinRequest;
@@ -60,6 +61,58 @@ public class BootstrapLogic : MonoBehaviour
     public static void CreateLobby()
     {
         SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypeFriendsOnly, 4);
+    }
+
+    public void SetHostConnection()
+    {
+        Multipass mp = _networkManager.TransportManager.GetTransport<Multipass>();
+
+        mp.SetClientTransport<FishySteamworks.FishySteamworks>();
+        mp.SetClientAddress(SteamUser.GetSteamID().ToString());
+
+        mp.StartConnection(true, 1);
+        mp.StartConnection(false,1);
+        Debug.Log($"mp.GetClientAddress = {mp.GetClientAddress()}");
+
+        //_networkManager.ServerManager.StartConnection(((ushort)lobby.GameServer.id));
+        //_networkManager.ClientManager.StartConnection();
+
+        //Debug.Log($"IsClientOnlyStarted = {_networkManager.ServerManager.}");
+    }
+
+    public void SetClientConnection(CSteamID steamID)
+    {
+        Debug.Log($"I am just a client in SetClientConnection! ");
+        Multipass mp = _networkManager.TransportManager.GetTransport<Multipass>();
+
+        mp.SetClientTransport<FishySteamworks.FishySteamworks>();
+        mp.SetClientAddress(steamID.ToString());
+
+        mp.StartConnection(false);
+        //if(mp.conn)
+        Debug.Log($"SetClientConnection | steamID = {steamID.ToString()}");
+        Debug.Log($"mp.GetClientAddress = {mp.GetClientAddress()}");
+    }
+
+    public void EnterOnlineGame(string selectedBoard)
+    {
+        string[] scenesToClose = new string[] { "MainMenu" };
+
+        var boardSceneName = "overworld 0";
+        switch (selectedBoard)
+        {
+            case "central market":
+                boardSceneName = "overworld 2";
+                break;
+            case "train street":
+                boardSceneName = "overworld 4";
+                break;
+            default:
+                boardSceneName = "overworld 2";
+                break;
+        }
+
+        BootstrapNetworkManager.ChangeNetworkScene(boardSceneName, scenesToClose);
     }
 
     private void OnLobbyCreated(LobbyCreated_t callback)

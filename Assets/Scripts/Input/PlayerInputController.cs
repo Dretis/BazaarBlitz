@@ -23,7 +23,7 @@ public class PlayerInputController : MonoBehaviour
     private PlayerInputActions playerInputActions; 
 
     [SerializeField] private CurrentDevice device;
-    [SerializeField] private EntityPiece currentPlayer;
+    //[SerializeField] private EntityPiece currentPlayer;
     [SerializeField] private EntityPiece assignedPlayer;
     [SerializeField] private PlayerInput playerInput;
     [SerializeField] private GameplayTest.GamePhase previousGamePhase = GamePhase.InitialTurnMenu;
@@ -218,9 +218,10 @@ public class PlayerInputController : MonoBehaviour
 
     private void OnRoll()
     {
+        var p = GameplayTest.instance.currentPlayer;
         Debug.Log("roll pressed as message");
         previousGamePhase = GamePhase.InitialTurnMenu;
-        m_TryDiceRollPrep.RaiseEvent(currentPlayer);
+        m_TryDiceRollPrep.RaiseEvent(p);
         //SwitchActionMap(GamePhase.RollDice);
     }
 
@@ -229,13 +230,15 @@ public class PlayerInputController : MonoBehaviour
         Debug.Log("inventorty pressed as message");
         if (!GameplayTest.instance.playerUsedItem)
         {
+            var p = GameplayTest.instance.currentPlayer;
+
             playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
             playerInput.uiInputModule.actionsAsset = playerInput.actions;
 
             previousGamePhase = GamePhase.InitialTurnMenu;
 
             SwitchActionMap(GamePhase.Inventory);
-            m_OpenInventory.RaiseEvent(currentPlayer);
+            m_OpenInventory.RaiseEvent(p);
         }
         else
         {
@@ -246,7 +249,7 @@ public class PlayerInputController : MonoBehaviour
     private void OnBuild()
     {
         Debug.Log("Build presed");
-        var p = currentPlayer;
+        var p = GameplayTest.instance.currentPlayer;
         if (p.occupiedNode.tag == "Encounter"
             && p.storeCount < 4)
         {
@@ -255,7 +258,7 @@ public class PlayerInputController : MonoBehaviour
 
             previousGamePhase = GamePhase.InitialTurnMenu;
 
-            m_TryBuildStore.RaiseEvent(currentPlayer);
+            m_TryBuildStore.RaiseEvent(p);
             SwitchActionMap(GamePhase.BuildingStore);
             //Debug.Log("Built a store");
             // Build a store in the current tile
@@ -297,7 +300,7 @@ public class PlayerInputController : MonoBehaviour
         switch (GameplayTest.instance.phase)
         {
             case GamePhase.StockStore:
-                m_FinishStockingStore.RaiseEvent(currentPlayer);
+                m_FinishStockingStore.RaiseEvent(GameplayTest.instance.currentPlayer);
                 break;
             case GamePhase.Inventory:
                 m_ExitInventory.RaiseEvent();
@@ -321,7 +324,7 @@ public class PlayerInputController : MonoBehaviour
     private void OnMove(InputValue value)
     {
         var gp = GameplayTest.instance;
-        var p = currentPlayer;
+        var p = GameplayTest.instance.currentPlayer;
 
         var x = value.Get<Vector2>().x;
         var y = value.Get<Vector2>().y;
@@ -340,7 +343,7 @@ public class PlayerInputController : MonoBehaviour
         {
             //Debug.Log("MOVE RIGHT/EAST");
             gp.wantedNode = p.occupiedNode.east;
-            currentPlayer.playerSprite.flipX = true;
+            p.playerSprite.flipX = true;
         }
         else if (angle <= -45 && angle >= -135)
         {
@@ -351,7 +354,7 @@ public class PlayerInputController : MonoBehaviour
         {
             //Debug.Log("MOVE LEFT/WEST");
             gp.wantedNode = p.occupiedNode.west;
-            currentPlayer.playerSprite.flipX = false;
+            p.playerSprite.flipX = false;
         }
 
         if(gp.wantedNode != null && !(gp.wantedNode == p.previousNode && p.traveledNodes.Count <= 1))
@@ -425,7 +428,7 @@ public class PlayerInputController : MonoBehaviour
         {
             case GamePhase.RollDice:
                 Debug.Log("undo confirm pressed");
-                m_DiceRollUndo.RaiseEvent(currentPlayer);
+                m_DiceRollUndo.RaiseEvent(GameplayTest.instance.currentPlayer);
                 SwitchActionMap(GamePhase.InitialTurnMenu);
                 break;
             case GamePhase.InVendor:
@@ -625,9 +628,10 @@ public class PlayerInputController : MonoBehaviour
 
     private void SetCurrentPlayer(EntityPiece player)
     {
-        currentPlayer = player;
+        //currentPlayer = player;
+        var p = GameplayTest.instance.currentPlayer;
 
-        if (assignedPlayer != currentPlayer)
+        if (assignedPlayer != p)
         {
             playerInput.DeactivateInput();
             Debug.Log($"Player ID: {playerInput.playerIndex} deactivated input.");
@@ -647,7 +651,7 @@ public class PlayerInputController : MonoBehaviour
 
     private void OnNextTurnRound(int round)
     {
-        if (assignedPlayer == currentPlayer)
+        if (assignedPlayer == GameplayTest.instance.currentPlayer)
         {
             playerInput.DeactivateInput();
             Debug.Log($"NextTurnRound | Player ID: {playerInput.playerIndex} deactivated input.");
@@ -727,7 +731,8 @@ public class PlayerInputController : MonoBehaviour
         if (previousGamePhase == GamePhase.PreStockStore)
         {
             // undo to ask after already tring to restock
-            m_AskRestockStore.RaiseEvent(currentPlayer);
+            var p = GameplayTest.instance.currentPlayer;
+            m_AskRestockStore.RaiseEvent(p);
         }
         else
             GameplayTest.instance.phase = GamePhase.EndTurn;

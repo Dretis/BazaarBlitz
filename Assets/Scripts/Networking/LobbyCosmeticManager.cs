@@ -9,7 +9,7 @@ public class LobbyCosmeticManager : MonoBehaviour
 
     [Header("Lobby Info")]
     [SerializeField] private LobbyManager lobbyManager;
-    [SerializeField] private LobbyMemberData me;
+    private LobbyMemberData me;
 
     [Header("Color Palette Selection")]
     public int currentIndex = 0;
@@ -29,7 +29,7 @@ public class LobbyCosmeticManager : MonoBehaviour
 
     public void IncrementColorPaletteSelection()
     {
-        var me = lobbyManager.Lobby.Me;
+        me = lobbyManager.Lobby.Me;
 
         currentIndex++;
 
@@ -40,7 +40,7 @@ public class LobbyCosmeticManager : MonoBehaviour
 
     public void DecrementColorPaletteSelection()
     {
-        var me = lobbyManager.Lobby.Me;
+        me = lobbyManager.Lobby.Me;
 
         currentIndex--;
 

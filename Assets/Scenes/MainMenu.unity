@@ -2226,6 +2226,7 @@ MonoBehaviour:
   lobbySearchPanelPrefab: {fileID: 2693219840109308742, guid: 8e5d555818d011449a417fbf08b8aaa9, type: 3}
   lobbySearchHolder: {fileID: 1455102815}
   testGameStartText: {fileID: 756828630}
+  _networkManager: {fileID: 0}
 --- !u!1 &261297870 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8230696920241051212, guid: 3c156f0187095084f9e49432e6acee8d, type: 3}
@@ -6518,7 +6519,7 @@ GameObject:
   m_Icon: {fileID: -5397416234189338067, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &733819611
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8124,34 +8125,34 @@ PrefabInstance:
     - target: {fileID: 5613114878548303166, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: bf28b5552df8ef248a8d625f702fb879, type: 3}
+      objectReference: {fileID: 21300000, guid: 1943d518c7283624b93246cf8fd4826b, type: 3}
     - target: {fileID: 5613114878548303167, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 1704
+      value: 768
       objectReference: {fileID: 0}
     - target: {fileID: 5613114878548303167, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 1054
+      value: 427.5
       objectReference: {fileID: 0}
     - target: {fileID: 5613114878548303167, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5613114878548303167, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5613114878548303167, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5613114878548303167, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 13.7
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5613114878548303167, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 48.69
+      value: 24
       objectReference: {fileID: 0}
     - target: {fileID: 5613114878893535381, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
       propertyPath: m_SizeDelta.y
@@ -8195,7 +8196,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5613114878903374573, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 420
+      value: 460
       objectReference: {fileID: 0}
     - target: {fileID: 5613114878903374573, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
       propertyPath: m_LocalPosition.x
@@ -11185,7 +11186,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5849191915087172682, guid: 98a51582d031b97479f74d34922414b5, type: 3}
       propertyPath: helpInfo
-      value: Check out who made this cool game!
+      value: Change the language of the game text.
       objectReference: {fileID: 0}
     - target: {fileID: 5849191915087172682, guid: 98a51582d031b97479f74d34922414b5, type: 3}
       propertyPath: selectable
@@ -11201,11 +11202,11 @@ PrefabInstance:
       objectReference: {fileID: 478939914}
     - target: {fileID: 7477437992595292371, guid: 98a51582d031b97479f74d34922414b5, type: 3}
       propertyPath: m_text
-      value: Credits
+      value: Language
       objectReference: {fileID: 0}
     - target: {fileID: 7477437993781401201, guid: 98a51582d031b97479f74d34922414b5, type: 3}
       propertyPath: m_Name
-      value: Settings Menu Panel - CREDITS
+      value: Settings Menu Panel - LANGUAGE
       objectReference: {fileID: 0}
     - target: {fileID: 7477437993781401202, guid: 98a51582d031b97479f74d34922414b5, type: 3}
       propertyPath: m_Pivot.x
@@ -18871,10 +18872,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lobbyManager: {fileID: 252017907}
-  me:
-    user:
-      id:
-        m_SteamID: 0
   currentIndex: 0
   colorPalettes:
   - {fileID: 11400000, guid: c9a41851deac784409f96d565cbea4a7, type: 2}
@@ -19926,34 +19923,34 @@ PrefabInstance:
     - target: {fileID: 5613114878548303166, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 0ce4fc677cf247647ae035278303ca08, type: 3}
+      objectReference: {fileID: 21300000, guid: 5849dba4b23619741a5673170e6f4d86, type: 3}
     - target: {fileID: 5613114878548303167, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 2480.0876
+      value: 1617
       objectReference: {fileID: 0}
     - target: {fileID: 5613114878548303167, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 1544
+      value: 891
       objectReference: {fileID: 0}
     - target: {fileID: 5613114878548303167, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.33
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 5613114878548303167, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.33
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 5613114878548303167, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.33
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 5613114878548303167, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 13.7
+      value: -12
       objectReference: {fileID: 0}
     - target: {fileID: 5613114878548303167, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 48.69
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 5613114878893535381, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
       propertyPath: m_SizeDelta.y
@@ -19993,11 +19990,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5613114878903374573, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 742.3
+      value: 750
       objectReference: {fileID: 0}
     - target: {fileID: 5613114878903374573, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 517.6
+      value: 520
       objectReference: {fileID: 0}
     - target: {fileID: 5613114878903374573, guid: deeaae0a159a3964d8c5d03e969b5a4a, type: 3}
       propertyPath: m_LocalPosition.x
