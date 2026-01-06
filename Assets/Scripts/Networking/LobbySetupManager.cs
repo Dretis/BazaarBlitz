@@ -1,7 +1,3 @@
-using FishNet;
-using FishNet.Managing;
-using FishNet.Managing.Transporting;
-using FishNet.Transporting.Multipass;
 using HeathenEngineering.SteamworksIntegration;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,14 +31,10 @@ public class LobbySetupManager : MonoBehaviour
     private Dictionary<UserData, LobbyUserPanel> _lobbyUserPanels = new Dictionary<UserData, LobbyUserPanel>();
     private Dictionary<LobbyData, LobbySearchPanel> _lobbySearchPanels = new Dictionary<LobbyData, LobbySearchPanel>();
 
-    [SerializeField] private NetworkManager _networkManager;
-
     // Start is called before the first frame update
     private void Awake()
     {
         HeathenEngineering.SteamworksIntegration.API.Overlay.Client.EventGameLobbyJoinRequested.AddListener(OverlayJoinButton);
-
-        _networkManager = InstanceFinder.NetworkManager;//FindAnyObjectByType<NetworkManager>(); // tempfind
     }
 
     public void OnLobbyCreated(LobbyData lobbyData)
@@ -223,31 +215,7 @@ public class LobbySetupManager : MonoBehaviour
         
         testGameStartText.text = "Game should start now \r\ngo into network scene next :)";
 
-
-        Debug.Log($"\n-- [NETWORK MANAGER VARIABLES] --");
-        Debug.Log($"IsHost = {_networkManager.IsHost}");
-        Debug.Log($"IsHostStarted = {_networkManager.IsHostStarted}");
-
-        Debug.Log($"IsClient = {_networkManager.IsClient}");
-        Debug.Log($"IsClientOnly = {_networkManager.IsClientOnly}");
-        Debug.Log($"IsClientOnlyStarted = {_networkManager.IsClientOnlyStarted}");
-
-
-        if (_networkManager.IsClientOnlyStarted)
-        {
-            Debug.Log("I am a client, setting up the network connection");
-            BootstrapLogic.instance.SetClientConnection(lobbyGameServer.id);
-            //FishySteamworks.FishySteamworks fishyTransport = _networkManager.GetComponent<FishySteamworks.FishySteamworks>();
-            //fishyTransport.SetClientAddress(lobbyGameServer.id.ToString());
-            //fishyTransport.StartConnection(false);
-            //_networkManager.ClientManager.StartConnection();
-        }
-        else
-        {
-            Debug.Log("Clients have been notified of Server!");
-            //BootstrapLogic.instance.EnterOnlineGame(lobbyManager.Lobby["game board"]);
-            //_networkManager.ServerManager.GetAuthenticator();
-        }
+        // Tell the other clients that the game server started!
     }
 
     // Button function to 'start game'

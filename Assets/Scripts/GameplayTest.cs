@@ -5,11 +5,13 @@ using DG.Tweening;
 using System.Linq;
 using Febucci.UI.Core;
 using UnityEngine.UI;
-using System.Collections; 
+using System.Collections;
+using PurrNet;
 
 public class GameplayTest : MonoBehaviour
 {
-    [SerializeField] private int seed = -1;
+    //[SerializeField] private int seed = -1;
+    [SerializeField] private SyncVar<int> seed = new SyncVar<int>(-1);
 
     [Space]
     public GameBoard board;
@@ -250,16 +252,18 @@ public class GameplayTest : MonoBehaviour
 
     public PlayerEventChannelSO m_FighterSelected;
 
-    private void SetSeed(int seed)
+    private void SetSeed(int givenSeed)
     {
-        if(seed == -1)
+        if(givenSeed == -1)
         {
-            seed = System.DateTime.Now.Millisecond;
+            givenSeed = System.DateTime.Now.Millisecond;
         }
 
-        Random.InitState(seed);
+        seed.value = givenSeed;
 
-        Debug.Log($"Random State = {seed} ");//| (Seed) = {Random.seed}");
+        Random.InitState(seed.value);
+
+        Debug.Log($"Random State = {seed.value} ");//| (Seed) = {Random.seed}");
 
         //SystemRandomUniTest(seed);
     }
@@ -356,11 +360,11 @@ public class GameplayTest : MonoBehaviour
         //m_ExitLevelUp.OnEventRaised -= OnExitLevelUp;
         //m_TryAugmentDieFaceValue.OnEventRaised -= OnTryAugmentDieFaceValue;
     }
-
+    
     // Start is called before the first frame update
     void Awake()
     {
-        SetSeed(seed);
+        SetSeed(seed.value);
 
         debugPhaseText.text = "";
 

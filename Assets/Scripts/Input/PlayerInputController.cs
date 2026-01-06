@@ -8,8 +8,10 @@ using UnityEngine.InputSystem.XInput;
 using UnityEngine.InputSystem.DualShock;
 using static GameplayTest;
 using UnityEngine.InputSystem.Switch;
+using PurrNet;
+using static UnityEditor.PlayerSettings;
 
-public class PlayerInputController : MonoBehaviour
+public class PlayerInputController : NetworkIdentity
 {
     public enum CurrentDevice
     {
@@ -104,6 +106,14 @@ public class PlayerInputController : MonoBehaviour
         //playerConfig = pc;
         // set color palette for player based on player config here
         //playerConfig.Input.onActionTriggered
+    }
+
+    protected override void OnSpawned(bool asServer)
+    {
+        base.OnSpawned(asServer);
+        if (asServer) return;
+
+        Debug.Log($"PlayerInputController spawned | Owner: {owner} | isController: {isController}");
     }
 
     private void Start()
@@ -202,15 +212,191 @@ public class PlayerInputController : MonoBehaviour
         m_PlayerWon.OnEventRaised -= OnPlayerWon;
     }
 
-    private void FixedUpdate()
+    private void SendInputToServer(PlayerInputActionsData.InputType inputType)
     {
-        //freeviewRb.velocity = freeviewMoveInput * freeviewSpeed; // Moving reticle during Freeview
+        var input = new PlayerInputActionsData { inputType = inputType };
+        SendInputToServerRpc(input);
     }
 
+    [ServerRpc]
+    private void SendInputToServerRpc(PlayerInputActionsData input)
+    {
+        if (!isServer) return;
+
+        // Server validates input based on current game state
+        if (!ValidateInput(input))
+        {
+            Debug.LogWarning($"Invalid input from {owner}: {input.inputType}");
+            return;
+        }
+
+        // Process the input and broadcast results
+        ProcessInputRpc(input);
+    }
+    private bool ValidateInput(PlayerInputActionsData input)
+    {
+        // Server-side validation
+        if (GameplayTest.instance == null) return false;
+        if (GameplayTest.instance.currentPlayer != assignedPlayer) return false;
+
+        // Add phase-specific validation as needed
+        return true;
+    }
+
+    [ObserversRpc]
+    private void ProcessInputRpc(PlayerInputActionsData input)
+    {
+        // Optional: Notify all clients that input was processed
+        // Useful for UI feedback, animations, etc.
+        var inputType = input.inputType;
+        Debug.Log($"Input processed: {inputType}");
+
+        // Server processes input and broadcasts to all clients
+        switch (inputType)
+        {
+            case PlayerInputActionsData.InputType.View:
+                //BroadcastInputProcessed(input.inputType);
+                m_EnableFreeview.RaiseEvent();
+                break;
+
+            case PlayerInputActionsData.InputType.Roll:
+                //BroadcastInputProcessed(input.inputType);
+                previousGamePhase = GamePhase.InitialTurnMenu;
+                m_TryDiceRollPrep.RaiseEvent(assignedPlayer);
+                break;
+
+            case PlayerInputActionsData.InputType.Inventory:
+                //BroadcastInputProcessed(input.inputType);
+                if (!GameplayTest.instance.playerUsedItem)
+                {
+                    var p = GameplayTest.instance.currentPlayer;
+
+                    playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
+                    playerInput.uiInputModule.actionsAsset = playerInput.actions;
+
+                    previousGamePhase = GamePhase.InitialTurnMenu;
+
+                    SwitchActionMap(GamePhase.Inventory);
+                    m_OpenInventory.RaiseEvent(p);
+                }
+                else
+                {
+                    // play some nuh-uh sound
+                }
+                break;
+
+            case PlayerInputActionsData.InputType.Build:
+                //BroadcastInputProcessed(input.inputType);
+                var pl = GameplayTest.instance.currentPlayer;
+                if (pl.occupiedNode.tag == "Encounter"
+                    && pl.storeCount < 4)
+                {
+                    playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
+                    playerInput.uiInputModule.actionsAsset = playerInput.actions;
+
+                    previousGamePhase = GamePhase.InitialTurnMenu;
+
+                    m_TryBuildStore.RaiseEvent(pl);
+                    SwitchActionMap(GamePhase.BuildingStore);
+                    //Debug.Log("Built a store");
+                    // Build a store in the current tile
+                    //m_BuildStore.RaiseEvent(currentPlayer);
+                    //m_RestockStore.RaiseEvent(currentPlayer.occupiedNode);
+                    //SwitchActionMap(GamePhase.StockStore);
+
+                }
+                else
+                {
+                    Debug.Log("Can't build store");
+                    // Give some notification/play some nuh-uh sound
+                }
+                break;
+
+            case PlayerInputActionsData.InputType.Info:
+                BroadcastInputProcessed(input.inputType);
+                //if (input.isPressed)
+                    //m_EnableInfo.RaiseEvent();
+                //else
+                    //m_DisableInfo.RaiseEvent();
+                break;
+
+            case PlayerInputActionsData.InputType.Cancel:
+                BroadcastInputProcessed(input.inputType);
+                //m_CancelAction.RaiseEvent();
+                break;
+
+            case PlayerInputActionsData.InputType.Move:
+                BroadcastInputProcessed(input.inputType);
+                //m_MoveInput.RaiseEvent(input.moveValue);
+                break;
+
+            case PlayerInputActionsData.InputType.ToggleFreeview:
+                BroadcastInputProcessed(input.inputType);
+                //m_ToggleFreeview.RaiseEvent();
+                break;
+
+            case PlayerInputActionsData.InputType.FreeviewMove:
+                BroadcastInputProcessed(input.inputType);
+                //m_FreeviewMove.RaiseEvent(input.moveValue);
+                break;
+
+            case PlayerInputActionsData.InputType.FreeviewExamine:
+                BroadcastInputProcessed(input.inputType);
+                //m_FreeviewExamine.RaiseEvent();
+                break;
+
+            case PlayerInputActionsData.InputType.FreeviewExit:
+                BroadcastInputProcessed(input.inputType);
+                //m_FreeviewExit.RaiseEvent();
+                break;
+
+            case PlayerInputActionsData.InputType.Yes:
+                BroadcastInputProcessed(input.inputType);
+                //m_YesAction.RaiseEvent();
+                break;
+
+            case PlayerInputActionsData.InputType.No:
+                BroadcastInputProcessed(input.inputType);
+                //m_NoAction.RaiseEvent();
+                break;
+
+            case PlayerInputActionsData.InputType.UpAction:
+                BroadcastInputProcessed(input.inputType);
+                //m_UpAction.RaiseEvent();
+                break;
+
+            case PlayerInputActionsData.InputType.RightAction:
+                BroadcastInputProcessed(input.inputType);
+                //m_RightAction.RaiseEvent();
+                break;
+
+            case PlayerInputActionsData.InputType.DownAction:
+                BroadcastInputProcessed(input.inputType);
+                //m_DownAction.RaiseEvent();
+                break;
+
+            case PlayerInputActionsData.InputType.CombatRoll:
+                BroadcastInputProcessed(input.inputType);
+                //m_CombatRoll.RaiseEvent();
+                break;
+        }
+    }
+
+    [ObserversRpc]
+    private void BroadcastInputProcessed(PlayerInputActionsData.InputType inputType)
+    {
+        // Optional: Notify all clients that input was processed
+        // Useful for UI feedback, animations, etc.
+        Debug.Log($"Input processed: {inputType}");
+    }
     #region 'Inital Turn Menu' Action Map
     private void OnView()
     {
         Debug.Log("menu item pressed as message");
+        if (!isController) return;
+
+        SendInputToServer(PlayerInputActionsData.InputType.View);
+        return;
         previousGamePhase = GamePhase.InitialTurnMenu;
         m_EnableFreeview.RaiseEvent();
         //FreeviewEnabled(GamePhase.InitialTurnMenu);
@@ -218,8 +404,14 @@ public class PlayerInputController : MonoBehaviour
 
     private void OnRoll()
     {
-        var p = GameplayTest.instance.currentPlayer;
         Debug.Log("roll pressed as message");
+
+        if (!isController) return;
+
+        SendInputToServer(PlayerInputActionsData.InputType.Roll);
+
+        return;
+        var p = GameplayTest.instance.currentPlayer;
         previousGamePhase = GamePhase.InitialTurnMenu;
         m_TryDiceRollPrep.RaiseEvent(p);
         //SwitchActionMap(GamePhase.RollDice);
@@ -227,6 +419,12 @@ public class PlayerInputController : MonoBehaviour
 
     private void OnInv()
     {
+        if (!isController) return;
+
+        SendInputToServer(PlayerInputActionsData.InputType.Inventory);
+
+        return;
+
         Debug.Log("inventorty pressed as message");
         if (!GameplayTest.instance.playerUsedItem)
         {
@@ -249,6 +447,12 @@ public class PlayerInputController : MonoBehaviour
     private void OnBuild()
     {
         Debug.Log("Build presed");
+        if (!isController) return;
+
+        SendInputToServer(PlayerInputActionsData.InputType.Inventory);
+
+        return;
+
         var p = GameplayTest.instance.currentPlayer;
         if (p.occupiedNode.tag == "Encounter"
             && p.storeCount < 4)
@@ -880,7 +1084,11 @@ public class PlayerInputController : MonoBehaviour
     private void OnAssignPlayerToController(EntityPiece entity)
     {
         //assign entitypiece to the controller w/ the same ID
-        if (entity.id == playerInput.playerIndex)
+        if (networkManager)
+        {
+            Debug.Log("There is a network manager present");
+        }
+        else if (entity.id == playerInput.playerIndex)
         {
             assignedPlayer = entity; // This should never change after this
 
@@ -899,6 +1107,13 @@ public class PlayerInputController : MonoBehaviour
             assignedPlayer.gameObject.GetComponent<PlayerPaletteLoader>().SetInspectorPalette(colorPal);
             assignedPlayer.dustCloud.GetComponent<PlayerPaletteLoader>().SetInspectorPalette(colorPal);
         }
+    }
+
+    private void AssignOwnerToEntity(PlayerID playerID)
+    {
+        if (assignedPlayer != null) return;
+
+        //playerID.id
     }
 
     //
