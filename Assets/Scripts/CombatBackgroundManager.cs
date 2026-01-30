@@ -11,7 +11,6 @@ public class CombatBackgroundManager : MonoBehaviour
     void Start()
     {
         currentBoard = CombatManager.Instance.sceneManager.overworldScene.board;
-
         backgrounds[(int)currentBoard].SetActive(true);
     }
 }

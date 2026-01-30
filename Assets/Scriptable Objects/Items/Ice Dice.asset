@@ -15,9 +15,40 @@ MonoBehaviour:
   itemName: Ice Cubes
   duration: 1
   showAsEffect: 1
+  usableInCombat: 1
   itemSprite: {fileID: 21300000, guid: 11aeb42eb94927e4d945f83a5a16854c, type: 3}
   effectDescription: Rolls three dice for all dice rolls this turn.
   flavorText: '"Fun to chew, but not to eat! So please do so in moderation."'
+  l_itemName:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 29978438553600
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  l_effect:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 30017110036480
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  l_flavor:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 30026324922368
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   basePrice: 900
   modifiers:
   - {fileID: 11400000, guid: f96bb0a173d4c384e8800716c579ac0e, type: 2}
+  references:
+    version: 2
+    RefIds: []

@@ -85,6 +85,7 @@ public class PlayerInputController : MonoBehaviour
     public PlayerEventChannelSO m_FullInventory;
 
     public NodeEventChannelSO m_LandOnVendor;
+    public NodeEventChannelSO m_LandOnCoconutTree;
 
     public PlayerListEventChannelSO m_LandOnMultipleEntities;
 
@@ -138,6 +139,7 @@ public class PlayerInputController : MonoBehaviour
         m_ItemBought.OnEventRaised += OnItemBought;
 
         m_LandOnVendor.OnEventRaised += OnLandOnVendor;
+        m_LandOnCoconutTree.OnEventRaised += OnLandOnCoconutTree;
 
         m_LandOnMultipleEntities.OnEventRaised += OnLandOnMultipleEntities;
 
@@ -182,6 +184,7 @@ public class PlayerInputController : MonoBehaviour
         m_ItemBought.OnEventRaised -= OnItemBought;
 
         m_LandOnVendor.OnEventRaised -= OnLandOnVendor;
+        m_LandOnCoconutTree.OnEventRaised -= OnLandOnCoconutTree;
 
         m_LandOnMultipleEntities.OnEventRaised -= OnLandOnMultipleEntities;
 
@@ -295,6 +298,7 @@ public class PlayerInputController : MonoBehaviour
     # region 'UI' Action Map
     private void OnCancel()
     {
+        // Not in a game session
         if (GameplayTest.instance == null) return;
 
         switch (GameplayTest.instance.phase)
@@ -428,8 +432,11 @@ public class PlayerInputController : MonoBehaviour
         {
             case GamePhase.RollDice:
                 Debug.Log("undo confirm pressed");
-                m_DiceRollUndo.RaiseEvent(GameplayTest.instance.currentPlayer);
-                SwitchActionMap(GamePhase.InitialTurnMenu);
+                if(previousGamePhase == GamePhase.InitialTurnMenu)
+                {
+                    m_DiceRollUndo.RaiseEvent(GameplayTest.instance.currentPlayer);
+                    SwitchActionMap(GamePhase.InitialTurnMenu);
+                }
                 break;
             case GamePhase.InVendor:
                 Debug.Log($"{assignedPlayer} leaves the vendor");
@@ -796,6 +803,15 @@ public class PlayerInputController : MonoBehaviour
         if (!playerInput.inputIsActive) return;
 
         SwitchActionMap(GamePhase.InVendor);
+    }
+
+    private void OnLandOnCoconutTree(MapNode node)
+    {
+        if (assignedPlayer == GameplayTest.instance.currentPlayer)
+        {
+            playerInput.DeactivateInput();
+            Debug.Log($"OnLandOnCoconutTree | Player ID: {playerInput.playerIndex} deactivated input.");
+        }
     }
 
     private void OnLandOnMultipleEntities(List<EntityPiece> entities)

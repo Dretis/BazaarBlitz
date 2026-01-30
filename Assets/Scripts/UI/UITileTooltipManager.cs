@@ -100,9 +100,27 @@ public class UITileTooltipManager : MonoBehaviour
             }
             else if(node.tag == "Vendor")
             {
-                tileType.text = "<color=#7EC673>Vendor</color>";
+                tileType.text = "<color=#5AA6DC>Vendor</color>";
                 tileDescription.text = "Upon landing, choose to enter and buy the item being sold.";
                 tileDescription.text += "\n\nBecome safe from fights and damage if entered.";
+            }
+            else if(node.tag == "MoveAgain")
+            {
+                tileType.text = "<color=#2AA583>Once More</color>";
+                tileDescription.text = "Upon landing, allow the current player to take their turn again.";
+                tileDescription.text += "\n\nFights cannot happen on this tile.";
+            }
+            else if (node.tag == "CoconutTree")
+            {
+                tileType.text = "<color=#65D252>Coconut Tree</color>";
+                tileDescription.text = "Upon landing, a Coconut may fall on your head.";
+                tileDescription.text += "\n\nTake damage and recieve a Coconut.";
+            }
+            else if (node.tag == "WaterCoconut")
+            {
+                tileType.text = "<color=#65D252>Water Coconut Bushel</color>";
+                tileDescription.text = "Upon landing, roll any dice of your choice to reach the given requirement.";
+                tileDescription.text += "\n\nIf successful, harvest a piece of Water Coconut.";
             }
             // Wild Tile
             else

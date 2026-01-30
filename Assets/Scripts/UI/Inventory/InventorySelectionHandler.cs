@@ -69,7 +69,8 @@ public class InventorySelectionHandler : MonoBehaviour, ISubmitHandler, IPointer
             itemIcon.color = Color.grey;
             itemIcon.enabled = true;
 
-            itemName.text = $"{item.itemName}";
+            //itemName.text = $"{item.itemName}";
+            itemName.text = $"{item.l_itemName.GetLocalizedString()}";
             itemName.color = Color.grey;
 
             itemPrice.text = $"<sprite=\"Coin Icon\" index=0 tint=1>{item.basePrice}";
@@ -85,7 +86,9 @@ public class InventorySelectionHandler : MonoBehaviour, ISubmitHandler, IPointer
         {
             itemIcon.sprite = item.itemSprite;
             itemIcon.enabled = true;
-            itemName.text = $"{item.itemName}";
+
+            //itemName.text = $"{item.itemName}";
+            itemName.text = $"{item.l_itemName.GetLocalizedString()}";
             itemPrice.text = $"<sprite=\"Coin Icon\" index=0>{item.basePrice}";
 
             GetComponent<Button>().interactable = true;

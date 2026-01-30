@@ -332,10 +332,15 @@ public class UIInventoryManager : MonoBehaviour
         selectedItemIcon.sprite = item.itemSprite;
         selectedItemIcon.enabled = true;
 
-        selectedItemInfo[0].text = $"{item.itemName}";
+        selectedItemInfo[0].text = $"{item.l_itemName.GetLocalizedString()}";
         selectedItemInfo[1].text = $"<sprite=\"Coin Icon\" index=0>{item.basePrice}";
-        selectedItemInfo[2].text = $"{item.effectDescription}";
-        selectedItemInfo[3].text = $"{item.flavorText}";
+        selectedItemInfo[2].text = $"{item.l_effect.GetLocalizedString()}";
+        selectedItemInfo[3].text = $"{item.l_flavor.GetLocalizedString()}";
+
+        //selectedItemInfo[0].text = $"{item.itemName}";
+        //selectedItemInfo[1].text = $"<sprite=\"Coin Icon\" index=0>{item.basePrice}";
+        //selectedItemInfo[2].text = $"{item.effectDescription}";
+        //selectedItemInfo[3].text = $"{item.flavorText}";
     }
 
     public void HideSelectedItemDetails()

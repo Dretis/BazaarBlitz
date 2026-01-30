@@ -1,5 +1,7 @@
+using Febucci.UI.Core;
 using System;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -59,6 +61,11 @@ public class EntityPiece : MonoBehaviour
     public ParticleSystem coinDrop;
     public ParticleSystem coinSucking;
     public ParticleSystem levelUpRays;
+    public ParticleSystem hitParticle;
+
+    [Header("Visual Text Effects")]
+    public TypewriterCore floatingDamageNumber;
+    public TypewriterCore coinGainNumber;
 
     [Header("Cosmetic Dice")]
     public GameObject moveDieCosmeticPrefab;
@@ -98,6 +105,9 @@ public class EntityPiece : MonoBehaviour
                 //dustCloud.Play();
             }
             else dustCloud.gameObject.SetActive(false);
+
+            floatingDamageNumber.ShowText("");
+            coinGainNumber.ShowText("");
         }
     }
 

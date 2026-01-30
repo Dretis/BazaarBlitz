@@ -14,12 +14,44 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Oolong Tea
   duration: 1
+  showAsEffect: 1
+  usableInCombat: 1
   itemSprite: {fileID: 21300000, guid: 8e39d2728cb4f6c4c8f4280819c0f1ef, type: 3}
   effectDescription: Heal 10-30 and add 2 to your movement roll
   flavorText: '"Can''t decide whether you want the bitterness of a black tea or the
     healthy benefits of a green tea? Have some of both with an oolong tea! (Results
     may vary)"'
+  l_itemName:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 11545609129984
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  l_effect:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 11601196240896
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  l_flavor:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 11616392204288
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   basePrice: 450
   modifiers:
   - {fileID: 11400000, guid: de625216a5d2d86438edb9c1c17c0875, type: 2}
   - {fileID: 11400000, guid: 510abdc097d654d49a7e528216b26633, type: 2}
+  references:
+    version: 2
+    RefIds: []

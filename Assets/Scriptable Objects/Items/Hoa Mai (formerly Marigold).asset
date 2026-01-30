@@ -15,11 +15,42 @@ MonoBehaviour:
   itemName: Hoa Mai
   duration: 1
   showAsEffect: 0
+  usableInCombat: 1
   itemSprite: {fileID: 21300000, guid: aa6a02de8b494de48a53023f515f50db, type: 3}
   effectDescription: 'Place on a store to give the following effect: "The next player
     that passes the store is forced to stop there." Disappears when triggered.'
   flavorText: '"A popular flower known to bring wealth and prosperity. That''s what
     it''s gonna give you, by the way."'
+  l_itemName:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 29676687740928
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  l_effect:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 29720610492416
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  l_flavor:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 29733310844928
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   basePrice: 200
   modifiers:
   - {fileID: 11400000, guid: 8d2ab6dd368f77747b3fa7f9304edce3, type: 2}
+  references:
+    version: 2
+    RefIds: []

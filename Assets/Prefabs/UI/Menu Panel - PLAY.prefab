@@ -316,6 +316,7 @@ MonoBehaviour:
   selectable: 1
   helpInfo: This is a menu option. I tell you what this does.
   helpText: {fileID: 0}
+  rect: {fileID: 0}
   menuPanel: {fileID: 5613114878903374572}
   menuVisual: {fileID: 5613114878548303166}
   menuBumper: {fileID: 5613114878893535380}
@@ -334,6 +335,7 @@ GameObject:
   - component: {fileID: 5613114879893324877}
   - component: {fileID: 5613114879893324867}
   - component: {fileID: 5613114879893324876}
+  - component: {fileID: 6124399659755996949}
   m_Layer: 5
   m_Name: Bumper Text (TMP)
   m_TagString: Untagged
@@ -357,8 +359,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -5}
-  m_SizeDelta: {x: -24, y: -10}
+  m_AnchoredPosition: {x: 0, y: -1.999999}
+  m_SizeDelta: {x: -24, y: -19.999998}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5613114879893324867
 CanvasRenderer:
@@ -457,3 +459,43 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &6124399659755996949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5613114879893324878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_StringReference:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  m_FormatArguments: []
+  m_UpdateString:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5613114879893324876}
+        m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
+        m_MethodName: set_text
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  references:
+    version: 2
+    RefIds: []

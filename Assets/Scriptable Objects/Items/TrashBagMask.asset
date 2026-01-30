@@ -14,11 +14,43 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Trash Bag Mask
   duration: 1
+  showAsEffect: 1
+  usableInCombat: 1
   itemSprite: {fileID: 21300000, guid: 1d730a52fcc4fa74c838b1f554825d19, type: 3}
   effectDescription: When you pass by a player, you steal one of their items at random.
     Effective this turn only.
   flavorText: '"Bruh, why you gotta do them like that?" - Russell, the Grand Poo-Bah
     of Items'
+  l_itemName:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 28762383994880
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  l_effect:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 29226416623616
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  l_flavor:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 29236000608256
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   basePrice: 220
   modifiers:
   - {fileID: 11400000, guid: 4cb84a8a427a9d54b8b37479c1eceabe, type: 2}
+  references:
+    version: 2
+    RefIds: []

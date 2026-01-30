@@ -15,11 +15,42 @@ MonoBehaviour:
   itemName: Rafflesia
   duration: 1
   showAsEffect: 0
+  usableInCombat: 1
   itemSprite: {fileID: 21300000, guid: 4bc2251aa026ca748bc7cf719c9bceeb, type: 3}
   effectDescription: 'Place trap on any tile to give it the following effect: "Prevent
     players from entering this tile, then end their turn".  Disappears when triggered.'
   flavorText: '"The world''s largest, worst smelling flower! Rumor has it that it
     eats people..."'
+  l_itemName:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 29746711646208
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  l_effect:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 29885589245952
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  l_flavor:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 29899329785856
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   basePrice: 500
   modifiers:
   - {fileID: 11400000, guid: 1889fc6a63627a746ba3d77bf0b2dcea, type: 2}
+  references:
+    version: 2
+    RefIds: []

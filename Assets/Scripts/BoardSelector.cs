@@ -18,6 +18,7 @@ public class BoardSelector : MonoBehaviour
 
     [Header("Boardcast on Event Channels")]
     public VoidEventChannelSO m_BoardSelected;
+    public VoidEventChannelSO m_ReturnToMainMenu;
     
     [Header("Listen on Event Channels")]
     public VoidEventChannelSO m_AllPlayersReady;
@@ -26,6 +27,7 @@ public class BoardSelector : MonoBehaviour
     {
         m_AllPlayersReady.OnEventRaised += OnAllPlayersReady;
         m_BoardSelected.OnEventRaised += OnBoardSelected;
+        m_ReturnToMainMenu.OnEventRaised += OnReturnToMainMenu;
     }
 
 
@@ -33,6 +35,7 @@ public class BoardSelector : MonoBehaviour
     {
         m_AllPlayersReady.OnEventRaised -= OnAllPlayersReady;
         m_BoardSelected.OnEventRaised -= OnBoardSelected;
+        m_ReturnToMainMenu.OnEventRaised -= OnReturnToMainMenu;
     }
 
     void Start()
@@ -41,9 +44,27 @@ public class BoardSelector : MonoBehaviour
         boardSelectGroup.gameObject.SetActive(false);
     }
 
+    private void Update()
+    {
+        if (Input.GetButtonDown("Back"))
+        {
+            Debug.Log("'Back' button pressed");
+            m_ReturnToMainMenu.RaiseEvent();
+            //SceneManager.LoadScene("MainMenu");
+        }
+    }
+
+    private void OnReturnToMainMenu()
+    {
+        //SceneManager.LoadScene("MainMenu");
+        StartCoroutine(DelayedEnterMatch("MainMenu", 1f));
+    }
+
     private void OnAllPlayersReady()
     {
         mainLayout.enabled = false;
+        mainLayout.gameObject.SetActive(false);
+
         boardSelectGroup.gameObject.SetActive(true);
 
         headerText.text = "[Board Select]";

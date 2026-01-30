@@ -59,7 +59,7 @@ public class VendorManager : MonoBehaviour
 
         m_NextPlayerTurn.OnEventRaised -= OnNextPlayerTurn;
 
-        m_IncidentStarted.OnEventRaised += OnIncidentStarted;
+        m_IncidentStarted.OnEventRaised -= OnIncidentStarted;
     }
 
     private void OnLandedOnVendor(MapNode node)

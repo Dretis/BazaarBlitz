@@ -41,6 +41,7 @@ public class GameplayTest : MonoBehaviour
     {
         CentralMarket,
         TrainStreet,
+        CoconutCanal,
         RiceTerrace,
     }
 
@@ -82,12 +83,14 @@ public class GameplayTest : MonoBehaviour
     public enum SpecialIncidents
     {
         Train,
+        CoconutTree,
         AirRaid,
         None,
     }
 
     [Header("Game Match Info")]
     public int targetGoal = 4000;
+    public int storeLimit = 4;
     public int playerCount = 4;
     public int turnRound = 1; // Round based on every player has had a turn
     private int playersActed = 0; // goes up every time a unique players turn is done
@@ -169,6 +172,8 @@ public class GameplayTest : MonoBehaviour
     public IntEventChannelSO m_PlayerScoreDecreased;
     public IntEventChannelSO m_PlayerScoreIncreased;
 
+    public EntityIntEventChannelSO m_DamageTakenOnPlayer;
+
     [Header("BC - ITM Events")]
     public VoidEventChannelSO m_EnableFreeview;
     //public PlayerEventChannelSO m_DiceRollUndo;
@@ -200,6 +205,8 @@ public class GameplayTest : MonoBehaviour
     public VoidEventChannelSO m_ExitStorefront;
 
     public NodeEventChannelSO m_LandOnVendor;
+    public NodeEventChannelSO m_LandOnCoconutTree;
+    public NodeEventChannelSO m_LandOnWaterCoconut;
 
     public PlayerListEventChannelSO m_LandOnMultipleEntities;
     public PlayerEventChannelSO m_AskRestockStore;
@@ -1058,6 +1065,31 @@ public class GameplayTest : MonoBehaviour
 
                 encounterOver = true;
                 phase = GamePhase.EndTurn;
+            }
+            else if (m.CompareTag("MoveAgain"))
+            {
+                oldStamps.Clear();
+                oldPoints = 0;
+                oldRep = 0;
+
+                p.occupiedNode.playersOccupied.Add(p); // update to have that player in that node now
+                p.occupiedNodeCopy = p.occupiedNode;
+                p.traveledNodes.Clear();
+                p.traveledNodes.Add(p.occupiedNode);
+
+                m_DiceRollPrep.RaiseEvent(p);
+            }
+            else if (m.CompareTag("CoconutTree"))
+            {
+                // get bonked idiot
+                m_LandOnCoconutTree.RaiseEvent(m);
+                phase = GamePhase.IncidentHappening;
+            }
+            else if (m.CompareTag("WaterCoconut"))
+            {
+                // Dice "minigame' time
+                m_LandOnWaterCoconut.RaiseEvent(m);
+                phase = GamePhase.IncidentHappening;
             }
             else if (m.CompareTag("Encounter") && CanFightPlayers(otherPlayers)) // Player Fight
             {
@@ -2090,13 +2122,14 @@ public class GameplayTest : MonoBehaviour
             else if (affectedNodes.Contains(player.occupiedNode))
             {
                 Debug.Log($"{player.entityName} in the streets. GOOBYE!!");
-
-                player.health -= (int)(player.maxHealth * damageRatio);
+                int damageTaken = (int)(player.maxHealth * damageRatio);
+                player.health -= damageTaken;
                 if(player.health < 0)
                 {
                     player.health = 1;
                 }
 
+                m_DamageTakenOnPlayer.RaiseEvent(player, damageTaken);
                 m_UpdatePlayerScore.RaiseEvent(player.id);
             }
         }

@@ -15,9 +15,40 @@ MonoBehaviour:
   itemName: Baked Potato
   duration: 1
   showAsEffect: 1
+  usableInCombat: 1
   itemSprite: {fileID: 21300000, guid: 2a8ecb51a6551064cbaba64c6ea9053f, type: 3}
   effectDescription: Boosts your next attack's die value by 100%.
   flavorText: '"Cooked to a warming smile, share its joy and whimsy with the world."'
+  l_itemName:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 28367238615040
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  l_effect:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 28401715793920
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  l_flavor:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 28423815581696
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   basePrice: 400
   modifiers:
   - {fileID: 11400000, guid: 585b781ae7ef33846b1132c1f16b70c2, type: 2}
+  references:
+    version: 2
+    RefIds: []

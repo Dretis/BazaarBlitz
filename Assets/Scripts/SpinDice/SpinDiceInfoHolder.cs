@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using LitMotion;
 using TMPro;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class SpinDiceInfoHolder : MonoBehaviour
 {
     //[SerializeField] private Transform additionalDiceParent;
     //[SerializeField] private List<GameObject> additionalDice = new List<GameObject>();
-    [SerializeField] private bool isChildDie = false;
+    [SerializeField] private EntityPiece assignedPlayer;
 
     [Header("Motion Info")]
+    [SerializeField] private bool isChildDie = false;
     [SerializeField] private float yOffset = 2;
     [SerializeField] private float zOffset = -2;
     [SerializeField] private float scaleDuration;
@@ -26,6 +28,7 @@ public class SpinDiceInfoHolder : MonoBehaviour
     [SerializeField] GameObject effectUsePrefab;
 
     [Header("Listen on Event Channels")]
+    //public PlayerEventChannelSO m_NextPlayerTurn;
     public PlayerEventChannelSO m_DiceRollPrep;
     public PlayerEventChannelSO m_DiceRollUndo;
     public IntEventChannelSO m_RollForMovement;
@@ -34,6 +37,7 @@ public class SpinDiceInfoHolder : MonoBehaviour
 
     private void OnEnable()
     {
+        //m_NextPlayerTurn.OnEventRaised += OnNextPlayerTurn;
         m_DiceRollPrep.OnEventRaised += OnDiceRollPrep;
         m_DiceRollUndo.OnEventRaised += OnDiceRollUndo;
         m_RollForMovement.OnEventRaised += OnRollForMovement;
@@ -43,6 +47,7 @@ public class SpinDiceInfoHolder : MonoBehaviour
 
     private void OnDisable()
     {
+        //m_NextPlayerTurn.OnEventRaised -= OnNextPlayerTurn;
         m_DiceRollPrep.OnEventRaised -= OnDiceRollPrep;
         m_DiceRollUndo.OnEventRaised -= OnDiceRollUndo;
         m_RollForMovement.OnEventRaised -= OnRollForMovement;
@@ -54,7 +59,9 @@ public class SpinDiceInfoHolder : MonoBehaviour
 
     private void OnDiceRollPrep(EntityPiece p)
     {
-        transform.position = p.transform.position + new Vector3(0, yOffset, zOffset);
+        if (GameplayTest.instance.currentPlayer != assignedPlayer) return;
+
+        //transform.position = p.transform.position + new Vector3(0, yOffset, zOffset);
         UpdateDiceNumbers(p);
         DiceAppear(scaleDuration);
 
@@ -69,6 +76,7 @@ public class SpinDiceInfoHolder : MonoBehaviour
 
                 var x = i * 2 - 1;
                 var targetPos = transform.position + new Vector3(x, -.2f, 0);
+                newDie.transform.SetParent(transform.parent);
                 newDie.transform.position = targetPos;
 
                 //LMotion.Create(newDie.transform.position, targetPos, .15f)
@@ -77,10 +85,14 @@ public class SpinDiceInfoHolder : MonoBehaviour
                 //    .AddTo(this.gameObject);
             }
         }
+        
+        //currentCoroutine = StartCoroutine(DelayDiceRollPrep(p, 0.05f));
     }
-    
+
     private void OnDiceRollUndo(EntityPiece p)
     {
+        if (GameplayTest.instance.currentPlayer != assignedPlayer) return;
+
         if (isChildDie)
         {
             Destroy(gameObject);
@@ -91,7 +103,9 @@ public class SpinDiceInfoHolder : MonoBehaviour
 
     private void OnRollForMovement(int roll)
     {
-        if(effectUsePrefab)
+        if (GameplayTest.instance.currentPlayer != assignedPlayer) return;
+
+        if (effectUsePrefab)
         {
             var vfx = Instantiate(effectUsePrefab);
             vfx.transform.position = transform.position;
@@ -105,6 +119,7 @@ public class SpinDiceInfoHolder : MonoBehaviour
 
     private void OnEnterLevelUp(EntityPiece p)
     {
+        if (GameplayTest.instance.currentPlayer != assignedPlayer) return;
         DiceDisappear(scaleDuration);
     }
 
@@ -122,17 +137,21 @@ public class SpinDiceInfoHolder : MonoBehaviour
             .WithEase(Ease.InQuad)
             .Bind(x => transform.localScale = x)
             .AddTo(this.gameObject);
+
+        GetComponent<DiceSpin>().canSpin = true;
     }
 
     private void DiceDisappear(float duration)
     {
-        //Debug.Log("disappearing dice...");
+        //Debug.Log("disappearing dice... 1");
         if (currentMotion.IsActive()) currentMotion.Cancel();
 
         currentMotion = LMotion.Create(transform.localScale, Vector3.zero, duration)
             .WithEase(Ease.OutQuad)
             .Bind(x => transform.localScale = x)
             .AddTo(this.gameObject);
+
+        GetComponent<DiceSpin>().canSpin = false;
     }
 
     private void UpdateDiceNumbers(EntityPiece p)

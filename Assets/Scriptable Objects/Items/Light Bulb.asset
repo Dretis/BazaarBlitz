@@ -15,10 +15,41 @@ MonoBehaviour:
   itemName: Light Bulb
   duration: 3
   showAsEffect: 1
+  usableInCombat: 1
   itemSprite: {fileID: 21300000, guid: 4bb308aebcdee1240a25a83274860420, type: 3}
   effectDescription: Adds 2 to your <sprite=2> attack roll for 3 turns.
   flavorText: '"The perfect thingamabob to light your day! Just, uh, don''t look
     directly at it for too long."'
+  l_itemName:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 7033259446272
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  l_effect:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 7033259446273
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  l_flavor:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 7033259446274
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   basePrice: 320
   modifiers:
   - {fileID: 11400000, guid: 5d86a49178b05ba42a8ccb7a996b80e9, type: 2}
+  references:
+    version: 2
+    RefIds: []

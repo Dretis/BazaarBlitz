@@ -15,11 +15,42 @@ MonoBehaviour:
   itemName: HOT Chili Sauce
   duration: 2
   showAsEffect: 1
+  usableInCombat: 1
   itemSprite: {fileID: 21300000, guid: 9ed25fba84d7fc746b2ca5cd4d282a88, type: 3}
   effectDescription: Adds 5 to your <sprite=0> attack roll for 2 turns, but take
     35 self-damage on use.
   flavorText: '"Get kicked back by the heat, but kick back even harder!"'
+  l_itemName:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 29284855861248
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  l_effect:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 29458768482304
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  l_flavor:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 29470642556928
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   basePrice: 505
   modifiers:
   - {fileID: 11400000, guid: 4d17a2b5125c2dc4e9c448677d224bbe, type: 2}
   - {fileID: 11400000, guid: dabc22dd472f7024f85c0dc8335ac1dd, type: 2}
+  references:
+    version: 2
+    RefIds: []

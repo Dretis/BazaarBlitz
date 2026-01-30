@@ -15,12 +15,43 @@ MonoBehaviour:
   itemName: Durian
   duration: 3
   showAsEffect: 1
+  usableInCombat: 1
   itemSprite: {fileID: 21300000, guid: d813533538124d6439cc3d3ee64719da, type: 3}
   effectDescription: Heal 10 HP and heal 20% of the damage you deal in battle for
     3 turns.
   flavorText: '"Spiky with a pungent scent. Heard its banned in some places, but
     not here!".'
+  l_itemName:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 18736760115200
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  l_effect:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 18768502607872
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  l_flavor:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 18781026799616
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   basePrice: 400
   modifiers:
   - {fileID: 11400000, guid: e71aa8a723fffac4eaa197dd7a52e9e6, type: 2}
   - {fileID: 11400000, guid: 7f73a8926f853e74d8bc02e4c186bd32, type: 2}
+  references:
+    version: 2
+    RefIds: []

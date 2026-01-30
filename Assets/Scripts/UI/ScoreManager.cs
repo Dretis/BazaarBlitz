@@ -5,8 +5,7 @@ using TMPro;
 using Febucci.UI.Core;
 using LitMotion;
 using LitMotion.Extensions;
-using System.Linq;
-using Unity.VisualScripting;
+using System.Collections;
 
 public class ScoreManager : MonoBehaviour
 {
@@ -222,6 +221,28 @@ public class ScoreManager : MonoBehaviour
         // Prob some text vfx that shows it going up lol
         //Debug.Log("yo i got more money");
         currentPlayer.coinSucking.Play();
+        StartCoroutine(ShowCoinGainNumber(currentPlayer, scoreChange));
+    }
+
+    private IEnumerator ShowCoinGainNumber(EntityPiece entity, int coinGain)
+    {
+        var coinGainLocalScale = entity.coinGainNumber.GetComponent<RectTransform>().localScale;
+        coinGainLocalScale = Vector3.zero;
+
+        LMotion.Create(coinGainLocalScale, Vector3.one, 0.2f)
+            .WithEase(Ease.OutBack)
+            .Bind(x => coinGainLocalScale = x);
+
+        entity.coinGainNumber.ShowText($"+{coinGain}<sprite=\"Coin Icon\" index=0> ");
+
+        yield return new WaitForSeconds(1f);
+
+        LMotion.Create(coinGainLocalScale, Vector3.zero, 0.5f)
+            .WithEase(Ease.OutQuad)
+            .Bind(x => coinGainLocalScale = x);
+
+        entity.coinGainNumber.StartDisappearingText();
+        yield return null;
     }
 
     private void UpdateScoreForPlayer(int id)
@@ -544,6 +565,7 @@ public class ScoreManager : MonoBehaviour
     private void OnPlayerWon(EntityPiece winner)
     {
         scoreCanvas.enabled = false;
+        scoreCanvas.gameObject.SetActive(false);
     }
 
     private void OnRefreshedActiveEffects(EntityPiece player)

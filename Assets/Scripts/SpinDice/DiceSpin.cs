@@ -8,10 +8,13 @@ public class DiceSpin : MonoBehaviour
 
     public int frameSkip;
 
+    public bool canSpin = true;
+
     // Update is called once per frame
     void Update()
     {
-        transform.Rotate(new Vector3(xSpeed * Time.deltaTime, ySpeed * Time.deltaTime, zSpeed * Time.deltaTime));
+        if (canSpin)
+            transform.Rotate(new Vector3(xSpeed * Time.deltaTime, ySpeed * Time.deltaTime, zSpeed * Time.deltaTime));
 
         /*
         if (Time.frameCount % frameSkip == 0)

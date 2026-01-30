@@ -16,15 +16,20 @@ public class PlayerConfigurationManager : MonoBehaviour
     [Header("Broadcast on Event Channels")]
     public VoidEventChannelSO m_AllPlayersReady;
 
+    [Header("Listen on Event Channels")]
+    public VoidEventChannelSO m_ReturnToMainMenu;
+
     public static PlayerConfigurationManager instance { get; private set; }
     private void OnEnable()
     {
         m_AllPlayersReady.OnEventRaised += OnAllPlayersReady;
+        m_ReturnToMainMenu.OnEventRaised += OnReturnToMainMenu;
     }
 
     private void OnDisable()
     {
         m_AllPlayersReady.OnEventRaised -= OnAllPlayersReady;
+        m_ReturnToMainMenu.OnEventRaised -= OnReturnToMainMenu;
     }
 
     private void Awake()
@@ -123,6 +128,11 @@ public class PlayerConfigurationManager : MonoBehaviour
     public void OnAllPlayersReady()
     {
         playerInputManager.DisableJoining();
+    }
+
+    private void OnReturnToMainMenu()
+    {
+        Destroy(this.gameObject);
     }
 }
 

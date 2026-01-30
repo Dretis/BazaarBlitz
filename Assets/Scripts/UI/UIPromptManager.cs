@@ -6,12 +6,17 @@ using LitMotion;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using LitMotion.Extensions;
+using UnityEngine.Localization;
+using UnityEngine.Localization.SmartFormat.PersistentVariables;
+using UnityEngine.Localization.Components;
 
 public class UIPromptManager : MonoBehaviour
 {
     private bool NextPlayerGoIsRunning = false;
     private Coroutine oldNextPlayerGo;
     private EntityPiece currentPlayer;
+
+    [SerializeField] private Color normalPromptColor;
 
     [SerializeField] private TAnimCore rollTextAnimator;
     [SerializeField] private TypewriterCore rollTypewriter;
@@ -209,7 +214,10 @@ public class UIPromptManager : MonoBehaviour
         ContextualizeMovePrompt(ps);
 
         if (NextPlayerGoIsRunning)
+        {
+            NextPlayerGoIsRunning = false;
             StopCoroutine(oldNextPlayerGo);
+        }
         oldNextPlayerGo = StartCoroutine(NotifyNextPlayerGo(ps));
     }
 
@@ -222,9 +230,14 @@ public class UIPromptManager : MonoBehaviour
     {
         NextPlayerGoIsRunning = true;
         string goLine = "{offset}{size}Go, " + ps.entityName + "!";
+        var localizedString = turnTypewriter.GetComponent<LocalizeStringEvent>().StringReference;
+
+        var variable = localizedString["PLAYER_NAME"] as StringVariable;
+        variable.Value = ps.entityName;
+        //Debug.Log("The value is NOW = " + variable.Value);
 
         turnTypewriter.GetComponent<TextMeshProUGUI>().color = ps.playerColor;
-        turnTypewriter.ShowText(goLine);
+        turnTypewriter.ShowText(localizedString.GetLocalizedString());
 
         yield return new WaitForSeconds(2f);
 
@@ -396,13 +409,14 @@ public class UIPromptManager : MonoBehaviour
         {
             movePromptText.text = "Fight";
         }
-        else movePromptText.text = "Move";
+        else movePromptText.text = $"Move";
 
     }
 
     private void NormalizeInventoryPrompt(EntityPiece ps)
     {
-        inventoryPromptText.text = "Item";
+        //inventoryPromptText.text = "Item";
+        inventoryPromptText.color = normalPromptColor;
 
         inventoryLimitText.color = Color.white;
         inventoryLimitText.text = $"{ps.inventory.Count}/{ps.inventoryLimit}";
@@ -410,30 +424,34 @@ public class UIPromptManager : MonoBehaviour
 
     private void StrikethroughInventoryPrompt(int index, ItemStats item)
     {
-        inventoryPromptText.text = "<color=grey>Item</color>";
+        //inventoryPromptText.text = "<color=grey>Item</color>";
+        inventoryPromptText.color = Color.gray;
         inventoryLimitText.color = Color.grey;
         inventoryLimitText.text = $"{currentPlayer.inventory.Count-1}/{currentPlayer.inventoryLimit}";
     }
 
     private void NormalizeBuildPrompt(EntityPiece ps)
     {
-        var buildCount = 4 - ps.storeCount;
+        var buildCount = GameplayTest.instance.storeLimit - ps.storeCount;
 
         if(buildCount <= 0 || !ps.occupiedNode.CompareTag("Encounter"))
         {
-            buildPromptText.text = "<color=grey>Build</color>";
+            //buildPromptText.text = "<color=grey>Build</color>";
+            buildPromptText.color = Color.gray;
             buildLimitText.text = "<color=grey>No</color>";
         }
         else
         {
-            buildPromptText.text = "Build";
-            buildLimitText.text = $"{4 - ps.storeCount} Left";
+            //buildPromptText.text = "Build";
+            buildPromptText.color = normalPromptColor;
+            buildLimitText.text = $"{buildCount} Left";
         }
     }
 
     private void StrikethroughBuildPrompt()
     {
-        buildPromptText.text = "<color=grey>Build</color>";
+        buildPromptText.color = Color.gray;
+        //buildPromptText.text = "<color=grey>Build</color>";
         buildLimitText.text = "<color=grey>No</color>";
     }
 

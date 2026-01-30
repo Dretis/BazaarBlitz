@@ -147,7 +147,10 @@ public class AvailableNodeIndicator : MonoBehaviour
     private void OnPlayerMovedOnBoard()
     {
         SetTargetNode(currentPlayer.occupiedNode);
-        ShowNodeIndicators();
+        if (currentPlayer.movementLeft <= 0)
+            HideNodeIndicators();
+        else
+            ShowNodeIndicators();
     }
 
     private void OnPlayerUndidSomething()

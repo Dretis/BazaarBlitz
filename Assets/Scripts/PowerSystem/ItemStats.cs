@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Localization;
 
 [CreateAssetMenu]
 public class ItemStats : ScriptableObject, IStatModifierChanger
@@ -29,10 +30,17 @@ public class ItemStats : ScriptableObject, IStatModifierChanger
 
     [Header("Shop and Visual Information")]
     public Sprite itemSprite;
+
+
     [TextArea (2, 10)]
     public string effectDescription;
     [TextArea(2, 10)]
     public string flavorText;
+
+    public LocalizedString l_itemName;
+    public LocalizedString l_effect;
+    public LocalizedString l_flavor;
+
     public int basePrice;
 
     public List<StatModifierChangerSO> modifiers;

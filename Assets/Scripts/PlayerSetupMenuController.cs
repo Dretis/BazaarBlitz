@@ -18,10 +18,12 @@ public class PlayerSetupMenuController : MonoBehaviour
     [SerializeField] private TypewriterCore titleText;
 
     [Header("Setup Visuals")]
-    [SerializeField] private Image baggieVisual;
+    //[SerializeField] private Image baggieVisual;
+    [SerializeField] private SpriteRenderer baggieVisual;
     [SerializeField] private TypewriterCore baggieVisualName;
 
     [Header("UI Elements")]
+    [SerializeField] private Canvas panelCanvas;
     [SerializeField] private CanvasGroup menuPanel;
     [SerializeField] private GameObject colorButtonContainer;
     [SerializeField] private List<Button> colorButtons = new List<Button>();
@@ -37,6 +39,7 @@ public class PlayerSetupMenuController : MonoBehaviour
 
     private void Start()
     {
+        panelCanvas.sortingLayerName = "UI";
         setupEventSystem = GetComponentInChildren<EventSystem>();
 
         foreach (Transform child in colorButtonContainer.transform)
@@ -103,6 +106,14 @@ public class PlayerSetupMenuController : MonoBehaviour
     public void SetSelectedColor(Color selectedColor)
     {
         baggieVisual.color = selectedColor;
+    }
+
+    public void SetSelectedPalette(List<Color> palette)
+    {
+        if(baggieVisual.TryGetComponent<PlayerPaletteLoader>(out PlayerPaletteLoader paletteLoader))
+        {
+            baggieVisual.GetComponent<PlayerPaletteLoader>().SetInspectorPalette(palette);
+        }
     }
 
     public void SetSelectedName(string selectedName)

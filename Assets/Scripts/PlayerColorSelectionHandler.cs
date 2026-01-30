@@ -47,6 +47,7 @@ public class PlayerColorSelectionHandler : MonoBehaviour, ISubmitHandler, IPoint
     {
         Debug.Log("Submitted | " + eventData);
         setup.SetColor(colorPreset.mainColor);
+        //setup.SetSelectedPalette(colorPreset.baggieColorPalette);
         setup.SetPalette(colorPreset.baggieColorPalette);
         setup.SetName(colorPreset.presetName);
         setup.SetSelectedColorButton(button);
@@ -56,8 +57,9 @@ public class PlayerColorSelectionHandler : MonoBehaviour, ISubmitHandler, IPoint
     public void OnSelect(BaseEventData eventData)
     {
         // Change color of the Baggie visual
-        setup.SetSelectedColor(colorPreset.mainColor);
-        //setup.SetSelectedPalette(colorPreset.baggieColorPalette);
+        //setup.SetSelectedColor(colorPreset.mainColor);
+        setup.SetSelectedPalette(colorPreset.baggieColorPalette);
+
         setup.SetSelectedName(colorPreset.presetName);
 
         //rect.localScale = Vector3.one * 1.15f;

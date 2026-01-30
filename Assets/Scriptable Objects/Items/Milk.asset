@@ -15,10 +15,41 @@ MonoBehaviour:
   itemName: Malk
   duration: 3
   showAsEffect: 1
+  usableInCombat: 1
   itemSprite: {fileID: 21300000, guid: 336a3e752a0baa24cac263d60204e183, type: 3}
   effectDescription: Adds 2 to your <sprite=0> attack roll for 3 turns.
   flavorText: "\"I've heard it makes you stronger, but at the cost of a tummy ache.
     \nA fair and honest trade in the search for power.\""
+  l_itemName:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 1515237298176
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  l_effect:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 1733563404288
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  l_flavor:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 1555682971648
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   basePrice: 320
   modifiers:
   - {fileID: 11400000, guid: 100b82ed887acb34f9d33fdae731f488, type: 2}
+  references:
+    version: 2
+    RefIds: []

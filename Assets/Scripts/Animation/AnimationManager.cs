@@ -1,5 +1,8 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using LitMotion;
+using UnityEngine.Rendering.Universal;
 
 public class AnimationManager : MonoBehaviour
 {
@@ -17,6 +20,7 @@ public class AnimationManager : MonoBehaviour
     public VoidEventChannelSO m_ExitLevelUp;
 
     public PlayerEventChannelSO m_CheerForPlayer;
+    public EntityIntEventChannelSO m_DamageTakenOnPlayer;
 
     private void OnEnable()
     {
@@ -28,6 +32,7 @@ public class AnimationManager : MonoBehaviour
         m_ExitLevelUp.OnEventRaised += OnExitLevelUp;
 
         m_CheerForPlayer.OnEventRaised += OnCheerForPlayer;
+        m_DamageTakenOnPlayer.OnEventRaised += OnDamageTakenOnPlayer;
     }
 
     private void OnDisable()
@@ -40,6 +45,7 @@ public class AnimationManager : MonoBehaviour
         m_ExitLevelUp.OnEventRaised -= OnExitLevelUp;
 
         m_CheerForPlayer.OnEventRaised -= OnCheerForPlayer;
+        m_DamageTakenOnPlayer.OnEventRaised -= OnDamageTakenOnPlayer;
     }
 
     private void SetCurrentPlayerAnimator(EntityPiece entity)
@@ -134,22 +140,34 @@ public class AnimationManager : MonoBehaviour
         animator.SetTrigger("ToCheer");
     }
 
-    // Testing Functions
-    private void Update()
+    private void OnDamageTakenOnPlayer(EntityPiece entity, int damageTaken)
     {
-        /*
-        if (Input.GetKeyDown(KeyCode.I))
-        {
-            m_DiceRolling.RaiseEvent(ep);
-        }
-        if (Input.GetKeyDown(KeyCode.O))
-        {
-            m_DiceThrown.RaiseEvent(ep);
-        }
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            m_ResetToIdle.RaiseEvent(ep);
-        }
-        */
+        var animator = entity.GetComponentInChildren<Animator>();
+        animator.SetTrigger("TakeDamage");
+
+        entity.hitParticle.Play();
+        StartCoroutine(ShowDamageNumber(entity, damageTaken));
     }
+
+    private IEnumerator ShowDamageNumber(EntityPiece entity, int damageTaken)
+    {
+        var damageLocalScale = entity.floatingDamageNumber.GetComponent<RectTransform>().localScale;
+        damageLocalScale = Vector3.zero;
+
+        LMotion.Create(damageLocalScale, Vector3.one, 0.2f)
+            .WithEase(Ease.OutBack)
+            .Bind(x => damageLocalScale = x);
+
+        entity.floatingDamageNumber.ShowText($"{damageTaken}!");
+
+        yield return new WaitForSeconds(.5f);
+
+        LMotion.Create(damageLocalScale, Vector3.zero, 0.5f)
+            .WithEase(Ease.OutQuad)
+            .Bind(x => damageLocalScale = x);
+
+        entity.floatingDamageNumber.StartDisappearingText();
+        yield return null;
+    }
+
 }

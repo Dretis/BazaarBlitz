@@ -14,10 +14,42 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Pho
   duration: 4
+  showAsEffect: 1
+  usableInCombat: 1
   itemSprite: {fileID: 21300000, guid: 5f01b6fc46f5a034da53bf002a447cd9, type: 3}
   effectDescription: Double your Max HP for 4 turns.
   flavorText: '"Proportions too much? Just get it to-go, it''ll last you awhile!
     But mind the tummy-ache."'
+  l_itemName:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 16269821497344
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  l_effect:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 16302096666624
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  l_flavor:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 16315140952064
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   basePrice: 450
   modifiers:
   - {fileID: 11400000, guid: 50fcc29f6df14e241a3d1ad29f287010, type: 2}
+  references:
+    version: 2
+    RefIds: []

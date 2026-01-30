@@ -13,6 +13,8 @@ public class UITransitionManager : MonoBehaviour
     public VoidEventChannelSO m_EnteredOverworldScene;
     public VoidEventChannelSO m_BoardSelected;
     public PlayerEventChannelSO m_TransitionIntoCombat;
+    public VoidEventChannelSO m_ReturnToMainMenu;
+
 
     void Awake()
     {
@@ -28,6 +30,8 @@ public class UITransitionManager : MonoBehaviour
         m_EnteredOverworldScene.OnEventRaised += FadeInInkTransition;
         m_BoardSelected.OnEventRaised += FadeInInkTransition;
         m_TransitionIntoCombat.OnEventRaised += OnTransitionIntoCombat;
+
+        m_ReturnToMainMenu.OnEventRaised += OnReturnToMainMenu;
     }
 
     private void OnDisable()
@@ -36,6 +40,8 @@ public class UITransitionManager : MonoBehaviour
         m_EnteredOverworldScene.OnEventRaised -= FadeInInkTransition;
         m_BoardSelected.OnEventRaised -= FadeInInkTransition;
         m_TransitionIntoCombat.OnEventRaised -= OnTransitionIntoCombat;
+
+        m_ReturnToMainMenu.OnEventRaised -= OnReturnToMainMenu;
     }
 
     public void LoopTween(Material m, float delay, string attribute, float startVal, float endVal)
@@ -72,5 +78,10 @@ public class UITransitionManager : MonoBehaviour
     private void OnTransitionIntoCombat(EntityPiece player)
     {
         FadeInInkTransition(.5f);
+    }
+
+    private void OnReturnToMainMenu()
+    {
+        FadeInInkTransition(1f);
     }
 }
