@@ -283,6 +283,12 @@ PlayableDirector:
     value: {fileID: 702291476796725720}
   - key: {fileID: -3338546231407190830, guid: 3578c1898fbb5d84f9b34e6b9f592138, type: 2}
     value: {fileID: 4151257443515378180}
+  - key: {fileID: 1108025799247158903, guid: e97c33bee543fe64596338b00d9f5bcd, type: 2}
+    value: {fileID: 7739089141016799248}
+  - key: {fileID: -8229752277830402274, guid: e97c33bee543fe64596338b00d9f5bcd, type: 2}
+    value: {fileID: 3417155259321840977}
+  - key: {fileID: 8723584633006415006, guid: e97c33bee543fe64596338b00d9f5bcd, type: 2}
+    value: {fileID: 3417155259321840977}
   m_ExposedReferences:
     m_References:
     - 73da00737f5bdf241876076fd8e0b65f: {fileID: 702291476796725727}
@@ -12539,7 +12545,7 @@ MonoBehaviour:
   typewriterStartsAutomatically: 0
   animationLoop: 0
   timeScale: 0
-  _text: +3000
+  _text: +300
   useDynamicScaling: 1
   referenceFontSize: 10
   isResettingTimeOnNewText: 1
@@ -22481,8 +22487,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 7e0983a274ecdce45b5ccfabffca4d1b, type: 2}
-  m_sharedMaterial: {fileID: 2674762156599226005, guid: 7e0983a274ecdce45b5ccfabffca4d1b, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: ff9500cae92c2164581eeee51a5e7f8a, type: 2}
+  m_sharedMaterial: {fileID: -6220351636370342547, guid: ff9500cae92c2164581eeee51a5e7f8a, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -22512,7 +22518,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 65.4
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 1024
   m_textAlignment: 65535
@@ -23321,8 +23327,8 @@ Transform:
   m_GameObject: {fileID: 7739089141016799248}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.25, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalPosition: {x: 0, y: 1.5, z: 0}
+  m_LocalScale: {x: 0.85, y: 0.85, z: 0.85}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 3252947843907586523}
@@ -23368,7 +23374,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 4
-  m_Sprite: {fileID: 21300000, guid: 0c035bc5d0574eb4cbc381ac5b786b20, type: 3}
+  m_Sprite: {fileID: 2103650747, guid: fb82644a77ded0d4492d28cbddae470e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -28962,7 +28968,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 25
+  m_AdditionalShaderChannelsFlag: 27
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: -785958923
   m_SortingOrder: 12

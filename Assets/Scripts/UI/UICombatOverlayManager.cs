@@ -4,10 +4,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Rendering;
 using TMPro;
-using DG.Tweening;
+//using DG.Tweening;
 using Febucci.UI;
 using Febucci.UI.Core;
-using UnityEngine.Rendering.Universal;
+using LitMotion;
+using LitMotion.Extensions;
+using Coffee.UIEffects;
 
 public class UICombatOverlayManager : MonoBehaviour
 {
@@ -113,7 +115,6 @@ public class UICombatOverlayManager : MonoBehaviour
     public VoidEventChannelSO m_Stalemate; // Combat is suspended, no one died this stime
     public IntListItemListEventChannelSO m_VictoryAgainstEnemy;
     public IntListItemListEventChannelSO m_DefeatAgainstEnemy;
-
 
     private void OnEnable()
     {
@@ -261,27 +262,47 @@ public class UICombatOverlayManager : MonoBehaviour
     */
     public void ShowVSHeader()
     {
-        vsHeader.DOAnchorPos(vsInitialPosition, 0.5f, false).SetEase(Ease.OutSine);
+        //vsHeader.DOAnchorPos(vsInitialPosition, 0.5f, false).SetEase(Ease.OutSine);
+
+        var currentMotion = LMotion.Create(vsHeader.anchoredPosition, vsInitialPosition, 0.5f)
+            .WithEase(Ease.OutSine)
+            .BindToAnchoredPosition(vsHeader);
     }
 
     public void HideVSHeader()
     {
-        vsHeader.DOAnchorPos(vsHidePosition, 0.5f, false).SetEase(Ease.InFlash);
+        //vsHeader.DOAnchorPos(vsHidePosition, 0.5f, false).SetEase(Ease.InFlash);
+
+        var currentMotion = LMotion.Create(vsHeader.anchoredPosition, vsHidePosition, 0.5f)
+            .WithEase(Ease.InQuad)
+            .BindToAnchoredPosition(vsHeader);
     }
 
     public void ShowDiceInfo()
     {
-        diceInfo.DOAnchorPos(diceInitialPosition, 0.5f, false).SetEase(Ease.OutSine);
+        //diceInfo.DOAnchorPos(diceInitialPosition, 0.5f, false).SetEase(Ease.OutSine);
+
+        var currentMotion = LMotion.Create(diceInfo.anchoredPosition, diceInitialPosition, 0.5f)
+            .WithEase(Ease.OutSine)
+            .BindToAnchoredPosition(diceInfo);
     }
 
     public void HideDiceInfo()
     {
-        diceInfo.DOAnchorPos(diceHidePosition, 0.5f, false).SetEase(Ease.InFlash);
+        //diceInfo.DOAnchorPos(diceHidePosition, 0.5f, false).SetEase(Ease.InFlash);
+
+        var currentMotion = LMotion.Create(diceInfo.anchoredPosition, diceHidePosition, 0.5f)
+            .WithEase(Ease.OutSine)
+            .BindToAnchoredPosition(diceInfo);
     }
 
     public void ShowInputPrompt(CanvasGroup inputPrompt, float duration)
     {
-        DOTween.To(()=> inputPrompt.alpha, x=> inputPrompt.alpha =  x, 1, duration); 
+        //DOTween.To(()=> inputPrompt.alpha, x=> inputPrompt.alpha =  x, 1, duration);
+
+        LMotion.Create(inputPrompt.alpha, 1, duration)
+            .WithEase(Ease.InOutExpo)
+            .Bind(x => inputPrompt.alpha = x);
     }
 
     public IEnumerator ShowAdvantageState(TextMeshProUGUI advantage, float duration) 
@@ -291,15 +312,44 @@ public class UICombatOverlayManager : MonoBehaviour
         //advantage.text = "Advantage!";
         advantage.GetComponent<TypewriterCore>().ShowText("Advantage!");
     }
+    public IEnumerator ShowAdvantageEffect(CanvasGroup selectedAction, float duration)
+    {
+        yield return new WaitForSeconds(duration);
+
+        var effect = selectedAction.GetComponent<UIEffect>();
+        var effectTweener = selectedAction.GetComponent<UIEffectTweener>();
+
+        effect.transitionColorFilter = ColorFilter.MultiplyAdditive;
+        effectTweener.enabled = true;
+    }
+
+    public void ResetAdvantageEffect(CanvasGroup selectedAction)
+    {
+        //yield return new WaitForSeconds(duration);
+
+        var effect = selectedAction.GetComponent<UIEffect>();
+        var effectTweener = selectedAction.GetComponent<UIEffectTweener>();
+
+        effect.transitionColorFilter = ColorFilter.Multiply;
+        effectTweener.enabled = false;
+    }
 
     public void HideInputPrompt(CanvasGroup inputPrompt, float duration)
     {
-        DOTween.To(() => inputPrompt.alpha, x => inputPrompt.alpha = x, 0, duration);
+        //DOTween.To(() => inputPrompt.alpha, x => inputPrompt.alpha = x, 0, duration);
+
+        LMotion.Create(inputPrompt.alpha, 0, duration)
+            .WithEase(Ease.InSine)
+            .Bind(x => inputPrompt.alpha = x);
     }
 
     public void SetInputPromptAlpha(CanvasGroup inputPrompt, float alphaValue, float duration)
     {
-        DOTween.To(() => inputPrompt.alpha, x => inputPrompt.alpha = x, alphaValue, duration);
+        //DOTween.To(() => inputPrompt.alpha, x => inputPrompt.alpha = x, alphaValue, duration);
+
+        LMotion.Create(inputPrompt.alpha, alphaValue, duration)
+            .WithEase(Ease.InSine)
+            .Bind(x => inputPrompt.alpha = x);
     }
 
     public void AttackerActionSelected(EntityPiece entity)
@@ -336,6 +386,7 @@ public class UICombatOverlayManager : MonoBehaviour
 
         CanvasGroup sideSelectedAction;
         TextMeshProUGUI sideSelectedAdvantage;
+        RectTransform rect;
         bool hasAdvantage = false;
 
         if (entity.fightingPosition == CombatUIManager.FightingPosition.Left)
@@ -348,7 +399,10 @@ public class UICombatOverlayManager : MonoBehaviour
             sideSelectedAction = rightSelectedAction;
             sideSelectedAdvantage = rightSelectedAdvantage;
         }
-            int typeIcon = 0;
+
+        rect = sideSelectedAction.GetComponent<RectTransform>();
+
+        int typeIcon = 0;
         switch (action.type)
         {
             case Action.WeaponTypes.Melee: typeIcon = 0; break;
@@ -386,29 +440,48 @@ public class UICombatOverlayManager : MonoBehaviour
 
         if (entity.fightingPosition == CombatUIManager.FightingPosition.Left)
         {
-            ShowInputPrompt(sideSelectedAction, 0.15f);
-            sideSelectedAction.GetComponentInChildren<TextMeshProUGUI>().text = $"<sprite={typeIcon}>  {action.actionName}";
+            rect.anchoredPosition = new Vector2(-1600, -280);
+            var goTo = new Vector2(-512, -280);
+            var currentMotion = LMotion.Create(rect.anchoredPosition, goTo, 0.35f)
+                .WithEase(Ease.OutBack)
+                .BindToAnchoredPosition(rect);
+
+            ShowInputPrompt(sideSelectedAction, 0.05f);
+            sideSelectedAction.GetComponentInChildren<TextMeshProUGUI>().text = $"<sprite={typeIcon}> {action.actionName}";
         }
         else
         {
-            ShowInputPrompt(sideSelectedAction, 0.15f);
-            sideSelectedAction.GetComponentInChildren<TextMeshProUGUI>().text = $"<sprite={typeIcon}>  {action.actionName}";
+            rect.anchoredPosition = new Vector2(1600, -280);
+            var goTo = new Vector2(512, -280);
+            var currentMotion = LMotion.Create(rect.anchoredPosition, goTo, 0.35f)
+                .WithEase(Ease.OutBack)
+                .BindToAnchoredPosition(rect);
+
+            ShowInputPrompt(sideSelectedAction, 0.05f);
+            sideSelectedAction.GetComponentInChildren<TextMeshProUGUI>().text = $"<sprite={typeIcon}> {action.actionName}";
         }
 
         if (hasAdvantage)
         {
             StartCoroutine(ShowAdvantageState(sideSelectedAdvantage, 0.35f));
+            StartCoroutine(ShowAdvantageEffect(sideSelectedAction, 0.25f));
         }
     }
 
     public void DisplayResultsGroup()
     {
-        DOTween.To(() => resultsGroup.alpha, x => resultsGroup.alpha = x, 1, 0.25f).SetEase(Ease.InFlash);
+        //DOTween.To(() => resultsGroup.alpha, x => resultsGroup.alpha = x, 1, 0.25f).SetEase(Ease.InFlash);
+        LMotion.Create(resultsGroup.alpha, 1, 0.25f)
+            .WithEase(Ease.OutQuint)
+            .Bind(x => resultsGroup.alpha = x);
     }
 
     public void DisplayStalemateGroup()
     {
-        DOTween.To(() => stalemateGroup.alpha, x => stalemateGroup.alpha = x, 1, 0.25f).SetEase(Ease.InFlash);
+        //DOTween.To(() => stalemateGroup.alpha, x => stalemateGroup.alpha = x, 1, 0.25f).SetEase(Ease.InFlash);
+        LMotion.Create(stalemateGroup.alpha, 1, 0.25f)
+            .WithEase(Ease.OutQuint)
+            .Bind(x => stalemateGroup.alpha = x);
     }
 
     public void UpdateDiceStats(EntityPiece entity, GameObject diceStats)
@@ -553,9 +626,18 @@ public class UICombatOverlayManager : MonoBehaviour
         if (fp == CombatUIManager.FightingPosition.Left) selectableActions = leftSelectableActions;
         else selectableActions = rightSelectableActions;
 
-        selectableActions[0].text = $"<sprite=\"switch_buttons\" index=2> <sprite={(int)entity.attackActions[1].type}> {entity.attackActions[1].actionName}";
-        selectableActions[1].text = $"<sprite=\"switch_buttons\" index=1> <sprite={(int)entity.attackActions[0].type}> {entity.attackActions[0].actionName}";
-        selectableActions[2].text = $"<sprite=\"switch_buttons\" index=0> <sprite={(int)entity.attackActions[2].type}> {entity.attackActions[2].actionName}";
+        var a0 = $"<sprite=\"switch_buttons\" index=2> <sprite={(int)entity.attackActions[1].type}> {entity.attackActions[1].actionName}";
+        var a1 = $"<sprite=\"switch_buttons\" index=1> <sprite={(int)entity.attackActions[0].type}> {entity.attackActions[0].actionName}";
+        var a2 = $"<sprite=\"switch_buttons\" index=0> <sprite={(int)entity.attackActions[2].type}> {entity.attackActions[2].actionName}";
+
+
+        selectableActions[0].GetComponent<TypewriterCore>().ShowText(a0);
+        selectableActions[1].GetComponent<TypewriterCore>().ShowText(a1);
+        selectableActions[2].GetComponent<TypewriterCore>().ShowText(a2);
+
+        //selectableActions[0].text = $"<sprite=\"switch_buttons\" index=2> <sprite={(int)entity.attackActions[1].type}> {entity.attackActions[1].actionName}";
+        //selectableActions[1].text = $"<sprite=\"switch_buttons\" index=1> <sprite={(int)entity.attackActions[0].type}> {entity.attackActions[0].actionName}";
+        //selectableActions[2].text = $"<sprite=\"switch_buttons\" index=0> <sprite={(int)entity.attackActions[2].type}> {entity.attackActions[2].actionName}";
     }
 
     public void HideBothInputPrompts()
@@ -579,7 +661,10 @@ public class UICombatOverlayManager : MonoBehaviour
         //HideHeaderInfo();
         Debug.Log("stalemate.");
         //volume.weight = 1;
-        DOTween.To(() => volume.weight, x => volume.weight = x, 1, 0.15f).SetEase(Ease.InOutExpo);
+        //DOTween.To(() => volume.weight, x => volume.weight = x, 1, 0.15f).SetEase(Ease.InOutExpo);
+        LMotion.Create(volume.weight, 1, 0.15f)
+            .WithEase(Ease.InOutExpo)
+            .Bind(x => volume.weight = x);
 
         leftDiceRoll.StartDisappearingText();
         rightDiceRoll.StartDisappearingText();
@@ -710,7 +795,10 @@ public class UICombatOverlayManager : MonoBehaviour
 
         hitParticle.Play();
 
-        dmgPos.DOAnchorPos(goToPos, 0.25f, false).SetEase(Ease.OutBounce);
+        //dmgPos.DOAnchorPos(goToPos, 0.25f, false).SetEase(Ease.OutBounce);
+        var currentMotion = LMotion.Create(dmgPos.anchoredPosition, goToPos, 0.5f)
+            .WithEase(Ease.OutBounce)
+            .BindToAnchoredPosition(dmgPos);
 
         StartCoroutine(HideFloatingDamageNumber(floatingDamage));
     }
@@ -733,10 +821,10 @@ public class UICombatOverlayManager : MonoBehaviour
                     floatingDamageNumber.ShowText($"<size=156>{damage}</size>");
                     break;
                 case CombatManager.TypeAdvantage.Neutral:
-                    floatingDamageNumber.ShowText($"{damage}");
+                    floatingDamageNumber.ShowText($"<shake a=.05 d=.5>{damage}!");
                     break;
                 case CombatManager.TypeAdvantage.Strong:
-                    floatingDamageNumber.ShowText($"<size=218>{damage}!!");
+                    floatingDamageNumber.ShowText($"<size=218><shake a=.1 d=.35>{damage}!!");
                     break;
                 default:
                     floatingDamageNumber.ShowText($"{damage}???");
@@ -761,8 +849,14 @@ public class UICombatOverlayManager : MonoBehaviour
         UpdateInputPrompts(attacker);
         ShowVSHeader();
         ShowDiceInfo();
+
         HideInputPrompt(leftSelectedAction, 0.25f);
         HideInputPrompt(rightSelectedAction, 0.25f);
+
+        ResetAdvantageEffect(leftSelectedAction);
+        ResetAdvantageEffect(rightSelectedAction);
+        //leftSelectedAction.GetComponent<UIEffect>().enabled = false;
+        //rightSelectedAction.GetComponent<UIEffect>().enabled = false;
 
         leftDiceRoll.StartDisappearingText();
         rightDiceRoll.StartDisappearingText();
@@ -791,9 +885,9 @@ public class UICombatOverlayManager : MonoBehaviour
             leftDiceRoll.GetComponent<TextMeshProUGUI>().colorGradientPreset = actionTypeGradients[(int)weaponType];
 
             if (roll <= 1)
-                leftDiceRoll.ShowText($"<size=120><shake a=.2 d=.5>{roll}</shake></size>");
+                leftDiceRoll.ShowText($"<size=132><shake a=.2 d=.5>{roll}</shake></size>");
             else if (roll >= 10)
-                leftDiceRoll.ShowText($"<size=180>{roll}</size>");
+                leftDiceRoll.ShowText($"<size=212>{roll}</size>");
             else
                 leftDiceRoll.ShowText($"{roll}");
         }
@@ -802,11 +896,13 @@ public class UICombatOverlayManager : MonoBehaviour
             rightDiceRoll.GetComponent<TextMeshProUGUI>().colorGradientPreset = actionTypeGradients[(int)weaponType];
 
             if (roll <= 1)
-                rightDiceRoll.ShowText($"<size=126><shake a=.2 d=.5>{roll}</shake></size>");
+                rightDiceRoll.ShowText($"<size=132><shake a=.2 d=.5>{roll}</shake></size>");
             else if (roll >= 10)
-                rightDiceRoll.ShowText($"<size=180>{roll}</size>");
+                rightDiceRoll.ShowText($"<size=212>{roll}</size>");
             else
                 rightDiceRoll.ShowText($"{roll}");
         }
     }
+
+
 }

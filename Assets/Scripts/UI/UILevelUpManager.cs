@@ -51,6 +51,7 @@ public class UILevelUpManager : MonoBehaviour
     {
         levelUpGroup.alpha = 0f;
         levelUpGroup.interactable = false;
+        levelUpGroup.blocksRaycasts = false;
     }
 
     public void UpdatePlayerDiceStats(EntityPiece entity, GameObject diceStats)
@@ -124,6 +125,7 @@ public class UILevelUpManager : MonoBehaviour
 
         levelUpGroup.alpha = 1f;
         levelUpGroup.interactable = true;
+        levelUpGroup.blocksRaycasts = true;
 
         levelIndicator.ShowText($"*\n{p.RenownLevel}");
         remainingSP.text = $"Remaining SP: {p.unspentLevelUpPoints}";
@@ -138,6 +140,7 @@ public class UILevelUpManager : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(null);
         levelUpGroup.alpha = 0f;
         levelUpGroup.interactable = false;
+        levelUpGroup.blocksRaycasts = false;
     }
 
     private void OnTryAugmentDieFaceValue(Action.WeaponTypes diceType, int diceIndex)

@@ -7,10 +7,12 @@ public class EventSystemEnabler : MonoBehaviour
 {
     private InputSystemUIInputModule _inputSystemUIInputModule;
     [SerializeField] private InputActionAsset actionAssetToUse;
+    private MultiplayerEventSystem _eventSystem;
 
     void Start()
     {
         _inputSystemUIInputModule = GetComponent<InputSystemUIInputModule>();
+        _eventSystem = GetComponent<MultiplayerEventSystem>();
     }
 
     private void OnEnable()
@@ -25,5 +27,10 @@ public class EventSystemEnabler : MonoBehaviour
         //yield return new WaitForSeconds(0.1f);
         _inputSystemUIInputModule.enabled = true;
         _inputSystemUIInputModule.actionsAsset = actionAssetToUse;
+    }
+
+    private void ChangePlayerRoot(GameObject o)
+    {
+        _eventSystem.playerRoot = o;
     }
 }

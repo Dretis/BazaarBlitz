@@ -4,10 +4,16 @@ using UnityEngine.UI;
 using TMPro;
 using System.Linq;
 using UnityEngine.EventSystems;
+using static UnityEditor.Progress;
+using Febucci.UI.Core;
+using LitMotion;
+using LitMotion.Extensions;
 
 public class UIStoreManager : MonoBehaviour
 {
     // CHANGE THIS SCRIPTS NAME, THIS ONE IS ONLY HANDLING STOREFRONT UI
+    private StoreSelectionHandler selectedStoreHandler;
+
     [Header("UI Visual Elements")]
     //[SerializeField] private Canvas storefrontCanvas;
     [SerializeField] private CanvasGroup storefrontFullGroup;
@@ -15,9 +21,14 @@ public class UIStoreManager : MonoBehaviour
     [SerializeField] private List<ItemSelectionHandler> itemSelectionHandlers;
     [SerializeField] private List<EventTrigger> itemSelectionTriggers;
     [SerializeField] private TextMeshProUGUI storeChatBubble;
+    private TypewriterCore storeChatTypewriter;
+    [Space]
+    [SerializeField] private Image storeboat;
     [SerializeField] private Image storekeeperImage;
-
-    [SerializeField] private CanvasGroup confirmButtonGroup;
+    [SerializeField] private RectTransform customerRect;
+    [SerializeField] private Image customerVisual;
+    [Space]
+    [SerializeField] private CanvasGroup confirmBuyGroup;
     [SerializeField] private GameObject confirmYesButton;
 
     // May move this to another script
@@ -41,7 +52,7 @@ public class UIStoreManager : MonoBehaviour
     public ItemEventChannelSO m_HoveringItem;
     public ItemListEventChannelSO m_StockItems;
     public IntEventChannelSO m_TryBuyItemAt; 
-    public IntEventChannelSO m_RemoveItem; 
+    public IntEventChannelSO m_RemoveItemAt; 
     
     // this probably needs to be in a seperate script too
     private StoreManager currentStore;
@@ -56,7 +67,7 @@ public class UIStoreManager : MonoBehaviour
         m_StockItems.OnEventRaised += StockItems;
 
         m_TryBuyItemAt.OnEventRaised += OnTryBuyItemAt;
-        m_RemoveItem.OnEventRaised += RemoveItemStockAt;
+        m_RemoveItemAt.OnEventRaised += OnRemoveItemStockAt;
 
         // Can you even listen to your own event?
         m_ItemBought.OnEventRaised += FinishShopping;
@@ -71,7 +82,7 @@ public class UIStoreManager : MonoBehaviour
         m_StockItems.OnEventRaised -= StockItems;
 
         m_TryBuyItemAt.OnEventRaised -= OnTryBuyItemAt;
-        m_RemoveItem.OnEventRaised -= RemoveItemStockAt;
+        m_RemoveItemAt.OnEventRaised -= OnRemoveItemStockAt;
 
         m_ItemBought.OnEventRaised -= FinishShopping;
     }
@@ -79,8 +90,51 @@ public class UIStoreManager : MonoBehaviour
     // Set dependencies here and in Inspector (if needed)
     private void Start()
     {
+        storeChatTypewriter = storeChatBubble.GetComponent<TypewriterCore>();
+
         storefrontFullGroup.alpha = 0f;
         storefrontFullGroup.interactable = false;
+
+        confirmBuyGroup.alpha = 0f;
+        confirmBuyGroup.interactable = false;
+    }
+
+    private void UpdateItemsInStore(MapNode node)
+    {
+        var store = node.GetComponent<StoreManager>();
+        //var storeItemParentTransform = storeItemGridContainer.transform;
+        stockedItems.Clear();
+
+        foreach (ItemStats item in store.storeInventory)
+        {
+            stockedItems.Add(item);
+        }
+
+        for (int i = 0; i < stockedItems.Count; i++)
+        {
+
+            var item = storeItemHolders[i];
+            //item.transform.localScale = Vector3.one;
+            var storeHandler = item.GetComponent<StoreSelectionHandler>();
+            storeHandler.UpdateItemInfo(stockedItems[i]);
+            storeHandler.itemIndex = i;
+            //storeHandler.button.interactable = true;
+
+            //storeItemHolders.Add(item);
+
+            if (storeHandler.HeldItem != null &&
+                currentPlayer.heldPoints < storeHandler.HeldItem.basePrice) // Disable player from buying if too expensive
+            {
+                //storeHandler.GetComponent<Button>().enabled = false;
+                //DisableItemSelection(i);
+            }
+
+            if (i == 0)
+            {
+                Debug.Log($"ID: {storeHandler.itemIndex} | {storeHandler.HeldItem}");
+                EventSystem.current.SetSelectedGameObject(item);
+            }
+        }
     }
 
     private void SpawnItemsInStore(MapNode node)
@@ -152,29 +206,28 @@ public class UIStoreManager : MonoBehaviour
 
     private void EnterStorefront(MapNode mapNode)
     {
-        confirmButtonGroup.gameObject.SetActive(false);
-        //storefrontCanvas.gameObject.SetActive(true);
-        //storefrontCanvas.enabled = true;
+        confirmBuyGroup.alpha = 0f;
+        confirmBuyGroup.interactable = false;
 
         storefrontFullGroup.alpha = 1f;
         storefrontFullGroup.interactable = true;
 
-        // storefrontCanvas.enabled = !storefrontCanvas.enabled;
         currentStore = mapNode.GetComponent<StoreManager>();
         currentPlayer = GameplayTest.instance.currentPlayer; //mapNode.playerOccupied;
 
-        SpawnItemsInStore(mapNode);
+        UpdateItemsInStore(mapNode);
 
-        /*
-        for (int i = 0; i < itemInventory.Count; i++)
-        {
-            itemInventory[i] = currentStore.storeInventory[i];
-        }
-        */
+        //storeChatBubble.text = "\"Greetings, customer! Welcome to " + currentStore.playerOwner.entityName + "'s wonderful store! \nPlease purchase something.\"";
+        var greeting = "\"Greetings, customer! Welcome to " + currentStore.playerOwner.entityName + "'s wonderful store! \nPlease purchase something.\"";
+        storeChatTypewriter.ShowText(greeting);
 
-        storeChatBubble.text = "\"Greetings, customer! Welcome to " + currentStore.playerOwner.entityName + "'s wonderful store! \nPlease purchase something.\"";
-        storekeeperImage.color = currentStore.playerOwner.playerColor;
+        // Set colors
+        //storekeeperImage.color = currentStore.playerOwner.playerColor;
+        storeboat.color = currentStore.playerOwner.playerColor;
+        customerVisual.color = currentPlayer.playerColor;
 
+        MoveStoreboat();
+        MoveCustomerBoat();
         /*
         StockItems(stockedItems);
 
@@ -193,13 +246,39 @@ public class UIStoreManager : MonoBehaviour
         */
     }
 
+    private void MoveCustomerBoat()
+    {
+        //var startingPos = new Vector2(160, -55);
+        var startingPos = new Vector2(320, -75);
+
+        var motion = LMotion.Create(startingPos, customerRect.anchoredPosition, 0.4f)
+            //.WithEase(Ease.InQuad)
+            .WithEase(Ease.OutBack)
+            .BindToAnchoredPosition(customerRect);
+    }
+
+    private void MoveStoreboat()
+    {
+        var storeboatRect = storeboat.GetComponent<RectTransform>();
+        //var startingPos = new Vector2(-60, 20);
+        var startingPos = new Vector2(240, 20);
+
+        var motion = LMotion.Create(startingPos, storeboatRect.anchoredPosition, 0.35f)
+            //.WithEase(Ease.InQuad)
+            .WithEase(Ease.OutBack)
+            .BindToAnchoredPosition(storeboatRect);
+    }
+
     private void ExitStorefront()
     {
+        Debug.Log("ExitStorefront guh?");
         // Enable selection of items upon finishing a shopping sesh.
         EnableItemSelections();
-        DestroyAllStoreItems();
+        //DestroyAllStoreItems();
         //storefrontCanvas.enabled = false;
-        confirmButtonGroup.gameObject.SetActive(false);
+        //confirmBuyGroup.gameObject.SetActive(false);
+        confirmBuyGroup.alpha = 0f;
+        confirmBuyGroup.interactable = false;
         //storefrontCanvas.gameObject.SetActive(false);
 
         storefrontFullGroup.alpha = 0f;
@@ -211,6 +290,7 @@ public class UIStoreManager : MonoBehaviour
         // Disable buying of all other items.
         DisableItemSelections();
 
+        //if (currentPlayer.currentStates.Contains(EntityPiece.State.DeathsRow))
         if (currentPlayer.currentStates.Contains(EntityPiece.State.DeathsRow))
             storeChatBubble.text = "\"You have received " + item.itemName + ". \n Unfortunately, you've just entered <color=red>DEBT'S ROW</color>.\"";
         else if (item != null)
@@ -225,38 +305,82 @@ public class UIStoreManager : MonoBehaviour
         if (item == null)
         {
             // There is no item in that spot
-            storeChatBubble.text = "<size=36><color=red>SOLD OUT</color></size>";
-            storeChatBubble.text += "<color=yellow><sprite=\"Coin Icon\" index=0> ----</color>\n";
-            storeChatBubble.text += "<size=36>No more stock left.\n\n";
-            storeChatBubble.text += "<color=grey>\"Come back another time when we refill it!\"</color></size>";
+            var emptyStock = "<size=36><color=red>SOLD OUT</color></size>";
+            emptyStock += "<color=yellow><sprite=\"Coin Icon\" index=0> ----</color>\n";
+            emptyStock += "<size=36>No more stock left.\n\n";
+            emptyStock += "<color=grey>\"Come back another time when we refill it!\"</color></size>";
+
+            storeChatTypewriter.ShowText(emptyStock);
         }
         else
         {
+
+            var flavor = item.l_flavor.GetLocalizedString();
+            //var typewriter = storeChatBubble.GetComponent<TypewriterCore>();
+
+            //storeChatBubble.text = flavor;
+            storeChatTypewriter.ShowText(flavor);
+            /*
             storeChatBubble.text = "<size=36><color=lightblue>" + item.itemName + "</color></size>";
             storeChatBubble.text += "<color=yellow><sprite=\"Coin Icon\" index=0>" + item.basePrice + "</color>\n";
             storeChatBubble.text += "" + item.effectDescription + "\n\n";
             storeChatBubble.text += "<color=grey>" + item.flavorText + "</color>";
+            */
         }
     }
     private void OnTryBuyItemAt(int i)
     {
-        var selectedStoreItem = storeItemHolders[i].GetComponent<StoreSelectionHandler>().HeldItem;
+        selectedStoreHandler = storeItemHolders[i].GetComponent<StoreSelectionHandler>();
+        var item = selectedStoreHandler.HeldItem;
 
-        storeChatBubble.text = $"Buy {selectedStoreItem.itemName}?";
-        storeChatBubble.text += $"\nIt costs <color=yellow>@{selectedStoreItem.basePrice}</color>.";
-        if(currentPlayer.heldPoints <= selectedStoreItem.basePrice)
+        var confirmBuyText = $"\"Buy the {item.itemName}? It costs <color=yellow>{item.basePrice}</color><sprite=\"Coin Icon\" index=0>.\"";
+        if(currentPlayer.heldPoints <= item.basePrice)
         {
-            storeChatBubble.text += $"\n\nWARNING: You will be in <color=red>Debt's Row</color> upon buying!!!";
+            confirmBuyText += $"\n\n<color=red>[WARNING]</color> You don't have enough <sprite=\"Coin Icon\" index=0>, so buying this will put you in <color=red>Debt's Row</color>!";
         }
 
-        confirmButtonGroup.gameObject.SetActive(true);
+        storeChatTypewriter.ShowText(confirmBuyText);
+
+        //confirmBuyGroup.gameObject.SetActive(true);
+        ShowConfirmBuyGroup();
         EventSystem.current.SetSelectedGameObject(confirmYesButton);
     }
 
-    private void RemoveItemStockAt(int i)
+    // Button Functions
+    public void ConfirmBuyItem()
+    {
+        // YES
+        m_RemoveItemAt.RaiseEvent(selectedStoreHandler.itemIndex);
+    }
+
+    public void CancelBuyItem()
+    {
+        // NO
+        selectedStoreHandler.isCurrentlySelected = false;
+
+        HideConfirmBuyGroup();
+        EventSystem.current.SetSelectedGameObject(selectedStoreHandler.gameObject);
+    }
+
+    public void ShowConfirmBuyGroup()
+    {
+        confirmBuyGroup.alpha = 1f;
+        confirmBuyGroup.interactable = true;
+
+
+    }
+
+    public void HideConfirmBuyGroup()
+    {
+        confirmBuyGroup.alpha = 0f;
+        confirmBuyGroup.interactable = false;
+    }
+
+    private void OnRemoveItemStockAt(int i)
     {
         // Try to buy an item
-        var selectedStoreItem = storeItemHolders[i].GetComponent<StoreSelectionHandler>().HeldItem;
+        var selectedStoreItem = selectedStoreHandler.HeldItem;
+
         if (selectedStoreItem != null || currentPlayer.currentStates.Contains(EntityPiece.State.DeathsRow) ||
             currentPlayer.heldPoints >= selectedStoreItem.basePrice)
         {
@@ -282,6 +406,8 @@ public class UIStoreManager : MonoBehaviour
 
             currentStore.storeInventory[i] = null;
             m_ItemBought.RaiseEvent(selectedStoreItem);
+
+            HideConfirmBuyGroup();
         }
         else
         {

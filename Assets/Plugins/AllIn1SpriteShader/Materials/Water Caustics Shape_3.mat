@@ -16,10 +16,10 @@ Material:
   - CONTRAST_ON
   - DISTORT_ON
   - FADE_ON
-  - GHOST_ON
   - OUTBASEPIXELPERF_ON
   - OVERLAYMULT_ON
   - OVERLAY_ON
+  - POSTERIZE_ON
   - WAVEUV_ON
   m_InvalidKeywords:
   - _BLURHD_ON
@@ -120,21 +120,21 @@ Material:
     - _ColorSwapBlueLuminosity: 0.5
     - _ColorSwapGreenLuminosity: 0.5
     - _ColorSwapRedLuminosity: 0.5
-    - _Contrast: 0.75
+    - _Contrast: 1
     - _CullingOption: 0
-    - _DistortAmount: 0.301
-    - _DistortTexXSpeed: 3
-    - _DistortTexYSpeed: 3
+    - _DistortAmount: 0.35
+    - _DistortTexXSpeed: 2
+    - _DistortTexYSpeed: 2
     - _EditorDrawers: 7
     - _FadeAmount: 0.615
     - _FadeBurnGlow: 1
-    - _FadeBurnTransition: 0.061
+    - _FadeBurnTransition: 0.4
     - _FadeBurnWidth: 0.025
     - _FishEyeUvAmount: 0.35
     - _FlickerAlpha: 0
     - _FlickerFreq: 0.2
     - _FlickerPercent: 0.05
-    - _GhostBlend: 0.8
+    - _GhostBlend: 0.479
     - _GhostColorBoost: 0
     - _GhostTransparency: 1
     - _GlitchAmount: 3
@@ -200,8 +200,8 @@ Material:
     - _OverlayTextureScrollYSpeed: 0
     - _PinchUvAmount: 0.35
     - _PixelateSize: 32
-    - _PosterizeGamma: 0.75
-    - _PosterizeNumColors: 8
+    - _PosterizeGamma: 3
+    - _PosterizeNumColors: 2
     - _PosterizeOutline: 0
     - _RadialClip: 45
     - _RadialClip2: 0
@@ -229,7 +229,7 @@ Material:
     - _TwistUvRadius: 0.75
     - _WarpScale: 0.35
     - _WarpSpeed: 5.5
-    - _WarpStrength: 0.025
+    - _WarpStrength: 0.0259
     - _WaveAmount: 7
     - _WaveSpeed: 2.5
     - _WaveStrength: 7.5
@@ -261,7 +261,7 @@ Material:
     - _HologramStripeColor: {r: 0, g: 1, b: 1, a: 1}
     - _InnerOutlineColor: {r: 1, g: 0, b: 0, a: 1}
     - _OutlineColor: {r: 1, g: 1, b: 1, a: 1}
-    - _OverlayColor: {r: 0.94509804, g: 0.77255845, b: 0.7529412, a: 0.83137256}
+    - _OverlayColor: {r: 0.7529412, g: 0.94509804, b: 0.86657107, a: 0.83137256}
     - _ShadowColor: {r: 0, g: 0, b: 0, a: 1}
     - _ShineColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []

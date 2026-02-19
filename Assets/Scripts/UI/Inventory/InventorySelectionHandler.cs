@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using Coffee.UIEffects;
 
 public class InventorySelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler
 {
@@ -32,6 +33,8 @@ public class InventorySelectionHandler : MonoBehaviour, ISubmitHandler, IPointer
     [SerializeField] private float verticalMoveAmount = 30f;
     [SerializeField] private float moveTime = 0.1f;
     [Range(0f, 2f), SerializeField] private float scaleAmount = 1.1f;
+
+    [SerializeField] private UIEffect containerPattern;
 
     private Vector3 startPos;
     private Vector3 startScale;
@@ -174,11 +177,15 @@ public class InventorySelectionHandler : MonoBehaviour, ISubmitHandler, IPointer
         //StartCoroutine(MoveItem(true));
         // Display Detailed Item Information
         m_ItemSelected.RaiseEvent(heldItem);
+        containerPattern.transitionAutoPlaySpeed = 1;
+        containerPattern.transitionColorFilter = ColorFilter.MultiplyAdditive;
         //Debug.Log("selected ???");
     }
 
     public void OnDeselect(BaseEventData eventData)
     {
         //StartCoroutine(MoveItem(false));
+        containerPattern.transitionAutoPlaySpeed = 0f;
+        containerPattern.transitionColorFilter = ColorFilter.Multiply;
     }
 }

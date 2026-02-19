@@ -24,7 +24,7 @@ public class GameplayTest : MonoBehaviour
     // Tile Data and Shit IGNORE THIS SECTION FOR NOW
 
     [SerializeField]
-    private List<EntityPiece> playerUnits = new List<EntityPiece>();
+    public List<EntityPiece> playerUnits = new List<EntityPiece>();
     [SerializeField]
     private List<EntityPiece> nextPlayers = new List<EntityPiece>();
 
@@ -404,6 +404,8 @@ public class GameplayTest : MonoBehaviour
     {
         m_NextPlayerTurn.RaiseEvent(currentPlayer);
         currentPlayer.playerSprite.GetComponentInParent<SpriteMask>().transform.position -= new Vector3(0, 0, .05f);
+        currentPlayerInitialNode = currentPlayer.occupiedNode;
+        oldStamps = new List<Stamp.StampType>(currentPlayer.stamps);
         //m_NextTurnRound.RaiseEvent(turnRound);
     }
 
@@ -856,13 +858,15 @@ public class GameplayTest : MonoBehaviour
         }
         else if (m.CompareTag("Stamp"))
         {
-            Stamp.StampType stampToBeCollected = m.gameObject.GetComponent<Stamp>().stampType;
+            var stamp = m.gameObject.GetComponent<Stamp>();
+            Stamp.StampType stampToBeCollected = stamp.stampType;
             if (!p.stamps.Contains(stampToBeCollected))
             {
                 Debug.Log($"Collect {stampToBeCollected} stamp passed");
                 oldStamps = new List<Stamp.StampType>(p.stamps);
                 p.stamps.Add(stampToBeCollected);
                 //m_UpdatePlayerScore.RaiseEvent(currentPlayer.id); // Change this to a different event
+                stamp.PlayCollectStamp(); //plays timeline to show you picked this up
                 m_PassByStamp.RaiseEvent(p);
             }
         }
@@ -1068,7 +1072,7 @@ public class GameplayTest : MonoBehaviour
             }
             else if (m.CompareTag("MoveAgain"))
             {
-                oldStamps.Clear();
+                oldStamps = new List<Stamp.StampType>(currentPlayer.stamps);
                 oldPoints = 0;
                 oldRep = 0;
 
