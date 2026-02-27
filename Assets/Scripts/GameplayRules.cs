@@ -43,6 +43,15 @@ public struct GameplayRules
         numberOfPlayers = players;
     }
 
+    public GameplayRules(GameplayRules ruleset)
+    {
+        board = ruleset.board;
+
+        pointGoal = ruleset.pointGoal;
+        storeLimit = ruleset.storeLimit;
+        numberOfPlayers = ruleset.numberOfPlayers;
+    }
+
     public void FinishConfigureGameplayRules()
     {
 

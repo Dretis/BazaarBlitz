@@ -16,6 +16,8 @@ public class UIPromptManager : MonoBehaviour
     private Coroutine oldNextPlayerGo;
     private EntityPiece currentPlayer;
 
+    private MotionHandle goTurnMotion;
+
     [SerializeField] private Color normalPromptColor;
 
     [SerializeField] private TAnimCore rollTextAnimator;
@@ -213,11 +215,15 @@ public class UIPromptManager : MonoBehaviour
         NormalizeInventoryPrompt(ps);
         ContextualizeMovePrompt(ps);
 
-        if (NextPlayerGoIsRunning)
+        
+        //if (NextPlayerGoIsRunning)
+        if(goTurnMotion.IsPlaying())
         {
-            NextPlayerGoIsRunning = false;
+            //NextPlayerGoIsRunning = false;
             StopCoroutine(oldNextPlayerGo);
+            goTurnMotion.TryCancel();
         }
+        
         oldNextPlayerGo = StartCoroutine(NotifyNextPlayerGo(ps));
     }
 
@@ -239,9 +245,24 @@ public class UIPromptManager : MonoBehaviour
         turnTypewriter.GetComponent<TextMeshProUGUI>().color = ps.playerColor;
         turnTypewriter.ShowText(localizedString.GetLocalizedString());
 
+        var goTurnRect = turnTypewriter.GetComponent<RectTransform>();
+        Vector2 startingPos = new Vector2(0, 150);
+        Vector2 showingPos = new Vector2(0, -25);
+
+        goTurnMotion = LMotion.Create(startingPos, showingPos, 1f)
+            .WithEase(Ease.OutBack)
+            .BindToAnchoredPosition(goTurnRect);
+        //BindToAnchoredPosition
+
         yield return new WaitForSeconds(2f);
 
-        turnTypewriter.StartDisappearingText();
+        //if(goTurnMotion.)
+        //turnTypewriter.ShowText("");
+        goTurnMotion = LMotion.Create(showingPos, startingPos, .75f)
+            .WithEase(Ease.OutQuad)
+            .BindToAnchoredPosition(goTurnRect);
+
+        //turnTypewriter.StartDisappearingText();
 
         NextPlayerGoIsRunning = false;
         yield return null;
@@ -249,7 +270,8 @@ public class UIPromptManager : MonoBehaviour
 
     private void RolledDice(int diceRoll)
     {
-        inputPrompt.text = "";
+        //inputPrompt.text = "";
+        DisplayMoveAroundPrompt();
 
         StartCoroutine(DisplayDiceRoll(diceRoll));
 
@@ -279,11 +301,18 @@ public class UIPromptManager : MonoBehaviour
         HideMenuPrompt();
     }
 
+    private void DisplayMoveAroundPrompt()
+    {
+        //inputPrompt.text = "<sprite name=stick_l><color=white></color> Move";
+        inputPrompt.text = "\n<sprite name=up><color=white></color> View Board";
+        inputPrompt.text += "\n<sprite name=lb><color=white></color> Player Info";
+    }
+
     private void DisplayRollPrompt(EntityPiece ps)
     {
         // This will get swapped out with a menu selection
-        inputPrompt.text = "<sprite=0><color=white></color> Roll Dice";
-        inputPrompt.text += "\n<sprite=1><color=white></color> Back";
+        inputPrompt.text = "<sprite name=down><color=white></color> Roll Dice";
+        inputPrompt.text += "\n<sprite name=right><color=white></color> Back";
 
         //rollTypewriter.ShowText("<size=84><bounce a=.3>Rolling...</>");
         //LMotion.Punch.Create(0, 25, 0.5f)
@@ -296,8 +325,9 @@ public class UIPromptManager : MonoBehaviour
     private void DisplayFreeviewPrompt()
     {
         inputPrompt.text = "<color=white>Freeview Mode</color>";
-        inputPrompt.text += "\n<sprite=0><color=white></color> Select Tile";
-        inputPrompt.text += "\n<sprite=1><color=white></color> Back";
+        //inputPrompt.text += "\n<sprite name=stick_l><color=white></color> Move";
+        inputPrompt.text += "\n<sprite name=down><color=white></color> Select Tile";
+        inputPrompt.text += "\n<sprite name=right><color=white></color> Back";
         //inputPrompt.text += "\n<color=white>[Scroll Wheel]</color> Zoom In/Out";
     }
 
@@ -317,8 +347,12 @@ public class UIPromptManager : MonoBehaviour
     {
         //ClearInputText();
 
-        if (GameplayTest.instance.phase == GameplayTest.GamePhase.PickDirection) //fuck ass way for ITM to not show while exiting freeview during pickdirection
+        if (GameplayTest.instance.phase == GameplayTest.GamePhase.PickDirection)
+        {
+            DisplayMoveAroundPrompt();
+            //fuck ass way for ITM to not show while exiting freeview during pickdirection
             return;
+        }
 
         ClearInputText();
         //menuPrompt.alpha = 1;
@@ -381,7 +415,8 @@ public class UIPromptManager : MonoBehaviour
 
     private void DisplayStorefrontPrompt(MapNode mapNode)
     {
-        inputPrompt.text = "<sprite=0><color=white></color> Purchase";
+        inputPrompt.text = "";
+        //inputPrompt.text = "<sprite=0><color=white></color> Purchase";
         /*
         inputPrompt.text = "<color=white>Hover over</color> items to see details.\n";
         inputPrompt.text += "<color=white>Left click</color> to buy an item.\n";
@@ -391,13 +426,14 @@ public class UIPromptManager : MonoBehaviour
 
     private void DisplayLeavePrompt(ItemStats item)
     {
-        inputPrompt.text = "<sprite=0><color=white></color> Leave";
+        inputPrompt.text = "";
+        //inputPrompt.text = "<sprite=0><color=white></color> Leave";
     }
 
     private void OnLandOnVendor(MapNode mapNode)
     {
-        inputPrompt.text = "<sprite=0><color=white></color> Purchase";
-        inputPrompt.text += "\n<sprite=1><color=white></color> Leave Vendor";
+        inputPrompt.text = "<sprite name=down><color=white></color> Buy and Enter";
+        inputPrompt.text += "\n<sprite name=right><color=white></color> Leave Vendor";
     }
 
     private void ContextualizeMovePrompt(EntityPiece ps)
@@ -432,7 +468,7 @@ public class UIPromptManager : MonoBehaviour
 
     private void NormalizeBuildPrompt(EntityPiece ps)
     {
-        var buildCount = GameplayTest.instance.storeLimit - ps.storeCount;
+        var buildCount = GameplayTest.instance.currentRuleset.storeLimit - ps.storeCount;
 
         if(buildCount <= 0 || !ps.occupiedNode.CompareTag("Encounter"))
         {
@@ -569,6 +605,7 @@ public class UIPromptManager : MonoBehaviour
         LMotion.Create(backseatGroup.alpha, 1, 0.2f)
             .Bind(x => backseatGroup.alpha = x);
 
+        inputPrompt.enabled = false;
         //LMotion.Create(initialInputPromptPos, hiddenInputPromptPos, 0.2f)
         //    .BindToPosition(inputPromptTransform.transform);
 
@@ -581,6 +618,7 @@ public class UIPromptManager : MonoBehaviour
         LMotion.Create(backseatGroup.alpha, 0, 0.2f)
             .Bind(x => backseatGroup.alpha = x);
 
+        inputPrompt.enabled = true;
         //LMotion.Create(hiddenInputPromptPos, initialInputPromptPos, 0.2f)
         //    .BindToPosition(inputPromptTransform.transform);
 

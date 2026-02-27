@@ -49,6 +49,7 @@ public class PlayerColorSelectionHandler : MonoBehaviour, ISubmitHandler, IPoint
         setup.SetColor(colorPreset.mainColor);
         //setup.SetSelectedPalette(colorPreset.baggieColorPalette);
         setup.SetPalette(colorPreset.baggieColorPalette);
+        setup.SetBoatPalette(colorPreset.boatColorPalette);
         setup.SetName(colorPreset.presetName);
         setup.SetSelectedColorButton(button);
         // set Baggie name here too with baggieColorName

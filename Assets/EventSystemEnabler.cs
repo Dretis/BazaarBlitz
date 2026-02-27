@@ -5,9 +5,29 @@ using UnityEngine.InputSystem.UI;
 
 public class EventSystemEnabler : MonoBehaviour
 {
+    //[SerializeField] private InputActionAsset actionAssetToUse;
     private InputSystemUIInputModule _inputSystemUIInputModule;
-    [SerializeField] private InputActionAsset actionAssetToUse;
     private MultiplayerEventSystem _eventSystem;
+
+    [Header("PlayerRoots")]
+    [SerializeField] private GameObject mainCanvas;
+    [SerializeField] private GameObject storefrontCanvas;
+
+    [Header("Listen on Event Channels")]
+    public NodeEventChannelSO m_LandOnStorefront;
+    public VoidEventChannelSO m_ExitStorefront;
+
+    private void OnEnable()
+    {
+        m_LandOnStorefront.OnEventRaised += OnLandOnStorefront;
+        m_ExitStorefront.OnEventRaised += OnExitStorefront;
+    }
+
+    private void OnDisable()
+    {
+        m_LandOnStorefront.OnEventRaised -= OnLandOnStorefront;
+        m_ExitStorefront.OnEventRaised -= OnExitStorefront;
+    }
 
     void Start()
     {
@@ -15,6 +35,22 @@ public class EventSystemEnabler : MonoBehaviour
         _eventSystem = GetComponent<MultiplayerEventSystem>();
     }
 
+    private void ChangePlayerRoot(GameObject o)
+    {
+        _eventSystem.playerRoot = o;
+    }
+
+    private void OnLandOnStorefront(MapNode node)
+    {
+        ChangePlayerRoot(storefrontCanvas);
+    }
+
+    private void OnExitStorefront()
+    {
+        ChangePlayerRoot(mainCanvas);
+    }
+
+    /*
     private void OnEnable()
     {
         StartCoroutine(Co_ActivateInputComponent());
@@ -28,9 +64,5 @@ public class EventSystemEnabler : MonoBehaviour
         _inputSystemUIInputModule.enabled = true;
         _inputSystemUIInputModule.actionsAsset = actionAssetToUse;
     }
-
-    private void ChangePlayerRoot(GameObject o)
-    {
-        _eventSystem.playerRoot = o;
-    }
+    */
 }

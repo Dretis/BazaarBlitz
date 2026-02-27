@@ -20,6 +20,7 @@ public class SoundManager : MonoBehaviour
     private EntityPiece stupidFuck;
 
     [Header("Listen on Event Channels")]
+    public VoidEventChannelSO m_ReturnToMainMenu;
     public VoidEventChannelSO m_EnteredOverworldScene;
     public VoidEventChannelSO m_EnteredCombatScene;
     [Space]
@@ -52,6 +53,8 @@ public class SoundManager : MonoBehaviour
 
     [Space]
     public NodeEventChannelSO m_LandOnStorefront;
+    public ItemEventChannelSO m_HoverItemInStorefront;
+    public IntEventChannelSO m_TryBuyItemAt;
 
     [Space]
     public PlayerEventChannelSO m_EnterLevelUp;
@@ -103,6 +106,7 @@ public class SoundManager : MonoBehaviour
     private void OnEnable()
     {
         //World Events
+        m_ReturnToMainMenu.OnEventRaised += OnReturnToMainMenu;
         m_EnteredCombatScene.OnEventRaised += StopOverworldMusic;
         m_EnteredOverworldScene.OnEventRaised += PlayOverworldMusic;
         m_PassByStamp.OnEventRaised += PlayStampSound;
@@ -130,6 +134,8 @@ public class SoundManager : MonoBehaviour
         m_TryExamineTile.OnEventRaised += PlayMoveSoundWithVector2;
 
         m_LandOnStorefront.OnEventRaised += OnLandOnStorefront;
+        m_HoverItemInStorefront.OnEventRaised += OnHoverItemInStorefront;
+        m_TryBuyItemAt.OnEventRaised += OnTryBuyItemAt;
 
         m_EnterLevelUp.OnEventRaised += OnEnterLevelUp;
         m_AugmentedDieFaceValue.OnEventRaised += PlayStampSound;
@@ -154,6 +160,7 @@ public class SoundManager : MonoBehaviour
     private void OnDisable()
     {
         //World Events
+        m_ReturnToMainMenu.OnEventRaised -= OnReturnToMainMenu;
         m_EnteredCombatScene.OnEventRaised -= StopOverworldMusic;
         m_EnteredOverworldScene.OnEventRaised -= PlayOverworldMusic;
         m_PassByStamp.OnEventRaised -= PlayStampSound;
@@ -180,6 +187,8 @@ public class SoundManager : MonoBehaviour
         m_TryExamineTile.OnEventRaised -= PlayMoveSoundWithVector2;
 
         m_LandOnStorefront.OnEventRaised -= OnLandOnStorefront;
+        m_HoverItemInStorefront.OnEventRaised -= OnHoverItemInStorefront;
+        m_TryBuyItemAt.OnEventRaised -= OnTryBuyItemAt;
 
         m_EnterLevelUp.OnEventRaised -= OnEnterLevelUp;
         m_AugmentedDieFaceValue.OnEventRaised -= PlayStampSound;
@@ -200,7 +209,10 @@ public class SoundManager : MonoBehaviour
         m_SuperEffectiveAttack.OnEventRaised -= PlaySuperEffectiveHitSound;
         m_SomeoneDied.OnEventRaised -= PlayDeathSound;
     }
-
+    private void OnReturnToMainMenu()
+    {
+        Destroy(this.gameObject);
+    }
     private void PlayOverworldMusic()
     {
         //overworldThemeInstance.setPaused(false);
@@ -418,6 +430,19 @@ public class SoundManager : MonoBehaviour
     {
         PlayEnterStoreSound();
         //FMODUnity.RuntimeManager.StudioSystem.setParameterByName("GameState", 2);
+    }
+
+    private void OnHoverItemInStorefront(ItemStats item)
+    {
+        if (item == null)
+            PlayUndoSound();
+        else
+            PlayMoveSound();
+    }
+
+    private void OnTryBuyItemAt(int index)
+    {
+        PlayUseItemSound(index);
     }
 
     private void OnEnterLevelUp(EntityPiece entity)

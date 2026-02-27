@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 using UnityEditor;
 using UnityEngine.UI;
 using Unity.VisualScripting;
+using UnityEngine.InputSystem.HID;
 
 public class UILevelUpManager : MonoBehaviour
 {
@@ -192,13 +193,22 @@ public class UILevelUpManager : MonoBehaviour
             m_AugmentedDieFaceValue.RaiseEvent();
             UpdatePlayerDiceStatsInLevelUp(currentPlayer);
             remainingSP.text = $"Remaining SP: {currentPlayer.unspentLevelUpPoints}";
-            tooltipText.text = $"Increase  <sprite={(int)diceType}> <color=white>[{selectedDie + 1}]</color> to <color=white>[{selectedDie + 2}]</color> for ";
-            
-            if(currentPlayer.unspentLevelUpPoints < GameplayTest.instance.costArray[selectedDie + 1])
-                tooltipText.text += $"<color=red>{GameplayTest.instance.costArray[selectedDie+1]} SP</color>.";  
-            else
-                tooltipText.text += $"<color=#8AEFFF>{GameplayTest.instance.costArray[selectedDie + 1]} SP</color>.";
 
+            Debug.Log("selctedDie = " + selectedDie);
+            if (selectedDie + 2 >= GameplayTest.instance.costArray.Length)
+            {
+                tooltipText.text = $"This <sprite={(int)diceType}> die face cannot be augmented further!";
+            }
+            else
+            {
+                tooltipText.text = $"Increase <sprite={(int)diceType}> <color=white>[{selectedDie+1}]</color> to <color=white>[{selectedDie + 2}]</color> for ";
+
+                if (GameplayTest.instance.currentPlayer.unspentLevelUpPoints < GameplayTest.instance.costArray[selectedDie + 1])
+                    tooltipText.text += $"<color=red>{GameplayTest.instance.costArray[selectedDie + 1]} SP</color>.";
+                else
+                    tooltipText.text += $"<color=#8AEFFF>{GameplayTest.instance.costArray[selectedDie + 1]} SP</color>.";
+            }
+            
             if (currentPlayer.unspentLevelUpPoints <= 0)
             {
                 m_ExitLevelUp.RaiseEvent();

@@ -29,6 +29,11 @@ public class UIScreenManager : MonoBehaviour
     {
         if(currentScreen != null) screenStack.Add(currentScreen);
     }
+    public void ExitToDesktop()
+    {
+        Debug.Log("Exitting Cho Noi, going to desktop. Goodbye gamer!");
+        Application.Quit();
+    }
 
     public void GoToScene(string sceneName)
     {

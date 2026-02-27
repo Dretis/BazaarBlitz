@@ -41,6 +41,18 @@ public class TestingEvents : MonoBehaviour
             Debug.Log("DEBUG | Turning on P2 test input");
             debugPlayerInput.transform.GetChild(1).gameObject.SetActive(true);
         }
+        if (debugPlayerInputOn &&
+            Input.GetKeyDown(KeyCode.Keypad3))
+        {
+            Debug.Log("DEBUG | Turning on P3 test input");
+            debugPlayerInput.transform.GetChild(2).gameObject.SetActive(true);
+        }
+        if (debugPlayerInputOn &&
+            Input.GetKeyDown(KeyCode.Keypad4))
+        {
+            Debug.Log("DEBUG | Turning on P4 test input");
+            debugPlayerInput.transform.GetChild(3).gameObject.SetActive(true);
+        }
         /*
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {

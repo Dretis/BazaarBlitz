@@ -49,6 +49,7 @@ MonoBehaviour:
   overworldBGM: {fileID: 4413332248883350849}
   musicVolume: 0.7
   SFXVolume: 0.8
+  m_ReturnToMainMenu: {fileID: 11400000, guid: c85b669722d3efb4491922442792d90f, type: 2}
   m_EnteredOverworldScene: {fileID: 11400000, guid: 56c6da0795bbaa44bbf1fe3b8e42122d, type: 2}
   m_EnteredCombatScene: {fileID: 11400000, guid: b06b734815e5e434087c29d416ff002e, type: 2}
   m_PlayerMovedOnBoard: {fileID: 11400000, guid: 3e053258b5caff14898c85eb40602276, type: 2}
@@ -70,6 +71,8 @@ MonoBehaviour:
   m_ItemUsed: {fileID: 11400000, guid: 848f52d6f0e789e4ab1731d31de0ae96, type: 2}
   m_ItemBought: {fileID: 11400000, guid: 1f1870f6bf259af498309d86d8f595b2, type: 2}
   m_LandOnStorefront: {fileID: 11400000, guid: f648c693d8451764f96f063b6b3da44b, type: 2}
+  m_HoverItemInStorefront: {fileID: 11400000, guid: a0556718fd4b2eb4089673c41068ff8e, type: 2}
+  m_TryBuyItemAt: {fileID: 11400000, guid: 207853df4b216b54e9edf283daf49d2f, type: 2}
   m_EnterLevelUp: {fileID: 11400000, guid: 2e765a5770dc0604e9dbf9fa24b60fba, type: 2}
   m_AugmentedDieFaceValue: {fileID: 11400000, guid: 0ef8bbaa72c4aa646bc8ae2c4105d54d, type: 2}
   m_FailAugmentDieFaceValue: {fileID: 11400000, guid: 1d94c6c07d87eef4fa64e79900fdc79b, type: 2}
@@ -126,7 +129,7 @@ MonoBehaviour:
     Path: event:/BGM_Counterflow
   Event: 
   PlayEvent: 0
-  StopEvent: 0
+  StopEvent: 2
   AllowFadeout: 1
   TriggerOnce: 0
   Preload: 0

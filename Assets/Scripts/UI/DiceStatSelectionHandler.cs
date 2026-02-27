@@ -59,12 +59,20 @@ public class DiceStatSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerC
         // Highlight selected die face
         // Show how much SP it costs to upgrade +1 Face Value
         diceFaceText.ShowText($"<incr>{diceFaceValue}");
-        tooltipText.text = $"Increase  <sprite={(int)diceType}> <color=white>[{diceFaceValue}]</color> to <color=white>[{diceFaceValue + 1}]</color> for ";
 
-        if (GameplayTest.instance.currentPlayer.unspentLevelUpPoints < GameplayTest.instance.costArray[diceFaceValue + 1])
-            tooltipText.text += $"<color=red>{GameplayTest.instance.costArray[diceFaceValue + 1]} SP</color>.";
+        if(diceFaceValue+1 >= GameplayTest.instance.costArray.Length)
+        {
+            tooltipText.text = $"This <sprite={(int)diceType}> die face cannot be augmented further!";
+        }
         else
-            tooltipText.text += $"<color=#8AEFFF>{GameplayTest.instance.costArray[diceFaceValue + 1]} SP</color>.";
+        {
+            tooltipText.text = $"Increase <sprite={(int)diceType}> <color=white>[{diceFaceValue}]</color> to <color=white>[{diceFaceValue + 1}]</color> for ";
+
+            if (GameplayTest.instance.currentPlayer.unspentLevelUpPoints < GameplayTest.instance.costArray[diceFaceValue])
+                tooltipText.text += $"<color=red>{GameplayTest.instance.costArray[diceFaceValue]} SP</color>.";
+            else
+                tooltipText.text += $"<color=#8AEFFF>{GameplayTest.instance.costArray[diceFaceValue]} SP</color>.";
+        }
 
         rec.localScale = Vector3.one * scaleMult;
     }

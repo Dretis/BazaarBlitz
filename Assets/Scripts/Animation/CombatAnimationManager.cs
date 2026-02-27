@@ -13,6 +13,8 @@ public class CombatAnimationManager : MonoBehaviour
 
     [Header("Additional Objects")]
     [SerializeField] private GameObject boat;
+    [SerializeField] private BoatMotionManager boatMotionManager;
+    [SerializeField] private PlayerPaletteLoader combatBoatPaletteLoader;
     private Vector3 boatInitialPos;
     [SerializeField] private GameObject gunSniperCrosshair;
 
@@ -53,6 +55,7 @@ public class CombatAnimationManager : MonoBehaviour
     public EntityItemEventChannelSO m_EntityDied; // someone's HP dropped to 0, Victory, show rewards
     //public VoidEventChannelSO m_Stalemate; // Combat is suspended, no one died this time
     //public IntItemListEventChannelSO m_VictoryAgainstEnemy;
+    public VoidEventChannelSO m_EnteredOverworldScene;
 
     private void OnEnable()
     {
@@ -66,6 +69,8 @@ public class CombatAnimationManager : MonoBehaviour
 
         m_DamageTaken.OnEventRaised += OnDamageTaken;
         m_EntityDied.OnEventRaised += OnEntityDied;
+
+        m_EnteredOverworldScene.OnEventRaised += OnEnteredOverworldScene;
     }
 
     private void OnDisable()
@@ -80,6 +85,8 @@ public class CombatAnimationManager : MonoBehaviour
 
         m_DamageTaken.OnEventRaised -= OnDamageTaken;
         m_EntityDied.OnEventRaised -= OnEntityDied;
+
+        m_EnteredOverworldScene.OnEventRaised -= OnEnteredOverworldScene;
     }
 
 
@@ -90,7 +97,16 @@ public class CombatAnimationManager : MonoBehaviour
 
         boatInitialPos = boat.transform.position;
     }
-    
+
+    public void SetCombatBoatPalette(EntityPiece entity)
+    {
+        if (entity.pBoatLoader.TryGetComponent<PlayerPaletteLoader>(out PlayerPaletteLoader pal))
+        {
+            combatBoatPaletteLoader.SetInspectorPalette(pal.GetInspectorPalette());
+        }
+    }
+
+
     private void OnSwapPhase(EntityPiece entity)
     {
         //if (entity.fightingPosition != fightingPosition) return;
@@ -286,6 +302,11 @@ public class CombatAnimationManager : MonoBehaviour
         animator.SetTrigger("Death");
 
         Debug.Log("I died lol");
+    }
+
+    private void OnEnteredOverworldScene()
+    {
+        boatMotionManager.StopPBoatMotion();
     }
 
     // Helper functions

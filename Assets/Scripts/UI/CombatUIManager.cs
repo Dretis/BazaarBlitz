@@ -46,6 +46,12 @@ public class CombatUIManager : MonoBehaviour
         {
             player1Renderer.gameObject.GetComponent<PlayerPaletteLoader>().
                 SetInspectorPalette(pal1.GetInspectorPalette());
+
+            if (!player1.isEnemy)
+            {
+                var p1AnimManager = player1Renderer.GetComponent<CombatAnimationManager>();
+                p1AnimManager.SetCombatBoatPalette(player1); 
+            }
         }
         else
         {
@@ -57,6 +63,12 @@ public class CombatUIManager : MonoBehaviour
         {
             player2Renderer.gameObject.GetComponent<PlayerPaletteLoader>().
                 SetInspectorPalette(pal2.GetInspectorPalette());
+
+            if (!player2.isEnemy)
+            {
+                var p2AnimManager = player2Renderer.GetComponent<CombatAnimationManager>();
+                p2AnimManager.SetCombatBoatPalette(player2);
+            }
         }
         else
         {

@@ -27,6 +27,8 @@ public class ScoreManager : MonoBehaviour
     //public PlayerEventChannelSO m_CheerForPlayer;
 
     [Header("Listen On Event Channels")]
+    public VoidEventChannelSO m_GameStart; // should only be called once
+
     public IntEventChannelSO m_ChangeInScore;
     public IntEventChannelSO m_PlayerScoreDecreased;
     public IntEventChannelSO m_PlayerScoreIncreased;
@@ -52,6 +54,8 @@ public class ScoreManager : MonoBehaviour
 
     private void OnEnable()
     {
+        //m_GameStart.OnEventRaised += OnGameStart;
+
         m_ChangeInScore.OnEventRaised += UpdateScoreForPlayer;
         m_PlayerScoreDecreased.OnEventRaised += OnPlayerScoreDecreased;
         m_PlayerScoreIncreased.OnEventRaised += OnPlayerScoreIncreased;
@@ -75,10 +79,13 @@ public class ScoreManager : MonoBehaviour
         m_RefreshedActiveEffects.OnEventRaised += OnRefreshedActiveEffects;
 
         m_PlayerWon.OnEventRaised += OnPlayerWon;
+        m_GameStart.OnEventRaised += OnGameStart;
     }
 
     private void OnDisable()
     {
+        //m_GameStart.OnEventRaised -= OnGameStart;
+
         m_ChangeInScore.OnEventRaised -= UpdateScoreForPlayer;
         m_PlayerScoreDecreased.OnEventRaised -= OnPlayerScoreDecreased;
         m_PlayerScoreIncreased.OnEventRaised -= OnPlayerScoreIncreased;
@@ -102,9 +109,15 @@ public class ScoreManager : MonoBehaviour
         m_RefreshedActiveEffects.OnEventRaised -= OnRefreshedActiveEffects;
 
         m_PlayerWon.OnEventRaised -= OnPlayerWon;
+        m_GameStart.OnEventRaised -= OnGameStart;
     }
 
-    void Start()
+    void Awake()
+    {
+        InitializePlayerScores();
+    }
+
+    private void InitializePlayerScores()
     {
         //playerInfoDiceNumbers.Add("1");
         players = GameplayTest.instance.playerUnits;
@@ -115,6 +128,25 @@ public class ScoreManager : MonoBehaviour
             playerScoreHandlers[i].AssignPlayerToScore(players[i]);
             playerScoreHandlers[i].InitialScoreSetup();
             playerScoreHandlers[i].ToggleCurrentPlayerEffect(false);
+        }
+    }
+
+    private void OnGameStart()
+    {
+        Debug.Log($"ScoreManager | OnGameStart");
+        //InitializePlayerScores();
+        var playerCount = GameplayTest.instance.currentRuleset.numberOfPlayers;
+        players = GameplayTest.instance.playerUnits;
+
+        for (int i = 4; i > playerCount; i--)
+        {
+            Debug.Log($"playerScoreHandlers[^1] = {playerScoreHandlers[^1]}");
+            //playerUnits.Remove(playerUnits[^1]);
+            //playerScoreHandlers[^1].gameObject.SetActive(false);
+            //playerScoreHandlers[^1].enabled = false;
+
+            playerScoreHandlers[^1].DisablePlayerScore();
+            playerScoreHandlers.Remove(playerScoreHandlers[^1]);
         }
     }
 

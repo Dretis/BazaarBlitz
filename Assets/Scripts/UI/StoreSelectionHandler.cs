@@ -4,7 +4,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using Unity.VisualScripting;
 using LitMotion;
 using LitMotion.Extensions;
 
@@ -28,7 +27,7 @@ public class StoreSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClic
     private RectTransform hoverRect;
 
     [Header("Broadcast On Event")]
-    public ItemEventChannelSO m_HightlightItem; // basically hovering on item in inv
+    public ItemEventChannelSO m_HoverItemInStorefront; // basically hovering on item in inv
 
     public IntEventChannelSO m_TryBuyItemAt;
     public IntEventChannelSO m_RemoveItemAt;
@@ -143,7 +142,7 @@ public class StoreSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClic
 
     public void OnSelect(BaseEventData eventData)
     {
-        m_HightlightItem.RaiseEvent(heldItem);
+        m_HoverItemInStorefront.RaiseEvent(heldItem);
         HoverItem();
         //StartCoroutine(MoveItem(true));
     }

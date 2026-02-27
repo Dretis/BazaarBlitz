@@ -89,9 +89,11 @@ public class GameplayTest : MonoBehaviour
     }
 
     [Header("Game Match Info")]
-    public int targetGoal = 4000;
-    public int storeLimit = 4;
-    public int playerCount = 4;
+    public GameplayRules currentRuleset;
+    //public int targetGoal = 4000;
+    //public int storeLimit = 4;
+    //public int playerCount = 4;
+
     public int turnRound = 1; // Round based on every player has had a turn
     private int playersActed = 0; // goes up every time a unique players turn is done
 
@@ -154,6 +156,7 @@ public class GameplayTest : MonoBehaviour
     public NodeListFloatEventChannelSO m_DamageAffectedNodes; // listening
 
     [Header("Broadcast on Event Channels")]
+    public VoidEventChannelSO m_GameStart;
     public PlayerEventChannelSO m_PlayerWon;
     public PlayerListEventChannelSO m_ResultFinalScores;
 
@@ -376,6 +379,30 @@ public class GameplayTest : MonoBehaviour
         //playerUnits.AddRange(FindObjectsOfType<EntityPiece>());
         //nextPlayers = playerUnits;
         encounterScreen.SetActive(false);
+        if(PlayerConfigurationManager.instance != null)
+        {
+            Debug.Log("[ :) ] Started game from PrepScene (Correct)");
+            currentRuleset = PlayerConfigurationManager.instance.ruleset;
+
+            //playerUnits.Count = 2;
+        }
+        else
+        {
+            Debug.Log("[ :( ] Started game from UnityEditor (Wrong in the real game)");
+            //currentRuleset.numberOfPlayers = playerUnits.Count;
+        }
+
+        Debug.Log($"Number of Players in this Game: {currentRuleset.numberOfPlayers}");
+
+        for (int i = 4; i > currentRuleset.numberOfPlayers; i--)
+        {
+            Debug.Log($"playerUnits[^1] = {playerUnits[^1]}");
+            // turn off the unused player slots
+            playerUnits[^1].gameObject.SetActive(false);
+            playerUnits[^1].enabled = false;
+
+            playerUnits.Remove(playerUnits[^1]);
+        }
 
         foreach (var player in playerUnits)
         {
@@ -389,8 +416,6 @@ public class GameplayTest : MonoBehaviour
             m_AssignPlayerToController.RaiseEvent(player);
         }
 
-        playerCount = playerUnits.Count;
-
         // Get the player at the start of the list.
         currentPlayer = nextPlayers[0];
         //currentPlayer = nextPlayers[playerUnits.Count - 1];
@@ -398,10 +423,15 @@ public class GameplayTest : MonoBehaviour
 
         //turnText.text = currentPlayer.entityName + "'s Turn!";
         //turnText.color = currentPlayer.playerColor;
+
+        //m_GameStart.RaiseEvent();
+        //Debug.Log("m_GameStart raised!!");
     }
 
     private void Start()
     {
+        m_GameStart.RaiseEvent();
+
         m_NextPlayerTurn.RaiseEvent(currentPlayer);
         currentPlayer.playerSprite.GetComponentInParent<SpriteMask>().transform.position -= new Vector3(0, 0, .05f);
         currentPlayerInitialNode = currentPlayer.occupiedNode;
@@ -848,7 +878,7 @@ public class GameplayTest : MonoBehaviour
             }
             m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
 
-            if (p.heldPoints >= targetGoal)
+            if (p.heldPoints >= currentRuleset.pointGoal)
             {
                 Debug.Log("BRO HE WON");
                 winner = p;
@@ -1476,7 +1506,7 @@ public class GameplayTest : MonoBehaviour
 
 
             playersActed++;
-            if (playersActed == playerCount)
+            if (playersActed == currentRuleset.numberOfPlayers)
             {
                 Debug.Log($"Round {turnRound} over.");
                 turnRound++;
@@ -1616,6 +1646,11 @@ public class GameplayTest : MonoBehaviour
             //encounterOver = true;
             currentPlayer.heldPoints -= item.basePrice;
             currentPlayer.ReputationPoints += 20 + (item.basePrice / 10);
+
+            if (currentPlayer.heldPoints < 0)
+            {
+                currentPlayer.currentStates.Add(EntityPiece.State.DeathsRow);
+            }
 
             m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
 

@@ -96,6 +96,13 @@ public class PlayerSetupMenuController : MonoBehaviour
         PlayerConfigurationManager.instance.SetPlayerPalette(playerIndex, palette);
     }
 
+    public void SetBoatPalette(List<Color> palette)
+    {
+        if (!inputEnabled) return;
+
+        PlayerConfigurationManager.instance.SetPlayerBoatPalette(playerIndex, palette);
+    }
+
     public void SetName(string name)
     {
         if (!inputEnabled) return;

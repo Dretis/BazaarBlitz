@@ -13,6 +13,7 @@ public class PlayerScoreHandler : MonoBehaviour
     private EntityPiece assignedPlayer;
     [SerializeField] private int playerMoneyNumber;
     [SerializeField] private int playerHPNumber;
+    [SerializeField] private int playerExpNumber;
 
     [Header("Colors")]
     [SerializeField] private Color goalMoneyColor;
@@ -35,15 +36,21 @@ public class PlayerScoreHandler : MonoBehaviour
 
     [Header("General UI Elements")]
     [SerializeField] private TextMeshProUGUI playerName;
-    [SerializeField] private TextMeshProUGUI playerLevel;
-    [SerializeField] private TextMeshProUGUI playerExp;
+    //[SerializeField] private TextMeshProUGUI playerLevel;
+    //[SerializeField] private TextMeshProUGUI playerExp;
 
     //[SerializeField] private List<TextMeshProUGUI> playerMoneys;
     //[SerializeField] private List<TypewriterCore> playerMoneys;
+    [Space]
     [SerializeField] private TMP_Text playerMoney;
-
+    
     [SerializeField] private TextMeshProUGUI playerCurrentHP;
     [SerializeField] private TextMeshProUGUI playerMaxHP;
+    [Space]
+    [SerializeField] private TextMeshProUGUI playerLevel;
+    [SerializeField] private TextMeshProUGUI playerExp;
+    [SerializeField] private TextMeshProUGUI playerNextExp;
+    [Space]
     //[SerializeField] private List<Image> playerImages;
     [SerializeField] private PlayerPaletteLoader playerPaletteLoader;
 
@@ -79,7 +86,8 @@ public class PlayerScoreHandler : MonoBehaviour
     public void InitialScoreSetup()
     {
         // Set name
-        playerName.text = "" + assignedPlayer.entityName;
+        //playerName.text = "" + assignedPlayer.entityName;
+        SetPlayerName(assignedPlayer.entityName);
 
         // Set Color of Baggie in score
         //playerImage.color = assignedPlayer.playerColor - new Color32(0, 0, 0, 0); // minus transparency
@@ -112,6 +120,7 @@ public class PlayerScoreHandler : MonoBehaviour
         UpdateScore();
 
         SetMoney(assignedPlayer.heldPoints);
+        playerMoney.GetComponent<UIEffect>().enabled = false;
 
         greenStamp.color -= new Color(0, 0, 0, 0.75f);
         redStamp.color -= new Color(0, 0, 0, 0.75f);
@@ -121,6 +130,14 @@ public class PlayerScoreHandler : MonoBehaviour
         //redStamp.enabled = false;
         //blueStamp.enabled = false;
         //orangeStamp.enabled = false;
+    }
+
+    public void DisablePlayerScore()
+    {
+        Debug.Log($"DisablePlayerScore() | Disabling/hiding this {name}");
+        gameObject.SetActive(false);
+        currentPlayerEffect.enabled = false;
+        this.enabled = false;
     }
 
     public void UpdateScore()
@@ -137,10 +154,19 @@ public class PlayerScoreHandler : MonoBehaviour
         UpdateInfoInvItems();
     }
 
+    public void SetPlayerName(string newName)
+    {
+        playerName.text = newName;
+    }
+
     public void SetMoney(int heldMoney)
     {
         playerMoney.text = heldMoney.ToString();
-        playerMoney.GetComponent<UIEffect>().enabled = false;
+        if(heldMoney < 0)
+        {
+            playerMoney.color = negativeMoneyColor;
+        }
+        //playerMoney.GetComponent<UIEffect>().enabled = false;
     }
 
     public void UpdateMoney()
@@ -153,10 +179,10 @@ public class PlayerScoreHandler : MonoBehaviour
 
         var moneyShine = playerMoney.GetComponent<UIEffect>();
 
-        if (moneyShine.enabled && assignedPlayer.heldPoints < GameplayTest.instance.targetGoal)
+        if (moneyShine.enabled && assignedPlayer.heldPoints < GameplayTest.instance.currentRuleset.pointGoal)
             playerMoney.GetComponent<UIEffect>().enabled = false;
 
-        if (assignedPlayer.heldPoints >= GameplayTest.instance.targetGoal)
+        if (assignedPlayer.heldPoints >= GameplayTest.instance.currentRuleset.pointGoal)
         {
             playerMoney.color = goalMoneyColor;
             playerMoney.GetComponent<UIEffect>().enabled = true;
@@ -195,10 +221,30 @@ public class PlayerScoreHandler : MonoBehaviour
         }
 
         var handle = LMotion.Create(playerHPNumber, assignedPlayer.health, .5f)
+                        //.WithEase(Ease.OutSine)
                         .BindToText(playerCurrentHP);
 
         playerHPNumber = assignedPlayer.health;
     }
+
+    public void UpdateExp()
+    {
+        //playerExp.text = "[" + (int)assignedPlayer.ReputationPoints + "/" + (int)assignedPlayer.levelThreshold + "]";
+        playerNextExp.text = $"/{(int)assignedPlayer.levelThreshold}";
+
+        if (playerExpNumber == assignedPlayer.ReputationPoints)
+        {
+            //Debug.Log($"!! Health is the same.");
+            return;
+        }
+
+        var handle = LMotion.Create(playerExpNumber, (int)assignedPlayer.ReputationPoints, 1f)
+                        .WithEase(Ease.OutCubic)
+                        .BindToText(playerExp);
+
+        playerExpNumber = (int)assignedPlayer.ReputationPoints;
+    }
+
     public void UpdateLevel()
     {
         var lvl = assignedPlayer.RenownLevel;
@@ -213,13 +259,15 @@ public class PlayerScoreHandler : MonoBehaviour
         }
 
         playerLevel.text = "*\n" + assignedPlayer.RenownLevel;
-        playerExp.text = "[" + (int)assignedPlayer.ReputationPoints + "/" + (int)assignedPlayer.levelThreshold + "]";
+        UpdateExp();
+        //playerExp.text = "[" + (int)assignedPlayer.ReputationPoints + "/" + (int)assignedPlayer.levelThreshold + "]";
     }
 
 
     public void UpdateHeldStamps()
     {
         var notObtainColor = Color.white - new Color(0, 0, 0, 0.75f);
+        //Debug.Log($"assignedPlayer = {assignedPlayer}");
         if (assignedPlayer.stamps.Contains(Stamp.StampType.Green)) greenStamp.color = Color.white;
         else greenStamp.color = notObtainColor;
 

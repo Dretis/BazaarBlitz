@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -16,6 +18,19 @@ public class SceneGameManager : MonoBehaviour
     // TODO: Change back to private.
     public GameplayTest overworldScene;
     private string overworldSceneName;
+
+    [Header("Listen On Event Channels")]
+    public VoidEventChannelSO m_ReturnToMainMenu;
+    private void OnEnable()
+    {
+        m_ReturnToMainMenu.OnEventRaised += OnReturnToMainMenu;
+    }
+
+    private void OnDisable()
+    {
+        m_ReturnToMainMenu.OnEventRaised -= OnReturnToMainMenu;
+    }
+
 
     void Awake()
     {
@@ -96,5 +111,22 @@ public class SceneGameManager : MonoBehaviour
     public void ChangeGamePhase(GameplayTest.GamePhase phase)
     {
         overworldScene.phase = phase;
+    }
+
+    private void OnReturnToMainMenu()
+    {
+        StartCoroutine(DelayReturnToMainMenu(1f));
+    }
+
+    private IEnumerator DelayReturnToMainMenu(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        var operation = SceneManager.LoadSceneAsync("MainMenu", LoadSceneMode.Single);
+        operation.allowSceneActivation = true;
+
+        yield return operation.isDone;
+
+        Destroy(this);
     }
 }

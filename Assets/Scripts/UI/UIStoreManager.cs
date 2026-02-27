@@ -4,35 +4,55 @@ using UnityEngine.UI;
 using TMPro;
 using System.Linq;
 using UnityEngine.EventSystems;
-using static UnityEditor.Progress;
 using Febucci.UI.Core;
 using LitMotion;
 using LitMotion.Extensions;
+
 
 public class UIStoreManager : MonoBehaviour
 {
     // CHANGE THIS SCRIPTS NAME, THIS ONE IS ONLY HANDLING STOREFRONT UI
     private StoreSelectionHandler selectedStoreHandler;
 
-    [Header("UI Visual Elements")]
+    [Header("UI Elements")]
     //[SerializeField] private Canvas storefrontCanvas;
     [SerializeField] private CanvasGroup storefrontFullGroup;
     [SerializeField] private List<Button> itemButtons;
     [SerializeField] private List<ItemSelectionHandler> itemSelectionHandlers;
     [SerializeField] private List<EventTrigger> itemSelectionTriggers;
-    [SerializeField] private TextMeshProUGUI storeChatBubble;
-    private TypewriterCore storeChatTypewriter;
-    [Space]
+
+    [Header("Visual Elements")]
     [SerializeField] private Image storeboat;
-    [SerializeField] private Image storekeeperImage;
+
+    //[SerializeField] private Image storekeeperImage; //change this to a spriterenderer
+    //[SerializeField] private GameObject storekeeperObject;
+    [SerializeField] private SpriteRenderer storekeeperVisual;
+    [SerializeField] private Animator storekeeperAnimator; // changes anim speed / idle
+
+
+    //[SerializeField] private GameObject customerObject;
     [SerializeField] private RectTransform customerRect;
-    [SerializeField] private Image customerVisual;
+    [SerializeField] private SpriteRenderer customerVisual;
+    [SerializeField] private SpriteRenderer customerBoatVisual;
+
+    private PlayerPaletteLoader storekeeperPaletteLoader;
+    private PlayerPaletteLoader customerPaletteLoader;
+    private PlayerPaletteLoader customerBoatPaletteLoader;
+
+    [Header("UI Text Boxes")]
+    [SerializeField] private TextMeshProUGUI storeChatBubble;
+    [SerializeField] private TextMeshProUGUI storeExpGain;
+    private TypewriterCore storeChatTypewriter;
+    private TypewriterCore storeExpGainTypewriter;
+    [Space]
+    [SerializeField] private TextMeshProUGUI storeInputPrompt; //<sprite=4> Select \t <sprite=0> Buy Item
     [Space]
     [SerializeField] private CanvasGroup confirmBuyGroup;
     [SerializeField] private GameObject confirmYesButton;
 
+
     // May move this to another script
-    [Header("Store Stock")]
+    [Header("UI Store Stock")]
     [SerializeField] private List<Image> itemInventoryImages;
     [SerializeField] private List<ItemStats> stockedItems;
 
@@ -49,7 +69,7 @@ public class UIStoreManager : MonoBehaviour
     [Header("Listen on Event Channels")]
     public NodeEventChannelSO m_LandOnStorefront;
     public VoidEventChannelSO m_ExitStorefront;
-    public ItemEventChannelSO m_HoveringItem;
+    public ItemEventChannelSO m_HoverItemInStorefront;
     public ItemListEventChannelSO m_StockItems;
     public IntEventChannelSO m_TryBuyItemAt; 
     public IntEventChannelSO m_RemoveItemAt; 
@@ -63,7 +83,7 @@ public class UIStoreManager : MonoBehaviour
     {
         m_LandOnStorefront.OnEventRaised += EnterStorefront;
         m_ExitStorefront.OnEventRaised += ExitStorefront;
-        m_HoveringItem.OnEventRaised += HighlightItem;
+        m_HoverItemInStorefront.OnEventRaised += HighlightItem;
         m_StockItems.OnEventRaised += StockItems;
 
         m_TryBuyItemAt.OnEventRaised += OnTryBuyItemAt;
@@ -78,7 +98,7 @@ public class UIStoreManager : MonoBehaviour
     {
         m_LandOnStorefront.OnEventRaised -= EnterStorefront;
         m_ExitStorefront.OnEventRaised -= ExitStorefront;
-        m_HoveringItem.OnEventRaised -= HighlightItem;
+        m_HoverItemInStorefront.OnEventRaised -= HighlightItem;
         m_StockItems.OnEventRaised -= StockItems;
 
         m_TryBuyItemAt.OnEventRaised -= OnTryBuyItemAt;
@@ -90,7 +110,17 @@ public class UIStoreManager : MonoBehaviour
     // Set dependencies here and in Inspector (if needed)
     private void Start()
     {
+        //customerObject.SetActive(false);
+        storekeeperVisual.enabled = false;
+        customerVisual.enabled = false;
+        customerBoatVisual.enabled = false;
+
+        storekeeperPaletteLoader = storekeeperVisual.GetComponent<PlayerPaletteLoader>();
+        customerPaletteLoader = customerVisual.GetComponent<PlayerPaletteLoader>();
+        customerBoatPaletteLoader = customerBoatVisual.GetComponent<PlayerPaletteLoader>();
+
         storeChatTypewriter = storeChatBubble.GetComponent<TypewriterCore>();
+        storeExpGainTypewriter = storeExpGain.GetComponent<TypewriterCore>();
 
         storefrontFullGroup.alpha = 0f;
         storefrontFullGroup.interactable = false;
@@ -218,16 +248,25 @@ public class UIStoreManager : MonoBehaviour
         UpdateItemsInStore(mapNode);
 
         //storeChatBubble.text = "\"Greetings, customer! Welcome to " + currentStore.playerOwner.entityName + "'s wonderful store! \nPlease purchase something.\"";
-        var greeting = "\"Greetings, customer! Welcome to " + currentStore.playerOwner.entityName + "'s wonderful store! \nPlease purchase something.\"";
+        var ownerColor = ColorUtility.ToHtmlStringRGB(currentStore.playerOwner.playerColor);
+        var greeting = $"\"Greetings, customer! Welcome to the wonderful storefront of <color=#{ownerColor}>{currentStore.playerOwner.entityName}</color>! \nPlease purchase something.\"";
         storeChatTypewriter.ShowText(greeting);
+        storeExpGain.text = "";
+        storeInputPrompt.text = "<sprite=4> Select \t <sprite=0> Buy Item";
 
-        // Set colors
+        // --- Set colors ---
         //storekeeperImage.color = currentStore.playerOwner.playerColor;
         storeboat.color = currentStore.playerOwner.playerColor;
-        customerVisual.color = currentPlayer.playerColor;
+        //SetStorekeeperPalette();
+
+        //customerObject.SetActive(true);
+        SetStorekeeperPalette(currentStore.playerOwner);
+        SetCustomerPalette();
 
         MoveStoreboat();
         MoveCustomerBoat();
+
+        ChangeStorekeeperSpeed(1f);
         /*
         StockItems(stockedItems);
 
@@ -244,6 +283,36 @@ public class UIStoreManager : MonoBehaviour
             EnableItemSelection(stockedItems.FindIndex(item => item == cheapestItem));
         }
         */
+    }
+
+    private void SetStorekeeperPalette(EntityPiece storeOwner)
+    {
+        storekeeperVisual.enabled = true;
+
+        if (storeOwner.TryGetComponent<PlayerPaletteLoader>(out PlayerPaletteLoader paletteLoader))
+        {
+            storekeeperPaletteLoader.SetInspectorPalette(paletteLoader.GetInspectorPalette());
+        }
+        else
+        {
+            storekeeperVisual.color = storeOwner.playerColor;
+        }
+    }
+
+    private void SetCustomerPalette()
+    {
+        customerVisual.enabled = true;
+        customerBoatVisual.enabled = true;
+
+        if (currentPlayer.TryGetComponent<PlayerPaletteLoader>(out PlayerPaletteLoader paletteLoader))
+        {
+            customerPaletteLoader.SetInspectorPalette(paletteLoader.GetInspectorPalette());
+            customerBoatPaletteLoader.SetInspectorPalette(currentPlayer.pBoatLoader.GetInspectorPalette());
+        }
+        else
+        {
+            customerVisual.color = currentPlayer.playerColor;
+        }
     }
 
     private void MoveCustomerBoat()
@@ -269,17 +338,27 @@ public class UIStoreManager : MonoBehaviour
             .BindToAnchoredPosition(storeboatRect);
     }
 
+    private void MoveRectFrom(GameObject element, Vector2 startingPos, float delay)
+    {
+        var rect = element.GetComponent<RectTransform>();
+
+        var motion = LMotion.Create(startingPos, rect.anchoredPosition, delay)
+            .WithEase(Ease.OutBack)
+            .BindToAnchoredPosition(rect);
+    }
+
     private void ExitStorefront()
     {
         Debug.Log("ExitStorefront guh?");
         // Enable selection of items upon finishing a shopping sesh.
         EnableItemSelections();
-        //DestroyAllStoreItems();
-        //storefrontCanvas.enabled = false;
-        //confirmBuyGroup.gameObject.SetActive(false);
+
+        storekeeperVisual.enabled = false;
+        customerVisual.enabled = false;
+        customerBoatVisual.enabled = false;
+
         confirmBuyGroup.alpha = 0f;
         confirmBuyGroup.interactable = false;
-        //storefrontCanvas.gameObject.SetActive(false);
 
         storefrontFullGroup.alpha = 0f;
         storefrontFullGroup.interactable = false;
@@ -291,12 +370,27 @@ public class UIStoreManager : MonoBehaviour
         DisableItemSelections();
 
         //if (currentPlayer.currentStates.Contains(EntityPiece.State.DeathsRow))
-        if (currentPlayer.currentStates.Contains(EntityPiece.State.DeathsRow))
-            storeChatBubble.text = "\"You have received " + item.itemName + ". \n Unfortunately, you've just entered <color=red>DEBT'S ROW</color>.\"";
+        var goodbye = "\"Enjoy your brand new " + item.itemName + "! \nThank you for your patronage, and we hope to see you very soon!\"";
+        var expGain = $"+{(20 + (item.basePrice / 10))} EXP";
+
+        Debug.Log($"FinishShopping | Current Player's Points: {currentPlayer.heldPoints}");
+        if(currentPlayer.heldPoints < 0)
+            expGain += "<color=red> +Debt's Row</color>";
+
+        var expStartingPos = new Vector2(0, -100);
+        MoveRectFrom(storeExpGain.gameObject, expStartingPos, .5f);
+
+        storeChatTypewriter.ShowText(goodbye);
+        storeExpGainTypewriter.ShowText(expGain);
+        storeInputPrompt.text = "<sprite=0> Leave Storefront";
+        /*
+         if (currentPlayer.currentStates.Contains(EntityPiece.State.DeathsRow))
+        storeChatBubble.text = "\"You have received " + item.itemName + ". \n Unfortunately, you've just entered <color=red>DEBT'S ROW</color>.\"";
         else if (item != null)
-            storeChatBubble.text = "\"Enjoy your brand new " + item.itemName + "! \nThank you for your patronage, and we hope to see you very soon!\"";
+        storeChatBubble.text = "\"Enjoy your brand new " + item.itemName + "! \nThank you for your patronage, and we hope to see you very soon!\"";
         else
-            storeChatBubble.text = "\"I'm sorry but you cannot afford the "+ item.itemName + ".\"";
+        storeChatBubble.text = "\"I'm sorry but you cannot afford the "+ item.itemName + ".\"";
+        */
     }
 
     private void HighlightItem(ItemStats item)
@@ -305,11 +399,11 @@ public class UIStoreManager : MonoBehaviour
         if (item == null)
         {
             // There is no item in that spot
-            var emptyStock = "<size=36><color=red>SOLD OUT</color></size>";
-            emptyStock += "<color=yellow><sprite=\"Coin Icon\" index=0> ----</color>\n";
-            emptyStock += "<size=36>No more stock left.\n\n";
-            emptyStock += "<color=grey>\"Come back another time when we refill it!\"</color></size>";
-
+            //var emptyStock = "<color=red>SOLD OUT</color>";
+            //emptyStock += "<color=yellow><sprite=\"Coin Icon\" index=0> ----</color>\n";
+            //emptyStock += "No more stock left.\n";
+            //emptyStock += "<color=grey>\"Come back another time when we refill it!\"</color></size>";
+            var emptyStock = "\"We're outta stock of this, so please pick something else.\"";
             storeChatTypewriter.ShowText(emptyStock);
         }
         else
@@ -336,14 +430,20 @@ public class UIStoreManager : MonoBehaviour
         var confirmBuyText = $"\"Buy the {item.itemName}? It costs <color=yellow>{item.basePrice}</color><sprite=\"Coin Icon\" index=0>.\"";
         if(currentPlayer.heldPoints <= item.basePrice)
         {
-            confirmBuyText += $"\n\n<color=red>[WARNING]</color> You don't have enough <sprite=\"Coin Icon\" index=0>, so buying this will put you in <color=red>Debt's Row</color>!";
+            confirmBuyText += $"\n\n<color=#D94A45>[WARNING]</color> You don't have enough <sprite=\"Coin Icon\" index=0>, so buying this will put you in <color=#D94A45>Debt's Row</color>!";
         }
 
         storeChatTypewriter.ShowText(confirmBuyText);
-
+        storeInputPrompt.text = "<sprite=0> Confirm";
         //confirmBuyGroup.gameObject.SetActive(true);
+        ChangeStorekeeperSpeed(2f);
         ShowConfirmBuyGroup();
         EventSystem.current.SetSelectedGameObject(confirmYesButton);
+    }
+
+    private void ChangeStorekeeperSpeed(float speed)
+    {
+        storekeeperAnimator.SetFloat("SpeedMultiplier", speed);
     }
 
     // Button Functions
@@ -358,6 +458,8 @@ public class UIStoreManager : MonoBehaviour
         // NO
         selectedStoreHandler.isCurrentlySelected = false;
 
+        storeInputPrompt.text = "<sprite=4> Select \t <sprite=0> Buy Item";
+        ChangeStorekeeperSpeed(1f);
         HideConfirmBuyGroup();
         EventSystem.current.SetSelectedGameObject(selectedStoreHandler.gameObject);
     }
@@ -407,6 +509,7 @@ public class UIStoreManager : MonoBehaviour
             currentStore.storeInventory[i] = null;
             m_ItemBought.RaiseEvent(selectedStoreItem);
 
+            ChangeStorekeeperSpeed(3f); // dude is FAST
             HideConfirmBuyGroup();
         }
         else

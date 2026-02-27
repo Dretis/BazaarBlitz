@@ -68,12 +68,15 @@ public class PlayerInputController : MonoBehaviour
     public EntityIntEventChannelSO m_PlayerActionSelected;
     public PlayerEventChannelSO m_CombatDiceRolled;
 
+    public VoidEventChannelSO m_ReturnToMainMenu; // also listening
+
     [Header("Listen on Event Channels")]
     public PlayerEventChannelSO m_AssignPlayerToController;
     public PlayerEventChannelSO m_NextPlayerTurn;
     public IntEventChannelSO m_NextTurnRound;
 
     // Store-based Event Channels
+    public PlayerEventChannelSO m_ConfirmBuildStore;
     public VoidEventChannelSO m_CancelBuildStore;
     public PlayerEventChannelSO m_AskRestockStore;
     public PlayerEventChannelSO m_TryRestockStore;
@@ -125,6 +128,7 @@ public class PlayerInputController : MonoBehaviour
         m_NextPlayerTurn.OnEventRaised += SetCurrentPlayer;
         m_NextTurnRound.OnEventRaised += OnNextTurnRound;
 
+        m_ConfirmBuildStore.OnEventRaised += OnConfirmBuildStore;
         m_CancelBuildStore.OnEventRaised += OnCancelBuildStore;
 
         m_AskRestockStore.OnEventRaised += OnAskRestockStore;
@@ -158,6 +162,7 @@ public class PlayerInputController : MonoBehaviour
         m_SwapPhase.OnEventRaised += OnSwapPhase;
         
         m_PlayerWon.OnEventRaised += OnPlayerWon;
+        m_ReturnToMainMenu.OnEventRaised += OnReturnToMainMenu;
     }
 
     private void OnDisable()
@@ -170,6 +175,7 @@ public class PlayerInputController : MonoBehaviour
         m_NextPlayerTurn.OnEventRaised -= SetCurrentPlayer;
         m_NextTurnRound.OnEventRaised -= OnNextTurnRound;
 
+        m_ConfirmBuildStore.OnEventRaised -= OnConfirmBuildStore;
         m_CancelBuildStore.OnEventRaised -= OnCancelBuildStore;
 
         m_AskRestockStore.OnEventRaised -= OnAskRestockStore;
@@ -203,6 +209,7 @@ public class PlayerInputController : MonoBehaviour
         m_SwapPhase.OnEventRaised -= OnSwapPhase;
 
         m_PlayerWon.OnEventRaised -= OnPlayerWon;
+        m_ReturnToMainMenu.OnEventRaised -= OnReturnToMainMenu;
     }
 
     private void FixedUpdate()
@@ -254,7 +261,7 @@ public class PlayerInputController : MonoBehaviour
         Debug.Log("Build presed");
         var p = GameplayTest.instance.currentPlayer;
         if (p.occupiedNode.tag == "Encounter"
-            && p.storeCount < 4)
+            && p.storeCount < GameplayTest.instance.currentRuleset.storeLimit)
         {
             playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
             playerInput.uiInputModule.actionsAsset = playerInput.actions;
@@ -278,7 +285,7 @@ public class PlayerInputController : MonoBehaviour
 
     }
 
-    // This function is used in the following Action Maps (Moving, Freeview)
+    // This function is used in the following Action Maps (Moving, Freeview, UI)
     private void OnInfo(InputValue value)
     {
         var hold = value.isPressed;
@@ -422,6 +429,7 @@ public class PlayerInputController : MonoBehaviour
                 break;
             case GamePhase.GameOver:
                 Debug.Log("YES | Game Finished, go to results scene?");
+                m_ReturnToMainMenu.RaiseEvent();
                 break;
         }
     }
@@ -641,11 +649,11 @@ public class PlayerInputController : MonoBehaviour
         if (assignedPlayer != p)
         {
             playerInput.DeactivateInput();
-            Debug.Log($"Player ID: {playerInput.playerIndex} deactivated input.");
+            Debug.Log($"SetCurrentPlayer | Player ID: {playerInput.playerIndex} deactivated input.");
         }
         else
         {
-            Debug.Log($"Player ID: {playerInput.playerIndex} activated input!");
+            Debug.Log($"SetCurrentPlayer | Player ID: {playerInput.playerIndex} activated input!");
             playerInput.ActivateInput();
             playerInput.SwitchCurrentActionMap("UI"); // FUCK YOU
             playerInput.currentActionMap.Disable();
@@ -660,8 +668,9 @@ public class PlayerInputController : MonoBehaviour
     {
         if (assignedPlayer == GameplayTest.instance.currentPlayer)
         {
-            playerInput.DeactivateInput();
-            Debug.Log($"NextTurnRound | Player ID: {playerInput.playerIndex} deactivated input.");
+            //playerInput.DeactivateInput();
+            //Debug.Log($"NextTurnRound | Player ID: {playerInput.playerIndex} deactivated input.");
+            Debug.Log($"NextTurnRound | Player ID: {playerInput.playerIndex} should be playing!");
         }
     }
 
@@ -671,6 +680,7 @@ public class PlayerInputController : MonoBehaviour
         {
             var gamepad = playerInput.GetDevice<Gamepad>();
 
+            if (gamepad == null) return; //somehow if there isn't one leave
             gamepad.SetMotorSpeeds(lowFreq, highFreq);
 
             StartCoroutine(StopRumbling(delay, gamepad));
@@ -703,6 +713,13 @@ public class PlayerInputController : MonoBehaviour
         if (!playerInput.inputIsActive) return;
         //freeviewReticle.SetActive(false);
         SwitchActionMap(previousGamePhase); // Should be whatever the one it was before
+    }
+
+    private void OnConfirmBuildStore(EntityPiece ps)
+    {
+        if (ps != assignedPlayer) return;
+
+        playerInput.DeactivateInput(); //temp could change this to a skip actionmap
     }
 
     private void OnCancelBuildStore()
@@ -747,7 +764,10 @@ public class PlayerInputController : MonoBehaviour
 
     private void OnRestockStore(MapNode node)
     {
-        if (!playerInput.inputIsActive) return;
+        //if (!playerInput.inputIsActive) return;
+        if (GameplayTest.instance.currentPlayer != assignedPlayer) return;
+
+        playerInput.ActivateInput();
 
         playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
         playerInput.uiInputModule.actionsAsset = playerInput.actions;
@@ -865,7 +885,12 @@ public class PlayerInputController : MonoBehaviour
 
     private void OnFullInventory(EntityPiece entity)
     {
-        if (!playerInput.inputIsActive) return;
+        //Debug.Log("PlayerINputController | before inputIsActive");
+        //if (!playerInput.inputIsActive) return;
+        if (entity != assignedPlayer) return;
+
+        playerInput.ActivateInput();
+        Debug.Log("PlayerINputController | fullinventory");
 
         playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
         playerInput.uiInputModule.actionsAsset = playerInput.actions;
@@ -911,9 +936,13 @@ public class PlayerInputController : MonoBehaviour
 
             var playerCosmeticManager = PlayerConfigurationManager.instance.GetPlayerCosmeticManager(playerInput.playerIndex);
             var colorPal = new List<Color>(playerCosmeticManager.baggieColorPalette);
+            var boatPal = new List<Color>(playerCosmeticManager.boatColorPalette);
 
             assignedPlayer.gameObject.GetComponent<PlayerPaletteLoader>().SetInspectorPalette(colorPal);
             assignedPlayer.dustCloud.GetComponent<PlayerPaletteLoader>().SetInspectorPalette(colorPal);
+
+            // Boat Colors
+            assignedPlayer.pBoatLoader.SetInspectorPalette(boatPal);
         }
     }
 
@@ -954,5 +983,16 @@ public class PlayerInputController : MonoBehaviour
             Debug.Log($"Player[{playerInput.playerIndex}] is not using gamepad.");
             device = CurrentDevice.Keyboard;
         }
+    }
+
+    private bool IsTheCurrentPlayer()
+    {
+        // I am the current player. (or not)
+        return GameplayTest.instance.currentPlayer == assignedPlayer;
+    }
+
+    private void OnReturnToMainMenu()
+    {
+        Destroy(this);
     }
 }

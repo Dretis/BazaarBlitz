@@ -7,14 +7,17 @@ using UnityEngine.SceneManagement;
 
 public class PlayerConfigurationManager : MonoBehaviour
 {
+    public GameplayRules ruleset;
+    //[SerializeField] private int maxPlayers = 4;
+
     private PlayerInputManager playerInputManager;
     private List<PlayerConfiguration> playerConfigs;
     [SerializeField] private List<PlayerCosmeticManager> playerCosmeticManagers;
 
-    [SerializeField] private int maxPlayers = 4;
 
     [Header("Broadcast on Event Channels")]
     public VoidEventChannelSO m_AllPlayersReady;
+    public VoidEventChannelSO m_NumberOfPlayersSelected;
 
     [Header("Listen on Event Channels")]
     public VoidEventChannelSO m_ReturnToMainMenu;
@@ -22,12 +25,16 @@ public class PlayerConfigurationManager : MonoBehaviour
     public static PlayerConfigurationManager instance { get; private set; }
     private void OnEnable()
     {
+        m_NumberOfPlayersSelected.OnEventRaised += OnNumberOfPlayersSelected;
+
         m_AllPlayersReady.OnEventRaised += OnAllPlayersReady;
         m_ReturnToMainMenu.OnEventRaised += OnReturnToMainMenu;
     }
 
     private void OnDisable()
     {
+        m_NumberOfPlayersSelected.OnEventRaised -= OnNumberOfPlayersSelected;
+
         m_AllPlayersReady.OnEventRaised -= OnAllPlayersReady;
         m_ReturnToMainMenu.OnEventRaised -= OnReturnToMainMenu;
     }
@@ -44,8 +51,69 @@ public class PlayerConfigurationManager : MonoBehaviour
             playerCosmeticManagers = new List<PlayerCosmeticManager>();
             playerInputManager = GetComponent<PlayerInputManager>();
         }
+
+        if (!playerInputManager.joiningEnabled)
+        {
+            Debug.Log("Players cannot join...");
+        }
+    }
+    #region Gameplay Ruleset Config
+    public void SetRuleBoard(GameplayTest.GameBoard selectedBoard)
+    {
+        ruleset.board = selectedBoard;
     }
 
+    public void SetRuleNumberOfPlayers(int playerCount)
+    {
+        ruleset.numberOfPlayers = playerCount;
+    }
+
+    public void SetRulePointGoal(int targetGoal)
+    {
+        ruleset.pointGoal = targetGoal;
+    }
+
+    public void SetRuleStoreLimit(int storeCount)
+    {
+        ruleset.storeLimit = storeCount;
+    }
+
+    public void NumberOfPlayersButton(int playerCount)
+    {
+        SetRuleNumberOfPlayers(playerCount);
+
+        //Set store limit based on the ppl playing
+        switch (playerCount)
+        {
+            case 2:
+                SetRuleStoreLimit(8);
+                break;
+            case 3:
+                SetRuleStoreLimit(6);
+                break;
+            case 4:
+                SetRuleStoreLimit(4);
+                break;
+            default:
+                SetRuleStoreLimit(4);
+                break;
+        }
+
+        m_NumberOfPlayersSelected.RaiseEvent();
+    }
+
+    public void OnNumberOfPlayersSelected()
+    {
+        playerInputManager.EnableJoining();
+
+        if (playerInputManager.joiningEnabled)
+        {
+            Debug.Log("Players can now join!!!");
+        }
+    }
+    #endregion
+
+    #region Personal Player Config Customization
     public List<PlayerConfiguration> GetPlayerConfigs()
     {
         return playerConfigs;
@@ -72,6 +140,11 @@ public class PlayerConfigurationManager : MonoBehaviour
         playerCosmeticManagers[index].baggieColorPalette = palette;
     }
 
+    public void SetPlayerBoatPalette(int index, List<Color> palette)
+    {
+        playerCosmeticManagers[index].boatColorPalette = palette;
+    }
+
     public void SetPlayerName(int index, string newName)
     {
         playerConfigs[index].PlayerName = newName;
@@ -81,7 +154,7 @@ public class PlayerConfigurationManager : MonoBehaviour
     public void ReadyPlayer(int index)
     {
         playerConfigs[index].IsReady = true;
-        if(playerConfigs.Count == maxPlayers && playerConfigs.All(p=>p.IsReady ==true))
+        if(playerConfigs.Count == ruleset.numberOfPlayers && playerConfigs.All(p=>p.IsReady ==true))
         {
             Debug.Log("All players ready, going to the board select!");
 
@@ -123,12 +196,25 @@ public class PlayerConfigurationManager : MonoBehaviour
             playerCosmeticManagers.Add(pi.GetComponent<PlayerCosmeticManager>());
             pi.gameObject.name = $"PLAYER CONFIG [{pi.playerIndex}]";
         }
+
+        if (playerConfigs.Count >= ruleset.numberOfPlayers)
+        {
+            Debug.Log($"Hit Max Player Count, stop letting ppl join");
+            playerInputManager.DisableJoining();
+            //return;
+        }
+    }
+
+    public void HandlePlayerLeft(PlayerInput pi)
+    {
+        Debug.Log($"Player Left {pi.playerIndex}");
     }
 
     public void OnAllPlayersReady()
     {
         playerInputManager.DisableJoining();
     }
+    #endregion Personal Player Config Customization
 
     private void OnReturnToMainMenu()
     {

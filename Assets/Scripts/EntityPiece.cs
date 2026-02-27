@@ -56,6 +56,9 @@ public class EntityPiece : MonoBehaviour
 
     public List<StoreManager> ownedStores = new List<StoreManager>();
 
+    [Header("P Boat")]
+    public PlayerPaletteLoader pBoatLoader;
+
     [Header("Particle Effects")]
     public GameObject dustCloud;
     public ParticleSystem coinDrop;

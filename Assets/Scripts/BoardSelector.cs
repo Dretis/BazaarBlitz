@@ -12,20 +12,25 @@ public class BoardSelector : MonoBehaviour
     [Header("UI")]
     [SerializeField] private Canvas mainLayout;
     [SerializeField] private CanvasGroup boardSelectGroup;
+    [SerializeField] private CanvasGroup numberOfPlayersSelectGroup;
     [SerializeField] private TextMeshProUGUI headerText;
     [SerializeField] private TextMeshProUGUI bottomText;
 
 
-    [Header("Boardcast on Event Channels")]
+    [Header("Broadcast on Event Channels")]
     public VoidEventChannelSO m_BoardSelected;
     public VoidEventChannelSO m_ReturnToMainMenu;
     
     [Header("Listen on Event Channels")]
     public VoidEventChannelSO m_AllPlayersReady;
+    public VoidEventChannelSO m_NumberOfPlayersSelected;
 
     private void OnEnable()
     {
         m_AllPlayersReady.OnEventRaised += OnAllPlayersReady;
+        m_NumberOfPlayersSelected.OnEventRaised += OnNumberOfPlayersSelected;
+
+
         m_BoardSelected.OnEventRaised += OnBoardSelected;
         m_ReturnToMainMenu.OnEventRaised += OnReturnToMainMenu;
     }
@@ -34,6 +39,9 @@ public class BoardSelector : MonoBehaviour
     private void OnDisable()
     {
         m_AllPlayersReady.OnEventRaised -= OnAllPlayersReady;
+        m_NumberOfPlayersSelected.OnEventRaised -= OnNumberOfPlayersSelected;
+
+
         m_BoardSelected.OnEventRaised -= OnBoardSelected;
         m_ReturnToMainMenu.OnEventRaised -= OnReturnToMainMenu;
     }
@@ -42,6 +50,9 @@ public class BoardSelector : MonoBehaviour
     {
         //boardSelectGroup.alpha = 0;
         boardSelectGroup.gameObject.SetActive(false);
+
+        headerText.text = "[Game Setup]";
+        bottomText.text = "How many people are playing?";
     }
 
     private void Update()
@@ -71,6 +82,15 @@ public class BoardSelector : MonoBehaviour
         bottomText.text = "Choose which board to play on!";
 
         EventSystem.current.SetSelectedGameObject(boardSelectGroup.transform.GetChild(0).gameObject);
+    }
+
+    private void OnNumberOfPlayersSelected()
+    {
+        numberOfPlayersSelectGroup.gameObject.SetActive(false);
+
+        headerText.text = $"[{PlayerConfigurationManager.instance.ruleset.numberOfPlayers} Player Setup]";
+        bottomText.text = "Press START or [ENTER] to join!";
+        //numberOfPlayersSelectGroup
     }
 
     public void BoardSelected(string board)
