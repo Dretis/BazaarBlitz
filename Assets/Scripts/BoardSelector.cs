@@ -12,6 +12,7 @@ public class BoardSelector : MonoBehaviour
     [Header("UI")]
     [SerializeField] private Canvas mainLayout;
     [SerializeField] private CanvasGroup boardSelectGroup;
+    [SerializeField] private GameObject boardSelectMenuObject;
     [SerializeField] private CanvasGroup numberOfPlayersSelectGroup;
     [SerializeField] private TextMeshProUGUI headerText;
     [SerializeField] private TextMeshProUGUI bottomText;
@@ -51,7 +52,7 @@ public class BoardSelector : MonoBehaviour
         //boardSelectGroup.alpha = 0;
         boardSelectGroup.gameObject.SetActive(false);
 
-        headerText.text = "[Game Setup]";
+        headerText.text = "Game Setup";
         bottomText.text = "How many people are playing?";
     }
 
@@ -78,17 +79,17 @@ public class BoardSelector : MonoBehaviour
 
         boardSelectGroup.gameObject.SetActive(true);
 
-        headerText.text = "[Board Select]";
+        headerText.text = "Board Select";
         bottomText.text = "Choose which board to play on!";
 
-        EventSystem.current.SetSelectedGameObject(boardSelectGroup.transform.GetChild(0).gameObject);
+        EventSystem.current.SetSelectedGameObject(boardSelectMenuObject);
     }
 
     private void OnNumberOfPlayersSelected()
     {
         numberOfPlayersSelectGroup.gameObject.SetActive(false);
 
-        headerText.text = $"[{PlayerConfigurationManager.instance.ruleset.numberOfPlayers} Player Setup]";
+        headerText.text = $"{PlayerConfigurationManager.instance.ruleset.numberOfPlayers}-Player Setup";
         bottomText.text = "Press START or [ENTER] to join!";
         //numberOfPlayersSelectGroup
     }

@@ -22396,6 +22396,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6143496328931216526, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: heldPoints
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 6143496328931216526, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: occupiedNode
       value: 
       objectReference: {fileID: 513793208}
@@ -22404,9 +22408,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 9bd4c379ce6d420439c509ee6dbac512, type: 2}
     - target: {fileID: 6143496328931216526, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: attackActions.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: 620d4cb780912a140a21e7207bf014ba, type: 2}
+    - target: {fileID: 6143496328931216526, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: attackActions.Array.data[2]
       value: 
       objectReference: {fileID: 11400000, guid: 2fe95680bff99de48be6c49ce996709d, type: 2}
+    - target: {fileID: 6143496329768989689, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: heldPoints
+      value: 1000
+      objectReference: {fileID: 0}
     - target: {fileID: 6143496329768989689, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: occupiedNode
       value: 
@@ -22424,9 +22436,9 @@ PrefabInstance:
       value: 0.22745098
       objectReference: {fileID: 0}
     - target: {fileID: 6143496329768989689, guid: 84bddb24974478f42b437d61898b6010, type: 3}
-      propertyPath: attackActions.Array.data[1]
+      propertyPath: attackActions.Array.data[2]
       value: 
-      objectReference: {fileID: 11400000, guid: 620d4cb780912a140a21e7207bf014ba, type: 2}
+      objectReference: {fileID: 11400000, guid: 2fe95680bff99de48be6c49ce996709d, type: 2}
     - target: {fileID: 6143496329768989691, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: inspectorPalette.Array.data[0].b
       value: 0.92549026
@@ -22452,13 +22464,13 @@ PrefabInstance:
       value: 0.26099145
       objectReference: {fileID: 0}
     - target: {fileID: 6143496330825871140, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: heldPoints
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 6143496330825871140, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: occupiedNode
       value: 
       objectReference: {fileID: 513793208}
-    - target: {fileID: 6143496330825871140, guid: 84bddb24974478f42b437d61898b6010, type: 3}
-      propertyPath: attackActions.Array.data[2]
-      value: 
-      objectReference: {fileID: 11400000, guid: 2fe95680bff99de48be6c49ce996709d, type: 2}
     - target: {fileID: 6157453737660719390, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -23856,6 +23868,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163865522836, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: heldPoints
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 6700546163865522836, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: occupiedNode
       value: 
       objectReference: {fileID: 513793208}
@@ -23871,10 +23887,6 @@ PrefabInstance:
       propertyPath: playerColor.r
       value: 0.40784314
       objectReference: {fileID: 0}
-    - target: {fileID: 6700546163865522836, guid: 84bddb24974478f42b437d61898b6010, type: 3}
-      propertyPath: attackActions.Array.data[0]
-      value: 
-      objectReference: {fileID: 11400000, guid: 9bd4c379ce6d420439c509ee6dbac512, type: 2}
     - target: {fileID: 6700546163865522836, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: attackActions.Array.data[1]
       value: 

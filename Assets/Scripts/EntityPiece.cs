@@ -240,13 +240,14 @@ public class EntityPiece : MonoBehaviour
         {
             playerSprite.color = playerColor;
         }
-        
+        /*
         if (occupiedNode != null)
         {
             transform.position = occupiedNode.transform.position;
             occupiedNodeCopy = occupiedNode;
             traveledNodes.Add(occupiedNode);
         }
+        */
     }
 
     public bool canLevelUp() {

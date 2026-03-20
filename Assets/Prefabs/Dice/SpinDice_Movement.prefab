@@ -1134,6 +1134,7 @@ MonoBehaviour:
   ySpeed: 300
   zSpeed: -150
   frameSkip: 1
+  canSpin: 1
 --- !u!114 &2015053838
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1146,6 +1147,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50cfea86dafa3d3408da8e7334795d0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  assignedPlayer: {fileID: 0}
   isChildDie: 0
   yOffset: 2
   zOffset: -2
@@ -1162,7 +1164,6 @@ MonoBehaviour:
   - {fileID: 4701922145727829205}
   - {fileID: 4701922145728842775}
   effectUsePrefab: {fileID: 4568632827120603810, guid: af75fb0ff141ccf4bb2ab85c4a605c90, type: 3}
-  m_NextPlayerTurn: {fileID: 11400000, guid: 45e13c3cd9283b74989c51218c39f6c2, type: 2}
   m_DiceRollPrep: {fileID: 11400000, guid: 9e449a1e468efff46b833c09542c6b5f, type: 2}
   m_DiceRollUndo: {fileID: 11400000, guid: c893b6f1be9cffb4b87d121e14d423c7, type: 2}
   m_RollForMovement: {fileID: 11400000, guid: d015287f1c859dc49a75cff91e2028a9, type: 2}

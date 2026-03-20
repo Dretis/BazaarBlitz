@@ -36,7 +36,8 @@ public class TestingEvents : MonoBehaviour
             DontDestroyOnLoad(debugPlayerInput);
         }
         if (debugPlayerInputOn &&
-            Input.GetKeyDown(KeyCode.Keypad2))
+            (Input.GetKeyDown(KeyCode.Keypad2) ||
+            Input.GetKeyDown(KeyCode.Period)))
         {
             Debug.Log("DEBUG | Turning on P2 test input");
             debugPlayerInput.transform.GetChild(1).gameObject.SetActive(true);

@@ -114,13 +114,16 @@ public class ScoreManager : MonoBehaviour
 
     void Awake()
     {
+        Debug.Log("Awake scoremanager");
         InitializePlayerScores();
+        Debug.Log("Awake scoremanager2");
     }
 
     private void InitializePlayerScores()
     {
         //playerInfoDiceNumbers.Add("1");
         players = GameplayTest.instance.playerUnits;
+        Debug.Log("InitializePlayerScores scoremanager");
         // Initial Setup
         for (int i = 0; i < players.Count; i++)
         {

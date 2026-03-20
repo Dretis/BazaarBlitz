@@ -53,6 +53,7 @@ public class SoundManager : MonoBehaviour
 
     [Space]
     public NodeEventChannelSO m_LandOnStorefront;
+    public VoidEventChannelSO m_ExitStorefront;
     public ItemEventChannelSO m_HoverItemInStorefront;
     public IntEventChannelSO m_TryBuyItemAt;
 
@@ -134,6 +135,8 @@ public class SoundManager : MonoBehaviour
         m_TryExamineTile.OnEventRaised += PlayMoveSoundWithVector2;
 
         m_LandOnStorefront.OnEventRaised += OnLandOnStorefront;
+        m_ExitStorefront.OnEventRaised += OnExitStorefront;
+
         m_HoverItemInStorefront.OnEventRaised += OnHoverItemInStorefront;
         m_TryBuyItemAt.OnEventRaised += OnTryBuyItemAt;
 
@@ -187,6 +190,8 @@ public class SoundManager : MonoBehaviour
         m_TryExamineTile.OnEventRaised -= PlayMoveSoundWithVector2;
 
         m_LandOnStorefront.OnEventRaised -= OnLandOnStorefront;
+        m_ExitStorefront.OnEventRaised -= OnExitStorefront;
+
         m_HoverItemInStorefront.OnEventRaised -= OnHoverItemInStorefront;
         m_TryBuyItemAt.OnEventRaised -= OnTryBuyItemAt;
 
@@ -429,7 +434,13 @@ public class SoundManager : MonoBehaviour
     private void OnLandOnStorefront(MapNode node)
     {
         PlayEnterStoreSound();
-        //FMODUnity.RuntimeManager.StudioSystem.setParameterByName("GameState", 2);
+        FMODUnity.RuntimeManager.StudioSystem.setParameterByName("GameState", 2);
+    }
+
+    private void OnExitStorefront()
+    {
+        //PlayEnterStoreSound();
+        FMODUnity.RuntimeManager.StudioSystem.setParameterByName("GameState", 0);
     }
 
     private void OnHoverItemInStorefront(ItemStats item)

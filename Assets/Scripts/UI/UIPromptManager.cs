@@ -362,6 +362,7 @@ public class UIPromptManager : MonoBehaviour
     private void HideInitialMenu(EntityPiece ps)
     {
         //menuPrompt.alpha = 0;
+        inputPrompt.text = "";
         HideMenuPrompt();
     }
 
@@ -381,6 +382,10 @@ public class UIPromptManager : MonoBehaviour
             .WithEase(Ease.InOutBack)
             //.WithEase(Ease.InQuint)
             .Bind(x => menuPrompt.GetComponent<RectTransform>().localScale = x);
+
+        // DELETE THIS LATER
+        inputPrompt.text = "<color=white></color><sprite name=lb> Player Info";
+        //inputPrompt.text += "\n<color=white>HOLD</color><sprite name=lb> Player Info";
     }
 
     private void HideMenuPrompt()
@@ -391,6 +396,8 @@ public class UIPromptManager : MonoBehaviour
         LMotion.Create(menuPrompt.GetComponent<RectTransform>().localScale, Vector3.zero, 0.15f)
             .WithEase(Ease.OutQuad)
             .Bind(x => menuPrompt.GetComponent<RectTransform>().localScale = x);
+
+        //inputPrompt.text = "";
     }
 
     private void DisplayEncounterChoices(EntityPiece ps)

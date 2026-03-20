@@ -43,6 +43,7 @@ public class AudioManager : MonoBehaviour
         {
             Debug.Log("ERROR! More than 1 AudioManager found.");
             Destroy(this.gameObject);
+            return;
         }
 
         instance = this;

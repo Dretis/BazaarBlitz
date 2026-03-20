@@ -107,6 +107,7 @@ public class GameplayTest : MonoBehaviour
     public int emptyStockCount = 3;
 
     [SerializeField] private TypewriterCore rollTypewriter;
+    public TextMeshProUGUI topLeftText;
     public TextMeshProUGUI turnText;
 
     public GameObject encounterScreen;
@@ -393,6 +394,7 @@ public class GameplayTest : MonoBehaviour
         }
 
         Debug.Log($"Number of Players in this Game: {currentRuleset.numberOfPlayers}");
+        topLeftText.text = $"Collect <color=yellow><sprite=\"Coin Icon\" index=0>{currentRuleset.pointGoal}</color> and return\r\nto the EXCHANGE space to win!";
 
         for (int i = 4; i > currentRuleset.numberOfPlayers; i--)
         {
@@ -420,7 +422,6 @@ public class GameplayTest : MonoBehaviour
         currentPlayer = nextPlayers[0];
         //currentPlayer = nextPlayers[playerUnits.Count - 1];
         currentPlayerInitialNode = currentPlayer.occupiedNode;
-
         //turnText.text = currentPlayer.entityName + "'s Turn!";
         //turnText.color = currentPlayer.playerColor;
 
@@ -433,9 +434,23 @@ public class GameplayTest : MonoBehaviour
         m_GameStart.RaiseEvent();
 
         m_NextPlayerTurn.RaiseEvent(currentPlayer);
-        currentPlayer.playerSprite.GetComponentInParent<SpriteMask>().transform.position -= new Vector3(0, 0, .05f);
         currentPlayerInitialNode = currentPlayer.occupiedNode;
         oldStamps = new List<Stamp.StampType>(currentPlayer.stamps);
+
+        foreach(EntityPiece player in playerUnits)
+        {
+            if (player.occupiedNode != null)
+            {
+                player.transform.position = player.occupiedNode.transform.position;
+                player.occupiedNodeCopy = player.occupiedNode;
+                player.traveledNodes.Add(player.occupiedNode);
+            }
+
+            if (currentPlayer)
+            {
+                currentPlayer.transform.position -= new Vector3(0, 0, .05f);
+            }
+        }
         //m_NextTurnRound.RaiseEvent(turnRound);
     }
 
@@ -1560,7 +1575,7 @@ public class GameplayTest : MonoBehaviour
     public void SetupNextPlayer()
     {
         // Put current player back to normal pos
-        currentPlayer.playerSprite.GetComponentInParent<SpriteMask>().transform.position += new Vector3(0, 0, .05f);
+        currentPlayer.transform.position += new Vector3(0, 0, .05f);
         // Change to the next player in the list.
         nextPlayers.Remove(currentPlayer);
         nextPlayers.Add(currentPlayer);
@@ -1583,7 +1598,7 @@ public class GameplayTest : MonoBehaviour
         }
 
         // put next player's sprite in front of the others
-        currentPlayer.playerSprite.GetComponentInParent<SpriteMask>().transform.position -= new Vector3(0,0,.05f);
+        currentPlayer.transform.position -= new Vector3(0,0,.05f);
 
         m_NextPlayerTurn.RaiseEvent(currentPlayer);
 
