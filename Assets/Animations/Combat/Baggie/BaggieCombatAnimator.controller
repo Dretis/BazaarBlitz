@@ -586,6 +586,12 @@ AnimatorController:
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 9100000}
+  - m_Name: Rolled Number
+    m_Type: 3
+    m_DefaultFloat: 0
+    m_DefaultInt: 3
+    m_DefaultBool: 0
+    m_Controller: {fileID: 9100000}
   - m_Name: Damage ID
     m_Type: 3
     m_DefaultFloat: 0
@@ -925,7 +931,7 @@ AnimatorStateMachine:
     m_Position: {x: -70, y: -180, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -3247733584808557025}
-    m_Position: {x: 540, y: 600, z: 0}
+    m_Position: {x: 550, y: 600, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 2560078959557095867}
     m_Position: {x: 540, y: 670, z: 0}
@@ -988,7 +994,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Baggie_Combat-Attack Magic_Mind
+  m_Name: Attack - Magic_Mind
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []

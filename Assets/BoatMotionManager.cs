@@ -8,7 +8,7 @@ public class BoatMotionManager : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer p_Boat;
     [SerializeField] private PlayerPaletteLoader boatPaletteLoader;
-    private Transform p_BoatTransform;
+    public Transform p_BoatTransform;
 
     private MotionHandle pBoatMotion;
 

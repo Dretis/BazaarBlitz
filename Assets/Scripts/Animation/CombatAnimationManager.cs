@@ -1,7 +1,10 @@
 using System.Collections;
-using System.Collections.Generic;
+//using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening;
+using LitMotion;
+using LitMotion.Extensions;
+using UnityEngine.UIElements;
+//using DG.Tweening;
 
 public class CombatAnimationManager : MonoBehaviour
 {
@@ -10,6 +13,9 @@ public class CombatAnimationManager : MonoBehaviour
 
     [SerializeField] private CombatUIManager.FightingPosition fightingPosition;
     private Action.PhaseTypes phaseType;
+    private int rolledNumber;
+
+    private MotionHandle currentMotion;
 
     [Header("Additional Objects")]
     [SerializeField] private GameObject boat;
@@ -49,6 +55,7 @@ public class CombatAnimationManager : MonoBehaviour
     public EntityActionEventChannelSO m_BothActionsSelected; // prep time to show what they picked, follow with the dice roll too
 
     public PlayerEventChannelSO m_CombatDiceRolled;
+    public PlayerFloatActionTypeEventChannelSO m_StoreDiceRolled;
     public PlayerEventChannelSO m_PlayOutCombat; // play attack anim and defend anim
 
     public DamageEventChannelSO m_DamageTaken; //upon attack anim finishing, show floating dmg ontop of defender, play hurt anim
@@ -65,6 +72,8 @@ public class CombatAnimationManager : MonoBehaviour
         m_BothActionsSelected.OnEventRaised += OnBothActionsSelected;
 
         m_CombatDiceRolled.OnEventRaised += OnCombatDiceRolled;
+        m_StoreDiceRolled.OnEventRaised += OnStoreDiceRolled;
+
         m_PlayOutCombat.OnEventRaised += OnPlayOutCombat;
 
         m_DamageTaken.OnEventRaised += OnDamageTaken;
@@ -81,6 +90,8 @@ public class CombatAnimationManager : MonoBehaviour
         m_BothActionsSelected.OnEventRaised -= OnBothActionsSelected;
 
         m_CombatDiceRolled.OnEventRaised -= OnCombatDiceRolled;
+        m_StoreDiceRolled.OnEventRaised -= OnStoreDiceRolled;
+
         m_PlayOutCombat.OnEventRaised -= OnPlayOutCombat;
 
         m_DamageTaken.OnEventRaised -= OnDamageTaken;
@@ -202,10 +213,17 @@ public class CombatAnimationManager : MonoBehaviour
         //animator.ResetTrigger("Reveal Roll");
     }
 
+    private void OnStoreDiceRolled(EntityPiece entity, float roll, Action.WeaponTypes type)
+    {
+        if (entity.fightingPosition != fightingPosition) return;
+
+        rolledNumber = (int)roll;
+        animator.SetInteger("Rolled Number", rolledNumber);
+    }
+
     private IEnumerator DelayActionAnimation(float duration)
     {
         yield return new WaitForSeconds(duration);
-        animator.SetTrigger("Play Action");
     }
 
     private void OnPlayOutCombat(EntityPiece entity)
@@ -386,8 +404,16 @@ public class CombatAnimationManager : MonoBehaviour
         if(boat == null) return;
 
         //Debug.Log(gameObject);
-        boat.transform.DOMoveX(gameObject.transform.position.x, duration).From(boat.transform.position)
-            .SetEase(Ease.OutQuad);
+        //boat.transform.DOMoveX(gameObject.transform.position.x, duration).From(boat.transform.position)
+        //    .SetEase(Ease.OutQuad);
+
+        var bt = boat.transform;
+
+        if (currentMotion.IsActive()) currentMotion.Cancel();
+
+        currentMotion = LMotion.Create(bt.position.x, gameObject.transform.position.x, duration)
+            .WithEase(Ease.OutQuad)
+            .BindToPositionX(bt);
     }
 
     private void MoveBoatToX(float xPosition)
@@ -395,8 +421,15 @@ public class CombatAnimationManager : MonoBehaviour
         if (boat == null) return;
 
         //Debug.Log(gameObject);
-        boat.transform.DOLocalMoveX(xPosition, 0.25f).From(boat.transform.position)
-            .SetEase(Ease.InSine);
+        //boat.transform.DOLocalMoveX(xPosition, .5f).From(boat.transform.position);
+
+        var bt = boat.transform;
+
+        if (currentMotion.IsActive()) currentMotion.Cancel();
+        
+        currentMotion = LMotion.Create(bt.localPosition.x, xPosition, .2f)
+            .WithEase(Ease.OutCubic)
+            .BindToLocalPositionX(bt);
     }
 
     private void ResetBoatPosition(float duration)
@@ -404,6 +437,14 @@ public class CombatAnimationManager : MonoBehaviour
         if (boat == null) return;
 
         //Debug.Log(gameObject);
-        boat.transform.DOMoveX(boatInitialPos.x, duration).From(boat.transform.position);
+        //boat.transform.DOMoveX(boatInitialPos.x, duration).From(boat.transform.position);
+
+        var bt = boat.transform;
+
+        if (currentMotion.IsActive()) currentMotion.Cancel();
+
+        currentMotion = LMotion.Create(bt.position.x, boatInitialPos.x, duration)
+            //.WithEase(Ease.OutQuad)
+            .BindToPositionX(bt);
     }
 }

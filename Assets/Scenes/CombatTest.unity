@@ -1581,6 +1581,7 @@ Transform:
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_ConstrainProportionsScale: 1
   m_Children:
+  - {fileID: 474875109}
   - {fileID: 1332324080}
   m_Father: {fileID: 241682267}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1650,6 +1651,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   p_Boat: {fileID: 70616985}
   boatPaletteLoader: {fileID: 0}
+  p_BoatTransform: {fileID: 0}
   startValue: 0
   strength: 0.066
   duration: 3
@@ -12827,6 +12829,38 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6051684997082574127, guid: c8e4d3328645e3446ad7ed36310951ab, type: 3}
   m_PrefabInstance: {fileID: 2054994846}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &474875108
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 474875109}
+  m_Layer: 0
+  m_Name: Left Fighter Origin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &474875109
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 474875108}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.375, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2022358467}
+  m_Father: {fileID: 70616984}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &479798424
 GameObject:
   m_ObjectHideFlags: 0
@@ -28797,6 +28831,7 @@ Transform:
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_ConstrainProportionsScale: 1
   m_Children:
+  - {fileID: 2005775934}
   - {fileID: 345390435}
   m_Father: {fileID: 1462721714}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -28866,6 +28901,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   p_Boat: {fileID: 853814074}
   boatPaletteLoader: {fileID: 0}
+  p_BoatTransform: {fileID: 0}
   startValue: 0
   strength: -0.066
   duration: 3
@@ -29439,10 +29475,10 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 5, y: 5.224842, z: 5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 1226360324}
+  m_Father: {fileID: 2005775934}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &872686420
 Animator:
@@ -29454,7 +29490,7 @@ Animator:
   m_GameObject: {fileID: 872686417}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 465b2cb309e4dfb44b2e8a55b23a5d24, type: 2}
+  m_Controller: {fileID: 9100000, guid: d791d6cb6a6adef44995eeb4f9b7c959, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -29478,7 +29514,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fightingPosition: 1
-  boat: {fileID: 1462721713}
+  boat: {fileID: 853814072}
   boatMotionManager: {fileID: 853814075}
   combatBoatPaletteLoader: {fileID: 853814076}
   gunSniperCrosshair: {fileID: 1729245459}
@@ -29501,6 +29537,7 @@ MonoBehaviour:
   m_ActionSelected: {fileID: 11400000, guid: fc7127886f7f7ed458771b3e118932a0, type: 2}
   m_BothActionsSelected: {fileID: 11400000, guid: 5e6e7809c5de840469b11fa61d18be8f, type: 2}
   m_CombatDiceRolled: {fileID: 11400000, guid: a1da45c0bec1bef45a082dbe65fd1548, type: 2}
+  m_StoreDiceRolled: {fileID: 11400000, guid: 8cbd34e4453c0ac46a2cc3fb10814cf8, type: 2}
   m_PlayOutCombat: {fileID: 11400000, guid: 92bd6a37ff6a3344cb44842875da70ca, type: 2}
   m_DamageTaken: {fileID: 11400000, guid: 21e2d2c157c4e564db136dc7709f07b4, type: 2}
   m_EntityDied: {fileID: 11400000, guid: 8d61128e2ea86d248a5d122114fb8c8e, type: 2}
@@ -35230,7 +35267,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 872686419}
   - {fileID: 1462721714}
   - {fileID: 1806147324}
   - {fileID: 1795507985}
@@ -47326,6 +47362,38 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &2005775933
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2005775934}
+  m_Layer: 0
+  m_Name: Right Fighter Origin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2005775934
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2005775933}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -1, z: -0, w: 0}
+  m_LocalPosition: {x: 0, y: 0.375, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 1
+  m_Children:
+  - {fileID: 872686419}
+  m_Father: {fileID: 853814073}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!224 &2019344270 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6051684997082574127, guid: c8e4d3328645e3446ad7ed36310951ab, type: 3}
@@ -47534,10 +47602,10 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 5, y: 5, z: 5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 2102989730}
+  m_Father: {fileID: 474875109}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &2022358468
 Animator:
@@ -47573,7 +47641,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fightingPosition: 0
-  boat: {fileID: 241682266}
+  boat: {fileID: 70616983}
   boatMotionManager: {fileID: 70616987}
   combatBoatPaletteLoader: {fileID: 70616988}
   gunSniperCrosshair: {fileID: 974795287}
@@ -47596,6 +47664,7 @@ MonoBehaviour:
   m_ActionSelected: {fileID: 11400000, guid: fc7127886f7f7ed458771b3e118932a0, type: 2}
   m_BothActionsSelected: {fileID: 11400000, guid: 5e6e7809c5de840469b11fa61d18be8f, type: 2}
   m_CombatDiceRolled: {fileID: 11400000, guid: a1da45c0bec1bef45a082dbe65fd1548, type: 2}
+  m_StoreDiceRolled: {fileID: 11400000, guid: 8cbd34e4453c0ac46a2cc3fb10814cf8, type: 2}
   m_PlayOutCombat: {fileID: 11400000, guid: 92bd6a37ff6a3344cb44842875da70ca, type: 2}
   m_DamageTaken: {fileID: 11400000, guid: 21e2d2c157c4e564db136dc7709f07b4, type: 2}
   m_EntityDied: {fileID: 11400000, guid: 8d61128e2ea86d248a5d122114fb8c8e, type: 2}
@@ -54306,7 +54375,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2022358467}
   - {fileID: 241682267}
   - {fileID: 1965440088}
   - {fileID: 557340335}
