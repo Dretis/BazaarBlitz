@@ -1514,6 +1514,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 4413332248883350849, guid: 00fe3f181ef77ac40ba435e15825dacc, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4413332248883350849, guid: 00fe3f181ef77ac40ba435e15825dacc, type: 3}
       propertyPath: EventReference.Path
       value: event:/BGM_Evening Riverside 2
       objectReference: {fileID: 0}
@@ -1535,7 +1539,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4413332248883350849, guid: 00fe3f181ef77ac40ba435e15825dacc, type: 3}
       propertyPath: Params.Array.data[0].Value
-      value: 0.65
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8453248687469701508, guid: 00fe3f181ef77ac40ba435e15825dacc, type: 3}
       propertyPath: m_Name
@@ -37166,10 +37170,6 @@ PrefabInstance:
       propertyPath: playerColor.r
       value: 0.9411765
       objectReference: {fileID: 0}
-    - target: {fileID: 6143496329768989689, guid: 84bddb24974478f42b437d61898b6010, type: 3}
-      propertyPath: attackActions.Array.data[2]
-      value: 
-      objectReference: {fileID: 11400000, guid: 2fe95680bff99de48be6c49ce996709d, type: 2}
     - target: {fileID: 6143496329768989691, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: inspectorPalette.Array.data[0].b
       value: 0.2392157
@@ -38843,13 +38843,37 @@ PrefabInstance:
       value: 0.68235296
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163865522836, guid: 84bddb24974478f42b437d61898b6010, type: 3}
-      propertyPath: attackActions.Array.data[1]
+      propertyPath: inventory.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6700546163865522836, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: inventory.Array.data[0]
       value: 
-      objectReference: {fileID: 11400000, guid: 620d4cb780912a140a21e7207bf014ba, type: 2}
+      objectReference: {fileID: 11400000, guid: 4fd59672f461ffa4bb6c75f0339fc93d, type: 2}
     - target: {fileID: 6700546163865522836, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: attackActions.Array.data[2]
       value: 
       objectReference: {fileID: 11400000, guid: 32a37866383854b4d80b76bd6c92a71b, type: 2}
+    - target: {fileID: 6700546163865522836, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: entityStats.dieConfigs.Array.data[2].dieFaces.Array.data[1]
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6700546163865522836, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: entityStats.dieConfigs.Array.data[2].dieFaces.Array.data[2]
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6700546163865522836, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: entityStats.dieConfigs.Array.data[2].dieFaces.Array.data[3]
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6700546163865522836, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: entityStats.dieConfigs.Array.data[2].dieFaces.Array.data[4]
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6700546163865522836, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: entityStats.dieConfigs.Array.data[2].dieFaces.Array.data[5]
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 6700546163865522838, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: inspectorPalette.Array.data[0].b
       value: 0.9725491

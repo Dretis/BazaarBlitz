@@ -71,6 +71,9 @@ public class SoundManager : MonoBehaviour
     public VoidEventChannelSO m_UsedMagicAttack;
     public VoidEventChannelSO m_UsedGunAttack;
 
+    public VoidEventChannelSO m_Shotgun2Windup;
+    public VoidEventChannelSO m_Shotgun2Shoot;
+
     [Space]
     public VoidEventChannelSO m_IneffectiveAttack;
     public VoidEventChannelSO m_EffectiveAttack;
@@ -154,6 +157,10 @@ public class SoundManager : MonoBehaviour
         m_UsedMeleeAttack.OnEventRaised += PlayMeleeAttackSound;
         m_UsedMagicAttack.OnEventRaised += PlayMagicAttackSound;
         m_UsedGunAttack.OnEventRaised += PlayGunAttackSound;
+
+        m_Shotgun2Windup.OnEventRaised += OnShotgun2Windup;
+        m_Shotgun2Shoot.OnEventRaised += OnShotgun2Shoot;
+
         m_IneffectiveAttack.OnEventRaised += PlayNotEffectiveHitSound;
         m_EffectiveAttack.OnEventRaised += PlayEffectiveHitSound;
         m_SuperEffectiveAttack.OnEventRaised += PlaySuperEffectiveHitSound;
@@ -209,6 +216,10 @@ public class SoundManager : MonoBehaviour
         m_UsedMeleeAttack.OnEventRaised -= PlayMeleeAttackSound;
         m_UsedMagicAttack.OnEventRaised -= PlayMagicAttackSound;
         m_UsedGunAttack.OnEventRaised -= PlayGunAttackSound;
+
+        m_Shotgun2Windup.OnEventRaised -= OnShotgun2Windup;
+        m_Shotgun2Shoot.OnEventRaised -= OnShotgun2Shoot;
+
         m_IneffectiveAttack.OnEventRaised -= PlayNotEffectiveHitSound;
         m_EffectiveAttack.OnEventRaised -= PlayEffectiveHitSound;
         m_SuperEffectiveAttack.OnEventRaised -= PlaySuperEffectiveHitSound;
@@ -370,6 +381,15 @@ public class SoundManager : MonoBehaviour
     private void PlayGunAttackSound()
     {
         AudioHelper.PlayOneShotWithParameters("event:/GunWindup", this.transform.position, ("SoundVolume", SFXVolume));
+    }
+
+    private void OnShotgun2Windup()
+    {
+        AudioHelper.PlayOneShotWithParameters("event:/SFX_Shotgun2_Clock", this.transform.position, ("SoundVolume", SFXVolume));
+    }
+    private void OnShotgun2Shoot()
+    {
+        AudioHelper.PlayOneShotWithParameters("event:/SFX_Shotgun2_Shoot", this.transform.position, ("SoundVolume", SFXVolume));
     }
 
     private void PlayNotEffectiveHitSound()

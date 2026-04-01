@@ -18,6 +18,7 @@ public class CombatAnimationManager : MonoBehaviour
     private MotionHandle currentMotion;
 
     [Header("Additional Objects")]
+    [SerializeField] private GameObject boatGroup; // the whole ass group 
     [SerializeField] private GameObject boat;
     [SerializeField] private BoatMotionManager boatMotionManager;
     [SerializeField] private PlayerPaletteLoader combatBoatPaletteLoader;
@@ -27,11 +28,18 @@ public class CombatAnimationManager : MonoBehaviour
     [Header("Extra FX")]
     [SerializeField] private ParticleSystem coinDrop;
     [SerializeField] private ParticleSystem gunShotgun;
+    [SerializeField] private ParticleSystem gunSniperShoot;
     [SerializeField] private ParticleSystem gunShrapnel;
+
     [SerializeField] private ParticleSystem magicSparkle;
+    [SerializeField] private ParticleSystem magicAura;
+
     [SerializeField] private ParticleSystem magicExplosion;
     [SerializeField] private ParticleSystem magicExplosion2;
+    [SerializeField] private ParticleSystem magicExplosion3;
+
     [SerializeField] private ParticleSystem magicWard;
+    [SerializeField] private ParticleSystem windRing;
     //[SerializeField] private ParticleSystem gunSniper;
     
 
@@ -40,6 +48,9 @@ public class CombatAnimationManager : MonoBehaviour
     public VoidEventChannelSO m_MeleeWindup;
     public VoidEventChannelSO m_GunWindup;
     public VoidEventChannelSO m_MagicWindup;
+
+    public VoidEventChannelSO m_Shotgun2Windup;
+    public VoidEventChannelSO m_Shotgun2Shoot;
 
     // The following 4 events are temporary?
     public VoidEventChannelSO m_IneffectiveAttack;
@@ -327,7 +338,8 @@ public class CombatAnimationManager : MonoBehaviour
         boatMotionManager.StopPBoatMotion();
     }
 
-    // Helper functions
+    // Helper functions, called by Animation Events
+    #region SFX Call Event Functions
     private void MeleeWindupSFX(float volume)
     {
         m_MeleeWindup.RaiseEvent();
@@ -343,6 +355,18 @@ public class CombatAnimationManager : MonoBehaviour
         m_MagicWindup.RaiseEvent();
     }
 
+    private void Shotgun2WindupSFX(float volume)
+    {
+        m_Shotgun2Windup.RaiseEvent();
+    }
+
+    private void Shotgun2ShootSFX(float volume)
+    {
+        m_Shotgun2Shoot.RaiseEvent();
+    }
+    #endregion
+
+    #region VFX Particle Functions
     private void BurstCoinDropParticle()
     {
         coinDrop.Play();
@@ -350,7 +374,19 @@ public class CombatAnimationManager : MonoBehaviour
 
     private void BurstShotgun()
     {
+        var numOfPellets = rolledNumber * 2;
+        var shotgunBurst = new ParticleSystem.Burst(0f, numOfPellets); //float_time, short_count
+        //gunShotgun.Emit(numOfPellets);
+        //Debug.Log($"shotgunBurst.count = {shotgunBurst.count}");
+        //shotgunBurst.count = numOfPellets;
+        //Debug.Log($"shotgunBurst.count after = {shotgunBurst.count}");
+        gunShotgun.emission.SetBurst(0, shotgunBurst);
         gunShotgun.Play();
+    }
+
+    private void BurstSniperShoot()
+    {
+        gunSniperShoot.Play();
     }
 
     private void BurstShrapnel()
@@ -362,6 +398,13 @@ public class CombatAnimationManager : MonoBehaviour
     {
         magicSparkle.gameObject.SetActive(true);
         magicSparkle.Play();
+    }
+
+    private void BurstMagicAura()
+    {
+        // "feels the aura"
+        magicAura.gameObject.SetActive(true);
+        magicAura.Play();
     }
 
     private void BurstMagicExplosion()
@@ -376,10 +419,23 @@ public class CombatAnimationManager : MonoBehaviour
         magicExplosion2.Play();
     }
 
+    private void BurstMagicExplosion3()
+    {
+        // big ass explosion
+        magicExplosion3.gameObject.SetActive(true);
+        magicExplosion3.Play();
+    }
+
     private void BurstMagicWard()
     {
         magicWard.gameObject.SetActive(true);
         magicWard.Play();
+    }
+
+    private void BurstWindRingFX()
+    {
+        windRing.gameObject.SetActive(true);
+        windRing.Play();
     }
 
     private void SniperScopeIn()
@@ -398,16 +454,18 @@ public class CombatAnimationManager : MonoBehaviour
     {
         magicWard.gameObject.SetActive(false);
     }
+    #endregion
 
+    #region Boat Positional Functions
     private void MoveBoatToEntity(float duration)
     {
-        if(boat == null) return;
+        if(boatGroup == null) return;
 
         //Debug.Log(gameObject);
         //boat.transform.DOMoveX(gameObject.transform.position.x, duration).From(boat.transform.position)
         //    .SetEase(Ease.OutQuad);
 
-        var bt = boat.transform;
+        var bt = boatGroup.transform;
 
         if (currentMotion.IsActive()) currentMotion.Cancel();
 
@@ -418,12 +476,12 @@ public class CombatAnimationManager : MonoBehaviour
 
     private void MoveBoatToX(float xPosition)
     {
-        if (boat == null) return;
+        if (boatGroup == null) return;
 
         //Debug.Log(gameObject);
         //boat.transform.DOLocalMoveX(xPosition, .5f).From(boat.transform.position);
 
-        var bt = boat.transform;
+        var bt = boatGroup.transform;
 
         if (currentMotion.IsActive()) currentMotion.Cancel();
         
@@ -432,14 +490,46 @@ public class CombatAnimationManager : MonoBehaviour
             .BindToLocalPositionX(bt);
     }
 
+    private void MoveBoatToEnemy(float duration)
+    {
+        if (boatGroup == null) return;
+
+        //Debug.Log(gameObject);
+        //boat.transform.DOLocalMoveX(xPosition, .5f).From(boat.transform.position);
+
+        var bt = boatGroup.transform;
+
+        if (currentMotion.IsActive()) currentMotion.Cancel();
+
+        currentMotion = LMotion.Create(bt.localPosition.x, -5, duration)
+            .WithEase(Ease.OutCubic)
+            .BindToLocalPositionX(bt);
+    }
+
+    private void MoveBoatToY(float yPosition, float duration)
+    {
+        if (boatGroup == null) return;
+
+        //Debug.Log(gameObject);
+        //boat.transform.DOLocalMoveX(xPosition, .5f).From(boat.transform.position);
+
+        var bt = boatGroup.transform;
+
+        if (currentMotion.IsActive()) currentMotion.Cancel();
+
+        currentMotion = LMotion.Create(bt.localPosition.x, yPosition, .15f)
+            .WithEase(Ease.OutBack)
+            .BindToLocalPositionY(bt);
+    }
+
     private void ResetBoatPosition(float duration)
     {
-        if (boat == null) return;
+        if (boatGroup == null) return;
 
         //Debug.Log(gameObject);
         //boat.transform.DOMoveX(boatInitialPos.x, duration).From(boat.transform.position);
 
-        var bt = boat.transform;
+        var bt = boatGroup.transform;
 
         if (currentMotion.IsActive()) currentMotion.Cancel();
 
@@ -447,4 +537,5 @@ public class CombatAnimationManager : MonoBehaviour
             //.WithEase(Ease.OutQuad)
             .BindToPositionX(bt);
     }
+    #endregion
 }
