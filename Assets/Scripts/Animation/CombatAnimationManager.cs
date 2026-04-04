@@ -8,7 +8,7 @@ using UnityEngine.UIElements;
 
 public class CombatAnimationManager : MonoBehaviour
 {
-    private Animator animator;
+    [SerializeField] private Animator animator;
     private EntityPiece thisEntity;
 
     [SerializeField] private CombatUIManager.FightingPosition fightingPosition;
@@ -23,40 +23,54 @@ public class CombatAnimationManager : MonoBehaviour
     [SerializeField] private BoatMotionManager boatMotionManager;
     [SerializeField] private PlayerPaletteLoader combatBoatPaletteLoader;
     private Vector3 boatInitialPos;
-    [SerializeField] private GameObject gunSniperCrosshair;
 
-    [Header("Extra FX")]
-    [SerializeField] private ParticleSystem coinDrop;
+    [Header("VFX - Self")]
     [SerializeField] private ParticleSystem gunShotgun;
     [SerializeField] private ParticleSystem gunSniperShoot;
-    [SerializeField] private ParticleSystem gunShrapnel;
-
+    [SerializeField] private ParticleSystem gunSniperForegroundShoot;
+    [Space]
     [SerializeField] private ParticleSystem magicSparkle;
     [SerializeField] private ParticleSystem magicAura;
+    [Space]
+    [SerializeField] private ParticleSystem magicWard;
 
+    //[SerializeField] private ParticleSystem gunSniper;
+    [Header("VFX - On Hit")]
+    [SerializeField] private ParticleSystem coinDrop;
+    [Space]
+    [SerializeField] private ParticleSystem impactSplash;
+    [Space]
+    [SerializeField] private GameObject gunSniperCrosshair;
+    [SerializeField] private ParticleSystem gunShrapnel;
+    [Space]
     [SerializeField] private ParticleSystem magicExplosion;
     [SerializeField] private ParticleSystem magicExplosion2;
     [SerializeField] private ParticleSystem magicExplosion3;
 
-    [SerializeField] private ParticleSystem magicWard;
+    [Header("VFX - Etc")]
     [SerializeField] private ParticleSystem windRing;
-    //[SerializeField] private ParticleSystem gunSniper;
-    
+    [SerializeField] private ParticleSystem smokeRing;
 
     [Header("Broadcast on Event Channels")]
     public VoidEventChannelSO m_AttackImpact;
-    public VoidEventChannelSO m_MeleeWindup;
-    public VoidEventChannelSO m_GunWindup;
-    public VoidEventChannelSO m_MagicWindup;
 
-    public VoidEventChannelSO m_Shotgun2Windup;
-    public VoidEventChannelSO m_Shotgun2Shoot;
-
-    // The following 4 events are temporary?
+    // DMG Taken Events
     public VoidEventChannelSO m_IneffectiveAttack;
     public VoidEventChannelSO m_EffectiveAttack;
     public VoidEventChannelSO m_SuperEffectiveAttack;
     public VoidEventChannelSO m_SomeoneDied;
+
+    // SFX / Audio Call Events
+    public VoidEventChannelSO m_MeleeWindup;
+    public VoidEventChannelSO m_GunWindup;
+    public VoidEventChannelSO m_MagicWindup;
+    public VoidEventChannelSO m_Magic2Windup;
+
+    public VoidEventChannelSO m_Shotgun2Windup;
+    public VoidEventChannelSO m_Shotgun2Shoot;
+
+    // VFX Call Events
+    public VoidEventChannelSO m_VFXKnockBoatDown;
 
     [Header("Listen on Event Channels")]
     //public PlayerEventChannelSO m_DecidedTurnOrder; // pass in the attacker
@@ -115,7 +129,7 @@ public class CombatAnimationManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        animator = GetComponent<Animator>();
+        //animator = GetComponent<Animator>();
 
         boatInitialPos = boat.transform.position;
     }
@@ -128,7 +142,7 @@ public class CombatAnimationManager : MonoBehaviour
         }
     }
 
-
+    #region Event Listener Functions
     private void OnSwapPhase(EntityPiece entity)
     {
         //if (entity.fightingPosition != fightingPosition) return;
@@ -255,13 +269,6 @@ public class CombatAnimationManager : MonoBehaviour
         m_AttackImpact.RaiseEvent();
     }
 
-    public void AttackImpact()
-    {
-        // Call function in Animator as an animation event
-        // Basically the moment of impact
-        m_AttackImpact.RaiseEvent();
-    }
-
     private void OnDamageTaken(EntityPiece entity, float damage, CombatManager.TypeAdvantage advantage)
     {
         if (entity.fightingPosition != fightingPosition) return;
@@ -337,6 +344,19 @@ public class CombatAnimationManager : MonoBehaviour
     {
         boatMotionManager.StopPBoatMotion();
     }
+    #endregion Event Listener Functions
+
+    // Raises events to broadcast something
+    #region Animation Call Event Functions
+    public void AttackImpact()
+    {
+        // Call function in Animator as an animation event
+        // Basically the moment of impact
+        m_AttackImpact.RaiseEvent();
+    }
+
+
+    #endregion
 
     // Helper functions, called by Animation Events
     #region SFX Call Event Functions
@@ -353,6 +373,11 @@ public class CombatAnimationManager : MonoBehaviour
     private void MagicWindupSFX(float volume)
     {
         m_MagicWindup.RaiseEvent();
+    }
+    
+    private void Magic2WindupSFX(float volume)
+    {
+        m_Magic2Windup.RaiseEvent();
     }
 
     private void Shotgun2WindupSFX(float volume)
@@ -387,6 +412,11 @@ public class CombatAnimationManager : MonoBehaviour
     private void BurstSniperShoot()
     {
         gunSniperShoot.Play();
+    }
+    
+    private void BurstSniperForegroundShoot()
+    {
+        gunSniperForegroundShoot.Play();
     }
 
     private void BurstShrapnel()
@@ -436,6 +466,18 @@ public class CombatAnimationManager : MonoBehaviour
     {
         windRing.gameObject.SetActive(true);
         windRing.Play();
+    }
+
+    private void BurstSmokeRingFX()
+    {
+        //smokeRing.gameObject.SetActive(true);
+        smokeRing.Play();
+    }
+
+    private void BurstImpactSplashFX()
+    {
+        //smokeRing.gameObject.SetActive(true);
+        impactSplash.Play();
     }
 
     private void SniperScopeIn()

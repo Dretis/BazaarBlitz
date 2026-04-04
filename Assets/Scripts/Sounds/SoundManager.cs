@@ -69,6 +69,7 @@ public class SoundManager : MonoBehaviour
     [Space]
     public VoidEventChannelSO m_UsedMeleeAttack;
     public VoidEventChannelSO m_UsedMagicAttack;
+    public VoidEventChannelSO m_Magic2Windup;
     public VoidEventChannelSO m_UsedGunAttack;
 
     public VoidEventChannelSO m_Shotgun2Windup;
@@ -156,6 +157,7 @@ public class SoundManager : MonoBehaviour
 
         m_UsedMeleeAttack.OnEventRaised += PlayMeleeAttackSound;
         m_UsedMagicAttack.OnEventRaised += PlayMagicAttackSound;
+        m_Magic2Windup.OnEventRaised += OnMagic2Windup;
         m_UsedGunAttack.OnEventRaised += PlayGunAttackSound;
 
         m_Shotgun2Windup.OnEventRaised += OnShotgun2Windup;
@@ -215,6 +217,7 @@ public class SoundManager : MonoBehaviour
 
         m_UsedMeleeAttack.OnEventRaised -= PlayMeleeAttackSound;
         m_UsedMagicAttack.OnEventRaised -= PlayMagicAttackSound;
+        m_Magic2Windup.OnEventRaised -= OnMagic2Windup;
         m_UsedGunAttack.OnEventRaised -= PlayGunAttackSound;
 
         m_Shotgun2Windup.OnEventRaised -= OnShotgun2Windup;
@@ -376,6 +379,11 @@ public class SoundManager : MonoBehaviour
     private void PlayMagicAttackSound()
     {
         AudioHelper.PlayOneShotWithParameters("event:/MagicWindup", this.transform.position, ("SoundVolume", SFXVolume));
+    }
+    
+    private void OnMagic2Windup()
+    {
+        AudioHelper.PlayOneShotWithParameters("event:/Magic2Windup", this.transform.position, ("SoundVolume", SFXVolume));
     }
 
     private void PlayGunAttackSound()

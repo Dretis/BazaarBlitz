@@ -12,6 +12,9 @@ public class CombatUIManager : MonoBehaviour
     }
 
     // Canvas UI Shit
+    public CombatAnimationManager player1CombatAnimManager;
+    public CombatAnimationManager player2CombatAnimManager;
+
     public SpriteRenderer player1Renderer;
     public SpriteRenderer player2Renderer;
 
@@ -49,8 +52,8 @@ public class CombatUIManager : MonoBehaviour
 
             if (!player1.isEnemy)
             {
-                var p1AnimManager = player1Renderer.GetComponent<CombatAnimationManager>();
-                p1AnimManager.SetCombatBoatPalette(player1); 
+                //var p1AnimManager = player1Renderer.GetComponent<CombatAnimationManager>();
+                player1CombatAnimManager.SetCombatBoatPalette(player1); 
             }
         }
         else
@@ -66,8 +69,8 @@ public class CombatUIManager : MonoBehaviour
 
             if (!player2.isEnemy)
             {
-                var p2AnimManager = player2Renderer.GetComponent<CombatAnimationManager>();
-                p2AnimManager.SetCombatBoatPalette(player2);
+                //var p2AnimManager = player2Renderer.GetComponent<CombatAnimationManager>();
+                player2CombatAnimManager.SetCombatBoatPalette(player2);
             }
         }
         else
