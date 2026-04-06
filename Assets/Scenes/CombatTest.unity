@@ -13430,8 +13430,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: v
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: ff9500cae92c2164581eeee51a5e7f8a, type: 2}
-  m_sharedMaterial: {fileID: -6220351636370342547, guid: ff9500cae92c2164581eeee51a5e7f8a, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 879bccd9c5d82ef4a8f28684428bcb53, type: 2}
+  m_sharedMaterial: {fileID: -6220351636370342547, guid: 879bccd9c5d82ef4a8f28684428bcb53, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -13442,8 +13442,8 @@ MonoBehaviour:
   m_enableVertexGradient: 1
   m_colorMode: 2
   m_fontColorGradient:
-    topLeft: {r: 0.07058824, g: 0.07058824, b: 0.34117648, a: 1}
-    topRight: {r: 0.07058824, g: 0.07058824, b: 0.34117648, a: 1}
+    topLeft: {r: 0.43529412, g: 0.43529412, b: 0.7294118, a: 1}
+    topRight: {r: 0.43529412, g: 0.43529412, b: 0.7294118, a: 1}
     bottomLeft: {r: 0.77254903, g: 0, b: 0.38039216, a: 1}
     bottomRight: {r: 0.77254903, g: 0, b: 0.38039216, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
@@ -13461,7 +13461,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -19542,7 +19542,7 @@ GameObject:
   m_Component:
   - component: {fileID: 285064329}
   m_Layer: 5
-  m_Name: Visual Info
+  m_Name: Top Visual Info
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -19909,7 +19909,7 @@ MonoBehaviour:
     rgba: 2947181127
   grayoutColor:
     serializedVersion: 2
-    rgba: 6842472
+    rgba: 2607310952
   actionTypeGradients:
   - {fileID: 11400000, guid: 6b3db77650b84724092b501d512a20c7, type: 2}
   - {fileID: 11400000, guid: bf87fcb570cb50b4d9f86650ecbc21c8, type: 2}
@@ -21822,8 +21822,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: s
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: ff9500cae92c2164581eeee51a5e7f8a, type: 2}
-  m_sharedMaterial: {fileID: -6220351636370342547, guid: ff9500cae92c2164581eeee51a5e7f8a, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 879bccd9c5d82ef4a8f28684428bcb53, type: 2}
+  m_sharedMaterial: {fileID: -6220351636370342547, guid: 879bccd9c5d82ef4a8f28684428bcb53, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -21834,10 +21834,10 @@ MonoBehaviour:
   m_enableVertexGradient: 1
   m_colorMode: 2
   m_fontColorGradient:
-    topLeft: {r: 0.072506905, g: 0.06888572, b: 0.33962262, a: 1}
-    topRight: {r: 0.072506905, g: 0.06888572, b: 0.33962262, a: 1}
+    topLeft: {r: 0.43529412, g: 0.43529412, b: 0.7294118, a: 1}
+    topRight: {r: 0.43529412, g: 0.43529412, b: 0.7294118, a: 1}
     bottomLeft: {r: 0.7735849, g: 0, b: 0.37866396, a: 1}
-    bottomRight: {r: 0.7735849, g: 0, b: 0.37866396, a: 1}
+    bottomRight: {r: 0.77254903, g: 0, b: 0.38039216, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
@@ -21853,7 +21853,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -47711,6 +47711,7 @@ GameObject:
   - component: {fileID: 1038504872}
   - component: {fileID: 1038504874}
   - component: {fileID: 1038504873}
+  - component: {fileID: 1038504875}
   m_Layer: 5
   m_Name: Top Text 2
   m_TagString: Untagged
@@ -47834,6 +47835,36 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1038504871}
   m_CullTransparentMesh: 1
+--- !u!114 &1038504875
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1038504871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8ace8ced0e81c847968cdca0aeda757, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  typewriterStartsAutomatically: 0
+  animationLoop: 0
+  timeScale: 0
+  _text: SmartestFridge
+  useDynamicScaling: 1
+  referenceFontSize: 10
+  isResettingTimeOnNewText: 1
+  useDefaultDatabases: 1
+  databaseBehaviors: {fileID: 11400000, guid: e7cd132376adf7149820bc2397a6885a, type: 2}
+  databaseAppearances: {fileID: 11400000, guid: 88366c42b466a3e4e922a1882c840e3b, type: 2}
+  useDefaultStyleSheet: 1
+  styleSheet: {fileID: 0}
+  databaseActions: {fileID: 11400000, guid: 805030f286ae6ad4ca560c442b0e9288, type: 2}
+  defaultAppearancesTags: []
+  defaultDisappearancesTags: []
+  defaultBehaviorsTags:
+  - wiggle  a=.005
+  defaultTagsMode: 0
 --- !u!1 &1044136714
 GameObject:
   m_ObjectHideFlags: 0
@@ -60400,6 +60431,30 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 58.86
       objectReference: {fileID: 0}
+    - target: {fileID: 584840584527156327, guid: 57685babf17a997489471d63ae7b1f40, type: 3}
+      propertyPath: m_fontSize
+      value: 36
+      objectReference: {fileID: 0}
+    - target: {fileID: 584840584527156327, guid: 57685babf17a997489471d63ae7b1f40, type: 3}
+      propertyPath: m_fontStyle
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 584840584527156327, guid: 57685babf17a997489471d63ae7b1f40, type: 3}
+      propertyPath: m_fontColor.b
+      value: 0.854902
+      objectReference: {fileID: 0}
+    - target: {fileID: 584840584527156327, guid: 57685babf17a997489471d63ae7b1f40, type: 3}
+      propertyPath: m_fontColor.r
+      value: 0.8235295
+      objectReference: {fileID: 0}
+    - target: {fileID: 584840584527156327, guid: 57685babf17a997489471d63ae7b1f40, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 36
+      objectReference: {fileID: 0}
+    - target: {fileID: 584840584527156327, guid: 57685babf17a997489471d63ae7b1f40, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4292542418
+      objectReference: {fileID: 0}
     - target: {fileID: 1001177712482817682, guid: 57685babf17a997489471d63ae7b1f40, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -60419,6 +60474,30 @@ PrefabInstance:
     - target: {fileID: 1143462066170300782, guid: 57685babf17a997489471d63ae7b1f40, type: 3}
       propertyPath: m_TransitionRotation
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1585017214364890035, guid: 57685babf17a997489471d63ae7b1f40, type: 3}
+      propertyPath: m_fontSize
+      value: 36
+      objectReference: {fileID: 0}
+    - target: {fileID: 1585017214364890035, guid: 57685babf17a997489471d63ae7b1f40, type: 3}
+      propertyPath: m_fontStyle
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1585017214364890035, guid: 57685babf17a997489471d63ae7b1f40, type: 3}
+      propertyPath: m_fontColor.b
+      value: 0.854902
+      objectReference: {fileID: 0}
+    - target: {fileID: 1585017214364890035, guid: 57685babf17a997489471d63ae7b1f40, type: 3}
+      propertyPath: m_fontColor.r
+      value: 0.8235295
+      objectReference: {fileID: 0}
+    - target: {fileID: 1585017214364890035, guid: 57685babf17a997489471d63ae7b1f40, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 36
+      objectReference: {fileID: 0}
+    - target: {fileID: 1585017214364890035, guid: 57685babf17a997489471d63ae7b1f40, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4292542418
       objectReference: {fileID: 0}
     - target: {fileID: 2346487836732601714, guid: 57685babf17a997489471d63ae7b1f40, type: 3}
       propertyPath: m_FillOrigin
@@ -60562,7 +60641,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8312109949630263081, guid: 57685babf17a997489471d63ae7b1f40, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -36
+      value: -24
+      objectReference: {fileID: 0}
+    - target: {fileID: 8312109949630263081, guid: 57685babf17a997489471d63ae7b1f40, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
@@ -67231,7 +67314,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1603012543}
   m_Enabled: 1
-  m_Alpha: 0
+  m_Alpha: 1
   m_Interactable: 0
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
@@ -85045,6 +85128,7 @@ GameObject:
   - component: {fileID: 2134190603}
   - component: {fileID: 2134190605}
   - component: {fileID: 2134190604}
+  - component: {fileID: 2134190606}
   m_Layer: 5
   m_Name: Top Text 1
   m_TagString: Untagged
@@ -85168,6 +85252,36 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2134190602}
   m_CullTransparentMesh: 1
+--- !u!114 &2134190606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2134190602}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8ace8ced0e81c847968cdca0aeda757, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  typewriterStartsAutomatically: 0
+  animationLoop: 0
+  timeScale: 0
+  _text: Baggie_name
+  useDynamicScaling: 1
+  referenceFontSize: 10
+  isResettingTimeOnNewText: 1
+  useDefaultDatabases: 1
+  databaseBehaviors: {fileID: 11400000, guid: e7cd132376adf7149820bc2397a6885a, type: 2}
+  databaseAppearances: {fileID: 11400000, guid: 88366c42b466a3e4e922a1882c840e3b, type: 2}
+  useDefaultStyleSheet: 1
+  styleSheet: {fileID: 0}
+  databaseActions: {fileID: 11400000, guid: 805030f286ae6ad4ca560c442b0e9288, type: 2}
+  defaultAppearancesTags: []
+  defaultDisappearancesTags: []
+  defaultBehaviorsTags:
+  - wiggle  a=.005
+  defaultTagsMode: 0
 --- !u!1 &2139694914
 GameObject:
   m_ObjectHideFlags: 0

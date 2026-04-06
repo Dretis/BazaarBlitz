@@ -265,7 +265,7 @@ public class UICombatOverlayManager : MonoBehaviour
         //vsHeader.DOAnchorPos(vsInitialPosition, 0.5f, false).SetEase(Ease.OutSine);
 
         var currentMotion = LMotion.Create(vsHeader.anchoredPosition, vsInitialPosition, 0.5f)
-            .WithEase(Ease.OutSine)
+            .WithEase(Ease.OutBack)
             .BindToAnchoredPosition(vsHeader);
     }
 
@@ -273,8 +273,8 @@ public class UICombatOverlayManager : MonoBehaviour
     {
         //vsHeader.DOAnchorPos(vsHidePosition, 0.5f, false).SetEase(Ease.InFlash);
 
-        var currentMotion = LMotion.Create(vsHeader.anchoredPosition, vsHidePosition, 0.5f)
-            .WithEase(Ease.InQuad)
+        var currentMotion = LMotion.Create(vsHeader.anchoredPosition, vsHidePosition, 0.25f)
+            .WithEase(Ease.InBack)
             .BindToAnchoredPosition(vsHeader);
     }
 
@@ -283,7 +283,7 @@ public class UICombatOverlayManager : MonoBehaviour
         //diceInfo.DOAnchorPos(diceInitialPosition, 0.5f, false).SetEase(Ease.OutSine);
 
         var currentMotion = LMotion.Create(diceInfo.anchoredPosition, diceInitialPosition, 0.5f)
-            .WithEase(Ease.OutSine)
+            .WithEase(Ease.OutBack)
             .BindToAnchoredPosition(diceInfo);
     }
 
@@ -291,8 +291,8 @@ public class UICombatOverlayManager : MonoBehaviour
     {
         //diceInfo.DOAnchorPos(diceHidePosition, 0.5f, false).SetEase(Ease.InFlash);
 
-        var currentMotion = LMotion.Create(diceInfo.anchoredPosition, diceHidePosition, 0.5f)
-            .WithEase(Ease.OutSine)
+        var currentMotion = LMotion.Create(diceInfo.anchoredPosition, diceHidePosition, 0.25f)
+            .WithEase(Ease.InBack)
             .BindToAnchoredPosition(diceInfo);
     }
 
