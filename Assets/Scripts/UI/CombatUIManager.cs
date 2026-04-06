@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
+using UnityEngine.UI;
+using UnityEditor.Experimental.GraphView;
 
 public class CombatUIManager : MonoBehaviour
 {
@@ -25,6 +27,9 @@ public class CombatUIManager : MonoBehaviour
     // Action Order in the list: Up, Down, Left, Right
     public List<TextMeshProUGUI> player1ActionTexts;
     public List<TextMeshProUGUI> player2ActionTexts;
+
+    [SerializeField] private Image player1HPFill;
+    [SerializeField] private Image player2HPFill;
 
     public Animator player1Animator;
     public Animator player2Animator;
@@ -97,33 +102,40 @@ public class CombatUIManager : MonoBehaviour
         List<TextMeshProUGUI> stateTexts = null;
         List<TextMeshProUGUI> actionTexts = null;
         List<Action> actions = null;
+        Image hpFill = null;
 
         if (ps.fightingPosition == FightingPosition.Left)
         {
             // Change the text on the left side
             stateTexts = player1StateTexts;
             actionTexts = player1ActionTexts;
+            hpFill = player1HPFill;
         }
         else
         {
             // Change the text on the right side
             stateTexts = player2StateTexts;
             actionTexts = player2ActionTexts;
+            hpFill = player2HPFill;
         }
 
         stateTexts[0].text = ps.entityName;
-        stateTexts[1].text = $"HP: {Mathf.Max(ps.health,0)}/{(ps.maxHealth * ps.currentStatsModifier.maxHealthMultModifier + ps.currentStatsModifier.maxHealthFlatModifier)}";
-        
+        stateTexts[1].text = $"{Mathf.Max(ps.health,0)}";
+        stateTexts[2].text = $"/{(ps.maxHealth * ps.currentStatsModifier.maxHealthMultModifier + ps.currentStatsModifier.maxHealthFlatModifier)}";
 
-        if(phase == Action.PhaseTypes.Attack)
+        float hpPercent = (float)(Mathf.Max(ps.health, 0)) / ((float)(ps.maxHealth * ps.currentStatsModifier.maxHealthMultModifier + ps.currentStatsModifier.maxHealthFlatModifier));
+        Debug.Log($"HP% = {hpPercent}");
+        hpFill.fillAmount = hpPercent;
+
+        if (phase == Action.PhaseTypes.Attack)
         {
             actions = ps.attackActions;
-            stateTexts[2].text = "<color=#FF6476>[Attacking]</color>";
+            //stateTexts[2].text = "<color=#FF6476>[Attacking]</color>";
         }
         else
         {
             actions = ps.defendActions;
-            stateTexts[2].text = "<color=#65BCFF>[Defending]</color>";
+            //stateTexts[2].text = "<color=#65BCFF>[Defending]</color>";
         }
 
         var count = 0;
