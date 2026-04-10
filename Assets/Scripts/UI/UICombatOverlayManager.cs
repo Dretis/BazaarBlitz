@@ -10,12 +10,16 @@ using Febucci.UI.Core;
 using LitMotion;
 using LitMotion.Extensions;
 using Coffee.UIEffects;
+using LitMotion.Animation;
 
 public class UICombatOverlayManager : MonoBehaviour
 {
     private CombatManager thisCombatManager;
     [SerializeField] private Volume volume;
     [SerializeField] private ParticleSystem hitParticle;
+
+    [Header("LitMotionAnimations")]
+    [SerializeField] private LitMotionAnimation resultsMotion;
 
     [Header("Colors")]
     [SerializeField] private Color32 attackColor;
@@ -471,9 +475,11 @@ public class UICombatOverlayManager : MonoBehaviour
     public void DisplayResultsGroup()
     {
         //DOTween.To(() => resultsGroup.alpha, x => resultsGroup.alpha = x, 1, 0.25f).SetEase(Ease.InFlash);
-        LMotion.Create(resultsGroup.alpha, 1, 0.25f)
-            .WithEase(Ease.OutQuint)
-            .Bind(x => resultsGroup.alpha = x);
+        //LMotion.Create(resultsGroup.alpha, 1, 0.25f)
+        //    .WithEase(Ease.OutQuint)
+        //    .Bind(x => resultsGroup.alpha = x);
+
+        resultsMotion.Play();
     }
 
     public void DisplayStalemateGroup()

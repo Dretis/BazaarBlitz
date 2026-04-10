@@ -1511,6 +1511,7 @@ public class GameplayTest : MonoBehaviour
             {
                 Debug.Log($"Wait {p.entityName} is the goat wtf?");
                 p.currentStates.Remove(EntityPiece.State.FightingParty);
+                p.dustCloud.SetActive(false);
             }
 
             isStockingStore = false; // let next player access inventory
