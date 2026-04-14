@@ -19499,7 +19499,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_Sprite: {fileID: 21300000, guid: 3423d236fef591d4baf2210fc5a1376d, type: 3}
   m_Color: {r: 0.5882353, g: 0.5882353, b: 0.3764706, a: 1}
   m_FlipX: 1
@@ -21396,8 +21396,8 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DistortTex:
-        m_Texture: {fileID: 2800000, guid: 7aad8c583ef292e48b06af0d1f2fab97, type: 3}
-        m_Scale: {x: 1, y: 1}
+        m_Texture: {fileID: 2800000, guid: f92fcbdea505b604b8ec3ffa9f68c340, type: 3}
+        m_Scale: {x: 1, y: 4}
         m_Offset: {x: 0, y: 0}
     - _FadeBurnTex:
         m_Texture: {fileID: 2800000, guid: 677cca399782dea41aedc1d292ecb67d, type: 3}
@@ -21483,8 +21483,8 @@ Material:
     - _ColorSwapRedLuminosity: 0.5
     - _Contrast: 0.7
     - _CullingOption: 0
-    - _DistortAmount: 0.25
-    - _DistortTexXSpeed: 4
+    - _DistortAmount: 1
+    - _DistortTexXSpeed: 16
     - _DistortTexYSpeed: 4
     - _EditorDrawers: 7
     - _FadeAmount: 0.12
@@ -21916,7 +21916,6 @@ Material:
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - DISTORT_ON
-  - DOODLE_ON
   - GHOST_ON
   - GRADIENT2COL_ON
   - OVERLAYMULT_ON
@@ -21949,8 +21948,8 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DistortTex:
-        m_Texture: {fileID: 2800000, guid: 7aad8c583ef292e48b06af0d1f2fab97, type: 3}
-        m_Scale: {x: 1, y: 1}
+        m_Texture: {fileID: 2800000, guid: f92fcbdea505b604b8ec3ffa9f68c340, type: 3}
+        m_Scale: {x: 1, y: 3}
         m_Offset: {x: 0, y: 0}
     - _FadeBurnTex:
         m_Texture: {fileID: 2800000, guid: 677cca399782dea41aedc1d292ecb67d, type: 3}
@@ -22024,9 +22023,9 @@ Material:
     - _ColorSwapRedLuminosity: 0.5
     - _Contrast: 0.7
     - _CullingOption: 0
-    - _DistortAmount: 0.25
+    - _DistortAmount: 0.75
     - _DistortTexXSpeed: 4
-    - _DistortTexYSpeed: 4
+    - _DistortTexYSpeed: 16
     - _EditorDrawers: 7
     - _FadeAmount: 0.12
     - _FadeBurnGlow: 2
@@ -22096,7 +22095,7 @@ Material:
     - _OutlineTexXSpeed: 10
     - _OutlineTexYSpeed: 0
     - _OutlineWidth: 0.004
-    - _OverlayBlend: 0.686
+    - _OverlayBlend: 0.8
     - _OverlayGlow: 0.8
     - _OverlayTextureScrollXSpeed: 0
     - _OverlayTextureScrollYSpeed: 0
@@ -23619,6 +23618,14 @@ PlayableDirector:
     value: {fileID: 2102989730}
   - key: {fileID: 7921768280753628421, guid: c7fece258087e8d4e9e03c83f2000331, type: 2}
     value: {fileID: 39359261}
+  - key: {fileID: -5763786402119780333, guid: c7fece258087e8d4e9e03c83f2000331, type: 2}
+    value: {fileID: 5686672750831887434}
+  - key: {fileID: 8622361115835777746, guid: c7fece258087e8d4e9e03c83f2000331, type: 2}
+    value: {fileID: 1125766376}
+  - key: {fileID: 950697754939160439, guid: c7fece258087e8d4e9e03c83f2000331, type: 2}
+    value: {fileID: 1728083685}
+  - key: {fileID: -1314421287576465796, guid: c7fece258087e8d4e9e03c83f2000331, type: 2}
+    value: {fileID: 5686672750831887435}
   m_ExposedReferences:
     m_References:
     - f40364769eee90d4084b436e45e21bee: {fileID: 2102989729}
@@ -34594,7 +34601,7 @@ MonoBehaviour:
   m_LightType: 4
   m_BlendStyleIndex: 0
   m_FalloffIntensity: 0.5
-  m_Color: {r: 0.8901961, g: 0.98702246, b: 1, a: 1}
+  m_Color: {r: 0.9292453, g: 0.9924191, b: 1, a: 1}
   m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
@@ -35666,7 +35673,7 @@ MonoBehaviour:
   m_AlphaBlendOnOverlap: 0
   m_OverlapOperation: 0
   m_NormalMapDistance: 3
-  m_NormalMapQuality: 2
+  m_NormalMapQuality: 0
   m_UseNormalMap: 0
   m_ShadowIntensityEnabled: 0
   m_ShadowIntensity: 0.75
@@ -36286,7 +36293,7 @@ SpriteShapeRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 386566768}
+  - {fileID: 1453187626}
   - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -36352,7 +36359,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee158225ee1e59f4791627785501d950, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentShaderType: 3
+  currentShaderType: 0
   normalStrength: 7.18
   normalSmoothing: 0
   computingNormal: 0
@@ -54270,6 +54277,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1125766376 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9085617780501325274, guid: 79e6d9e71732e2841a40970910948468, type: 3}
+  m_PrefabInstance: {fileID: 781057138}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &1129992726 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6051684997082574127, guid: c8e4d3328645e3446ad7ed36310951ab, type: 3}
@@ -58958,9 +58970,7 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
-  - CONTRAST_ON
   - DISTORT_ON
-  - DOODLE_ON
   - FADE_ON
   - GHOST_ON
   - OVERLAYMULT_ON
@@ -58991,8 +59001,8 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DistortTex:
-        m_Texture: {fileID: 2800000, guid: 7aad8c583ef292e48b06af0d1f2fab97, type: 3}
-        m_Scale: {x: 1, y: 1}
+        m_Texture: {fileID: 2800000, guid: f92fcbdea505b604b8ec3ffa9f68c340, type: 3}
+        m_Scale: {x: 1, y: 4}
         m_Offset: {x: 0, y: 0}
     - _FadeBurnTex:
         m_Texture: {fileID: 2800000, guid: 677cca399782dea41aedc1d292ecb67d, type: 3}
@@ -59078,9 +59088,9 @@ Material:
     - _ColorSwapRedLuminosity: 0.5
     - _Contrast: 1.44
     - _CullingOption: 0
-    - _DistortAmount: 0.25
+    - _DistortAmount: 1
     - _DistortTexXSpeed: 4
-    - _DistortTexYSpeed: 4
+    - _DistortTexYSpeed: 20
     - _EditorDrawers: 7
     - _FadeAmount: 0.12
     - _FadeBurnGlow: 2
@@ -59860,6 +59870,282 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 384, y: 64}
   m_Pivot: {x: 0, y: 0.5}
+--- !u!21 &1453187626
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: AllIn1SpriteShader/AllIn1SpriteShader
+  m_Shader: {fileID: 4800000, guid: a36b7719ff0465b42ab1407d67672c5f, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords:
+  - CONTRAST_ON
+  - DISTORT_ON
+  - FADE_ON
+  - GHOST_ON
+  - OVERLAYMULT_ON
+  - OVERLAY_ON
+  - WAVEUV_ON
+  m_InvalidKeywords:
+  - _GLOWAFFECTLIGHT_ON
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: 3000
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _ColorRampTex:
+        m_Texture: {fileID: 2800000, guid: 279657edc397ece4b8029c727adf6ddc, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ColorRampTexGradient:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ColorSwapTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DistortTex:
+        m_Texture: {fileID: 2800000, guid: f92fcbdea505b604b8ec3ffa9f68c340, type: 3}
+        m_Scale: {x: 1, y: 4}
+        m_Offset: {x: 0, y: 0}
+    - _FadeBurnTex:
+        m_Texture: {fileID: 2800000, guid: 677cca399782dea41aedc1d292ecb67d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FadeTex:
+        m_Texture: {fileID: 2800000, guid: 7aad8c583ef292e48b06af0d1f2fab97, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GlowTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: bd3249e8aae01e748aaca0c062e2c19c, type: 3}
+        m_Scale: {x: 0.5, y: 0.75}
+        m_Offset: {x: 0, y: 0}
+    - _MaskTex:
+        m_Texture: {fileID: 2800000, guid: 839adabbc5de26041bac66450214a831, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OutlineDistortTex:
+        m_Texture: {fileID: 2800000, guid: 7aad8c583ef292e48b06af0d1f2fab97, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OutlineTex:
+        m_Texture: {fileID: 2800000, guid: 74087f6d03f233e4a8a142fa01f9e5cf, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OverlayTex:
+        m_Texture: {fileID: 2800000, guid: bd3249e8aae01e748aaca0c062e2c19c, type: 3}
+        m_Scale: {x: 0.25, y: 0.5}
+        m_Offset: {x: 0, y: 0}
+    - _ShineMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _Alpha: 1
+    - _AlphaCutoffValue: 0.25
+    - _AlphaOutlineBlend: 1
+    - _AlphaOutlineGlow: 5
+    - _AlphaOutlineMinAlpha: 0
+    - _AlphaOutlinePower: 1
+    - _AlphaRoundThreshold: 0.5
+    - _BillboardY: 0
+    - _BlurHD: 0
+    - _BlurIntensity: 10
+    - _Brightness: 0
+    - _ChromAberrAlpha: 0.4
+    - _ChromAberrAmount: 1
+    - _ClipUvDown: 0
+    - _ClipUvLeft: 0
+    - _ClipUvRight: 0
+    - _ClipUvUp: 0
+    - _ColorChangeLuminosity: 0
+    - _ColorChangeTolerance: 0.25
+    - _ColorChangeTolerance2: 0.25
+    - _ColorChangeTolerance3: 0.25
+    - _ColorRampBlend: 1
+    - _ColorRampLuminosity: 0
+    - _ColorRampOutline: 0
+    - _ColorSwapBlend: 1
+    - _ColorSwapBlueLuminosity: 0.5
+    - _ColorSwapGreenLuminosity: 0.5
+    - _ColorSwapRedLuminosity: 0.5
+    - _Contrast: 0.7
+    - _CullingOption: 0
+    - _DistortAmount: 1
+    - _DistortTexXSpeed: -6
+    - _DistortTexYSpeed: 8
+    - _EditorDrawers: 7
+    - _FadeAmount: 0.12
+    - _FadeBurnGlow: 1
+    - _FadeBurnTransition: 0.075
+    - _FadeBurnWidth: 0.025
+    - _FishEyeUvAmount: 0.35
+    - _FlickerAlpha: 0
+    - _FlickerFreq: 0.2
+    - _FlickerPercent: 0.05
+    - _GhostBlend: 0.658
+    - _GhostColorBoost: 0
+    - _GhostTransparency: 0.798
+    - _GlitchAmount: 3
+    - _GlitchSize: 1
+    - _Glow: 2.6
+    - _GlowAffectLight: 1
+    - _GlowGlobal: 1
+    - _GradBlend: 1
+    - _GradBoostX: 1.2
+    - _GradBoostY: 1.2
+    - _GradIsRadial: 0
+    - _GrassManualAnim: 1
+    - _GrassManualToggle: 0
+    - _GrassRadialBend: 0.1
+    - _GrassSpeed: 2
+    - _GrassWind: 20
+    - _GreyscaleBlend: 1
+    - _GreyscaleLuminosity: 0
+    - _GreyscaleOutline: 0
+    - _HandDrawnAmount: 6
+    - _HandDrawnSpeed: 5.59
+    - _HitEffectBlend: 1
+    - _HitEffectGlow: 5
+    - _HologramBlend: 1
+    - _HologramMaxAlpha: 0.75
+    - _HologramMinAlpha: 0.1
+    - _HologramStripesAmount: 0.1
+    - _HologramStripesSpeed: 4.5
+    - _HologramUnmodAmount: 0
+    - _HsvBright: 1
+    - _HsvSaturation: 1
+    - _HsvShift: 180
+    - _InnerOutlineAlpha: 1
+    - _InnerOutlineGlow: 4
+    - _InnerOutlineThickness: 1
+    - _LitAmount: 1
+    - _MaxXUV: 1
+    - _MaxYUV: 1
+    - _MinXUV: 0
+    - _MinYUV: 0
+    - _MotionBlurAngle: 0.1
+    - _MotionBlurDist: 1.25
+    - _MyDstMode: 3
+    - _MySrcMode: 5
+    - _NegativeAmount: 1
+    - _NormalStrength: 1
+    - _OffsetUvX: 0
+    - _OffsetUvY: 0
+    - _OnlyInnerOutline: 0
+    - _OnlyOutline: 0
+    - _OutlineAlpha: 1
+    - _OutlineDistortAmount: 0.5
+    - _OutlineDistortTexXSpeed: 5
+    - _OutlineDistortTexYSpeed: 5
+    - _OutlineGlow: 1.5
+    - _OutlinePixelWidth: 1
+    - _OutlineTexXSpeed: 10
+    - _OutlineTexYSpeed: 0
+    - _OutlineWidth: 0.004
+    - _OverlayBlend: 0.75
+    - _OverlayGlow: 1
+    - _OverlayTextureScrollXSpeed: 0
+    - _OverlayTextureScrollYSpeed: 0
+    - _PinchUvAmount: 0.35
+    - _PixelateSize: 32
+    - _PosterizeGamma: 0.75
+    - _PosterizeNumColors: 8
+    - _PosterizeOutline: 0
+    - _QueueControl: -1
+    - _QueueOffset: 0
+    - _RadialClip: 45
+    - _RadialClip2: 0
+    - _RadialStartAngle: 90
+    - _RandomSeed: 0
+    - _RectSize: 1
+    - _RotateUvAmount: 0
+    - _RoundWaveSpeed: 2
+    - _RoundWaveStrength: 0.7
+    - _ShadowAlpha: 0.5
+    - _ShadowX: 0.1
+    - _ShadowY: -0.05
+    - _ShakeUvSpeed: 2.5
+    - _ShakeUvX: 1.5
+    - _ShakeUvY: 1
+    - _ShineGlow: 1
+    - _ShineLocation: 0.5
+    - _ShineRotate: 0
+    - _ShineWidth: 0.1
+    - _TextureScrollXSpeed: 1
+    - _TextureScrollYSpeed: 0
+    - _TwistUvAmount: 1
+    - _TwistUvPosX: 0.5
+    - _TwistUvPosY: 0.5
+    - _TwistUvRadius: 0.75
+    - _WarpScale: 0.5
+    - _WarpSpeed: 8
+    - _WarpStrength: 0.025
+    - _WaveAmount: 7
+    - _WaveSpeed: 2.5
+    - _WaveStrength: 7.5
+    - _WaveX: 0.3
+    - _WaveY: 0.5
+    - _ZTestMode: 4
+    - _ZWrite: 0
+    - _ZoomUvAmount: 0.5
+    m_Colors:
+    - _AlphaOutlineColor: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _ColorChangeNewCol: {r: 1, g: 1, b: 0, a: 1}
+    - _ColorChangeNewCol2: {r: 1, g: 1, b: 0, a: 1}
+    - _ColorChangeNewCol3: {r: 1, g: 1, b: 0, a: 1}
+    - _ColorChangeTarget: {r: 1, g: 0, b: 0, a: 1}
+    - _ColorChangeTarget2: {r: 1, g: 0, b: 0, a: 1}
+    - _ColorChangeTarget3: {r: 1, g: 0, b: 0, a: 1}
+    - _ColorSwapBlue: {r: 1, g: 1, b: 1, a: 1}
+    - _ColorSwapGreen: {r: 1, g: 1, b: 1, a: 1}
+    - _ColorSwapRed: {r: 1, g: 1, b: 1, a: 1}
+    - _FadeBurnColor: {r: 0, g: 0.49948263, b: 1, a: 1}
+    - _GlowColor: {r: 1, g: 1, b: 1, a: 1}
+    - _GradBotLeftCol: {r: 0, g: 0, b: 1, a: 1}
+    - _GradBotRightCol: {r: 0, g: 1, b: 0, a: 1}
+    - _GradTopLeftCol: {r: 1, g: 0, b: 0, a: 1}
+    - _GradTopRightCol: {r: 1, g: 1, b: 0, a: 1}
+    - _GreyscaleTintColor: {r: 1, g: 1, b: 1, a: 1}
+    - _HitEffectColor: {r: 1, g: 1, b: 1, a: 1}
+    - _HologramStripeColor: {r: 0, g: 1, b: 1, a: 1}
+    - _InnerOutlineColor: {r: 1, g: 0, b: 0, a: 1}
+    - _OutlineColor: {r: 1, g: 1, b: 1, a: 1}
+    - _OverlayColor: {r: 1, g: 1, b: 1, a: 1}
+    - _ShadowColor: {r: 0, g: 0, b: 0, a: 1}
+    - _ShineColor: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []
 --- !u!114 &1458444975 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1585017214364890035, guid: 57685babf17a997489471d63ae7b1f40, type: 3}
@@ -67303,7 +67589,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1603012543}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 0
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
@@ -69241,6 +69527,11 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1230, y: 600}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1728083685 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1647725496117639216, guid: 79e6d9e71732e2841a40970910948468, type: 3}
+  m_PrefabInstance: {fileID: 781057138}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1729245459 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 248609153787602160, guid: 79e6d9e71732e2841a40970910948468, type: 3}
@@ -70189,7 +70480,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_Sprite: {fileID: 21300000, guid: 3423d236fef591d4baf2210fc5a1376d, type: 3}
   m_Color: {r: 0.46319053, g: 0.5754717, b: 0.29045033, a: 1}
   m_FlipX: 0
@@ -71486,8 +71777,8 @@ MonoBehaviour:
   m_LightOrder: 0
   m_AlphaBlendOnOverlap: 0
   m_OverlapOperation: 0
-  m_NormalMapDistance: 3
-  m_NormalMapQuality: 2
+  m_NormalMapDistance: 4
+  m_NormalMapQuality: 0
   m_UseNormalMap: 0
   m_ShadowIntensityEnabled: 0
   m_ShadowIntensity: 0.75
@@ -79290,8 +79581,8 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DistortTex:
-        m_Texture: {fileID: 2800000, guid: 7aad8c583ef292e48b06af0d1f2fab97, type: 3}
-        m_Scale: {x: 1, y: 1}
+        m_Texture: {fileID: 2800000, guid: f92fcbdea505b604b8ec3ffa9f68c340, type: 3}
+        m_Scale: {x: 1, y: 5}
         m_Offset: {x: 0, y: 0}
     - _FadeBurnTex:
         m_Texture: {fileID: 2800000, guid: 677cca399782dea41aedc1d292ecb67d, type: 3}
@@ -79365,9 +79656,9 @@ Material:
     - _ColorSwapRedLuminosity: 0.5
     - _Contrast: 0.7
     - _CullingOption: 0
-    - _DistortAmount: 0.25
-    - _DistortTexXSpeed: 4
-    - _DistortTexYSpeed: 4
+    - _DistortAmount: 0.5
+    - _DistortTexXSpeed: -6
+    - _DistortTexYSpeed: 6
     - _EditorDrawers: 7
     - _FadeAmount: 0.12
     - _FadeBurnGlow: 2
@@ -79437,7 +79728,7 @@ Material:
     - _OutlineTexXSpeed: 10
     - _OutlineTexYSpeed: 0
     - _OutlineWidth: 0.004
-    - _OverlayBlend: 0.686
+    - _OverlayBlend: 0.7
     - _OverlayGlow: 1
     - _OverlayTextureScrollXSpeed: 0
     - _OverlayTextureScrollYSpeed: 0
@@ -85736,6 +86027,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3dce68b526fa09b47a180b5e882507e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &5686672750831887434 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9085617780501325274, guid: 79e6d9e71732e2841a40970910948468, type: 3}
+  m_PrefabInstance: {fileID: 5686672750831887432}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &5686672750831887435 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1647725496117639216, guid: 79e6d9e71732e2841a40970910948468, type: 3}
+  m_PrefabInstance: {fileID: 5686672750831887432}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6327613737072156022
 PrefabInstance:
   m_ObjectHideFlags: 0
