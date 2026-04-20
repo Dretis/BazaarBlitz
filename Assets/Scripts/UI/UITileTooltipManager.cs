@@ -83,11 +83,14 @@ public class UITileTooltipManager : MonoBehaviour
             // Stamp Tile
             if (node.TryGetComponent<Stamp>(out Stamp stamp))
             {
-                var stampHexColor = stamp.stampColor.ToHexString();
-                tileType.text = $"<color=#{stampHexColor}>{stamp.stampType} Stamp</color>";
-                tileDescription.text = $"Upon passing, collect the <color=#{stampHexColor}>{stamp.stampType}</color> stamp.";
-                tileDescription.text += $"\n\nCan only hold one <color=#{stampHexColor}>{stamp.stampType}</color> stamp at a time.";
-                tileDescription.text += "\n\nFights cannot happen on this tile.";
+                //var stampHexColor = stamp.stampColor.ToHexString();
+                //tileType.text = $"<color=#{stampHexColor}>{stamp.stampType} Stamp</color>";
+                //tileDescription.text = $"Upon passing, collect the <color=#{stampHexColor}>{stamp.stampType}</color> stamp.";
+                //tileDescription.text += $"\n\nCan only hold one <color=#{stampHexColor}>{stamp.stampType}</color> stamp at a time.";
+                //tileDescription.text += "\n\nFights cannot happen on this tile.";
+                tileType.color = node.tileHoverColor;
+                tileType.text = node.GetTileTypeString();
+                tileDescription.text = node.GetTileAboutString();
             }
             // Pawn Shop
             else if (node.tag == "Castle") //please change this tag
@@ -125,10 +128,12 @@ public class UITileTooltipManager : MonoBehaviour
             // Wild Tile
             else
             {
-                tileType.text = "Wild Tile";
-                tileDescription.text = "Upon landing, encounter an enemy.";
-                tileDescription.text += "\n\nCan set up shop on this space.";
-                //tileDescription.text += "\n\nCan build a store on this space.";
+                //tileType.text = "Wild Tile";
+                //tileDescription.text = "Upon landing, encounter an enemy.";
+                //tileDescription.text += "\n\nCan set up shop on this space.";
+                tileType.color = node.tileHoverColor;
+                tileType.text = node.GetTileTypeString();
+                tileDescription.text = node.GetTileAboutString();
             }
         }
     }

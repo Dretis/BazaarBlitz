@@ -14,7 +14,7 @@ public class GameplayTest : MonoBehaviour
     [Space]
     public GameBoard board;
     public GamePhase phase = GamePhase.RollDice;
-    private EntityPiece winner;
+    public EntityPiece winner;
 
     [Header("Debugging")]
     [SerializeField] private TextMeshProUGUI debugPhaseText;
@@ -114,7 +114,7 @@ public class GameplayTest : MonoBehaviour
     public TextMeshProUGUI p1fight;
     public TextMeshProUGUI p2fight;
     public TextMeshProUGUI resultInfo;
-    public bool encounterOver = false;
+    //public bool encounterOver = false;
 
     public GameObject storeScreen;
     public TextMeshProUGUI storeListings;
@@ -684,6 +684,7 @@ public class GameplayTest : MonoBehaviour
             // Undo moves (not sure if this actually undoes multiple stamp collections)
             if (p.occupiedNode.CompareTag("Castle"))
             {
+                /*
                 p.stamps = new List<Stamp.StampType>(oldStamps);
                 p.heldPoints = oldPoints;
                 p.ReputationPoints = oldRep;
@@ -694,10 +695,14 @@ public class GameplayTest : MonoBehaviour
 
                 m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
                 m_UndoPassByPawnShop.RaiseEvent(p);
+                */
+                p.occupiedNode.UndoPassByThisNode(p);
             }
-            else if (stampCollected != null)
+            else if (p.occupiedNode.CompareTag("Stamp"))
             {
+                p.occupiedNode.UndoPassByThisNode(p);
                 // Stamp was not collected before
+                /*
                 if (p.stamps.Contains(stampCollected.stampType) && !oldStamps.Contains(stampCollected.stampType))
                 {
                     Debug.Log("undo stamp");
@@ -706,6 +711,7 @@ public class GameplayTest : MonoBehaviour
                     p.stamps.Remove(stampCollected.stampType);
                     m_UndoPassByStamp.RaiseEvent(stampCollected.stampType); // shit code fix later
                 }
+                */
             }
 
             p.traveledNodes.Remove(lastNode);
@@ -792,6 +798,7 @@ public class GameplayTest : MonoBehaviour
         // Cash in Stamps
         if (m.CompareTag("Castle"))
         {
+            /*
             oldRep = p.ReputationPoints;
             oldPoints = p.heldPoints;
             oldStamps = new List<Stamp.StampType>(p.stamps);
@@ -826,20 +833,12 @@ public class GameplayTest : MonoBehaviour
                 phase = GamePhase.EndGame; // Finish game if player w/ enough points passes by Pawn Shop
                 return;
             }
+            */
+            m.PassByThisNode(p);
         }
         else if (m.CompareTag("Stamp"))
         {
-            var stamp = m.gameObject.GetComponent<Stamp>();
-            Stamp.StampType stampToBeCollected = stamp.stampType;
-            if (!p.stamps.Contains(stampToBeCollected))
-            {
-                Debug.Log($"Collect {stampToBeCollected} stamp passed");
-                oldStamps = new List<Stamp.StampType>(p.stamps);
-                p.stamps.Add(stampToBeCollected);
-                //m_UpdatePlayerScore.RaiseEvent(currentPlayer.id); // Change this to a different event
-                stamp.PlayCollectStamp(); //plays timeline to show you picked this up
-                m_PassByStamp.RaiseEvent(p);
-            }
+            m.PassByThisNode(p);
         }
 
         //if (m.playerOccupied != null && m.playerOccupied != p)
@@ -909,15 +908,6 @@ public class GameplayTest : MonoBehaviour
     void EncounterTime(EntityPiece p, MapNode m)
     {
         // Player has started combat
-        /*if (p.combatSceneIndex != -1)
-        /
-        {
-            phase = GamePhase.CombatTime;
-            m_EnteredCombatScene.RaiseEvent();
-            sceneManager.DisableScene(0);
-            sceneManager.EnableScene(p.combatSceneIndex);
-        }
-        */
         if (ThisPlayerMustFight(p))
         {
             InitiateCombat(p, m);
@@ -930,46 +920,19 @@ public class GameplayTest : MonoBehaviour
             playersOnCurrentNode = m.playersOccupied;
             var otherPlayers = GetOtherPlayersOnNode(p);
 
-            if (m.TryGetComponent<StoreManager>(out StoreManager component)) // Forced to buy item(s)
+            // Player Storefront
+            if (m.TryGetComponent<StoreManager>(out StoreManager component))
             {
-                // Have the node be occupied by the current player.
-                //m.playerOccupied = p;
-
                 // Update portions of this code later
                 GameObject tile = m.gameObject;
                 StoreManager store = component;
 
-                //if (otherPlayer != null && otherPlayer != currentPlayer) // temp player fight on store
                 if (CanFightPlayers(otherPlayers)) // Fight ppl on store
                 {
                     InitiateCombat(p, m);
-                    /*
-                    if (otherPlayer.combatSceneIndex == -1)
-                    {
-                        phase = GamePhase.CombatTime;
-
-                        //Debug.Log("Your Player: " + currentPlayer.nickname);
-                        //Debug.Log("Other Player: " + otherPlayer.nickname);
-                        //m_EnteredCombatScene.RaiseEvent();
-                        encounterStarted = true;
-
-                        // Set IDs of players entering combat.
-                        //sceneManager.player1ID = currentPlayer.id;
-                        //sceneManager.player2ID = otherPlayer.id;
-
-                        StartCoroutine(StartTransitionIntoCombat(.5f, otherPlayer));
-                        //m_EnteredCombatScene.RaiseEvent();
-                        //m_InitiateCombatOnPassBy.RaiseEvent(otherPlayer);
-
-                        //sceneManager.LoadCombatScene();
-                    }
-                    */
                 }
                 else if (store.playerOwner != currentPlayer)
                 {
-                    // Have the node be occupied by the current player.
-                    //m.playersOccupied.Add(p);
-
                     // Forced to buy item(s) from another player's store
                     Debug.Log("Landed on " + store.playerOwner + " store");
 
@@ -987,24 +950,15 @@ public class GameplayTest : MonoBehaviour
                 }
                 else
                 {
-                    // Have the node be occupied by the current player.
-                    //m.playersOccupied.Add(p);
+                    // Restock any store
 
                     Debug.Log($"Ask if {p.entityName} wants to restock");
                     m_AskRestockStore.RaiseEvent(p);
-                    //m_RestockStore.RaiseEvent(m);
-                    //m_OpenInventory.RaiseEvent(p); // COMMENT THIS OUT WHEN RAISING THE RESTOCK EVENT
-                    //storestockTooltip.enabled = true; // PROBABLY PUT THIS IN UI AS WELL
-                    //phase = GamePhase.StockStore;
                 }
             }
             else if (m.CompareTag("Castle"))
             {
-                // Clear your direction so you can choose next turn
-                p.previousNode = null;
-
-                encounterOver = true;
-                phase = GamePhase.EndTurn;
+                m.LandOnThisNode(p);
             }
             else if (m.CompareTag("Vendor"))
             {
@@ -1036,10 +990,7 @@ public class GameplayTest : MonoBehaviour
             else if (m.CompareTag("Stamp"))
             {
                 // Clear your direction so you can choose next turn (TEMPORARY)
-                p.previousNode = null;
-
-                encounterOver = true;
-                phase = GamePhase.EndTurn;
+                m.LandOnThisNode(p);
             }
             else if (m.CompareTag("MoveAgain"))
             {
@@ -1079,6 +1030,11 @@ public class GameplayTest : MonoBehaviour
                 StartCoroutine(InitiateCombatOnEnemy(.05f, p));
 
                 phase = GamePhase.RockPaperScissors;
+            }
+            else // Generic MapNode Landing Function
+            {
+                Debug.Log("Generic landed on this node.");
+                m.LandOnThisNode(p);
             }
         }
     }
@@ -1388,7 +1344,7 @@ public class GameplayTest : MonoBehaviour
     public void ConfirmContinue()
     {
         phase = GamePhase.EndTurn;
-        encounterOver = false;
+        //encounterOver = false;
         encounterScreen.SetActive(false);
         storeScreen.SetActive(false);
         //m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
@@ -1607,7 +1563,7 @@ public class GameplayTest : MonoBehaviour
             }
             else
             {
-                encounterOver = true;
+                //encounterOver = true;
             }
         }
     }
@@ -1896,11 +1852,6 @@ public class GameplayTest : MonoBehaviour
     public IEnumerator InitiateCombatOnEnemy(float delay, EntityPiece p)
     {
         EntityPiece enemy = null;
-        //Raise event for moving to combat scene
-        //m_EnteredCombatScene.RaiseEvent();
-
-        //encounterStarted = true;
-
         // Set IDs of players entering combat.
         sceneManager.player1ID = p.id;
 
@@ -1922,16 +1873,12 @@ public class GameplayTest : MonoBehaviour
                     lookingForTarget = false;
                 }
             }
-
         }
 
         enemy.occupiedNode = p.occupiedNode;
         p.occupiedNode.playersOccupied.Add(enemy);
 
         yield return new WaitForSeconds(delay);
-
-        //phase = GamePhase.CombatTime;
-        //sceneManager.LoadCombatScene();
 
         BeginCombat(enemy);
 

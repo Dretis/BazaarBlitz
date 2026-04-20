@@ -261,10 +261,11 @@ MonoBehaviour:
     m_Localized: 'Upon landing, buy an item from the storefront.
 
 
-      If <color=#>{PLAYER_NAME}</color>
+      If <color=#{HEX_COLOR}>{PLAYER_NAME}</color>
       lands, restock items from inventory.'
     m_Metadata:
-      m_Items: []
+      m_Items:
+      - rid: 1699095790756298753
   - m_Id: 3522253672042501
     m_Localized: Central Exchange
     m_Metadata:
@@ -272,19 +273,21 @@ MonoBehaviour:
   - m_Id: 3522253672042503
     m_Localized: '{COLOR} Stamp'
     m_Metadata:
-      m_Items: []
+      m_Items:
+      - rid: 1699095790756298753
   - m_Id: 3522253672042504
-    m_Localized: 'Upon passing, collect the <color=#>{COLOR}</color> stamp.
+    m_Localized: 'Upon passing, collect the <color=#{HEX_COLOR}>{COLOR}</color> stamp.
 
 
       Can
-      only hold one <color=#>{COLOR}</color> stamp at a time.
+      only hold one <color=#{HEX_COLOR}>{COLOR}</color> stamp at a time.
 
 
-      Fights cannot
-      happen on this tile.'
+      Fights
+      cannot happen on this tile.'
     m_Metadata:
-      m_Items: []
+      m_Items:
+      - rid: 1699095790756298753
   - m_Id: 3522253672042505
     m_Localized: Red
     m_Metadata:
@@ -724,3 +727,6 @@ MonoBehaviour:
         m_Entries: 
         m_SharedEntries:
         - id: 3522253676236821
+        - id: 3522253672042503
+        - id: 3522253672042504
+        - id: 3522253672042500

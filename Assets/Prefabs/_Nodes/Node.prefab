@@ -949,6 +949,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playersOccupied: []
+  tileHoverColor: {r: 0.9921569, g: 0.9843138, b: 0.6862745, a: 1}
+  tileTypeString:
+    m_TableReference:
+      m_TableCollectionName: GUID:c5a5d24bd5dd6a1459756bb15eaa5fc3
+    m_TableEntryReference:
+      m_KeyId: 3522253672042497
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  tileAboutString:
+    m_TableReference:
+      m_TableCollectionName: GUID:c5a5d24bd5dd6a1459756bb15eaa5fc3
+    m_TableEntryReference:
+      m_KeyId: 3522253672042498
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   focusPoint: {fileID: 0}
   flowerTrapVisual: {fileID: 2864088131345327554}
   flowerTrapSprites:
@@ -967,6 +986,9 @@ MonoBehaviour:
   west: {fileID: 0}
   modifier: 0
   modifierOwner: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []
 --- !u!58 &6593633649207188595
 CircleCollider2D:
   m_ObjectHideFlags: 0
