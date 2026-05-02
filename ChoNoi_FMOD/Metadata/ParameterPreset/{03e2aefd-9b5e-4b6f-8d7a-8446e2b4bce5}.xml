@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="ParameterPreset" id="{03e2aefd-9b5e-4b6f-8d7a-8446e2b4bce5}">
+		<property name="name">
+			<value>RolledNumber</value>
+		</property>
+		<relationship name="folder">
+			<destination>{b7e37e18-d8bd-4577-bcec-307d7f836521}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{8c87b54c-538d-4c30-93ac-dd5a02e6e040}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{8c87b54c-538d-4c30-93ac-dd5a02e6e040}">
+		<property name="parameterType">
+			<value>1</value>
+		</property>
+		<property name="maximum">
+			<value>16</value>
+		</property>
+		<property name="initialValue">
+			<value>3</value>
+		</property>
+	</object>
+</objects>
