@@ -21964,7 +21964,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: bd3249e8aae01e748aaca0c062e2c19c, type: 3}
+        m_Texture: {fileID: 2800000, guid: 5579bebef5e2662479a88f01b07fa10b, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MaskTex:
@@ -21984,7 +21984,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OverlayTex:
-        m_Texture: {fileID: 2800000, guid: 4f6aecb46b26fd64c9d441c59273fe61, type: 3}
+        m_Texture: {fileID: 2800000, guid: 5579bebef5e2662479a88f01b07fa10b, type: 3}
         m_Scale: {x: 0.25, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ShineMask:
@@ -22037,7 +22037,7 @@ Material:
     - _FlickerPercent: 0.05
     - _GhostBlend: 0.658
     - _GhostColorBoost: 0
-    - _GhostTransparency: 0.798
+    - _GhostTransparency: 0.4
     - _GlitchAmount: 3
     - _GlitchSize: 1
     - _Glow: 10
@@ -22096,7 +22096,7 @@ Material:
     - _OutlineTexYSpeed: 0
     - _OutlineWidth: 0.004
     - _OverlayBlend: 0.8
-    - _OverlayGlow: 0.8
+    - _OverlayGlow: 2
     - _OverlayTextureScrollXSpeed: 0
     - _OverlayTextureScrollYSpeed: 0
     - _PinchUvAmount: 0.026
@@ -22162,7 +22162,7 @@ Material:
     - _HologramStripeColor: {r: 0, g: 1, b: 1, a: 1}
     - _InnerOutlineColor: {r: 1, g: 0, b: 0, a: 1}
     - _OutlineColor: {r: 1, g: 1, b: 1, a: 1}
-    - _OverlayColor: {r: 1, g: 1, b: 1, a: 0.21176471}
+    - _OverlayColor: {r: 1, g: 1, b: 1, a: 0.49019608}
     - _ShadowColor: {r: 0, g: 0, b: 0, a: 1}
     - _ShineColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -58080,7 +58080,7 @@ MonoBehaviour:
   m_LightType: 4
   m_BlendStyleIndex: 0
   m_FalloffIntensity: 0.5
-  m_Color: {r: 0.8901961, g: 1, b: 0.98277146, a: 1}
+  m_Color: {r: 0.8901961, g: 0.8980392, b: 1, a: 1}
   m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
@@ -58767,7 +58767,7 @@ SpriteShapeRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: -3
-  m_Color: {r: 0.026165891, g: 0.25369003, b: 0.26415092, a: 0.46666667}
+  m_Color: {r: 0.43137255, g: 0.5254902, b: 0.4392157, a: 1}
   m_MaskInteraction: 0
   m_ShapeTexture: {fileID: 2800000, guid: b281b91a70a624a0da1c43adc1c30c7b, type: 3}
   m_Sprites:
@@ -58971,7 +58971,6 @@ Material:
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - DISTORT_ON
-  - FADE_ON
   - GHOST_ON
   - OVERLAYMULT_ON
   - OVERLAY_ON
@@ -59017,7 +59016,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: bd3249e8aae01e748aaca0c062e2c19c, type: 3}
+        m_Texture: {fileID: 2800000, guid: 5579bebef5e2662479a88f01b07fa10b, type: 3}
         m_Scale: {x: 0.5, y: 0.75}
         m_Offset: {x: 0, y: 0}
     - _MaskTex:
@@ -59037,7 +59036,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OverlayTex:
-        m_Texture: {fileID: 2800000, guid: 4f6aecb46b26fd64c9d441c59273fe61, type: 3}
+        m_Texture: {fileID: 2800000, guid: 5579bebef5e2662479a88f01b07fa10b, type: 3}
         m_Scale: {x: 0.25, y: 0.5}
         m_Offset: {x: 0, y: 0}
     - _ShineMask:
@@ -59102,7 +59101,7 @@ Material:
     - _FlickerPercent: 0.05
     - _GhostBlend: 0.658
     - _GhostColorBoost: 0
-    - _GhostTransparency: 0.798
+    - _GhostTransparency: 0.4
     - _GlitchAmount: 3
     - _GlitchSize: 1
     - _Glow: 2.6
@@ -59160,8 +59159,8 @@ Material:
     - _OutlineTexXSpeed: 10
     - _OutlineTexYSpeed: 0
     - _OutlineWidth: 0.004
-    - _OverlayBlend: 1
-    - _OverlayGlow: 1
+    - _OverlayBlend: 0.8
+    - _OverlayGlow: 1.5
     - _OverlayTextureScrollXSpeed: 0
     - _OverlayTextureScrollYSpeed: 0
     - _PinchUvAmount: 0.35
@@ -59229,7 +59228,7 @@ Material:
     - _HologramStripeColor: {r: 0, g: 1, b: 1, a: 1}
     - _InnerOutlineColor: {r: 1, g: 0, b: 0, a: 1}
     - _OutlineColor: {r: 1, g: 1, b: 1, a: 1}
-    - _OverlayColor: {r: 1, g: 1, b: 1, a: 0}
+    - _OverlayColor: {r: 1, g: 1, b: 1, a: 0.60784316}
     - _ShadowColor: {r: 0, g: 0, b: 0, a: 1}
     - _ShineColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
@@ -80035,7 +80034,7 @@ SpriteShapeRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: -11
-  m_Color: {r: 0.22895159, g: 0.45102015, b: 0.46226418, a: 0.5803922}
+  m_Color: {r: 0.43137255, g: 0.5254902, b: 0.4392157, a: 1}
   m_MaskInteraction: 0
   m_ShapeTexture: {fileID: 2800000, guid: b281b91a70a624a0da1c43adc1c30c7b, type: 3}
   m_Sprites:
