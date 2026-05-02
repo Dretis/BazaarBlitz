@@ -451,7 +451,7 @@ public class UICombatOverlayManager : MonoBehaviour
                 .BindToAnchoredPosition(rect);
 
             ShowInputPrompt(sideSelectedAction, 0.05f);
-            sideSelectedAction.GetComponentInChildren<TextMeshProUGUI>().text = $"<sprite={typeIcon}> {action.actionName}";
+            sideSelectedAction.GetComponentInChildren<TextMeshProUGUI>().text = $"<sprite={typeIcon}> {action.l_actionName.GetLocalizedString()}";
         }
         else
         {
@@ -462,7 +462,7 @@ public class UICombatOverlayManager : MonoBehaviour
                 .BindToAnchoredPosition(rect);
 
             ShowInputPrompt(sideSelectedAction, 0.05f);
-            sideSelectedAction.GetComponentInChildren<TextMeshProUGUI>().text = $"<sprite={typeIcon}> {action.actionName}";
+            sideSelectedAction.GetComponentInChildren<TextMeshProUGUI>().text = $"<sprite={typeIcon}> {action.l_actionName.GetLocalizedString()}";
         }
 
         if (hasAdvantage)
@@ -632,18 +632,18 @@ public class UICombatOverlayManager : MonoBehaviour
         if (fp == CombatUIManager.FightingPosition.Left) selectableActions = leftSelectableActions;
         else selectableActions = rightSelectableActions;
 
-        var a0 = $"<sprite=\"switch_buttons\" index=2> <sprite={(int)entity.attackActions[1].type}> {entity.attackActions[1].actionName}";
-        var a1 = $"<sprite=\"switch_buttons\" index=1> <sprite={(int)entity.attackActions[0].type}> {entity.attackActions[0].actionName}";
-        var a2 = $"<sprite=\"switch_buttons\" index=0> <sprite={(int)entity.attackActions[2].type}> {entity.attackActions[2].actionName}";
+        var a0 = $"<sprite=\"switch_buttons\" index=2> <sprite={(int)entity.attackActions[1].type}> {entity.attackActions[1].l_actionName.GetLocalizedString()}";
+        var a1 = $"<sprite=\"switch_buttons\" index=1> <sprite={(int)entity.attackActions[0].type}> {entity.attackActions[0].l_actionName.GetLocalizedString()}";
+        var a2 = $"<sprite=\"switch_buttons\" index=0> <sprite={(int)entity.attackActions[2].type}> {entity.attackActions[2].l_actionName.GetLocalizedString()}";
 
 
         selectableActions[0].GetComponent<TypewriterCore>().ShowText(a0);
         selectableActions[1].GetComponent<TypewriterCore>().ShowText(a1);
         selectableActions[2].GetComponent<TypewriterCore>().ShowText(a2);
 
-        //selectableActions[0].text = $"<sprite=\"switch_buttons\" index=2> <sprite={(int)entity.attackActions[1].type}> {entity.attackActions[1].actionName}";
-        //selectableActions[1].text = $"<sprite=\"switch_buttons\" index=1> <sprite={(int)entity.attackActions[0].type}> {entity.attackActions[0].actionName}";
-        //selectableActions[2].text = $"<sprite=\"switch_buttons\" index=0> <sprite={(int)entity.attackActions[2].type}> {entity.attackActions[2].actionName}";
+        //selectableActions[0].text = $"<sprite=\"switch_buttons\" index=2> <sprite={(int)entity.attackActions[1].type}> {entity.attackActions[1].l_actionName.GetLocalizedString()}";
+        //selectableActions[1].text = $"<sprite=\"switch_buttons\" index=1> <sprite={(int)entity.attackActions[0].type}> {entity.attackActions[0].l_actionName.GetLocalizedString()}";
+        //selectableActions[2].text = $"<sprite=\"switch_buttons\" index=0> <sprite={(int)entity.attackActions[2].type}> {entity.attackActions[2].l_actionName.GetLocalizedString()}";
     }
 
     public void HideBothInputPrompts()

@@ -1097,10 +1097,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 954811501}
     - target: {fileID: 1007061364613708534, guid: 97b73a3ba495b1a4690ddae2452a388c, type: 3}
-      propertyPath: west
-      value: 
-      objectReference: {fileID: 1118036299}
-    - target: {fileID: 1007061364613708534, guid: 97b73a3ba495b1a4690ddae2452a388c, type: 3}
       propertyPath: south
       value: 
       objectReference: {fileID: 1149250018}
@@ -1549,7 +1545,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4413332248883350849, guid: 00fe3f181ef77ac40ba435e15825dacc, type: 3}
       propertyPath: Params.Array.data[0].Value
-      value: 0
+      value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 8453248687469701508, guid: 00fe3f181ef77ac40ba435e15825dacc, type: 3}
       propertyPath: m_Name
@@ -9812,17 +9808,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &721990791 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4472431520472913379, guid: 2837ee99f0317ed4a97345e850373061, type: 3}
-  m_PrefabInstance: {fileID: 4204652332614212922}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c55da4c6d718614981e03050dbd4362, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &723841637
 GameObject:
   m_ObjectHideFlags: 0
@@ -14857,17 +14842,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 69f31e6771cb88445bfaf2670973572c, type: 3}
---- !u!114 &1118036299 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4472431520472913379, guid: 2837ee99f0317ed4a97345e850373061, type: 3}
-  m_PrefabInstance: {fileID: 1652060060}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c55da4c6d718614981e03050dbd4362, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1121795040
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15828,10 +15802,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 882769479}
     - target: {fileID: 1007061364613708534, guid: 27432e08e5cdad84a9f749ed4b054739, type: 3}
-      propertyPath: east
-      value: 
-      objectReference: {fileID: 721990791}
-    - target: {fileID: 1007061364613708534, guid: 27432e08e5cdad84a9f749ed4b054739, type: 3}
       propertyPath: west
       value: 
       objectReference: {fileID: 1189968893}
@@ -15842,46 +15812,6 @@ PrefabInstance:
     - target: {fileID: 1007061364613708534, guid: 27432e08e5cdad84a9f749ed4b054739, type: 3}
       propertyPath: managedReferences[-2]
       value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 1007061364613708534, guid: 27432e08e5cdad84a9f749ed4b054739, type: 3}
-      propertyPath: managedReferences[3392484206094057485]
-      value: Unity.Localization UnityEngine.Localization.SmartFormat.PersistentVariables.StringVariable
-      objectReference: {fileID: 0}
-    - target: {fileID: 1007061364613708534, guid: 27432e08e5cdad84a9f749ed4b054739, type: 3}
-      propertyPath: tileTypeString.m_LocalVariables.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1007061364613708534, guid: 27432e08e5cdad84a9f749ed4b054739, type: 3}
-      propertyPath: tileAboutString.m_LocalVariables.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1007061364613708534, guid: 27432e08e5cdad84a9f749ed4b054739, type: 3}
-      propertyPath: managedReferences[3392484206094057485].m_Value
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 1007061364613708534, guid: 27432e08e5cdad84a9f749ed4b054739, type: 3}
-      propertyPath: tileTypeString.m_LocalVariables.Array.data[1].name
-      value: HEX_COLOR
-      objectReference: {fileID: 0}
-    - target: {fileID: 1007061364613708534, guid: 27432e08e5cdad84a9f749ed4b054739, type: 3}
-      propertyPath: tileAboutString.m_LocalVariables.Array.data[0].name
-      value: COLOR
-      objectReference: {fileID: 0}
-    - target: {fileID: 1007061364613708534, guid: 27432e08e5cdad84a9f749ed4b054739, type: 3}
-      propertyPath: tileAboutString.m_LocalVariables.Array.data[1].name
-      value: HEX_COLOR
-      objectReference: {fileID: 0}
-    - target: {fileID: 1007061364613708534, guid: 27432e08e5cdad84a9f749ed4b054739, type: 3}
-      propertyPath: tileTypeString.m_LocalVariables.Array.data[1].variable
-      value: 3392484206094057485
-      objectReference: {fileID: 0}
-    - target: {fileID: 1007061364613708534, guid: 27432e08e5cdad84a9f749ed4b054739, type: 3}
-      propertyPath: tileAboutString.m_LocalVariables.Array.data[0].variable
-      value: -2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1007061364613708534, guid: 27432e08e5cdad84a9f749ed4b054739, type: 3}
-      propertyPath: tileAboutString.m_LocalVariables.Array.data[1].variable
-      value: -2
       objectReference: {fileID: 0}
     - target: {fileID: 4951987870634099496, guid: 27432e08e5cdad84a9f749ed4b054739, type: 3}
       propertyPath: m_RootOrder
@@ -18668,7 +18598,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecae2eb90d781ba43a87fa3b48e57d2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnPoint: {fileID: 0}
+  spawnPoint: {fileID: 513793211}
   entities: []
   player1ID: 0
   player2ID: 0
@@ -24197,8 +24127,8 @@ PrefabInstance:
       value: Node [Warp]
       objectReference: {fileID: 0}
     - target: {fileID: 4344296543091632015, guid: 2837ee99f0317ed4a97345e850373061, type: 3}
-      propertyPath: m_TagString
-      value: MoveAgain
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4396549718613925862, guid: 2837ee99f0317ed4a97345e850373061, type: 3}
       propertyPath: m_AnchorMax.y
@@ -31712,6 +31642,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Node [Warp] 2
       objectReference: {fileID: 0}
+    - target: {fileID: 4344296543091632015, guid: 2837ee99f0317ed4a97345e850373061, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4472431520472913379, guid: 2837ee99f0317ed4a97345e850373061, type: 3}
       propertyPath: west
       value: 
@@ -38842,7 +38776,7 @@ PrefabInstance:
     - target: {fileID: 6143496329768989689, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: occupiedNode
       value: 
-      objectReference: {fileID: 1888144212}
+      objectReference: {fileID: 2134234005}
     - target: {fileID: 6143496329768989689, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: playerColor.b
       value: 0.23921569
@@ -38855,6 +38789,18 @@ PrefabInstance:
       propertyPath: playerColor.r
       value: 0.9411765
       objectReference: {fileID: 0}
+    - target: {fileID: 6143496329768989689, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: inventory.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6143496329768989689, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: inventory.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: eb28f5dcbddd3514eb903201f798e52c, type: 2}
+    - target: {fileID: 6143496329768989689, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: inventory.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: f678bd587785a29459a91ba38885eef5, type: 2}
     - target: {fileID: 6143496329768989691, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: inspectorPalette.Array.data[0].b
       value: 0.2392157
@@ -40504,6 +40450,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163865522836, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: health
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6700546163865522836, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: entityName
       value: Apple
       objectReference: {fileID: 0}
@@ -40521,7 +40471,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163865522836, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: inventory.Array.size
-      value: 2
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163865522836, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: stamps.Array.data[1]
@@ -40535,6 +40485,18 @@ PrefabInstance:
       propertyPath: inventory.Array.data[1]
       value: 
       objectReference: {fileID: 11400000, guid: 17f44431f77d4774cbc29d11b9c5d2e9, type: 2}
+    - target: {fileID: 6700546163865522836, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: inventory.Array.data[2]
+      value: 
+      objectReference: {fileID: 11400000, guid: f678bd587785a29459a91ba38885eef5, type: 2}
+    - target: {fileID: 6700546163865522836, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: inventory.Array.data[3]
+      value: 
+      objectReference: {fileID: 11400000, guid: 58d0b4009d557fc4595aa02754729cc4, type: 2}
+    - target: {fileID: 6700546163865522836, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: inventory.Array.data[4]
+      value: 
+      objectReference: {fileID: 11400000, guid: eb28f5dcbddd3514eb903201f798e52c, type: 2}
     - target: {fileID: 6700546163865522836, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: attackActions.Array.data[1]
       value: 

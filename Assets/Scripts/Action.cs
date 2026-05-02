@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Localization;
 
 [CreateAssetMenu]
 public class Action : ScriptableObject
@@ -19,6 +20,7 @@ public class Action : ScriptableObject
     }
 
     public string actionName;
+    public LocalizedString l_actionName;
 
     [Tooltip("What phase the action is used in")]
     public PhaseTypes phase;

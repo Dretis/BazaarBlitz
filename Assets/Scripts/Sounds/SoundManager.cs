@@ -272,6 +272,7 @@ public class SoundManager : MonoBehaviour
 
     private void PlayStampSound(EntityPiece entity)
     {
+        //Debug.Log("Stamp sound");
         AudioHelper.PlayOneShotWithParameters("event:/Stamp", this.transform.position, ("SoundVolume", SFXVolume));
     }
 
