@@ -68,7 +68,7 @@ public class Stamp : MapNode
     public override void PassByThisNode(EntityPiece p)
     {
         // Current player passed this node
-        if (p.movementLeft == 0) return;
+        //if (p.movementLeft == 0) return;
 
         Debug.Log($"Passed Stamp MapNode - {name}");
         if(p.stamps.Count == 0)

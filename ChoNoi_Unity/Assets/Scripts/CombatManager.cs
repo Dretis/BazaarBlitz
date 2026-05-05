@@ -150,7 +150,7 @@ public class CombatManager : MonoBehaviour
         combatUIManager.UpdateActionText(attacker, Action.PhaseTypes.Attack);
         combatUIManager.UpdateActionText(defender, Action.PhaseTypes.Defend);
 
-        m_DecidedTurnOrder.RaiseEvent(attacker);
+        //m_DecidedTurnOrder.RaiseEvent(attacker);
 
         //Why is this here???
         // m_ActionSelected.RaiseEvent(attacker, Action.PhaseTypes.Attack);
@@ -525,7 +525,7 @@ public class CombatManager : MonoBehaviour
 
         if(attackerRolled && defenderRolled)
         {
-            StartCoroutine(DiceRollAnimation(0.7f, damageRoll, defenseRoll));
+            StartCoroutine(DiceRollAnimation(.75f, damageRoll, defenseRoll));
         }
     }
 

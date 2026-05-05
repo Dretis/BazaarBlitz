@@ -95,29 +95,45 @@ public class UITileTooltipManager : MonoBehaviour
             // Pawn Shop
             else if (node.tag == "Castle") //please change this tag
             {
-                tileType.text = "<color=yellow>Central Market</color>";
-                tileDescription.text = "Upon passing, heal <color=#4DCF56>33% HP</color> and exchange all currently held stamps. " +
-                    "\n\nGain <sprite=\"Coin Icon\" index=0> and <color=#7AFFF7>EXP</color> relative to the number of exchanged stamps.";
-                tileDescription.text += "\n\nThe first player to pass with <color=#FDECAD>4000</color><sprite=\"Coin Icon\" index=0> in hand wins!";
+                //tileType.text = "<color=yellow>Central Market</color>";
+                //tileDescription.text = "Upon passing, heal <color=#4DCF56>33% HP</color> and exchange all currently held stamps. " +
+                //    "\n\nGain <sprite=\"Coin Icon\" index=0> and <color=#7AFFF7>EXP</color> relative to the number of exchanged stamps.";
+                //tileDescription.text += "\n\nThe first player to pass with <color=#FDECAD>4000</color><sprite=\"Coin Icon\" index=0> in hand wins!";
                 //tileDescription.text += "\n\n<sprite=\"Coin Icon\" index=0> recieved is based on the number of colored stamps exchanged at once.";
+
+                tileType.color = node.tileHoverColor;
+                tileType.text = node.GetTileTypeString();
+                tileDescription.text = node.GetTileAboutString();
             }
             else if(node.tag == "Vendor")
             {
-                tileType.text = "<color=#5AA6DC>Vendor</color>";
-                tileDescription.text = "Upon landing, choose to enter and buy the item being sold.";
-                tileDescription.text += "\n\nBecome safe from fights and damage if entered.";
+                //tileType.text = "<color=#5AA6DC>Vendor</color>";
+                //tileDescription.text = "Upon landing, choose to enter and buy the item being sold.";
+                //tileDescription.text += "\n\nBecome safe from fights and damage if entered.";
+
+                tileType.color = node.tileHoverColor;
+                tileType.text = node.GetTileTypeString();
+                tileDescription.text = node.GetTileAboutString();
             }
             else if(node.tag == "MoveAgain")
             {
-                tileType.text = "<color=#2AA583>Once More</color>";
-                tileDescription.text = "Upon landing, allow the current player to take their turn again.";
-                tileDescription.text += "\n\nFights cannot happen on this tile.";
+                //tileType.text = "<color=#2AA583>Once More</color>";
+                //tileDescription.text = "Upon landing, allow the current player to take their turn again.";
+                //tileDescription.text += "\n\nFights cannot happen on this tile.";
+
+                tileType.color = node.tileHoverColor;
+                tileType.text = node.GetTileTypeString();
+                tileDescription.text = node.GetTileAboutString();
             }
             else if (node.tag == "CoconutTree")
             {
-                tileType.text = "<color=#65D252>Coconut Tree</color>";
-                tileDescription.text = "Upon landing, a Coconut may fall on your head.";
-                tileDescription.text += "\n\nTake damage and recieve a Coconut.";
+                //tileType.text = "<color=#65D252>Coconut Tree</color>";
+                //tileDescription.text = "Upon landing, a Coconut may fall on your head.";
+                //tileDescription.text += "\n\nTake damage and recieve a Coconut.";
+
+                tileType.color = node.tileHoverColor;
+                tileType.text = node.GetTileTypeString();
+                tileDescription.text = node.GetTileAboutString();
             }
             else if (node.tag == "WaterCoconut")
             {
@@ -172,7 +188,7 @@ public class UITileTooltipManager : MonoBehaviour
             {
                 storestockIcons[i].sprite = storeItem.itemSprite;
                 storestockIcons[i].enabled = true;
-                storestockNames[i].text = $"{storeItem.itemName}";
+                storestockNames[i].text = $"{storeItem.l_itemName.GetLocalizedString()}";
                 storestockPrices[i].text = $"<sprite=\"Coin Icon\" index=0>{storeItem.basePrice}";
 
                 storestockNames[i].GetComponentInParent<Button>().interactable = false;

@@ -15,10 +15,12 @@ public class MapNode : MonoBehaviour
     
     [Header("Visual Variables")]
     public GameObject focusPoint;
-
+    [Space]
     public SpriteRenderer flowerTrapVisual;
     public Sprite[] flowerTrapSprites;
-
+    [Space]
+    public SpriteRenderer storeModVisual; // For Lucky Cat / Neko
+    [Space]
     public SpriteRenderer storefrontVisual;
     public CanvasGroup stockGroup;
     public Image[] stockItems;
@@ -32,6 +34,7 @@ public class MapNode : MonoBehaviour
 
     [Header("Modifiers / Trap")]
     public Modifier modifier = Modifier.None;
+    public StoreModifier storeModifier = StoreModifier.Empty;
     public EntityPiece modifierOwner;
 
     public enum Modifier
@@ -41,6 +44,14 @@ public class MapNode : MonoBehaviour
         Rafflesia,
         Bomb
     }
+    public enum StoreModifier
+    {
+        Empty,
+        NekoWhite,
+        NekoBlack,
+        NekoGold
+    }
+
 
     private void OnDrawGizmosSelected()
     {

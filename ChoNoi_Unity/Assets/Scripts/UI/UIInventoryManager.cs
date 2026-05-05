@@ -320,7 +320,7 @@ public class UIInventoryManager : MonoBehaviour
         // Visually update that spot in the Restock UI
         storestockIcons[storeTotalIndex].sprite = item.itemSprite;
         storestockIcons[storeTotalIndex].enabled = true;
-        storestockNames[storeTotalIndex].text = $"{item.itemName}";
+        storestockNames[storeTotalIndex].text = $"{item.l_itemName.GetLocalizedString()}";
         storestockPrices[storeTotalIndex].text = $"<sprite=\"Coin Icon\" index=0>{item.basePrice}";
     }
 

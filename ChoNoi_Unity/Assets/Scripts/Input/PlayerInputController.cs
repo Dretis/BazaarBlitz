@@ -74,7 +74,7 @@ public class PlayerInputController : MonoBehaviour
     public PlayerEventChannelSO m_AssignPlayerToController;
     public PlayerEventChannelSO m_NextPlayerTurn;
     public IntEventChannelSO m_NextTurnRound;
-
+    [Space]
     // Store-based Event Channels
     public PlayerEventChannelSO m_ConfirmBuildStore;
     public VoidEventChannelSO m_CancelBuildStore;
@@ -86,6 +86,9 @@ public class PlayerInputController : MonoBehaviour
     public ItemEventChannelSO m_ItemBought;
 
     public PlayerEventChannelSO m_FullInventory;
+    [Space]
+    public PlayerEventChannelSO m_WarpStarted;
+    public PlayerEventChannelSO m_WarpOver;
 
     public NodeEventChannelSO m_LandOnVendor;
     public NodeEventChannelSO m_LandOnCoconutTree;
@@ -142,6 +145,9 @@ public class PlayerInputController : MonoBehaviour
         m_ExitStorefront.OnEventRaised += OnExitStorefront;
         m_ItemBought.OnEventRaised += OnItemBought;
 
+        m_WarpStarted.OnEventRaised += OnWarpStarted;
+        m_WarpOver.OnEventRaised += OnWarpOver;
+
         m_LandOnVendor.OnEventRaised += OnLandOnVendor;
         m_LandOnCoconutTree.OnEventRaised += OnLandOnCoconutTree;
 
@@ -188,6 +194,9 @@ public class PlayerInputController : MonoBehaviour
         m_LandOnStorefront.OnEventRaised -= OnLandOnStorefront;
         m_ExitStorefront.OnEventRaised -= OnExitStorefront;
         m_ItemBought.OnEventRaised -= OnItemBought;
+
+        m_WarpStarted.OnEventRaised -= OnWarpStarted;
+        m_WarpOver.OnEventRaised -= OnWarpOver;
 
         m_LandOnVendor.OnEventRaised -= OnLandOnVendor;
         m_LandOnCoconutTree.OnEventRaised -= OnLandOnCoconutTree;
@@ -715,6 +724,7 @@ public class PlayerInputController : MonoBehaviour
         SwitchActionMap(previousGamePhase); // Should be whatever the one it was before
     }
 
+    #region Store-based Functions
     private void OnConfirmBuildStore(EntityPiece ps)
     {
         if (ps != assignedPlayer) return;
@@ -813,9 +823,29 @@ public class PlayerInputController : MonoBehaviour
         SwitchActionMap(GamePhase.ConfirmContinue);
     }
 
+
     private void OnExitStorefront()
     {
 
+    }
+    #endregion Store-based Functions
+    private void OnWarpStarted(EntityPiece p)
+    {
+        if (assignedPlayer == p)
+        {
+            playerInput.DeactivateInput();
+            Debug.Log($"OnWarpStarted | Player ID: {playerInput.playerIndex} deactivated input.");
+        }
+    }
+
+    private void OnWarpOver(EntityPiece p)
+    {
+        if (assignedPlayer == p
+            && GameplayTest.instance.phase != GamePhase.EndTurn)
+        {
+            playerInput.ActivateInput();
+            Debug.Log($"OnWarpOver | Player ID: {playerInput.playerIndex} activated input.");
+        }
     }
 
     private void OnLandOnVendor(MapNode node)

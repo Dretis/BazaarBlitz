@@ -8,6 +8,7 @@ public class CombatDiceInfoHolder : MonoBehaviour
 {
     //[SerializeField] private Transform additionalDiceParent;
     //[SerializeField] private List<GameObject> additionalDice = new List<GameObject>();
+    private float[] diceNumberSizes = {3f, 3.25f, 3.5f, 3.75f, 4f, 4.2f};
     [SerializeField] private bool isChildDie = false;
 
     [Header("Motion Info")]
@@ -148,13 +149,23 @@ public class CombatDiceInfoHolder : MonoBehaviour
         {
             // $"{(int)((entity.intDie[faceIndex] * intDieMultMod) + intDieFlatMod)}";
             int number = (int)((die[i] * statDieMultMod) + statDieFlatMod); ;// (((i + 1) * multMoveMod) + flatMoveMod);
+            string sizeChange = "";
 
             diceStatNumbers[i].colorGradientPreset = gradient;
-
-            if(attacking)
-                diceStatNumbers[i].text = "" + number;
+            /*
+            if (attacking && !(number - 1 > diceNumberSizes.Length))
+            {
+                sizeChange = $"<size={diceNumberSizes[number - 1]}>";
+            }
+            else if (!(die[i] - 1 > diceNumberSizes.Length))
+            {
+                sizeChange = $"<size={diceNumberSizes[die[i]]}>";
+            }
+            */
+            if (attacking)
+                diceStatNumbers[i].text = $"{sizeChange}{number}";
             else
-                diceStatNumbers[i].text = "" + die[i];
+                diceStatNumbers[i].text = $"{sizeChange}{die[i]}";
         }
     }
 

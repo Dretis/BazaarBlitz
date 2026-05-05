@@ -1,19 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine;
+using static GameplayTest;
 
 public class TimelineManager : MonoBehaviour
 {
     // script includes handling Timelines
 
     [SerializeField] private TimelineSignalResponder currentResponder; // Current player's director to play timelines
-    [SerializeField] private SpriteRenderer usedItemSprite; // Current player's director to play timelines
+
+    [SerializeField] private SpriteRenderer usedItemSprite; // for p_UseItem
+    [SerializeField] private MapNode destination; // for p_Warp
+
+    //private GameplayTest.GamePhase expectedPhase; // After the cutscene, what is expected to be next
 
     [Header("Listen On Event Channels")]
     public PlayerEventChannelSO m_NextPlayerTurn;
     //public IntEventChannelSO m_UseItemAt; // aka m_ItemUsed or "I want to Use Inventory Item At"
     public IntItemEventChannelSO m_ItemUsed; // aka m_ItemUsed or "I want to Use Inventory Item At"
     public PlayerEventChannelSO m_ConfirmBuildStore;
+    //public NodeEventChannelSO m_LandOnWarpNode;
     //public PlayerEventChannelSO m_ResetToIdle;
     public PlayerEventChannelSO m_PlayerWon;
 
@@ -23,6 +30,7 @@ public class TimelineManager : MonoBehaviour
         //m_UseItemAt.OnEventRaised += OnUseItemAt;
         m_ItemUsed.OnEventRaised += OnItemUsed;
         m_ConfirmBuildStore.OnEventRaised += OnConfirmBuildStore;
+        //m_LandOnWarpNode.OnEventRaised += OnLandOnWarpNode;
         m_PlayerWon.OnEventRaised += OnPlayerWon;
         //m_ResetToIdle.OnEventRaised += ResetToIdleAnim;
     }
@@ -33,6 +41,7 @@ public class TimelineManager : MonoBehaviour
         //m_UseItemAt.OnEventRaised -= OnUseItemAt;
         m_ItemUsed.OnEventRaised -= OnItemUsed;
         m_ConfirmBuildStore.OnEventRaised -= OnConfirmBuildStore;
+        //m_LandOnWarpNode.OnEventRaised -= OnLandOnWarpNode;
         m_PlayerWon.OnEventRaised -= OnPlayerWon;
         //m_ResetToIdle.OnEventRaised -= ResetToIdleAnim;
     }
@@ -72,6 +81,32 @@ public class TimelineManager : MonoBehaviour
             if (currentPlayer.playerSprite.flipX) currentPlayer.playerSprite.flipX = false;
 
             responder.pd_BuildStore.Play();
+        }
+    }
+
+    private void OnLandOnWarpNode(MapNode m)
+    {
+        /*
+        //GameplayTest.instance.expectedPhase = GamePhase.EndTurn;
+        if (m is WarpNode)
+        {
+            var w = m as WarpNode;
+            destination = w.GetDestinationNode();
+        }
+
+        PlayWarp(GameplayTest.instance.currentPlayer);
+        */
+    }
+
+    private void PlayWarp(EntityPiece currentPlayer)
+    {
+        if (currentPlayer.TryGetComponent<TimelineSignalResponder>(out TimelineSignalResponder responder))
+        {
+            Debug.Log($"{currentPlayer} is warping to...");
+
+            //if (currentPlayer.playerSprite.flipX) currentPlayer.playerSprite.flipX = false;
+
+            responder.pd_Warp.Play();
         }
     }
 

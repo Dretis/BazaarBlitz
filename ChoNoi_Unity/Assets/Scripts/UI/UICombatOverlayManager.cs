@@ -15,6 +15,9 @@ using LitMotion.Animation;
 public class UICombatOverlayManager : MonoBehaviour
 {
     private CombatManager thisCombatManager;
+    private float[] diceNumberSizes = { .7f, .8f, .85f, .9f, .925f, .95f, 1f, 1f, 1.1f, 1.1f, 1.1f, 1.15f };
+    // float[] diceNumberSizes = { 30f, 34f, 40f, 46f, 48f, 51.5f };
+
     [SerializeField] private Volume volume;
     [SerializeField] private ParticleSystem hitParticle;
 
@@ -62,6 +65,7 @@ public class UICombatOverlayManager : MonoBehaviour
     [SerializeField] private GameObject rightDiceStat;
 
     [SerializeField] private List<TextMeshProUGUI> diceNumbers = new List<TextMeshProUGUI>();
+    [SerializeField] private List<Transform> diceScale = new List<Transform>();
 
     [Header("UI Inputs")]
     [SerializeField] private CanvasGroup leftAttackPrompt;
@@ -148,7 +152,7 @@ public class UICombatOverlayManager : MonoBehaviour
         m_BothActionsSelected.OnEventRaised += ShowSelectedAction;
         m_StoreDiceRolled.OnEventRaised += SetDiceActionRoll;
 
-        //m_PlayOutCombat.OnEventRaised += HideHeaderInfo;
+        m_PlayOutCombat.OnEventRaised += OnPlayOutCombat;
 
         m_DamageTaken.OnEventRaised += ShowFloatingDamageNumber;
 
@@ -167,7 +171,7 @@ public class UICombatOverlayManager : MonoBehaviour
         m_BothActionsSelected.OnEventRaised -= ShowSelectedAction;
         m_StoreDiceRolled.OnEventRaised -= SetDiceActionRoll;
 
-        //m_PlayOutCombat.OnEventRaised += HideHeaderInfo;
+        m_PlayOutCombat.OnEventRaised -= OnPlayOutCombat;
 
         m_DamageTaken.OnEventRaised -= ShowFloatingDamageNumber;
 
@@ -390,6 +394,7 @@ public class UICombatOverlayManager : MonoBehaviour
 
         CanvasGroup sideSelectedAction;
         TextMeshProUGUI sideSelectedAdvantage;
+        string sideTypeAdvantageArrow = "";
         RectTransform rect;
         bool hasAdvantage = false;
 
@@ -426,6 +431,19 @@ public class UICombatOverlayManager : MonoBehaviour
                 hasAdvantage = true;
                 //sideSelectedAdvantage.text = "Advantage!";
             }
+
+            switch (CombatManager.Instance.damageTypeAdvantage)
+            {
+                case CombatManager.TypeAdvantage.Strong:
+                    sideTypeAdvantageArrow = "<color=green>\u2191</color>";
+                    break;
+                case CombatManager.TypeAdvantage.Resist:
+                    sideTypeAdvantageArrow = "<color=red>\u2193</color>";
+                    break;
+                default:
+                    sideTypeAdvantageArrow = " ";
+                    break;
+            }
         }
         else
         {
@@ -440,6 +458,18 @@ public class UICombatOverlayManager : MonoBehaviour
                 //sideSelectedAdvantage.text = "Advantage!";
             }
 
+            switch (CombatManager.Instance.damageTypeAdvantage)
+            {
+                case CombatManager.TypeAdvantage.Resist:
+                    sideTypeAdvantageArrow = "<color=green>\u2191</color>";
+                    break;
+                case CombatManager.TypeAdvantage.Strong:
+                    sideTypeAdvantageArrow = "<color=red>\u2193</color>";
+                    break;
+                default:
+                    sideTypeAdvantageArrow = " ";
+                    break;
+            }
         }
 
         if (entity.fightingPosition == CombatUIManager.FightingPosition.Left)
@@ -451,7 +481,7 @@ public class UICombatOverlayManager : MonoBehaviour
                 .BindToAnchoredPosition(rect);
 
             ShowInputPrompt(sideSelectedAction, 0.05f);
-            sideSelectedAction.GetComponentInChildren<TextMeshProUGUI>().text = $"<sprite={typeIcon}> {action.l_actionName.GetLocalizedString()}";
+            sideSelectedAction.GetComponentInChildren<TextMeshProUGUI>().text = $"<sprite={typeIcon}>{sideTypeAdvantageArrow}{action.l_actionName.GetLocalizedString()}";
         }
         else
         {
@@ -462,13 +492,58 @@ public class UICombatOverlayManager : MonoBehaviour
                 .BindToAnchoredPosition(rect);
 
             ShowInputPrompt(sideSelectedAction, 0.05f);
-            sideSelectedAction.GetComponentInChildren<TextMeshProUGUI>().text = $"<sprite={typeIcon}> {action.l_actionName.GetLocalizedString()}";
+            sideSelectedAction.GetComponentInChildren<TextMeshProUGUI>().text = $"<sprite={typeIcon}>{sideTypeAdvantageArrow}{action.l_actionName.GetLocalizedString()}";
         }
 
         if (hasAdvantage)
         {
             StartCoroutine(ShowAdvantageState(sideSelectedAdvantage, 0.35f));
             StartCoroutine(ShowAdvantageEffect(sideSelectedAction, 0.25f));
+        }
+    }
+
+    public void HideSelectedAction(EntityPiece entity)
+    {
+        CanvasGroup sideSelectedAction;
+        TextMeshProUGUI sideSelectedAdvantage;
+        //string sideTypeAdvantageArrow = "";
+        RectTransform rect;
+        //bool hasAdvantage = false;
+
+        if (entity.fightingPosition == CombatUIManager.FightingPosition.Left)
+        {
+            sideSelectedAction = leftSelectedAction;
+            sideSelectedAdvantage = leftSelectedAdvantage;
+        }
+        else
+        {
+            sideSelectedAction = rightSelectedAction;
+            sideSelectedAdvantage = rightSelectedAdvantage;
+        }
+
+        rect = sideSelectedAction.GetComponent<RectTransform>();
+
+        if (entity.fightingPosition == CombatUIManager.FightingPosition.Left)
+        {
+            var goTo = new Vector2(-1600, -280);
+            //var goTo = new Vector2(-512, -280);
+            var currentMotion = LMotion.Create(rect.anchoredPosition, goTo, 0.75f)
+                .WithEase(Ease.OutBack)
+                .BindToAnchoredPosition(rect);
+
+            HideInputPrompt(sideSelectedAction, 0.15f);
+            //sideSelectedAction.GetComponentInChildren<TextMeshProUGUI>().text = $"<sprite={typeIcon}>{sideTypeAdvantageArrow}{action.l_actionName.GetLocalizedString()}";
+        }
+        else
+        {
+            var goTo = new Vector2(1600, -280);
+            //var goTo = new Vector2(512, -280);
+            var currentMotion = LMotion.Create(rect.anchoredPosition, goTo, 0.75f)
+                .WithEase(Ease.OutBack)
+                .BindToAnchoredPosition(rect);
+
+            HideInputPrompt(sideSelectedAction, 0.15f);
+            //sideSelectedAction.GetComponentInChildren<TextMeshProUGUI>().text = $"<sprite={typeIcon}>{sideTypeAdvantageArrow}{action.l_actionName.GetLocalizedString()}";
         }
     }
 
@@ -514,32 +589,46 @@ public class UICombatOverlayManager : MonoBehaviour
 
         // Visually updates the dice stats ui based on the entity and side
         diceNumbers.Clear();
+        //diceScale.Clear();
 
         // Goes through the diceStats UI List and finds the text components
         foreach (Transform child in diceStats.transform)
         {
             diceNumbers.Add(child.GetComponentInChildren<TextMeshProUGUI>());
+            //diceScale.Add(child.transform);
         }
 
         // Updates each individual dice from the text list based on the type
         // the following code is ABSOLUTELY DISGUSTING
         var faceIndex = 0;
+        var dieNumber = -1;
+        //string sizeChange = "";
+        //float diceScaleMult = 1;
 
         for (int i = 0; i < 6; i++)
         {
+
             if (attacking)
             {
                 if (strDieFlatMod == 0 && strDieMultMod == 1) diceNumbers[i].colorGradientPreset = actionTypeGradients[0];
                 else diceNumbers[i].colorGradientPreset = actionTypeGradients[3];
 
-                diceNumbers[i].text = $"{(int)((entity.strDie[faceIndex] * strDieMultMod) + strDieFlatMod)}";
+                dieNumber = (int)((entity.strDie[faceIndex] * strDieMultMod) + strDieFlatMod);
+
+                //sizeChange = GetDiceNumberSize(dieNumber);
             }
             else
             {
+                dieNumber = entity.strDie[faceIndex];
+
                 diceNumbers[i].colorGradientPreset = actionTypeGradients[0];
-                diceNumbers[i].text = $"{entity.strDie[faceIndex]}";
             }
 
+            //sizeChange = GetDiceNumberSize(dieNumber);
+            //diceScaleMult = GetDiceNumberScale(dieNumber);
+            //diceScale[i].transform.localScale = Vector3.one * diceScaleMult;
+
+            diceNumbers[i].text = $"{dieNumber}";
             //diceNumbers[i].text = $"{((entity.strDie[faceIndex] * strDieMultMod) + strDieFlatMod)}";
             faceIndex++;
         }
@@ -553,14 +642,23 @@ public class UICombatOverlayManager : MonoBehaviour
                 if (dexDieFlatMod == 0 && dexDieMultMod == 1) diceNumbers[i].colorGradientPreset = actionTypeGradients[1];
                 else diceNumbers[i].colorGradientPreset = actionTypeGradients[3];
 
-                diceNumbers[i].text = $"{(int)((entity.dexDie[faceIndex] * dexDieMultMod) + dexDieFlatMod)}";
+                dieNumber = (int)((entity.dexDie[faceIndex] * dexDieMultMod) + dexDieFlatMod);
+
+                //diceNumbers[i].text = $"{(int)((entity.dexDie[faceIndex] * dexDieMultMod) + dexDieFlatMod)}";
             }
             else
             {
+                dieNumber = entity.dexDie[faceIndex];
+
                 diceNumbers[i].colorGradientPreset = actionTypeGradients[1];
-                diceNumbers[i].text = $"{entity.dexDie[faceIndex]}";
+                //diceNumbers[i].text = $"{entity.dexDie[faceIndex]}";
             }
 
+            //sizeChange = GetDiceNumberSize(dieNumber);
+            //diceScaleMult = GetDiceNumberScale(dieNumber);
+            //diceScale[i].transform.localScale = Vector3.one * diceScaleMult;
+
+            diceNumbers[i].text = $"{dieNumber}";
             //diceNumbers[i].text = $"{((entity.dexDie[faceIndex] * dexDieMultMod) + dexDieFlatMod)}";
             faceIndex++;
         }
@@ -574,17 +672,49 @@ public class UICombatOverlayManager : MonoBehaviour
                 if (intDieFlatMod == 0 && intDieMultMod == 1) diceNumbers[i].colorGradientPreset = actionTypeGradients[2];
                 else diceNumbers[i].colorGradientPreset = actionTypeGradients[3];
 
-                diceNumbers[i].text = $"{(int)((entity.intDie[faceIndex] * intDieMultMod) + intDieFlatMod)}";
+                dieNumber = (int)((entity.intDie[faceIndex] * intDieMultMod) + intDieFlatMod);
+
+                //diceNumbers[i].text = $"{(int)((entity.intDie[faceIndex] * intDieMultMod) + intDieFlatMod)}";
             }
             else
             {
+                dieNumber = entity.intDie[faceIndex];
+
                 diceNumbers[i].colorGradientPreset = actionTypeGradients[2];
-                diceNumbers[i].text = $"{entity.intDie[faceIndex]}";
+                //diceNumbers[i].text = $"{entity.intDie[faceIndex]}";
             }
 
+            //sizeChange = GetDiceNumberSize(dieNumber);
+            //diceScaleMult = GetDiceNumberScale(dieNumber);
+            //diceScale[i].transform.localScale = Vector3.one * diceScaleMult;
+
+            diceNumbers[i].text = $"{dieNumber}";
             //diceNumbers[i].text = $"{((entity.intDie[faceIndex] * intDieMultMod) + intDieFlatMod)}";
             faceIndex++;
         }
+    }
+
+    public string GetDiceNumberSize(int dieNumber)
+    {
+        Debug.Log($"dieNumber = {dieNumber}");
+        if (!(dieNumber - 1 > diceNumberSizes.Length))
+        {
+            var sizeChange = $"<size={diceNumberSizes[dieNumber - 1]}>";
+            return sizeChange;
+        }
+        else return "";
+
+    }
+    public float GetDiceNumberScale(int dieNumber)
+    {
+        Debug.Log($"dieNumber = {dieNumber}");
+        if (dieNumber < diceNumberSizes.Length)
+        {
+            var sizeChange = diceNumberSizes[dieNumber];
+            return sizeChange;
+        }
+        else return diceNumberSizes[^1];
+
     }
 
     public void UpdateInputPrompts(EntityPiece attacker)
@@ -806,6 +936,10 @@ public class UICombatOverlayManager : MonoBehaviour
             .WithEase(Ease.OutBounce)
             .BindToAnchoredPosition(dmgPos);
 
+        var secondaryMotion = LMotion.Create(Vector3.zero, Vector3.one, 0.35f)
+            .WithEase(Ease.OutBack)
+            .BindToLocalScale(dmgPos);
+
         StartCoroutine(HideFloatingDamageNumber(floatingDamage));
     }
 
@@ -824,13 +958,13 @@ public class UICombatOverlayManager : MonoBehaviour
             {
                 case CombatManager.TypeAdvantage.Resist:
                     //floatingDamage.GetComponent<TextMeshProUGUI>().text = $"<size=120>{damage}</size>";
-                    floatingDamageNumber.ShowText($"<size=156>{damage}</size>");
+                    floatingDamageNumber.ShowText($"<size=180>{damage}</size>");
                     break;
                 case CombatManager.TypeAdvantage.Neutral:
                     floatingDamageNumber.ShowText($"<shake a=.05 d=.5>{damage}!");
                     break;
                 case CombatManager.TypeAdvantage.Strong:
-                    floatingDamageNumber.ShowText($"<size=218><shake a=.1 d=.35>{damage}!!");
+                    floatingDamageNumber.ShowText($"<size=256><shake a=.1 d=.35>{damage}!!");
                     break;
                 default:
                     floatingDamageNumber.ShowText($"{damage}???");
@@ -886,29 +1020,83 @@ public class UICombatOverlayManager : MonoBehaviour
     public void SetDiceActionRoll(EntityPiece entity, float roll, Action.WeaponTypes weaponType)
     {
         Debug.Log($"{entity.name} picked {weaponType} with roll[{roll}]");
-        if(entity.fightingPosition == CombatUIManager.FightingPosition.Left)
+
+        string visualRoll = $"{roll}";
+
+        int typeInt = (int)weaponType;
+        string sideTypeAdvantageArrow = "";
+
+        float rollTextSize = 180;
+
+        if (roll <= 1)
+        {
+            visualRoll = $"<shake a=.2 d=.5><size=132>{roll}</size>";
+            rollTextSize = 132;
+        }
+        else if (roll >= 10)
+        {
+            visualRoll = $"<size=212>{roll}</size>";
+            rollTextSize = 212;
+        }
+        else
+        {
+            visualRoll = $"{roll}";
+        }
+
+        float typeTextSize = rollTextSize * .65f;
+
+        if(entity == CombatManager.Instance.attacker)
+        {
+            switch (CombatManager.Instance.damageTypeAdvantage)
+            {
+                case CombatManager.TypeAdvantage.Strong:
+                    sideTypeAdvantageArrow = "<color=green>\u2191</color>";
+                    break;
+                case CombatManager.TypeAdvantage.Resist:
+                    sideTypeAdvantageArrow = "<color=red>\u2193</color>";
+                    break;
+                default:
+                    sideTypeAdvantageArrow = "";
+                    break;
+            }
+        }
+        else
+        {
+            switch (CombatManager.Instance.damageTypeAdvantage)
+            {
+                case CombatManager.TypeAdvantage.Resist:
+                    sideTypeAdvantageArrow = "<color=green>\u2191</color>";
+                    break;
+                case CombatManager.TypeAdvantage.Strong:
+                    sideTypeAdvantageArrow = "<color=red>\u2193</color>";
+                    break;
+                default:
+                    sideTypeAdvantageArrow = "";
+                    break;
+            }
+        }
+
+        visualRoll += $"<size={typeTextSize}><sprite={typeInt}>{sideTypeAdvantageArrow}";
+        //Debug.Log(visualRoll);
+        if (entity.fightingPosition == CombatUIManager.FightingPosition.Left)
         {
             leftDiceRoll.GetComponent<TextMeshProUGUI>().colorGradientPreset = actionTypeGradients[(int)weaponType];
 
-            if (roll <= 1)
-                leftDiceRoll.ShowText($"<size=132><shake a=.2 d=.5>{roll}</shake></size>");
-            else if (roll >= 10)
-                leftDiceRoll.ShowText($"<size=212>{roll}</size>");
-            else
-                leftDiceRoll.ShowText($"{roll}");
+            //visualRoll += $"<sprite={typeInt}";
+            leftDiceRoll.ShowText(visualRoll);
         }
         else
         {
             rightDiceRoll.GetComponent<TextMeshProUGUI>().colorGradientPreset = actionTypeGradients[(int)weaponType];
-
-            if (roll <= 1)
-                rightDiceRoll.ShowText($"<size=132><shake a=.2 d=.5>{roll}</shake></size>");
-            else if (roll >= 10)
-                rightDiceRoll.ShowText($"<size=212>{roll}</size>");
-            else
-                rightDiceRoll.ShowText($"{roll}");
+            rightDiceRoll.ShowText(visualRoll);
         }
+
+        //HideSelectedAction(entity);
     }
 
-
+    public void OnPlayOutCombat(EntityPiece attacker)
+    {
+        HideSelectedAction(thisCombatManager.player1);
+        HideSelectedAction(thisCombatManager.player2);
+    }
 }

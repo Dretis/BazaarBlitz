@@ -14,6 +14,7 @@ public class GameplayTest : MonoBehaviour
     [Space]
     public GameBoard board;
     public GamePhase phase = GamePhase.RollDice;
+    public GamePhase expectedPhase = GamePhase.EndTurn;
     public EntityPiece winner;
 
     [Header("Debugging")]
@@ -192,6 +193,7 @@ public class GameplayTest : MonoBehaviour
     //public NodeEventChannelSO m_RestockStore;
 
     public VoidEventChannelSO m_ExitInventory;
+    public NodeEventChannelSO m_WarpByItem;
 
     [Header("BC - Board Moving Events")]
     public PlayerEventChannelSO m_PassByStamp;
@@ -253,6 +255,10 @@ public class GameplayTest : MonoBehaviour
 
     public VoidEventChannelSO m_ExitRaycastedTile; //Listening to this one
     public VoidEventChannelSO m_DisableFreeview;
+
+    [Header("LS - Warp Events")]
+    public NodeEventChannelSO m_LandOnWarpNode;
+    public NodeEventChannelSO m_WarpToNode;
 
     [Header("LS - etc Events")]
     public WeaponTypeIntEventChannel m_TryAugmentDieFaceValue; // lvl up
@@ -316,6 +322,9 @@ public class GameplayTest : MonoBehaviour
 
         m_DisableFreeview.OnEventRaised += DisableFreeview;
 
+        m_LandOnWarpNode.OnEventRaised += OnLandOnWarpNode;
+        m_WarpToNode.OnEventRaised += OnWarpToNode;
+
         m_StealOnPassBy.OnEventRaised += StealFromPlayer;
         m_InitiateCombatOnPassBy.OnEventRaised += InitiateCombatOnPlayer;
         m_StopOnStoreOnPassBy.OnEventRaised += StopOnStore;
@@ -353,6 +362,9 @@ public class GameplayTest : MonoBehaviour
         m_ItemDiscarded.OnEventRaised -= OnItemDiscarded;
 
         m_DisableFreeview.OnEventRaised -= DisableFreeview;
+
+        m_LandOnWarpNode.OnEventRaised -= OnLandOnWarpNode;
+        m_WarpToNode.OnEventRaised -= OnWarpToNode;
 
         m_StealOnPassBy.OnEventRaised -= StealFromPlayer;
         m_InitiateCombatOnPassBy.OnEventRaised -= InitiateCombatOnPlayer;
@@ -480,6 +492,16 @@ public class GameplayTest : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha3))
         {
             currentPlayer.movementLeft = 3;
+            rollTypewriter.ShowText("" + currentPlayer.movementLeft);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha9))
+        {
+            currentPlayer.movementLeft = 9;
+            rollTypewriter.ShowText("" + currentPlayer.movementLeft);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha0))
+        {
+            currentPlayer.movementLeft = 100;
             rollTypewriter.ShowText("" + currentPlayer.movementLeft);
         }
 #endif
@@ -872,6 +894,7 @@ public class GameplayTest : MonoBehaviour
 
 
         }
+        
         if (m.CompareTag("Store") && p.currentStatsModifier.canStopOnStoreOnPassBy)
         {
             p.previousNode = p.traveledNodes[p.traveledNodes.Count - 1];
@@ -890,7 +913,7 @@ public class GameplayTest : MonoBehaviour
 
         // Change phase.
 
-        else if (p.movementLeft <= 0)
+        if (p.movementLeft <= 0)
         {
             p.previousNode = p.traveledNodes[p.traveledNodes.Count - 1];
             p.traveledNodes.Clear();
@@ -901,8 +924,12 @@ public class GameplayTest : MonoBehaviour
             else
                 phase = GamePhase.EncounterTime; // next phase
         }
-        else
+        else if (phase != GamePhase.EndGame)
             phase = GamePhase.PickDirection; // Go back to picking direction
+        else
+        {
+            Debug.Log("?? Something went wrong in PassBy");
+        }
     }
 
     void EncounterTime(EntityPiece p, MapNode m)
@@ -1511,7 +1538,7 @@ public class GameplayTest : MonoBehaviour
         SetupNextPlayer();
     }
 
-    void EndGame()
+    public void EndGame()
     {
         // The player with the most points wins!
         if (winner == null)
@@ -1662,11 +1689,9 @@ public class GameplayTest : MonoBehaviour
         // Warp player to specified destination.
         if (p.currentStatsModifier.warpDestination != null)
         {
-            p.occupiedNode = p.currentStatsModifier.warpDestination;
-            p.transform.position = p.occupiedNode.transform.position;
-            p.occupiedNodeCopy = p.occupiedNode;
-            p.traveledNodes.Clear();
-            p.traveledNodes.Add(p.occupiedNode);
+            //WarpToMapNode(p, p.currentStatsModifier.warpDestination);
+            expectedPhase = GamePhase.InitialTurnMenu;
+            m_WarpByItem.RaiseEvent(p.currentStatsModifier.warpDestination);
         }
     }
 
@@ -1675,12 +1700,43 @@ public class GameplayTest : MonoBehaviour
         // Warp player to specified destination.
         if (p.currentStatsModifier.warpDestination != null)
         {
-            p.occupiedNode = p.currentStatsModifier.warpDestination;
-            p.transform.position = p.occupiedNode.transform.position;
-            p.occupiedNodeCopy = p.occupiedNode;
-            p.traveledNodes.Clear();
-            p.traveledNodes.Add(p.occupiedNode);
+            //WarpToMapNode(p, p.currentStatsModifier.warpDestination);
+
+            expectedPhase = GamePhase.InitialTurnMenu;
+            m_WarpByItem.RaiseEvent(p.currentStatsModifier.warpDestination);
         }
+    }
+
+    public void WarpToMapNode(EntityPiece p, MapNode d)
+    {
+        p.occupiedNode = d;
+
+        p.transform.position = p.occupiedNode.transform.position;
+        p.occupiedNodeCopy = p.occupiedNode;
+        p.traveledNodes.Clear();
+        p.traveledNodes.Add(p.occupiedNode);
+
+        //p.transform.position = p.occupiedNode.transform.position;
+    }
+
+    private void OnLandOnWarpNode(MapNode m)
+    {
+        /*
+        // temp
+        if(m is WarpNode) 
+        {
+            var w = m as WarpNode;
+            WarpToMapNode(currentPlayer, w.GetDestinationNode());
+            phase = expectedPhase;
+        }
+        */
+        phase = GamePhase.IncidentHappening;
+        expectedPhase = GamePhase.EndTurn;
+    }
+
+    private void OnWarpToNode(MapNode m)
+    {
+        WarpToMapNode(currentPlayer, m);
     }
 
     private void RemoveDeathsRow(int id)
@@ -1714,7 +1770,7 @@ public class GameplayTest : MonoBehaviour
     {
         freeviewEnabled = false;
     }
-
+    #region Store Related Functions
     public void BuildStore(EntityPiece p)
     {
         p.storeCount++;
@@ -1835,7 +1891,7 @@ public class GameplayTest : MonoBehaviour
         currentPlayer.inventory.RemoveAt(index);
         m_RefreshInventory.RaiseEvent(currentPlayer);
     }
-
+    #endregion Store Related Functions
     public void StealFromPlayer(EntityPiece otherPlayer)
     {
 

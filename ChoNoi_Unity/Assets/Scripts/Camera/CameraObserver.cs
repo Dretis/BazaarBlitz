@@ -50,6 +50,10 @@ public class CameraObserver : MonoBehaviour
 
     public NodeEventChannelSO m_FocusOnNode;
     public NodeEventChannelSO m_LandedOnVendor;
+
+    public PlayerEventChannelSO m_WarpStarted;
+    public PlayerEventChannelSO m_WarpOver;
+
     public PlayerListEventChannelSO m_LandedOnMultipleEntities;
 
     public VoidEventChannelSO m_IncidentStarted;
@@ -81,6 +85,10 @@ public class CameraObserver : MonoBehaviour
 
         m_FocusOnNode.OnEventRaised += OnFocusOnNode;
         m_LandedOnVendor.OnEventRaised += OnLandedOnVendor;
+
+        m_WarpStarted.OnEventRaised += OnWarpStarted;
+        m_WarpOver.OnEventRaised += OnWarpOver;
+
         m_LandedOnMultipleEntities.OnEventRaised += OnLandedOnMultipleEntities;
 
         m_IncidentStarted.OnEventRaised += OnIncidentStarted;
@@ -113,6 +121,10 @@ public class CameraObserver : MonoBehaviour
 
         m_FocusOnNode.OnEventRaised -= OnFocusOnNode;
         m_LandedOnVendor.OnEventRaised -= OnLandedOnVendor;
+
+        m_WarpStarted.OnEventRaised -= OnWarpStarted;
+        m_WarpOver.OnEventRaised -= OnWarpOver;
+
         m_LandedOnMultipleEntities.OnEventRaised -= OnLandedOnMultipleEntities;
 
         m_IncidentStarted.OnEventRaised -= OnIncidentStarted;
@@ -247,6 +259,33 @@ public class CameraObserver : MonoBehaviour
             focusZoomCam.Follow = vendorPos.transform;
             focusZoomCam.enabled = true;
         }
+    }
+
+    private void OnWarpStarted(EntityPiece p)
+    {
+        focusZoomCam.Follow = p.transform;
+        focusZoomCam.enabled = true;
+        /*
+        var warpPos = node.focusPoint;
+        if (warpPos != null)
+        {
+            focusZoomCam.Follow = warpPos.transform;
+            focusZoomCam.enabled = true;
+        }
+        */
+    }
+    private void OnWarpOver(EntityPiece p)
+    {
+        //focusZoomCam.Follow = p.transform;
+        focusZoomCam.enabled = false;
+        /*
+        var warpPos = node.focusPoint;
+        if (warpPos != null)
+        {
+            focusZoomCam.Follow = warpPos.transform;
+            focusZoomCam.enabled = true;
+        }
+        */
     }
 
     private void OnLandedOnMultipleEntities(List<EntityPiece> entities)

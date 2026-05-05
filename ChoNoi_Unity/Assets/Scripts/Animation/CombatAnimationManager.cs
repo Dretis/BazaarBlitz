@@ -249,20 +249,24 @@ public class CombatAnimationManager : MonoBehaviour
     private IEnumerator DelayActionAnimation(float duration)
     {
         yield return new WaitForSeconds(duration);
+        animator.SetTrigger("Play Action");
     }
 
     private void OnPlayOutCombat(EntityPiece entity)
     {
-        animator.SetTrigger("Play Action");
-        /*
-        if (phaseType == Action.PhaseTypes.Attack)
+        if(phaseType == Action.PhaseTypes.Attack)
         {
-            var animationLength = animator.GetCurrentAnimatorStateInfo(0).length;
-            Debug.Log($"AttackAnimation Length:{animationLength}");
-            StartCoroutine(WaitForAttackAnimation(animationLength));
-        }*/
+            StartCoroutine(DelayActionAnimation(0.15f));
+        }
+        else
+        {
+            animator.SetTrigger("Play Action");
+        }
+
+        //animator.SetTrigger("Play Action");
     }
 
+    // This could be used as a 'No Animation' speed option in-game
     private IEnumerator WaitForAttackAnimation(float duration)
     {
         yield return new WaitForSeconds(duration);

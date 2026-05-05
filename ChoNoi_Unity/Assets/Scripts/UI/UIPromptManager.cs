@@ -83,6 +83,9 @@ public class UIPromptManager : MonoBehaviour
     public PlayerEventChannelSO m_BuildStore; // also listening
     public PlayerEventChannelSO m_FinishStockingStore;
 
+    public PlayerEventChannelSO m_WarpStarted;
+    public PlayerEventChannelSO m_WarpOver;
+
     public PlayerEventChannelSO m_OverturnOpportunity;
     public IntItemEventChannelSO m_ItemUsed;
 
@@ -142,6 +145,9 @@ public class UIPromptManager : MonoBehaviour
         m_CancelBuildStore.OnEventRaised += OnCancelBuildStore;
         m_FinishStockingStore.OnEventRaised += OnFinishStockingStore;
 
+        m_WarpStarted.OnEventRaised += OnWarpStarted;
+        m_WarpOver.OnEventRaised += OnWarpOver;
+
         m_OverturnOpportunity.OnEventRaised += DisplayOverturnChoices;
 
         m_ItemUsed.OnEventRaised += StrikethroughInventoryPrompt;
@@ -188,6 +194,9 @@ public class UIPromptManager : MonoBehaviour
         m_BuildStore.OnEventRaised -= OnBuildStore;
         m_CancelBuildStore.OnEventRaised -= OnCancelBuildStore;
         m_FinishStockingStore.OnEventRaised -= OnFinishStockingStore;
+
+        m_WarpStarted.OnEventRaised -= OnWarpStarted;
+        m_WarpOver.OnEventRaised -= OnWarpOver;
 
         m_OverturnOpportunity.OnEventRaised -= DisplayOverturnChoices;
 
@@ -579,6 +588,22 @@ public class UIPromptManager : MonoBehaviour
     private void OnFinishStockingStore(EntityPiece ep)
     {
         inventoryLimitText.text = $"{ep.inventory.Count}/{ep.inventoryLimit}";
+    }
+
+    private void OnWarpStarted(EntityPiece ep)
+    {
+        if(GameplayTest.instance.expectedPhase == GameplayTest.GamePhase.InitialTurnMenu)
+        {
+            HideInitialMenu();
+        }
+    }
+
+    private void OnWarpOver(EntityPiece ep)
+    {
+        if (GameplayTest.instance.expectedPhase == GameplayTest.GamePhase.InitialTurnMenu)
+        {
+            DisplayInitialMenu();
+        }
     }
 
     private void OnEnterLevelUp(EntityPiece ep)
