@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 using UnityEngine.EventSystems;
+using System.Linq;
 
 public class UIInventoryManager : MonoBehaviour
 {
@@ -70,6 +71,7 @@ public class UIInventoryManager : MonoBehaviour
 
     [Header("Broadcast on Event Channels")]
     public IntItemEventChannelSO m_ItemUsed;
+    public IntItemEventChannelSO m_RaycastItemUsed;
 
     [Header("Listen on Event Channels")]
     public PlayerEventChannelSO m_OpenInventory;
@@ -452,8 +454,42 @@ public class UIInventoryManager : MonoBehaviour
         //UseItem(selectedItemIndex);
         HideInventory();
 
-        //Tell everything that this item is being used
-        m_ItemUsed.RaiseEvent(index, item);
+        // **Figure out the type of item being used (this decides the behavior based on type)
+
+        // if TargetSelection item, open Raycast / Freeview Mode first
+        if (item.type == ItemStats.ItemType.TargetSelect ||
+            item.type == ItemStats.ItemType.Deployable)
+        {
+            Debug.Log($"UIInventoryManager | {item.itemName} is a target selection item!");
+            m_RaycastItemUsed.RaiseEvent(index, item);
+        }
+        else
+        {
+            // Generic: Tell everything that this item is being used
+            Debug.Log($"UIInventoryManager | {item.itemName} is a regular item.");
+            m_ItemUsed.RaiseEvent(index, item);
+        }
+
+        //m_ItemUsed.RaiseEvent(index, item);
+        /*
+        var cs = GameplayTest.instance.currentPlayer.currentStatsModifier;
+
+        Debug.Log($"UIInventoryManager | Testing Adding this Item to {GameplayTest.instance.currentPlayer}'s stat mods");
+        var tempItemMod = item.ApplyStatModChanges(cs, item.Duration);
+        Debug.Log($"UIInventoryManager | {GameplayTest.instance.currentPlayer}'s warpMode = {cs.warpMode}");
+        if(tempItemMod.warpMode != EntityStatsModifiers.WarpMode.None )
+        {
+            Debug.Log($"UIInventoryManager | {item.itemName} is a target selection item!");
+        }
+        else
+        {
+            Debug.Log($"UIInventoryManager | {item.itemName} is a regular item.");
+        }
+        */
+
+
+        // Generic: Tell everything that this item is being used
+        //m_ItemUsed.RaiseEvent(index, item);
 
     }
 

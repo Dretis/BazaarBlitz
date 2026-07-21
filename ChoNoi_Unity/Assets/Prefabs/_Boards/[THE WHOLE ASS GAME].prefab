@@ -2735,6 +2735,7 @@ MonoBehaviour:
   currentPlayer: {fileID: 0}
   currentPlayerInitialNode: {fileID: 0}
   playersOnCurrentNode: []
+  playerUsedItem: 0
   currentRuleset:
     board: 0
     pointGoal: 4000
@@ -2758,7 +2759,6 @@ MonoBehaviour:
   storeListingsLabel: {fileID: 6700546164843911560}
   wantedNode: {fileID: 0}
   encounterStarted: 0
-  playerUsedItem: 0
   isStockingStore: 0
   oldStamps: 
   costArray: ffffffff01000000010000000200000002000000020000000300000003000000030000000400000005000000e7030000
@@ -2810,6 +2810,7 @@ MonoBehaviour:
   m_DiceRolled: {fileID: 11400000, guid: fb9fa3f55f7f0924db5a635622936326, type: 2}
   m_TryUseItemAt: {fileID: 11400000, guid: cf367ade587c18d4f816fbe70e57e7d5, type: 2}
   m_ItemUsed: {fileID: 11400000, guid: 4c3e0ee6a8a2a4f4ea69a5202dd82790, type: 2}
+  m_RaycastItemUsed: {fileID: 11400000, guid: 988cc46420d364848a8808fb0e91d733, type: 2}
   m_FinishedUsedItem: {fileID: 11400000, guid: 6a71930c05468f844a5f664c671e2077, type: 2}
   m_ItemStocked: {fileID: 11400000, guid: 677672fced788ca4ba7cecd9f14887dc, type: 2}
   m_ItemDiscarded: {fileID: 11400000, guid: b1cc7f46ffa055a4588d794ae7f0cd13, type: 2}
@@ -7437,6 +7438,7 @@ MonoBehaviour:
   m_HoldPlayerInfo: {fileID: 11400000, guid: 43b7d47204c4b5b40aa3fd2a37085485, type: 2}
   m_ReleasePlayerInfo: {fileID: 11400000, guid: 4224677cda2bca442a340f5e1b1244de, type: 2}
   m_FinishStockingStore: {fileID: 11400000, guid: f02cee4c939241841aa967904d4db75e, type: 2}
+  m_FinishedUsedItem: {fileID: 11400000, guid: 6a71930c05468f844a5f664c671e2077, type: 2}
   m_PassedByStamp: {fileID: 11400000, guid: 3191c86eefbe7b94caff7661018a4a38, type: 2}
   m_UndoPassByStamp: {fileID: 11400000, guid: e467542006d63bf4e8c6974a713227a0, type: 2}
   m_PassByPawnShop: {fileID: 11400000, guid: 84525d3ae156f3845931e6ac178b7438, type: 2}
@@ -10473,7 +10475,7 @@ MonoBehaviour:
   m_Follow: {fileID: 0}
   m_Lens:
     FieldOfView: 48
-    OrthographicSize: 4.4
+    OrthographicSize: 4
     NearClipPlane: 0.3
     FarClipPlane: 1000
     Dutch: 0

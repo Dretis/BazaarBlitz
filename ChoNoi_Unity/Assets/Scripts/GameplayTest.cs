@@ -34,6 +34,9 @@ public class GameplayTest : MonoBehaviour
     public MapNode currentPlayerInitialNode;
     [SerializeField] private List<EntityPiece> playersOnCurrentNode = new List<EntityPiece>();
     private MapNode currentRestockNode;
+    [Space]
+    private int selectedItemIndex = -1; // -1 = currently not remembering an item in use | CHANGE THIS PART LATER
+    public bool playerUsedItem = false; // please change these down the line
 
     //public Dictionary<Vector2Int, GameObject> map = new Dictionary<Vector2Int, GameObject>();
     //public Dictionary<Vector2Int, GameObject> unitPos = new Dictionary<Vector2Int, GameObject>();
@@ -126,7 +129,6 @@ public class GameplayTest : MonoBehaviour
 
     private bool freeviewEnabled = false;
     public bool encounterStarted = false;
-    public bool playerUsedItem = false; // please change these down the line
     public bool isStockingStore = false;
 
     [SerializeField] private List<Stamp.StampType> oldStamps = new List<Stamp.StampType>();
@@ -239,9 +241,9 @@ public class GameplayTest : MonoBehaviour
 
     [Header("LS - Item Usage Events")]
     public IntItemEventChannelSO m_TryUseItemAt;
-    private int selectedItemIndex; // CHANGE THIS PART LATER
 
     public IntItemEventChannelSO m_ItemUsed; // after confirm use
+    public IntItemEventChannelSO m_RaycastItemUsed; // after confirm use
     public VoidEventChannelSO m_FinishedUsedItem; // after UseItem timeline is done
 
     public IntItemEventChannelSO m_ItemStocked;
@@ -307,11 +309,14 @@ public class GameplayTest : MonoBehaviour
         m_ItemBought.OnEventRaised += ConfirmPurchase;
 
         m_TryUseItemAt.OnEventRaised += OnUseItemAt;
+
         m_ItemUsed.OnEventRaised += OnItemUsed;
+        m_RaycastItemUsed.OnEventRaised += OnRaycastItemUsed;
+
         m_FinishedUsedItem.OnEventRaised += OnFinishedUsedItem;
 
         m_UpdatePlayerScore.OnEventRaised += RemoveDeathsRow;
-        m_ExitRaycastedTile.OnEventRaised += DisableFreeview;
+        //m_ExitRaycastedTile.OnEventRaised += OnDisableFreeview;
 
         m_BuildStore.OnEventRaised += BuildStore;
         m_RestockStore.OnEventRaised += OnRestockStore;
@@ -320,7 +325,7 @@ public class GameplayTest : MonoBehaviour
 
         m_ItemDiscarded.OnEventRaised += OnItemDiscarded;
 
-        m_DisableFreeview.OnEventRaised += DisableFreeview;
+        m_DisableFreeview.OnEventRaised += OnDisableFreeview;
 
         m_LandOnWarpNode.OnEventRaised += OnLandOnWarpNode;
         m_WarpToNode.OnEventRaised += OnWarpToNode;
@@ -348,11 +353,14 @@ public class GameplayTest : MonoBehaviour
         m_ItemBought.OnEventRaised -= ConfirmPurchase;
 
         m_TryUseItemAt.OnEventRaised -= OnUseItemAt;
+
         m_ItemUsed.OnEventRaised -= OnItemUsed;
+        m_RaycastItemUsed.OnEventRaised -= OnRaycastItemUsed;
+
         m_FinishedUsedItem.OnEventRaised -= OnFinishedUsedItem;
 
         m_UpdatePlayerScore.OnEventRaised -= RemoveDeathsRow;
-        m_ExitRaycastedTile.OnEventRaised -= DisableFreeview;
+        //m_ExitRaycastedTile.OnEventRaised -= OnDisableFreeview;
 
         m_BuildStore.OnEventRaised -= BuildStore;
         m_RestockStore.OnEventRaised -= OnRestockStore;
@@ -361,7 +369,7 @@ public class GameplayTest : MonoBehaviour
 
         m_ItemDiscarded.OnEventRaised -= OnItemDiscarded;
 
-        m_DisableFreeview.OnEventRaised -= DisableFreeview;
+        m_DisableFreeview.OnEventRaised -= OnDisableFreeview;
 
         m_LandOnWarpNode.OnEventRaised -= OnLandOnWarpNode;
         m_WarpToNode.OnEventRaised -= OnWarpToNode;
@@ -763,7 +771,9 @@ public class GameplayTest : MonoBehaviour
 
                 p.previousNode = p.traveledNodes[p.traveledNodes.Count - 1];
 
-                wantedNode.flowerTrapVisual.color = new Color32(0, 0, 0, 0);
+                wantedNode.flowerTrapVisual.color = Color.white;
+                wantedNode.flowerTrapVisual.enabled = false;
+
                 wantedNode = null;
                 //audioSource.PlayOneShot(moveSFX, 1.2f);
 
@@ -883,8 +893,10 @@ public class GameplayTest : MonoBehaviour
                 p.RemoveItemEffectOnUse(ItemLists.StealOnPassByItemNames); // ?? change this it shouldn't go away
             }
 
-            // Check if can initiate combat.
-            if (p.currentStatsModifier.canInitiateCombatOnPassBy)
+            // Check if can initiate combat via pass, like Cobra Whiskey.
+            // and there is a player (not enemy) on that tile
+            if (p.currentStatsModifier.canInitiateCombatOnPassBy &&
+                otherPlayers.Exists(op => !op.isEnemy))
             {
                 Debug.Log("Combat");
                 p.RemoveItemEffectOnUse(ItemLists.CombatOnPassByItemNames);
@@ -903,8 +915,11 @@ public class GameplayTest : MonoBehaviour
             // Deactivate all active effects of items that end on store.
             p.RemoveItemEffectOnUse(ItemLists.StopOnStoreOnPassBy);
         }
-        else if (m.CompareTag("Store") && (m.modifier == MapNode.Modifier.Marigold && m.modifierOwner != p)) {
-            m.flowerTrapVisual.color = new Color32(0, 0, 0, 0);
+        else if (m.CompareTag("Store") && (m.modifier == MapNode.Modifier.Marigold && m.modifierOwner != p)) 
+        {
+            m.flowerTrapVisual.color = Color.white;
+            m.flowerTrapVisual.enabled = false;
+
             p.previousNode = p.traveledNodes[p.traveledNodes.Count - 1];
             m_StopOnStoreOnPassBy.RaiseEvent();
 
@@ -1424,7 +1439,9 @@ public class GameplayTest : MonoBehaviour
             }
 
             isStockingStore = false; // let next player access inventory
+
             playerUsedItem = false; // let next player access inventory
+            selectedItemIndex = -1;
 
             m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
             rollTypewriter.ShowText("");
@@ -1601,6 +1618,31 @@ public class GameplayTest : MonoBehaviour
         selectedItemIndex = index;
     }
 
+    private void OnRaycastItemUsed(int index, ItemStats item)
+    {
+        Debug.Log("Used target select item");
+        currentPlayer.AddItemToActiveEffects(currentPlayer.inventory[index].Duration, currentPlayer.inventory[index]);
+
+        currentPlayer.UpdateStatModifier(new EntityPiece.ActiveEffect
+        {
+            originalItem = currentPlayer.inventory[index],
+            turnsRemaining = currentPlayer.inventory[index].Duration - 1
+        });
+
+        ApplyItemEffectsOnTurnStart(currentPlayer);
+
+        m_ExitInventory.RaiseEvent();
+        // Raise free view event I guess?
+        m_EnableFreeview.RaiseEvent();
+        // FOR NAM: USE THIS EVENT TO SHOW SELECT TILE/PLAYER UI.
+        m_EnterRaycastTargetSelection.RaiseEvent();
+        freeviewEnabled = true;
+
+        phase = GamePhase.RaycastTargetSelection;
+
+        //RemoveItemInPlayerInventory(index);
+    }
+
     private void OnItemUsed(int index, ItemStats item)
     {
         //RemoveItemInPlayerInventory(index);
@@ -1608,8 +1650,37 @@ public class GameplayTest : MonoBehaviour
 
     private void OnFinishedUsedItem()
     {
-        Debug.Log("Finished used item");
-        RemoveItemInPlayerInventory(selectedItemIndex);
+        Debug.Log("Finished used item (timeline animation)");
+        var index = selectedItemIndex;
+        var usedItem = currentPlayer.inventory[index];
+        // Should determine what to do based on the Item Type used
+        switch (usedItem.type)
+        {
+            case ItemStats.ItemType.TargetSelect:
+                // temp behavior
+                currentPlayer.inventory.RemoveAt(index);
+                selectedItemIndex = -1;
+                playerUsedItem = true;
+
+                Debug.Log("OnFinishedUsedItem() | ItemType.TargetSelect");
+                break;
+            case ItemStats.ItemType.Deployable:
+                // temp behavior
+                currentPlayer.inventory.RemoveAt(index);
+                selectedItemIndex = -1;
+                playerUsedItem = true;
+
+                //m_DisableFreeview.RaiseEvent();
+                //phase = GamePhase.InitialTurnMenu;
+
+                Debug.Log("OnFinishedUsedItem() | ItemType.Deployable");
+                break;
+            default:
+                Debug.Log("OnFinishedUsedItem() | default");
+                RemoveItemInPlayerInventory(selectedItemIndex);
+                break;
+        }
+        //RemoveItemInPlayerInventory(selectedItemIndex);
     }
 
     public void RemoveItemInPlayerInventory(int index)
@@ -1636,6 +1707,7 @@ public class GameplayTest : MonoBehaviour
             // play the PD_UseItem timeline asset here
 
             // get signalled from the end of timeline sequence to actually give item effect (SEPERATE FUNCTION)
+            /*
             currentPlayer.AddItemToActiveEffects(currentPlayer.inventory[index].Duration, currentPlayer.inventory[index]);
 
             currentPlayer.UpdateStatModifier(new EntityPiece.ActiveEffect
@@ -1644,13 +1716,13 @@ public class GameplayTest : MonoBehaviour
                 turnsRemaining = currentPlayer.inventory[index].Duration - 1
             });
 
-            currentPlayer.inventory.RemoveAt(index);
-            playerUsedItem = true;
-
             ApplyItemEffectsOnTurnStart(currentPlayer);
+            */
 
+            // Item Used is a Deployable / Trap / Placeable
             if (currentPlayer.currentStatsModifier.warpMode != EntityStatsModifiers.WarpMode.None)
             {
+                /*
                 Debug.Log("Used target select item");
                 m_ExitInventory.RaiseEvent();
                 // Raise free view event I guess?
@@ -1660,12 +1732,33 @@ public class GameplayTest : MonoBehaviour
                 freeviewEnabled = true;
 
                 phase = GamePhase.RaycastTargetSelection;
+                */
+                Debug.Log("Used raycast item, removing");
+
+                //currentPlayer.inventory.RemoveAt(index);
+                //playerUsedItem = true;
+                //selectedItemIndex = -1;
             }
             else
             {
                 // only get rid of item if its not a target selection one
+                currentPlayer.AddItemToActiveEffects(currentPlayer.inventory[index].Duration, currentPlayer.inventory[index]);
+
+                currentPlayer.UpdateStatModifier(new EntityPiece.ActiveEffect
+                {
+                    originalItem = currentPlayer.inventory[index],
+                    turnsRemaining = currentPlayer.inventory[index].Duration - 1
+                });
+
                 //currentPlayer.inventory.RemoveAt(index);
                 //playerUsedItem = true;
+
+                ApplyItemEffectsOnTurnStart(currentPlayer);
+
+                currentPlayer.inventory.RemoveAt(index);
+                playerUsedItem = true;
+                selectedItemIndex = -1;
+
                 Debug.Log("Used normal item");
                 m_ExitInventory.RaiseEvent();
             }
@@ -1766,9 +1859,14 @@ public class GameplayTest : MonoBehaviour
         */
     }
 
-    public void DisableFreeview()
+    public void OnDisableFreeview()
     {
         freeviewEnabled = false;
+        if(currentPlayer.currentStatsModifier.warpMode != EntityStatsModifiers.WarpMode.None)
+        {
+            currentPlayer.currentStatsModifier.warpMode = EntityStatsModifiers.WarpMode.None;
+            //selectedItemIndex = -1;
+        }
     }
     #region Store Related Functions
     public void BuildStore(EntityPiece p)
@@ -1911,6 +2009,7 @@ public class GameplayTest : MonoBehaviour
         // Set IDs of players entering combat.
         sceneManager.player1ID = p.id;
 
+        // Rework for Scaling Enemy System
         bool lookingForTarget = true;
         while (lookingForTarget)
         {
@@ -1931,8 +2030,16 @@ public class GameplayTest : MonoBehaviour
             }
         }
 
+        if(enemy.occupiedNode != null)
+            enemy.occupiedNode.playersOccupied.Remove(enemy);
+
         enemy.occupiedNode = p.occupiedNode;
         p.occupiedNode.playersOccupied.Add(enemy);
+        // End rework
+
+
+        //enemy.occupiedNode = p.occupiedNode;
+        //p.occupiedNode.playersOccupied.Add(enemy);
 
         yield return new WaitForSeconds(delay);
 
@@ -1963,43 +2070,7 @@ public class GameplayTest : MonoBehaviour
 
     public void SelectRaycastTarget(EntityPiece p)
     {
-        /*
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            if (p.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Tiles)
-            {
-                if (RaycastTiles.tileSelected != null)
-                    WarpConfirmed(p);
-            }
-            else if (p.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Players)
-            {
-                if (RaycastTiles.tileSelected.playerOccupied != null
-                && RaycastTiles.tileSelected.playerOccupied != p)
-                    WarpConfirmed(p);
-            }
-            else if (p.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Marigold)
-            {
-                if (RaycastTiles.tileSelected.CompareTag("Store") && RaycastTiles.tileSelected.modifier == MapNode.Modifier.None)
-                {
-                    PlantConfirmed(p, MapNode.Modifier.Marigold);
-                    RaycastTiles.tileSelected.flowerTrapVisual.color = currentPlayer.playerColor;
-                }
-                else 
-                {
-                    m_ExitRaycastTargetSelection.RaiseEvent(); // prevents getting stuck, but we should probably add a warning
-                    phase = GamePhase.InitialTurnMenu;
-                }
-            }
-            else if (p.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Rafflesia)
-            {
-                if (RaycastTiles.tileSelected.modifier == MapNode.Modifier.None)
-                {
-                    RaycastTiles.tileSelected.flowerTrapVisual.color = currentPlayer.playerColor;
-                    PlantConfirmed(p, MapNode.Modifier.Rafflesia);
-                }
-            }
-        }
-        */
+
     }
 
     public void OnSelectRaycastTarget()
@@ -2018,8 +2089,6 @@ public class GameplayTest : MonoBehaviour
         {
             if (RaycastTiles.tileSelected.CompareTag("Store") && RaycastTiles.tileSelected.modifier == MapNode.Modifier.None)
             {
-                RaycastTiles.tileSelected.flowerTrapVisual.color = currentPlayer.playerColor;
-                RaycastTiles.tileSelected.flowerTrapVisual.sprite = RaycastTiles.tileSelected.flowerTrapSprites[0];
                 PlantConfirmed(currentPlayer, MapNode.Modifier.Marigold);
             }
             /*
@@ -2034,8 +2103,6 @@ public class GameplayTest : MonoBehaviour
         {
             if (RaycastTiles.tileSelected.modifier == MapNode.Modifier.None)
             {
-                RaycastTiles.tileSelected.flowerTrapVisual.color = currentPlayer.playerColor;
-                RaycastTiles.tileSelected.flowerTrapVisual.sprite = RaycastTiles.tileSelected.flowerTrapSprites[1];
                 PlantConfirmed(currentPlayer, MapNode.Modifier.Rafflesia);
             }
         }
@@ -2070,6 +2137,33 @@ public class GameplayTest : MonoBehaviour
         {
             p.currentStatsModifier.warpDestination.modifier = modifier;
             p.currentStatsModifier.warpDestination.modifierOwner = p;
+
+            if(selectedItemIndex != -1)
+            {
+                // deployed something due to item usage!
+                Debug.Log("PlantItemOnSpaceSelection | deployed something due to item usage!");
+                // call the event to play the animation here!
+                // temp behavior, just to get rid of the item
+                m_FinishedUsedItem.RaiseEvent();
+                //m_ItemUsed.RaiseEvent(selectedItemIndex, currentPlayer.inventory[selectedItemIndex]);
+            }
+
+            switch(modifier)
+            {
+                case MapNode.Modifier.Marigold:
+                    RaycastTiles.tileSelected.flowerTrapVisual.enabled = true;
+                    RaycastTiles.tileSelected.flowerTrapVisual.color = currentPlayer.playerColor;
+                    RaycastTiles.tileSelected.flowerTrapVisual.sprite = RaycastTiles.tileSelected.flowerTrapSprites[0];
+                    break;
+                case MapNode.Modifier.Rafflesia:
+                    RaycastTiles.tileSelected.flowerTrapVisual.enabled = true;
+                    RaycastTiles.tileSelected.flowerTrapVisual.color = currentPlayer.playerColor;
+                    RaycastTiles.tileSelected.flowerTrapVisual.sprite = RaycastTiles.tileSelected.flowerTrapSprites[1];
+                    break;
+                default:
+                    Debug.Log("PlantItemOnSpaceSelection | No MapNode.modifier! Umm, something went wrong?");
+                    break;
+            }
         }
     }
 

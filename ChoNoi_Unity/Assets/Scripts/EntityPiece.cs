@@ -222,7 +222,7 @@ public class EntityPiece : MonoBehaviour
 
         foreach (var effect in activeEffects)
         {
-            if (itemNames.Contains(effect.originalItem.name))
+            if (itemNames.Contains(effect.originalItem.itemName))
             {
                 Debug.Log(effect.originalItem.name + "'s effect is removed!");
                 effectsToRemove.Add(effect);

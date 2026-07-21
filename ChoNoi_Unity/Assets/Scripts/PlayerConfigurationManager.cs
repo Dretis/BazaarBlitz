@@ -81,7 +81,7 @@ public class PlayerConfigurationManager : MonoBehaviour
     public void NumberOfPlayersButton(int playerCount)
     {
         SetRuleNumberOfPlayers(playerCount);
-        SetRulePointGoal(2500);
+        SetRulePointGoal(4000);
 
         //Set store limit based on the ppl playing
         switch (playerCount)

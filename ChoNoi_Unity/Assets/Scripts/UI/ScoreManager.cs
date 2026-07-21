@@ -39,6 +39,7 @@ public class ScoreManager : MonoBehaviour
     public VoidEventChannelSO m_ReleasePlayerInfo;
 
     public PlayerEventChannelSO m_FinishStockingStore;
+    public VoidEventChannelSO m_FinishedUsedItem;
 
     public PlayerEventChannelSO m_PassedByStamp;
     public StampEventChannelSO m_UndoPassByStamp;
@@ -67,6 +68,7 @@ public class ScoreManager : MonoBehaviour
         m_ReleasePlayerInfo.OnEventRaised += OnReleasePlayerInfo;
 
         m_FinishStockingStore.OnEventRaised += OnFinishStockingStore;
+        m_FinishedUsedItem.OnEventRaised += OnFinishedUsedItem;
 
         m_PassedByStamp.OnEventRaised += OnPassedByStamp;
         m_UndoPassByStamp.OnEventRaised += OnUndoPassByStamp;
@@ -97,6 +99,7 @@ public class ScoreManager : MonoBehaviour
         m_ReleasePlayerInfo.OnEventRaised -= OnReleasePlayerInfo;
 
         m_FinishStockingStore.OnEventRaised -= OnFinishStockingStore;
+        m_FinishedUsedItem.OnEventRaised -= OnFinishedUsedItem;
 
         m_PassedByStamp.OnEventRaised -= OnPassedByStamp;
         m_UndoPassByStamp.OnEventRaised -= OnUndoPassByStamp;
@@ -176,7 +179,11 @@ public class ScoreManager : MonoBehaviour
             .WithEase(Ease.OutBack)
             .Bind(x => coinGainLocalScale = x);
 
-        entity.coinGainNumber.ShowText($"+{coinGain}<sprite=\"Coin Icon\" index=0> ");
+        if (!(entity.heldPoints >= GameplayTest.instance.currentRuleset.pointGoal))
+        {
+            entity.coinGainNumber.ShowText($"+{coinGain}<sprite=\"Coin Icon\" index=0> ");
+        }
+        //entity.coinGainNumber.ShowText($"+{coinGain}<sprite=\"Coin Icon\" index=0> ");
 
         yield return new WaitForSeconds(1f);
 
@@ -258,6 +265,12 @@ public class ScoreManager : MonoBehaviour
     {
         //UpdateInfoInvItemsForPlayer(ps.id);
         var id = ps.id;
+        playerScoreHandlers[id].UpdateInfoInvItems();
+    }
+    private void OnFinishedUsedItem()
+    {
+        //UpdateInfoInvItemsForPlayer(ps.id);
+        var id = currentPlayer.id;
         playerScoreHandlers[id].UpdateInfoInvItems();
     }
 

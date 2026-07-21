@@ -50,6 +50,7 @@ public class UIPromptManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI inventoryLimitText;
 
     [Space]
+    [SerializeField] private TAnimCore buildPromptAnim;
     [SerializeField] private TextMeshProUGUI buildPromptText;
     [SerializeField] private TextMeshProUGUI buildLimitText;
 
@@ -87,7 +88,8 @@ public class UIPromptManager : MonoBehaviour
     public PlayerEventChannelSO m_WarpOver;
 
     public PlayerEventChannelSO m_OverturnOpportunity;
-    public IntItemEventChannelSO m_ItemUsed;
+    //public IntItemEventChannelSO m_ItemUsed;
+    public VoidEventChannelSO m_FinishedUsedItem;
 
     public VoidEventChannelSO m_EnableFreeview;
     public VoidEventChannelSO m_DisableFreeview;
@@ -150,7 +152,7 @@ public class UIPromptManager : MonoBehaviour
 
         m_OverturnOpportunity.OnEventRaised += DisplayOverturnChoices;
 
-        m_ItemUsed.OnEventRaised += StrikethroughInventoryPrompt;
+        m_FinishedUsedItem.OnEventRaised += StrikethroughInventoryPrompt;
 
         m_EnableFreeview.OnEventRaised += DisplayFreeviewPrompt;
         m_EnableFreeview.OnEventRaised += HideInitialMenu;
@@ -200,7 +202,7 @@ public class UIPromptManager : MonoBehaviour
 
         m_OverturnOpportunity.OnEventRaised -= DisplayOverturnChoices;
 
-        m_ItemUsed.OnEventRaised -= StrikethroughInventoryPrompt;
+        m_FinishedUsedItem.OnEventRaised -= StrikethroughInventoryPrompt;
 
         m_EnableFreeview.OnEventRaised -= HideInitialMenu;
         m_DisableFreeview.OnEventRaised -= DisplayInitialMenu;
@@ -474,30 +476,45 @@ public class UIPromptManager : MonoBehaviour
         inventoryLimitText.text = $"{ps.inventory.Count}/{ps.inventoryLimit}";
     }
 
-    private void StrikethroughInventoryPrompt(int index, ItemStats item)
+    private void StrikethroughInventoryPrompt()
     {
         //inventoryPromptText.text = "<color=grey>Item</color>";
         inventoryPromptText.color = Color.gray;
         inventoryLimitText.color = Color.grey;
-        inventoryLimitText.text = $"{currentPlayer.inventory.Count-1}/{currentPlayer.inventoryLimit}";
+        //inventoryLimitText.text = $"{currentPlayer.inventory.Count-1}/{currentPlayer.inventoryLimit}";
+        inventoryLimitText.text = $"{currentPlayer.inventory.Count}/{currentPlayer.inventoryLimit}";
     }
 
     private void NormalizeBuildPrompt(EntityPiece ps)
     {
         var buildCount = GameplayTest.instance.currentRuleset.storeLimit - ps.storeCount;
+        //var buildVisual = buildPromptText.text;
+        var buildVisual = "Build"; //temp
 
-        if(buildCount <= 0 || !ps.occupiedNode.CompareTag("Encounter"))
+        if (buildCount <= 0 || !ps.occupiedNode.CompareTag("Encounter"))
         {
             //buildPromptText.text = "<color=grey>Build</color>";
             buildPromptText.color = Color.gray;
             buildLimitText.text = "<color=grey>No</color>";
+
+            buildVisual = "Build";
+            //buildPromptText.text = "a";
+            //buildPromptText.text = "Build";
         }
         else
         {
             //buildPromptText.text = "Build";
             buildPromptText.color = normalPromptColor;
             buildLimitText.text = $"{buildCount} Left";
+
+            if (ps.inventory.Count > 3 && !ps.currentStates.Contains(EntityPiece.State.Fighting))
+            {
+                buildVisual = $"<incr>Build</incr>";
+            }
         }
+
+        //buildPromptText.text = buildVisual;
+        buildPromptAnim.SetText(buildVisual);
     }
 
     private void StrikethroughBuildPrompt()
@@ -505,6 +522,10 @@ public class UIPromptManager : MonoBehaviour
         buildPromptText.color = Color.gray;
         //buildPromptText.text = "<color=grey>Build</color>";
         buildLimitText.text = "<color=grey>No</color>";
+
+        var buildVisual = "Build";
+        //buildPromptText.text = buildVisual;
+        buildPromptAnim.SetText(buildVisual);
     }
 
     private void DisplayOverturnChoices(EntityPiece storeOwner)

@@ -67,6 +67,7 @@ public class PawnShop : MapNode
             p.ReputationPoints += repGained;
             p.heldPoints += pointsGained;
             //m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
+
             m_PlayerScoreIncreased.RaiseEvent(pointsGained);
             m_PassByPawnShop.RaiseEvent(); // change this later
 
@@ -80,6 +81,7 @@ public class PawnShop : MapNode
         {
             p.health = p.maxHealth;
         }
+
         m_UpdatePlayerScore.RaiseEvent(p.id);
 
         if (p.heldPoints >= gp.currentRuleset.pointGoal)

@@ -11,6 +11,7 @@ public class TimelineSignalResponder : MonoBehaviour
 
     [SerializeField] private SpriteRenderer usedItemSprite; // for p_UseItem
     [SerializeField] private MapNode destination;
+    [SerializeField] private bool warpedByItem;
 
     [Header("Playable Directors")]
     public PlayableDirector pd_UseItem;
@@ -68,6 +69,7 @@ public class TimelineSignalResponder : MonoBehaviour
         if (assignedPlayer != GameplayTest.instance.currentPlayer) return;
 
         destination = m;
+        warpedByItem = true;
 
         //Debug.Log($"{assignedPlayer} is warping to {destination.name}");
         pd_Warp.Play();
@@ -102,6 +104,11 @@ public class TimelineSignalResponder : MonoBehaviour
     public void SignalWarpOver()
     {
         GameplayTest.instance.phase = GameplayTest.instance.expectedPhase;
+        if (warpedByItem)
+        {
+            FinishUsedItem();
+            warpedByItem = false;
+        }
         m_WarpOver.RaiseEvent(assignedPlayer);
         //m_FinishedWarping.RaiseEvent();
     }
@@ -109,6 +116,7 @@ public class TimelineSignalResponder : MonoBehaviour
     public void GameFinished()
     {
         Debug.Log("Game done LOL");
+        GameplayTest.instance.phase = GameplayTest.GamePhase.GameOver;
         //m_GameFinished.OnEventRaised();
     }
     #endregion Signals

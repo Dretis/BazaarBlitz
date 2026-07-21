@@ -88,7 +88,7 @@ public class MapNode : MonoBehaviour
     public virtual void LandOnThisNode(EntityPiece p)
     {
         // Current player landed on this node
-        Debug.Log($"Landed on MapNode - {name}");
+        Debug.Log($"Landed on MapNode - {name} | Tag: {tag}");
     }
 
     public virtual void PassByThisNode(EntityPiece p)
@@ -96,14 +96,14 @@ public class MapNode : MonoBehaviour
         // Current player passed this node
         if (p.movementLeft == 0) return;
 
-        Debug.Log($"Passed MapNode - {name}");
+        Debug.Log($"Passed MapNode - {name} | Tag: {tag}");
     }
 
     public virtual void UndoPassByThisNode(EntityPiece p)
     {
         // Current player is undo'd passing this node
 
-        Debug.Log($"Undo Passing MapNode - {name}");
+        Debug.Log($"Undo Passing MapNode - {name} | Tag: {tag}");
     }
 
     public virtual string GetTileTypeString()

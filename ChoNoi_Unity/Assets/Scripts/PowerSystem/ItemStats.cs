@@ -1,10 +1,13 @@
 using System.Collections.Generic;
+using UnityEditor.Localization.Plugins.XLIFF.V20;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Localization;
 
 [CreateAssetMenu]
 public class ItemStats : ScriptableObject, IStatModifierChanger
 {
+    /*
     public enum PhaseTypes 
     { 
         Attack, 
@@ -19,6 +22,35 @@ public class ItemStats : ScriptableObject, IStatModifierChanger
         Magic, 
         Special
     }
+    */
+    // Item 'Type' is based on what it does
+    public enum ItemType
+    {
+        Generic,
+        TargetSelect,
+        Deployable, // for traps
+        Buff,
+        Debuff,
+        Heal
+    }
+
+    // Item 'Category' is based on what it looks like
+    public enum ItemCategory
+    {
+        Misc,
+        Cube,
+        Fruit,
+        Drink,
+        Food,
+        Flower
+    }
+    public enum ItemRarity
+    {
+        Common,
+        Uncommon,
+        Rare,
+        Legendary
+    }
 
     public int Duration => duration;
 
@@ -27,6 +59,11 @@ public class ItemStats : ScriptableObject, IStatModifierChanger
     private int duration = 1;
     public bool showAsEffect = true;
     public bool usableInCombat = true;
+
+    [Header("Grouping Info")]
+    public ItemType type;
+    public ItemCategory category;
+    //public ItemRarity rarity;
 
     [Header("Shop and Visual Information")]
     public Sprite itemSprite;
