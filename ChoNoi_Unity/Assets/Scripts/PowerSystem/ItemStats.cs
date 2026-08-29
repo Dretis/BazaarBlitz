@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using UnityEditor.Localization.Plugins.XLIFF.V20;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Localization;
 

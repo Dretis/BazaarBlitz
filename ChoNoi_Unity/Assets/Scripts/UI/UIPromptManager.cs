@@ -9,6 +9,7 @@ using LitMotion.Extensions;
 using UnityEngine.Localization;
 using UnityEngine.Localization.SmartFormat.PersistentVariables;
 using UnityEngine.Localization.Components;
+using UnityEngine.UI;
 
 public class UIPromptManager : MonoBehaviour
 {
@@ -44,6 +45,11 @@ public class UIPromptManager : MonoBehaviour
     [Header("ITM UI Elements")]
     [SerializeField] private CanvasGroup menuPrompt;
     [SerializeField] private TextMeshProUGUI movePromptText;
+    [Space]
+    [SerializeField] private RectTransform movePromptButton;
+    [SerializeField] private RectTransform inventoryPromptButton;
+    [SerializeField] private RectTransform buildPromptButton;
+    [SerializeField] private RectTransform viewPromptButton;
 
     [Space]
     [SerializeField] private TextMeshProUGUI inventoryPromptText;
@@ -309,6 +315,7 @@ public class UIPromptManager : MonoBehaviour
 
     private void OnTryDiceRollPrep(EntityPiece ps)
     {
+        //ScaleButtonPressed(movePromptButton);
         HideMenuPrompt();
     }
 
@@ -335,6 +342,8 @@ public class UIPromptManager : MonoBehaviour
 
     private void DisplayFreeviewPrompt()
     {
+        //ScaleButtonPressed(viewPromptButton);
+
         inputPrompt.text = "<color=white>Freeview Mode</color>";
         //inputPrompt.text += "\n<sprite name=stick_l><color=white></color> Move";
         inputPrompt.text += "\n<sprite name=down><color=white></color> Select Tile";
@@ -383,12 +392,45 @@ public class UIPromptManager : MonoBehaviour
         HideMenuPrompt();
     }
 
+    private void ScaleRectToOne(RectTransform rect, float duration)
+    {
+        LMotion.Create(rect.localScale, Vector3.one, duration)
+            .WithEase(Ease.InOutBack)
+            .Bind(x => rect.localScale = x);
+    }
+
+    private void ScaleRectTo(RectTransform rect, Vector3 targetScale, float duration)
+    {
+        LMotion.Create(rect.localScale, targetScale, duration)
+            .WithEase(Ease.OutQuad)
+            .Bind(x => rect.localScale = x);
+    }
+
+    private void ScaleButtonPressed(RectTransform rect)
+    {
+        //rect.GetComponent<Image>().color = Color.white;
+
+        LSequence.Create()
+            //.Append(LMotion.Create(Vector3.one * .75f, Vector3.one * 1.5f, 0.15f)
+            //                .WithEase(Ease.OutBack)
+            //                .Bind(x => rect.localScale = x))
+            //.AppendInterval(0.15f)
+            .Append(LMotion.Create(Vector3.one * 1.5f, Vector3.one * .75f, 0.2f)
+                            .WithEase(Ease.OutQuad)
+                            .Bind(x => rect.localScale = x))
+            .AppendInterval(0.2f)
+            .Append(LMotion.Create(rect.localScale, Vector3.one, 0.05f)
+                            .WithEase(Ease.OutBack)
+                            .Bind(x => rect.localScale = x))
+            .Run();
+    }
+
     private void ShowMenuPrompt()
     {
-        LMotion.Create(menuPrompt.alpha, 1, 0.15f)
+        LMotion.Create(menuPrompt.alpha, 1, 0.2f)
             .Bind(x => menuPrompt.alpha = x);
 
-        LMotion.Create(menuPrompt.GetComponent<RectTransform>().localScale, Vector3.one, 0.15f)
+        LMotion.Create(menuPrompt.GetComponent<RectTransform>().localScale, Vector3.one, 0.2f)
             //.WithEase(Ease.InQuad)
             .WithEase(Ease.InOutBack)
             //.WithEase(Ease.InQuint)
@@ -401,10 +443,10 @@ public class UIPromptManager : MonoBehaviour
 
     private void HideMenuPrompt()
     {
-        LMotion.Create(menuPrompt.alpha, 0, 0.15f)
+        LMotion.Create(menuPrompt.alpha, 0, 0.2f)
             .Bind(x => menuPrompt.alpha = x);
 
-        LMotion.Create(menuPrompt.GetComponent<RectTransform>().localScale, Vector3.zero, 0.15f)
+        LMotion.Create(menuPrompt.GetComponent<RectTransform>().localScale, Vector3.zero, 0.2f)
             .WithEase(Ease.OutQuad)
             .Bind(x => menuPrompt.GetComponent<RectTransform>().localScale = x);
 
@@ -491,7 +533,7 @@ public class UIPromptManager : MonoBehaviour
         //var buildVisual = buildPromptText.text;
         var buildVisual = "Build"; //temp
 
-        if (buildCount <= 0 || !ps.occupiedNode.CompareTag("Encounter"))
+        if (buildCount <= 0 || !ps.occupiedNode.CompareTag("Encounter") || ps.currentStates.Contains(EntityPiece.State.Fighting))
         {
             //buildPromptText.text = "<color=grey>Build</color>";
             buildPromptText.color = Color.gray;
@@ -578,6 +620,8 @@ public class UIPromptManager : MonoBehaviour
 
     private void OnTryBuildStore(EntityPiece ep)
     {
+        //ScaleButtonPressed(buildPromptButton);
+
         HideMenuPrompt();
 
         ShowPromptInstruction();

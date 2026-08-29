@@ -92,6 +92,12 @@ public class UITileTooltipManager : MonoBehaviour
                 tileType.text = node.GetTileTypeString();
                 tileDescription.text = node.GetTileAboutString();
             }
+            else if (node.TryGetComponent<StampWildcard>(out StampWildcard stampWildcard))
+            {
+                tileType.color = node.tileHoverColor;
+                tileType.text = node.GetTileTypeString();
+                tileDescription.text = node.GetTileAboutString();
+            }
             // Pawn Shop
             else if (node.tag == "Castle") //please change this tag
             {
@@ -165,7 +171,7 @@ public class UITileTooltipManager : MonoBehaviour
         storestockDisplayed = true;
         FadeTo(storestockGroup, 1, 0.25f);
         var storeInventory = store.storeInventory;
-
+        var storeItemPrice = 67;
         ItemStats storeItem = null;
 
         for (int i = 0; i < storestockNames.Count; i++)
@@ -186,10 +192,12 @@ public class UITileTooltipManager : MonoBehaviour
             }
             else
             {
+                storeItemPrice = (int)(storeItem.basePrice * store.storePriceMultiplier);
                 storestockIcons[i].sprite = storeItem.itemSprite;
                 storestockIcons[i].enabled = true;
                 storestockNames[i].text = $"{storeItem.l_itemName.GetLocalizedString()}";
-                storestockPrices[i].text = $"<sprite=\"Coin Icon\" index=0>{storeItem.basePrice}";
+                //storestockPrices[i].text = $"<sprite=\"Coin Icon\" index=0>{storeItem.basePrice}";
+                storestockPrices[i].text = $"<sprite=\"Coin Icon\" index=0>{storeItemPrice}";
 
                 storestockNames[i].GetComponentInParent<Button>().interactable = false;
             }

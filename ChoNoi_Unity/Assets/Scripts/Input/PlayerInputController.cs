@@ -53,7 +53,7 @@ public class PlayerInputController : MonoBehaviour
     public PlayerEventChannelSO m_TryBuildStore;
     public PlayerEventChannelSO m_BuildStore; 
     public PlayerEventChannelSO m_FinishStockingStore;
-    public VoidEventChannelSO m_CancelRestockStore; // also listening
+    public VoidEventChannelSO m_BackRenovateStore;
     public NodeEventChannelSO m_RestockStore; // also listening
 
     public VoidEventChannelSO m_ExitInventory; // also listening
@@ -137,7 +137,7 @@ public class PlayerInputController : MonoBehaviour
         m_AskRestockStore.OnEventRaised += OnAskRestockStore;
         m_TryRestockStore.OnEventRaised += OnTryRestockStore;
 
-        m_CancelRestockStore.OnEventRaised += OnCancelRestockStore;
+        //m_BackRenovateStore.OnEventRaised += OnCancelRestockStore;
         m_RestockStore.OnEventRaised += OnRestockStore;
         m_FinishStockingStore.OnEventRaised += OnFinishStockingStore;
 
@@ -187,7 +187,7 @@ public class PlayerInputController : MonoBehaviour
         m_AskRestockStore.OnEventRaised -= OnAskRestockStore;
         m_TryRestockStore.OnEventRaised -= OnTryRestockStore;
 
-        m_CancelRestockStore.OnEventRaised -= OnCancelRestockStore;
+        //m_BackRenovateStore.OnEventRaised -= OnCancelRestockStore;
         m_RestockStore.OnEventRaised -= OnRestockStore;
         m_FinishStockingStore.OnEventRaised -= OnFinishStockingStore;
 
@@ -270,7 +270,8 @@ public class PlayerInputController : MonoBehaviour
         Debug.Log("Build presed");
         var p = GameplayTest.instance.currentPlayer;
         if (p.occupiedNode.tag == "Encounter"
-            && p.storeCount < GameplayTest.instance.currentRuleset.storeLimit)
+            && p.storeCount < GameplayTest.instance.currentRuleset.storeLimit
+            && !p.currentStates.Contains(EntityPiece.State.Fighting))
         {
             playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
             playerInput.uiInputModule.actionsAsset = playerInput.actions;
@@ -326,7 +327,7 @@ public class PlayerInputController : MonoBehaviour
                 m_ExitInventory.RaiseEvent();
                 break;
             case GamePhase.PreStockStore:
-                m_CancelRestockStore.RaiseEvent();
+                m_BackRenovateStore.RaiseEvent();
                 break;
             case GamePhase.BuildingStore:
                 m_CancelBuildStore.RaiseEvent();

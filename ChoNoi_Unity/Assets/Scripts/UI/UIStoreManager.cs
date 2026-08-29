@@ -146,7 +146,7 @@ public class UIStoreManager : MonoBehaviour
             var item = storeItemHolders[i];
             //item.transform.localScale = Vector3.one;
             var storeHandler = item.GetComponent<StoreSelectionHandler>();
-            storeHandler.UpdateItemInfo(stockedItems[i]);
+            storeHandler.UpdateItemInfo(stockedItems[i], store);
             storeHandler.itemIndex = i;
             //storeHandler.button.interactable = true;
 
@@ -190,7 +190,7 @@ public class UIStoreManager : MonoBehaviour
             var item = Instantiate(storeItemPrefab, storeItemParentTransform);
             //item.transform.localScale = Vector3.one;
             var storeHandler = item.GetComponent<StoreSelectionHandler>();
-            storeHandler.UpdateItemInfo(stockedItems[i]);
+            storeHandler.UpdateItemInfo(stockedItems[i], store);
             storeHandler.itemIndex = i;
 
             storeItemHolders.Add(item);
@@ -371,7 +371,7 @@ public class UIStoreManager : MonoBehaviour
 
         //if (currentPlayer.currentStates.Contains(EntityPiece.State.DeathsRow))
         var goodbye = "\"Enjoy your brand new " + item.itemName + "! \nThank you for your patronage, and we hope to see you very soon!\"";
-        var expGain = $"+{(20 + (item.basePrice / 10))} EXP";
+        var expGain = $"+{(20 + (selectedStoreHandler.AssociatedItemPrice / 10))} EXP";
 
         Debug.Log($"FinishShopping | Current Player's Points: {currentPlayer.heldPoints}");
         if(currentPlayer.heldPoints < 0)
@@ -427,8 +427,8 @@ public class UIStoreManager : MonoBehaviour
         selectedStoreHandler = storeItemHolders[i].GetComponent<StoreSelectionHandler>();
         var item = selectedStoreHandler.HeldItem;
 
-        var confirmBuyText = $"\"Buy the {item.itemName}? It costs <color=yellow>{item.basePrice}</color><sprite=\"Coin Icon\" index=0>.\"";
-        if(currentPlayer.heldPoints <= item.basePrice)
+        var confirmBuyText = $"\"Buy the {item.itemName}? It costs <color=yellow>{selectedStoreHandler.AssociatedItemPrice}</color><sprite=\"Coin Icon\" index=0>.\"";
+        if(currentPlayer.heldPoints <= selectedStoreHandler.AssociatedItemPrice)
         {
             confirmBuyText += $"\n\n<color=#D94A45>[WARNING]</color> You don't have enough <sprite=\"Coin Icon\" index=0>, so buying this will put you in <color=#D94A45>Debt's Row</color>!";
         }
@@ -497,16 +497,17 @@ public class UIStoreManager : MonoBehaviour
             // Signal that this item was sold.
             // Likely for the PlayerManager to subtract currency based off item's price.
 
-            currentPlayer.inventory.Add(selectedStoreItem);
-            currentStore.playerOwner.heldPoints += selectedStoreItem.basePrice;
+            //currentPlayer.inventory.Add(selectedStoreItem);
+            //currentStore.playerOwner.heldPoints += selectedStoreHandler.AssociatedItemPrice;
+            //currentStore.storeInventory[i] = null;
+            currentStore.BuyItem(currentPlayer, selectedStoreItem, i);
 
             // Update store owner's score.
             m_UpdatePlayerScore.RaiseEvent(currentStore.playerOwner.id);
 
             //Broadcast the player's score difference for the sound effect
-            m_PlayerScoreDecreased.RaiseEvent(currentPlayer.heldPoints - selectedStoreItem.basePrice);
+            m_PlayerScoreDecreased.RaiseEvent(currentPlayer.heldPoints - selectedStoreHandler.AssociatedItemPrice);
 
-            currentStore.storeInventory[i] = null;
             m_ItemBought.RaiseEvent(selectedStoreItem);
 
             ChangeStorekeeperSpeed(3f); // dude is FAST

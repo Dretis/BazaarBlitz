@@ -2,10 +2,12 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Localization;
+using UnityEngine.Playables;
 using UnityEngine.UI;
 
 public class MapNode : MonoBehaviour
 {
+
     public List<EntityPiece> playersOccupied;
 
     [Header("Hover Information")]
@@ -25,6 +27,9 @@ public class MapNode : MonoBehaviour
     public CanvasGroup stockGroup;
     public Image[] stockItems;
     public TMP_Text soldoutText;
+    public TMP_Text storeLevelIndicator;
+    [Space]
+    public PlayableDirector pd_nUpgradeStore;
 
     [Header("Nearby Nodes")] 
     public MapNode north;
@@ -114,5 +119,11 @@ public class MapNode : MonoBehaviour
     public virtual string GetTileAboutString()
     {
         return tileAboutString.GetLocalizedString();
+    }
+
+    public void SignalUpgradeOver()
+    {
+        GameplayTest.instance.phase = GameplayTest.instance.expectedPhase;
+        Debug.Log($"SignalUpgradeOver - {name} | ExpectedPhase = {GameplayTest.instance.expectedPhase}");
     }
 }

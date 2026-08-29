@@ -54,8 +54,8 @@ MonoBehaviour:
   playerSprite: {fileID: 0}
   combatAnimatorController: {fileID: 9100000, guid: d5d7071bb14e7d24b815ad4b8b632fbb, type: 2}
   heldPoints: 0
-  health: 55
-  maxHealth: 55
+  health: 50
+  maxHealth: 50
   RenownLevel: 1
   ReputationPoints: 75
   levelThreshold: 100
@@ -70,10 +70,14 @@ MonoBehaviour:
   unspentLevelUpPoints: 0
   traveledNodes: []
   ownedStores: []
+  pBoatLoader: {fileID: 0}
   dustCloud: {fileID: 0}
   coinDrop: {fileID: 0}
   coinSucking: {fileID: 0}
   levelUpRays: {fileID: 0}
+  hitParticle: {fileID: 0}
+  floatingDamageNumber: {fileID: 0}
+  coinGainNumber: {fileID: 0}
   moveDieCosmeticPrefab: {fileID: 5585022736157667931, guid: 486f96b49c27bd641a2d57a470309018, type: 3}
   strDieCosmeticPrefab: {fileID: 9101131634749363289, guid: e0f7a7c075c01fa4196cf3ce44570102, type: 3}
   dexDieCosmeticPrefab: {fileID: 9101131634749363289, guid: 5993f324723ef4b44afd56c01bbb7d0e, type: 3}
@@ -85,7 +89,7 @@ MonoBehaviour:
     dieConfigs:
     - dieFaces: 010000000100000002000000030000000500000005000000
     - dieFaces: 010000000100000002000000020000000300000004000000
-    - dieFaces: 010000000100000002000000030000000500000005000000
+    - dieFaces: 010000000100000003000000030000000400000005000000
   attackActions:
   - {fileID: 11400000, guid: 6ca9e4123ea095d4fb087a3cc7c9a44d, type: 2}
   - {fileID: 11400000, guid: 092cf3b3af66061478bc3530f1af01f9, type: 2}

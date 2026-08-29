@@ -1,5 +1,7 @@
+using Febucci.UI.Core;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Playables;
 
@@ -9,7 +11,10 @@ public class TimelineSignalResponder : MonoBehaviour
     // Should ONLY broadcast events
     private EntityPiece assignedPlayer;
 
+    [Header("pd_UseItem Variables")]
     [SerializeField] private SpriteRenderer usedItemSprite; // for p_UseItem
+    [SerializeField] private TextMeshProUGUI usedItemName; // for p_UseItem
+    [Header("pd_Warp Variables")]
     [SerializeField] private MapNode destination;
     [SerializeField] private bool warpedByItem;
 
@@ -30,6 +35,7 @@ public class TimelineSignalResponder : MonoBehaviour
     public VoidEventChannelSO m_GameFinished;
 
     [Header("Listen On Event Channels")]
+    public IntItemEventChannelSO m_ItemUsed;
     public NodeEventChannelSO m_LandOnWarpNode;
     public NodeEventChannelSO m_WarpByItem;
 
@@ -40,17 +46,31 @@ public class TimelineSignalResponder : MonoBehaviour
 
     private void OnEnable()
     {
+        m_ItemUsed.OnEventRaised += OnItemUsed;
         m_LandOnWarpNode.OnEventRaised += OnLandOnWarpNode;
         m_WarpByItem.OnEventRaised += OnWarpByItem;
     }
 
     private void OnDisable()
     {
+        m_ItemUsed.OnEventRaised -= OnItemUsed;
         m_LandOnWarpNode.OnEventRaised -= OnLandOnWarpNode;
         m_WarpByItem.OnEventRaised -= OnWarpByItem;
     }
+    private void OnItemUsed(int index, ItemStats item)
+    {
+        if (assignedPlayer != GameplayTest.instance.currentPlayer) return;
+        //var usedItemSprite = currentDirector.gameObject.GetComponentInChildren<SpriteRenderer>();
+        usedItemSprite.sprite = item.itemSprite;
+        var itemName = $"{item.l_itemName.GetLocalizedString()}!";
+        usedItemName.text = itemName;
+        //usedItemName.ShowText(itemName);
 
-    public void OnLandOnWarpNode(MapNode m)
+        pd_UseItem.Play();
+        //usedItemSprite = pd_UseItem.GetComponentInChildren<SpriteRenderer>();
+    }
+
+    private void OnLandOnWarpNode(MapNode m)
     {
         if (assignedPlayer != GameplayTest.instance.currentPlayer) return;
 
@@ -64,7 +84,7 @@ public class TimelineSignalResponder : MonoBehaviour
         pd_Warp.Play();
     }
 
-    public void OnWarpByItem(MapNode m)
+    private void OnWarpByItem(MapNode m)
     {
         if (assignedPlayer != GameplayTest.instance.currentPlayer) return;
 

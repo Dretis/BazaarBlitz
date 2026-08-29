@@ -3,18 +3,24 @@ using UnityEngine;
 
 public class StoreManager : MonoBehaviour
 {
+    private MapNode node;
     public List<ItemStats> storeInventory;
 
     public EntityPiece playerOwner;
     private int storeCapacity = 3;
 
-
+    [Header("Store Stats")]
+    public int storeLevel = 1;
+    public float storePriceMultiplier = 1;
+    public int storeHeldCoins = 0;
     
     private void Awake()
     {
         //playerOwner = GetComponent<MapNode>().playerOccupied;
+        node = GetComponent<MapNode>();
 
         storeInventory = new List<ItemStats>();
+        node.storeLevelIndicator.text = "*";
 
         for (int i = 0; i < storeCapacity; i++)
         {
@@ -23,14 +29,26 @@ public class StoreManager : MonoBehaviour
         // storeInventory = Enumerable.Repeat<ItemStats>(null, storeCapacity).ToList();
     }
 
+    public void LevelUpStore()
+    {
+        storeLevel += 1;
+        node.storeLevelIndicator.text += "*";
+        storePriceMultiplier += 0.2f;
+    }
+
     public void BuyItem(EntityPiece buyer, ItemStats item, int index)
     {
-        buyer.ReputationPoints += 20 + (item.basePrice / 100);
-        // Check if buyer has enough money to buy items
-        // Subject to change - inventory system
+        Debug.Log("StoreManager | BuyItem");
+        int finalItemPrice = (int)(item.basePrice * storePriceMultiplier);
+        storeHeldCoins += finalItemPrice;
+
+        buyer.heldPoints -= finalItemPrice;
+        buyer.ReputationPoints += 20 + (finalItemPrice / 10);
         buyer.inventory.Add(item);
+
         // subtract value of item from buyer buyer.heldPoints
         // add value of item to playerOwner
+        playerOwner.heldPoints += finalItemPrice;
 
         // Remove from store inventory
         storeInventory[index] = null;

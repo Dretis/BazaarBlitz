@@ -17,6 +17,9 @@ public class StoreSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClic
     [SerializeField] private Image itemIcon;
     [SerializeField] private TextMeshProUGUI itemPrice;
 
+    [SerializeField] private StoreManager associatedStore;
+    [SerializeField] private int associatedItemPrice;
+
     private RectTransform itemRect;
     public Button button;
 
@@ -37,6 +40,18 @@ public class StoreSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClic
     {
         get { return heldItem; }
         set { heldItem = value; }
+    }
+
+    public StoreManager AssociatedStore
+    {
+        get { return associatedStore; }
+        set { associatedStore = value; }
+    }
+
+    public int AssociatedItemPrice
+    {
+        get { return associatedItemPrice; }
+        set { associatedItemPrice = value; }
     }
 
     [SerializeField] private float verticalMoveAmount = 30f;
@@ -74,10 +89,12 @@ public class StoreSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClic
         button.interactable = false;
     }
 
-    public void UpdateItemInfo(ItemStats item)
+    public void UpdateItemInfo(ItemStats item, StoreManager store)
     {
-        heldItem = item;
 
+        heldItem = item;
+        associatedStore = store;
+        //associatedItemPrice = (int)(item.basePrice * associatedStore.storePriceMultiplier);
         if (item == null)
         {
             itemIcon.sprite = null;
@@ -91,9 +108,10 @@ public class StoreSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClic
         }
         else
         {
+            associatedItemPrice = (int)(item.basePrice * associatedStore.storePriceMultiplier);
             itemIcon.sprite = item.itemSprite;
             itemIcon.enabled = true;
-            itemPrice.text = $"<sprite=\"Coin Icon\" index=0>{item.basePrice}";
+            itemPrice.text = $"<sprite=\"Coin Icon\" index=0>{associatedItemPrice}";
 
             hoverItemName.text = heldItem.l_itemName.GetLocalizedString();
             hoverEffect.text = heldItem.l_effect.GetLocalizedString();

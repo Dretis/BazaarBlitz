@@ -20,6 +20,7 @@ public class UIInventoryManager : MonoBehaviour
     //[SerializeField] private EntityPiece currentPlayer; //reference of player
 
     private int currentPlayerIndex;
+    private StoreManager selectedStore;
 
     [Header("Main Inventory")]
     [SerializeField] private Canvas inventoryCanvas;
@@ -323,7 +324,8 @@ public class UIInventoryManager : MonoBehaviour
         storestockIcons[storeTotalIndex].sprite = item.itemSprite;
         storestockIcons[storeTotalIndex].enabled = true;
         storestockNames[storeTotalIndex].text = $"{item.l_itemName.GetLocalizedString()}";
-        storestockPrices[storeTotalIndex].text = $"<sprite=\"Coin Icon\" index=0>{item.basePrice}";
+        //storestockPrices[storeTotalIndex].text = $"<sprite=\"Coin Icon\" index=0>{item.basePrice}";
+        storestockPrices[storeTotalIndex].text = $"<sprite=\"Coin Icon\" index=0>{(int)(item.basePrice * selectedStore.storePriceMultiplier)}";
     }
 
     public void ShowSelectedItemDetails(ItemStats item)
@@ -371,6 +373,7 @@ public class UIInventoryManager : MonoBehaviour
         Debug.Log("Show store stock");
         FadeTo(storestockGroup, 1, 0.25f);
 
+        selectedStore = node.GetComponent<StoreManager>();
         var storeInventory = node.GetComponent<StoreManager>().storeInventory;
 
         storeInv.Clear();
@@ -404,7 +407,8 @@ public class UIInventoryManager : MonoBehaviour
                 storestockIcons[i].sprite = storeItem.itemSprite;
                 storestockIcons[i].enabled = true;
                 storestockNames[i].text = $"{storeItem.itemName}";
-                storestockPrices[i].text = $"<sprite=\"Coin Icon\" index=0>{storeItem.basePrice}";
+                //storestockPrices[i].text = $"<sprite=\"Coin Icon\" index=0>{storeItem.basePrice}";
+                storestockPrices[i].text = $"<sprite=\"Coin Icon\" index=0>{(int)(storeItem.basePrice * selectedStore.storePriceMultiplier)}";
 
                 storestockNames[i].GetComponentInParent<Button>().interactable = false;
             }

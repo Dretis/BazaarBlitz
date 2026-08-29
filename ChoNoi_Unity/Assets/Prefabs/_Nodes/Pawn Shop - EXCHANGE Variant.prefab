@@ -24,6 +24,14 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Castle
       objectReference: {fileID: 0}
+    - target: {fileID: 4327128548956698961, guid: d4b33b9ccda1e454f862e36344df06c1, type: 3}
+      propertyPath: m_Events.m_Events.Array.data[0].m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5291059726670441601, guid: d4b33b9ccda1e454f862e36344df06c1, type: 3}
+      propertyPath: m_SceneBindings.Array.data[6].value
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 5360240772892884666, guid: d4b33b9ccda1e454f862e36344df06c1, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.5
@@ -82,7 +90,8 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3468267535802386402, guid: d4b33b9ccda1e454f862e36344df06c1, type: 3}
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 577501769571956468, guid: d4b33b9ccda1e454f862e36344df06c1, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3637374162590643598, guid: d4b33b9ccda1e454f862e36344df06c1, type: 3}
@@ -136,15 +145,19 @@ MonoBehaviour:
   flowerTrapSprites:
   - {fileID: 21300000, guid: 1ab50192cc1034d4ebe4e0652122e4d5, type: 3}
   - {fileID: 21300000, guid: 3e1224160f9f1944bab7532253c83d7f, type: 3}
-  storefrontVisual: {fileID: 6486877525366589967}
+  storeModVisual: {fileID: 0}
+  storefrontVisual: {fileID: 0}
   stockGroup: {fileID: 8878822845151951321}
   stockItems: []
   soldoutText: {fileID: 0}
+  storeLevelIndicator: {fileID: 0}
+  pd_nUpgradeStore: {fileID: 0}
   north: {fileID: 0}
   east: {fileID: 0}
   south: {fileID: 0}
   west: {fileID: 0}
   modifier: 0
+  storeModifier: 0
   modifierOwner: {fileID: 0}
   snapshotHealths: 
   snapshotPoints: 
@@ -157,11 +170,6 @@ MonoBehaviour:
   references:
     version: 2
     RefIds: []
---- !u!212 &6486877525366589967 stripped
-SpriteRenderer:
-  m_CorrespondingSourceObject: {fileID: 6731608614645923409, guid: d4b33b9ccda1e454f862e36344df06c1, type: 3}
-  m_PrefabInstance: {fileID: 535223444587754590}
-  m_PrefabAsset: {fileID: 0}
 --- !u!225 &8878822845151951321 stripped
 CanvasGroup:
   m_CorrespondingSourceObject: {fileID: 8960637922155597191, guid: d4b33b9ccda1e454f862e36344df06c1, type: 3}

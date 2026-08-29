@@ -6,7 +6,7 @@ using static GameplayTest;
 
 public class TimelineManager : MonoBehaviour
 {
-    // script includes handling Timelines
+    // script includes handling Timelines, should really be only for non-player based cutscenes
 
     [SerializeField] private TimelineSignalResponder currentResponder; // Current player's director to play timelines
 
@@ -24,6 +24,8 @@ public class TimelineManager : MonoBehaviour
     //public PlayerEventChannelSO m_ResetToIdle;
     public PlayerEventChannelSO m_PlayerWon;
 
+    //public NodeEventChannelSO m_UpgradeStore;
+
     private void OnEnable()
     {
         m_NextPlayerTurn.OnEventRaised += OnNextPlayerTurn;
@@ -33,6 +35,8 @@ public class TimelineManager : MonoBehaviour
         //m_LandOnWarpNode.OnEventRaised += OnLandOnWarpNode;
         m_PlayerWon.OnEventRaised += OnPlayerWon;
         //m_ResetToIdle.OnEventRaised += ResetToIdleAnim;
+        //m_UpgradeStore.OnEventRaised += OnUpgradeStore;
+
     }
 
     private void OnDisable()
@@ -44,6 +48,7 @@ public class TimelineManager : MonoBehaviour
         //m_LandOnWarpNode.OnEventRaised -= OnLandOnWarpNode;
         m_PlayerWon.OnEventRaised -= OnPlayerWon;
         //m_ResetToIdle.OnEventRaised -= ResetToIdleAnim;
+        //m_UpgradeStore.OnEventRaised -= OnUpgradeStore;
     }
     private void OnNextPlayerTurn(EntityPiece entity)
     {
@@ -65,10 +70,10 @@ public class TimelineManager : MonoBehaviour
     private void OnItemUsed(int index, ItemStats item)
     {
         //var usedItemSprite = currentDirector.gameObject.GetComponentInChildren<SpriteRenderer>();
-        usedItemSprite.sprite = item.itemSprite;
+        //usedItemSprite.sprite = item.itemSprite;
 
-        currentResponder.pd_UseItem.Play();
-        usedItemSprite = currentResponder.pd_UseItem.GetComponentInChildren<SpriteRenderer>();
+        //currentResponder.pd_UseItem.Play();
+        //usedItemSprite = currentResponder.pd_UseItem.GetComponentInChildren<SpriteRenderer>();
 
     }
 
@@ -121,5 +126,10 @@ public class TimelineManager : MonoBehaviour
         //currentDirector.Play();
 
         //winner.pd_winGame.Play();
+    }
+
+    private void OnUpgradeStore(MapNode node)
+    {
+
     }
 }

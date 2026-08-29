@@ -28,6 +28,8 @@ public class Stamp : MapNode
     public PlayerEventChannelSO m_PassByStamp;
     public StampEventChannelSO m_UndoPassByStamp;
 
+    public PlayerEventChannelSO m_AskRenovateStore;
+
     [Header("Listen on Event Channels")]
     public PlayerEventChannelSO m_NextPlayerTurn;
 
@@ -52,7 +54,7 @@ public class Stamp : MapNode
     void Awake()
     { 
         spawnNode = this.gameObject;
-        spawnNode.GetComponent<SpriteRenderer>().color = stampColor;
+        //spawnNode.GetComponent<SpriteRenderer>().color = stampColor;
     }
 
     public override void LandOnThisNode(EntityPiece p)
@@ -62,7 +64,17 @@ public class Stamp : MapNode
         Debug.Log($"Reseting {p.entityName}'s direction!");
         p.previousNode = null;
 
-        GameplayTest.instance.phase = GamePhase.EndTurn;
+        //GameplayTest.instance.phase = GamePhase.EndTurn;
+
+        if (p.storeCount > 0)
+        {
+            m_AskRenovateStore.RaiseEvent(p);
+            GameplayTest.instance.expectedPhase = GamePhase.EndTurn;
+        }
+        else
+        {
+            GameplayTest.instance.phase = GamePhase.EndTurn;
+        }
     }
 
     public override void PassByThisNode(EntityPiece p)

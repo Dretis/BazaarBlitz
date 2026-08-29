@@ -17,7 +17,9 @@ public class UICombatOverlayManager : MonoBehaviour
     private CombatManager thisCombatManager;
     private float[] diceNumberSizes = { .7f, .8f, .85f, .9f, .925f, .95f, 1f, 1f, 1.1f, 1.1f, 1.1f, 1.15f };
     // float[] diceNumberSizes = { 30f, 34f, 40f, 46f, 48f, 51.5f };
-
+    [Header("Prefabs")]
+    [SerializeField] private GameObject effectIndicatorPrefab;
+    [Space]
     [SerializeField] private Volume volume;
     [SerializeField] private ParticleSystem hitParticle;
 
@@ -35,7 +37,9 @@ public class UICombatOverlayManager : MonoBehaviour
 
     [Header("UI Elements")]
     [SerializeField] private RectTransform vsHeader;
-
+    [SerializeField] private RectTransform leftActiveEffectsGridContainer;
+    [SerializeField] private RectTransform rightActiveEffectsGridContainer;
+    [Space]
     [SerializeField] private CanvasGroup floatingDamage;
     [SerializeField] private TypewriterCore floatingDamageNumber;
     [SerializeField] private TypewriterCore leftDiceRoll;
@@ -201,6 +205,9 @@ public class UICombatOverlayManager : MonoBehaviour
 
         UpdateDiceStats(thisCombatManager.player1, leftDiceStat);
         UpdateDiceStats(thisCombatManager.player2, rightDiceStat);
+
+        UpdateActiveEffects(thisCombatManager.player1, leftActiveEffectsGridContainer);
+        UpdateActiveEffects(thisCombatManager.player2, rightActiveEffectsGridContainer);
 
         ShowVSHeader();
         ShowDiceInfo();
@@ -563,6 +570,27 @@ public class UICombatOverlayManager : MonoBehaviour
         LMotion.Create(stalemateGroup.alpha, 1, 0.25f)
             .WithEase(Ease.OutQuint)
             .Bind(x => stalemateGroup.alpha = x);
+    }
+
+    private void UpdateActiveEffects(EntityPiece entity, RectTransform gridContainer)
+    {
+        var activeEffects = entity.activeEffects;
+
+        //DestroyAllActiveEffects();
+
+        //Debug.Log("spawning");
+
+        //heldItemHolders.Clear();
+        var activeEffectsParentTransform = gridContainer.transform;
+
+        foreach (var effect in activeEffects)
+        {
+            if (effect.originalItem.showAsEffect)
+            {
+                var indicator = Instantiate(effectIndicatorPrefab, gridContainer);
+                indicator.GetComponent<ActiveEffectIndicatorHandler>().UpdateEffectInfo(effect);
+            }
+        }
     }
 
     public void UpdateDiceStats(EntityPiece entity, GameObject diceStats)

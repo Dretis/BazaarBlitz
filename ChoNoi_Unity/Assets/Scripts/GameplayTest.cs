@@ -47,6 +47,7 @@ public class GameplayTest : MonoBehaviour
         TrainStreet,
         CoconutCanal,
         RiceTerrace,
+        Waterfalls
     }
 
     public enum GamePhase
@@ -253,6 +254,7 @@ public class GameplayTest : MonoBehaviour
     [Header("LS - ITM Events")]
     public PlayerEventChannelSO m_BuildStore; //Listening to this one
     public NodeEventChannelSO m_RestockStore;
+    public NodeEventChannelSO m_UpgradeStore;
     public PlayerEventChannelSO m_FinishStockingStore;
 
     public VoidEventChannelSO m_ExitRaycastedTile; //Listening to this one
@@ -320,6 +322,7 @@ public class GameplayTest : MonoBehaviour
 
         m_BuildStore.OnEventRaised += BuildStore;
         m_RestockStore.OnEventRaised += OnRestockStore;
+        m_UpgradeStore.OnEventRaised += OnUpgradeStore;
         m_FinishStockingStore.OnEventRaised += AddRecentStockIntoStore;
         m_ItemStocked.OnEventRaised += TrackItemFromPlayerInventory;
 
@@ -364,6 +367,7 @@ public class GameplayTest : MonoBehaviour
 
         m_BuildStore.OnEventRaised -= BuildStore;
         m_RestockStore.OnEventRaised -= OnRestockStore;
+        m_UpgradeStore.OnEventRaised -= OnUpgradeStore;
         m_FinishStockingStore.OnEventRaised -= AddRecentStockIntoStore;
         m_ItemStocked.OnEventRaised -= TrackItemFromPlayerInventory;
 
@@ -744,7 +748,7 @@ public class GameplayTest : MonoBehaviour
                 */
             }
 
-            p.traveledNodes.Remove(lastNode);
+            p.traveledNodes.RemoveAt(lastEle - 1);
             p.occupiedNode = lastNode;
 
             p.movementLeft++;
@@ -1040,7 +1044,7 @@ public class GameplayTest : MonoBehaviour
                 oldPoints = 0;
                 oldRep = 0;
 
-                p.occupiedNode.playersOccupied.Add(p); // update to have that player in that node now
+                //p.occupiedNode.playersOccupied.Add(p); // update to have that player in that node now
                 p.occupiedNodeCopy = p.occupiedNode;
                 p.traveledNodes.Clear();
                 p.traveledNodes.Add(p.occupiedNode);
@@ -1460,9 +1464,17 @@ public class GameplayTest : MonoBehaviour
             }
             else
             {
+                //StartCoroutine(DelaySetupNextPlayer(.25f));
                 SetupNextPlayer();
             }
         }
+    }
+
+    public IEnumerator DelaySetupNextPlayer(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        SetupNextPlayer();
+        yield return null;
     }
 
     public void OnNextTurnRound(int round)
@@ -1495,6 +1507,7 @@ public class GameplayTest : MonoBehaviour
         }
         else
         {
+            //DelaySetupNextPlayer(0.25f);
             SetupNextPlayer();
         }
     }
@@ -1581,13 +1594,14 @@ public class GameplayTest : MonoBehaviour
 
     private void ConfirmPurchase(ItemStats item)
     {
+        var store = currentPlayer.occupiedNode.GetComponent<MapNode>().GetComponent<StoreManager>();
         // When an item is bought, allow confirmation via SPACE bar to continue the game
         if (item != null)
         {
             UpdateStorefrontVisual(currentPlayer.occupiedNode.GetComponent<MapNode>());
             //encounterOver = true;
-            currentPlayer.heldPoints -= item.basePrice;
-            currentPlayer.ReputationPoints += 20 + (item.basePrice / 10);
+            //currentPlayer.heldPoints -= (int)(item.basePrice * store.storePriceMultiplier); *Now in UIStoreManager using BuyItem
+            //currentPlayer.ReputationPoints += 20 + ((item.basePrice * store.storePriceMultiplier) / 10); *Now in UIStoreManager using BuyItem
 
             if (currentPlayer.heldPoints < 0)
             {
@@ -1921,6 +1935,23 @@ public class GameplayTest : MonoBehaviour
             if (item == null)
                 emptyStockCount++;
         }
+    }
+
+    public void OnUpgradeStore(MapNode node)
+    {
+        var store = node.GetComponent<StoreManager>();
+
+        // prob have a cutscene play instead
+        store.LevelUpStore();
+
+        currentPlayer.heldPoints -= 150;
+        m_UpdatePlayerScore.RaiseEvent(store.playerOwner.id);
+
+        //phase = GamePhase.EndTurn;
+        phase = GamePhase.IncidentHappening;
+        expectedPhase = GamePhase.EndTurn;
+
+        node.pd_nUpgradeStore.Play();
     }
 
     public void TrackItemFromPlayerInventory(int index, ItemStats itemStats)

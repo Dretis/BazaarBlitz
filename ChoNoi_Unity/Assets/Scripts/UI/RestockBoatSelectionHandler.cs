@@ -31,6 +31,8 @@ public class RestockBoatSelectionHandler : MonoBehaviour, ISubmitHandler, IPoint
     public NodeEventChannelSO m_RestockStore;
     public NodeEventChannelSO m_FocusOnNode;
 
+    public NodeEventChannelSO m_PromptRenovateOptions;
+
     private void Awake()
     {
         boatIcon = GetComponent<Image>();
@@ -54,13 +56,21 @@ public class RestockBoatSelectionHandler : MonoBehaviour, ISubmitHandler, IPoint
     public void OnSubmit(BaseEventData eventData)
     {
         Debug.Log("BoatSelector - Submitted | " + eventData);
+        // NEW: Show prompt to let player pick Restock or Upgrade!
+        m_PromptRenovateOptions.RaiseEvent(storeLocation);
+        /*
+        // OLD: 
         if (storestock >= 3)
         {
             // Play some goofa noise with this
             Debug.Log("you can't restock a full store!!");
         }
         else
+        {
+            // Let player pick to Restock or Upgrade!
             m_RestockStore.RaiseEvent(storeLocation);
+        }
+        */
     }
 
     public void OnSelect(BaseEventData eventData)
