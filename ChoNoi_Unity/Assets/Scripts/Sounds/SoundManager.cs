@@ -59,6 +59,9 @@ public class SoundManager : MonoBehaviour
 
     [Space]
     public PlayerEventChannelSO m_EnterLevelUp;
+    public ItemEventChannelSO m_BlessingSelected;
+    public ItemEventChannelSO m_HoverInBlessing;
+
     public VoidEventChannelSO m_AugmentedDieFaceValue;
     public VoidEventChannelSO m_FailAugmentDieFaceValue;
 
@@ -145,6 +148,8 @@ public class SoundManager : MonoBehaviour
         m_TryBuyItemAt.OnEventRaised += OnTryBuyItemAt;
 
         m_EnterLevelUp.OnEventRaised += OnEnterLevelUp;
+        m_BlessingSelected.OnEventRaised += OnBlessingSelected;
+        m_HoverInBlessing.OnEventRaised += OnHoverInBlessing;
         m_AugmentedDieFaceValue.OnEventRaised += PlayStampSound;
         m_FailAugmentDieFaceValue.OnEventRaised += PlayNotEffectiveHitSound;
 
@@ -205,6 +210,8 @@ public class SoundManager : MonoBehaviour
         m_TryBuyItemAt.OnEventRaised -= OnTryBuyItemAt;
 
         m_EnterLevelUp.OnEventRaised -= OnEnterLevelUp;
+        m_BlessingSelected.OnEventRaised -= OnBlessingSelected;
+        m_HoverInBlessing.OnEventRaised -= OnHoverInBlessing;
         m_AugmentedDieFaceValue.OnEventRaised -= PlayStampSound;
         m_FailAugmentDieFaceValue.OnEventRaised -= PlayNotEffectiveHitSound;
 
@@ -490,6 +497,16 @@ public class SoundManager : MonoBehaviour
         StopDiceRollSound(entity);
         //PlayCurrencyIncreasedSound(0);
         PlayLevelUpSound();
+    }
+
+    private void OnBlessingSelected(ItemStats blessing)
+    {
+        PlayDiceHitSound(15);
+    }
+    
+    private void OnHoverInBlessing(ItemStats blessing)
+    {
+        PlayMoveSound();
     }
     /*
     private void OnCombatDiceRolled(EntityPiece entity)

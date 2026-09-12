@@ -6,19 +6,28 @@ using Febucci.UI.Core;
 using UnityEngine.EventSystems;
 using UnityEditor;
 using UnityEngine.UI;
-using Unity.VisualScripting;
-using UnityEngine.InputSystem.HID;
+using LitMotion;
+using LitMotion.Extensions;
 
 public class UILevelUpManager : MonoBehaviour
 {
     private EntityPiece currentPlayer;
-    [SerializeField] private CanvasGroup levelUpGroup;
+    [SerializeField] private CanvasGroup statAllocationGroup;
+    [SerializeField] private RectTransform backgroundStripParent;
+    [SerializeField] private RectTransform backgroundStrip;
     [SerializeField] private TypewriterCore levelIndicator;
     [SerializeField] private Image levelIndicatorDiamond;
+    [Space]
     [SerializeField] private Image tooltipTextbox;
+    [SerializeField] private Image diceStatsBox;
     [SerializeField] private TextMeshProUGUI remainingSP;
     [SerializeField] private TextMeshProUGUI tooltipText;
-    [SerializeField] private GameObject diceStats;
+    [Space]
+    [SerializeField] private CanvasGroup diceStatsRegularGroup;
+    [SerializeField] private CanvasGroup diceStatsWithSpeedGroup;
+    [SerializeField] private GameObject diceStatsRegular;
+    [SerializeField] private GameObject diceStatsWithSpeed;
+
     [SerializeField] private List<DiceStatSelectionHandler> playerDiceNumbers = new List<DiceStatSelectionHandler>();
     [SerializeField] private List<TMP_ColorGradient> levelColorGradients;
 
@@ -32,27 +41,42 @@ public class UILevelUpManager : MonoBehaviour
     public VoidEventChannelSO m_FailAugmentDieFaceValue;
 
     [Header("Listen on Event Channels")]
+    public PlayerEventChannelSO m_EnterStatAllocation;
+    public VoidEventChannelSO m_ExitStatAllocation;
+
     public WeaponTypeIntEventChannel m_TryAugmentDieFaceValue; // lvl up
+    public VoidEventChannelSO m_HoldPlayerInfo;
+    public VoidEventChannelSO m_ReleasePlayerInfo;
 
     private void OnEnable()
     {
-        m_EnterLevelUp.OnEventRaised += OnEnterLevelUp;
+        //m_EnterLevelUp.OnEventRaised += OnEnterLevelUp;
         m_ExitLevelUp.OnEventRaised += OnExitLevelUp;
+        m_EnterStatAllocation.OnEventRaised += OnEnterStatAllocation;
+        m_ExitStatAllocation.OnEventRaised += OnExitStatAllocation;
         m_TryAugmentDieFaceValue.OnEventRaised += OnTryAugmentDieFaceValue;
+
+        m_HoldPlayerInfo.OnEventRaised += OnHoldPlayerInfo;
+        m_ReleasePlayerInfo.OnEventRaised += OnReleasePlayerInfo;
     }
 
     private void OnDisable()
     {
-        m_EnterLevelUp.OnEventRaised -= OnEnterLevelUp;
+        //m_EnterLevelUp.OnEventRaised -= OnEnterLevelUp;
         m_ExitLevelUp.OnEventRaised -= OnExitLevelUp;
+        m_EnterStatAllocation.OnEventRaised -= OnEnterStatAllocation;
+        m_ExitStatAllocation.OnEventRaised -= OnExitStatAllocation;
         m_TryAugmentDieFaceValue.OnEventRaised -= OnTryAugmentDieFaceValue;
+
+        m_HoldPlayerInfo.OnEventRaised -= OnHoldPlayerInfo;
+        m_ReleasePlayerInfo.OnEventRaised -= OnReleasePlayerInfo;
     }
 
     private void Start()
     {
-        levelUpGroup.alpha = 0f;
-        levelUpGroup.interactable = false;
-        levelUpGroup.blocksRaycasts = false;
+        statAllocationGroup.alpha = 0f;
+        statAllocationGroup.interactable = false;
+        statAllocationGroup.blocksRaycasts = false;
     }
 
     public void UpdatePlayerDiceStats(EntityPiece entity, GameObject diceStats)
@@ -100,18 +124,54 @@ public class UILevelUpManager : MonoBehaviour
             playerDiceNumbers[i].SetDieFaceValue(entity.intDie[faceIndex]);
             faceIndex++;
         }
+
+        if (currentPlayer.currentStatsModifier.canUseSpeedDie)
+        {
+            faceIndex = 0;
+            for (int i = 18; i < 24; i++)
+            {
+                playerDiceNumbers[i].SetDieFaceValue(entity.spdDie[faceIndex]);
+                faceIndex++;
+            }
+        }
     }
 
-    private void OnEnterLevelUp(EntityPiece p)
+    private void OnEnterStatAllocation(EntityPiece p)
     {
         currentPlayer = p;
-        p.unspentLevelUpPoints += 6;
-        p.maxHealth += 5;
-        p.health += 5;
-        p.RenownLevel += 1;
-        p.levelThreshold = (p.RenownLevel * 100) * (Mathf.Pow(1.15f, p.RenownLevel - 1));
+        //p.unspentLevelUpPoints += 6;
+        //p.maxHealth += 5;
+        //p.health += 5;
+        //p.RenownLevel += 1;
+        //p.levelThreshold = (p.RenownLevel * 100) * (Mathf.Pow(1.15f, p.RenownLevel - 1));
+        if (p.currentStatsModifier.canUseSpeedDie)
+        {
+            diceStatsRegularGroup.alpha = 0;
+            diceStatsRegularGroup.interactable = false;
+            diceStatsRegularGroup.blocksRaycasts = false;
 
-        UpdatePlayerDiceStats(p, diceStats);
+            diceStatsWithSpeedGroup.alpha = 1;
+            diceStatsWithSpeedGroup.interactable = true;
+            diceStatsWithSpeedGroup.blocksRaycasts = true;
+
+            //diceStatsWithSpeed.SetActive(true);
+            //diceStatsRegular.SetActive(false);
+            UpdatePlayerDiceStats(p, diceStatsWithSpeed);
+        }
+        else
+        {
+            diceStatsRegularGroup.alpha = 1;
+            diceStatsRegularGroup.interactable = true;
+            diceStatsRegularGroup.blocksRaycasts = true;
+
+            diceStatsWithSpeedGroup.alpha = 0;
+            diceStatsWithSpeedGroup.interactable = false;
+            diceStatsWithSpeedGroup.blocksRaycasts = false;
+
+            //diceStatsWithSpeed.SetActive(false);
+            //diceStatsRegular.SetActive(true);
+            UpdatePlayerDiceStats(p, diceStatsRegular);
+        }
 
         var lvl = p.RenownLevel;
 
@@ -124,24 +184,47 @@ public class UILevelUpManager : MonoBehaviour
             levelIndicator.GetComponent<TextMeshProUGUI>().colorGradientPreset = levelColorGradients[lvl - 1];
         }
 
-        levelUpGroup.alpha = 1f;
-        levelUpGroup.interactable = true;
-        levelUpGroup.blocksRaycasts = true;
-
         levelIndicator.ShowText($"*\n{p.RenownLevel}");
-        remainingSP.text = $"Remaining SP: {p.unspentLevelUpPoints}";
+        //remainingSP.text = $"Remaining SP: {p.unspentLevelUpPoints}";
+        remainingSP.text = $"<size=72>{p.unspentLevelUpPoints}</size>\nSP";
 
         levelIndicatorDiamond.color = p.playerColor - new Color32 (0,0,0,25);
-        tooltipTextbox.color = p.playerColor - new Color32 (0,0,0, 100);
+        //diceStatsBox.color = p.playerColor - new Color32 (0,0,0, 200);
+        tooltipTextbox.color = p.playerColor - new Color32 (0,0,0, 150);
 
-        m_UpdatePlayerScore.RaiseEvent(p.id);
+        //m_UpdatePlayerScore.RaiseEvent(p.id);
+
+        //statAllocationGroup.alpha = 1f;
+        statAllocationGroup.interactable = true;
+        statAllocationGroup.blocksRaycasts = true;
+
+        var statMotion = LMotion.Create(statAllocationGroup.alpha, 1, 0.35f)
+            .WithEase(Ease.OutQuad)
+            .Bind(x => statAllocationGroup.alpha = x);
+
+        var stripParentMotion = LMotion.Create(Vector3.zero, Vector3.one, .5f)
+            .WithEase(Ease.OutBack)
+            .BindToLocalScale(backgroundStripParent);
     }
-    private void OnExitLevelUp()
+    private void OnExitStatAllocation()
     {
         EventSystem.current.SetSelectedGameObject(null);
-        levelUpGroup.alpha = 0f;
-        levelUpGroup.interactable = false;
-        levelUpGroup.blocksRaycasts = false;
+        //statAllocationGroup.alpha = 0f;
+        statAllocationGroup.interactable = false;
+        statAllocationGroup.blocksRaycasts = false;
+
+        var statMotion = LMotion.Create(statAllocationGroup.alpha, 0, 0.25f)
+            .WithEase(Ease.OutQuad)
+            .Bind(x => statAllocationGroup.alpha = x);
+
+        var stripParentMotion = LMotion.Create(Vector3.one, Vector3.zero, .4f)
+            .WithEase(Ease.OutBack)
+            .BindToLocalScale(backgroundStripParent);
+    }
+
+    private void OnExitLevelUp()
+    {
+        OnExitStatAllocation();
     }
 
     private void OnTryAugmentDieFaceValue(Action.WeaponTypes diceType, int diceIndex)
@@ -165,6 +248,9 @@ public class UILevelUpManager : MonoBehaviour
             case Action.WeaponTypes.Magic:
                 selectedDie = currentPlayer.intDie[diceIndex];
                 break;
+            case Action.WeaponTypes.Speed:
+                selectedDie = currentPlayer.spdDie[diceIndex];
+                break;
         }
 
         Debug.Log($"Selected Die [{selectedDie}]");
@@ -187,12 +273,16 @@ public class UILevelUpManager : MonoBehaviour
                 case Action.WeaponTypes.Magic:
                     currentPlayer.intDie[diceIndex]++;
                     break;
+                case Action.WeaponTypes.Speed:
+                    currentPlayer.spdDie[diceIndex]++;
+                    break;
             }
 
             // broadcast that it did in fact upgrade
             m_AugmentedDieFaceValue.RaiseEvent();
             UpdatePlayerDiceStatsInLevelUp(currentPlayer);
-            remainingSP.text = $"Remaining SP: {currentPlayer.unspentLevelUpPoints}";
+            //remainingSP.text = $"Remaining SP: {currentPlayer.unspentLevelUpPoints}";
+            remainingSP.text = $"<size=72>{currentPlayer.unspentLevelUpPoints}</size>\nSP";
 
             Debug.Log("selctedDie = " + selectedDie);
             if (selectedDie + 2 >= GameplayTest.instance.costArray.Length)
@@ -218,7 +308,27 @@ public class UILevelUpManager : MonoBehaviour
         {
             // Can't augment, fail L bozo
             Debug.Log("failed to augment wtf how");
+            LMotion.Shake.Create(0f, 10f, .5f)
+                .WithFrequency(5)
+                .BindToAnchoredPositionX(diceStatsBox.rectTransform);
             m_FailAugmentDieFaceValue.RaiseEvent();
         }
+    }
+
+    private void OnHoldPlayerInfo()
+    {
+        //backgroundStrip.anchoredPosition = new Vector2(0, 475);
+        var stripMotion = LMotion.Create(backgroundStrip.localScale, new Vector3(1, 0.85f, 1), .2f)
+            .WithEase(Ease.OutBack)
+            .BindToLocalScale(backgroundStrip);
+    }
+
+    private void OnReleasePlayerInfo()
+    {
+        //backgroundStrip.anchoredPosition = new Vector2(0, 360);
+        //backgroundStrip.localScale = Vector3.one;
+        var stripMotion = LMotion.Create(backgroundStrip.localScale, Vector3.one, .2f)
+            .WithEase(Ease.OutBack)
+            .BindToLocalScale(backgroundStrip);
     }
 }

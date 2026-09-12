@@ -22,7 +22,7 @@ public class CameraObserver : MonoBehaviour
     [Header("Extra Cameras")]
     [SerializeField] private CinemachineVirtualCamera freeviewCam;
     [SerializeField] private CinemachineVirtualCamera zoomedInCam;
-    [SerializeField] private CinemachineVirtualCamera levelUpCam;
+    [SerializeField] private CinemachineVirtualCamera magnifyFocusCam;
     [SerializeField] private CinemachineVirtualCamera combatZoomCam;
     [SerializeField] private CinemachineVirtualCamera focusZoomCam;
     [SerializeField] private CinemachineVirtualCamera discardZoomCam;
@@ -43,6 +43,9 @@ public class CameraObserver : MonoBehaviour
 
     public PlayerEventChannelSO m_EnterLevelUp;
     public VoidEventChannelSO m_ExitLevelUp;
+
+    public PlayerEventChannelSO m_EnterStatAllocation;
+    public VoidEventChannelSO m_ExitStatAllocation;
 
     public PlayerEventChannelSO m_FullInventory;
 
@@ -76,6 +79,10 @@ public class CameraObserver : MonoBehaviour
 
         m_EnterLevelUp.OnEventRaised += OnEnterLevelUp;
         m_ExitLevelUp.OnEventRaised += OnExitLevelUp;
+
+        m_EnterStatAllocation.OnEventRaised += OnEnterStatAllocation;
+        m_ExitStatAllocation.OnEventRaised += OnExitStatAllocation;
+
         m_EnterRaycastedTile.OnEventRaised += OnEnterRaycastedTile;
         m_ExitRaycastedTile.OnEventRaised += OnExitRaycastedTile;
 
@@ -112,6 +119,10 @@ public class CameraObserver : MonoBehaviour
 
         m_EnterLevelUp.OnEventRaised -= OnEnterLevelUp;
         m_ExitLevelUp.OnEventRaised -= OnExitLevelUp;
+
+        m_EnterStatAllocation.OnEventRaised -= OnEnterStatAllocation;
+        m_ExitStatAllocation.OnEventRaised -= OnExitStatAllocation;
+
         m_EnterRaycastedTile.OnEventRaised -= OnEnterRaycastedTile;
         m_ExitRaycastedTile.OnEventRaised -= OnExitRaycastedTile;
 
@@ -221,15 +232,30 @@ public class CameraObserver : MonoBehaviour
     {
         // Activate zoomed offset level up camera
 
-        levelUpCam.Follow = player.transform;
+        zoomedInCam.Follow = player.transform;
 
-        levelUpCam.enabled = true;
+        zoomedInCam.enabled = true;
     }
 
     private void OnExitLevelUp()
     {
         // Deactivate zoomed offset level up camera, go back to normal
-        levelUpCam.enabled = false;
+        //zoomedInCam.enabled = false;
+        magnifyFocusCam.enabled = false;
+    }
+    private void OnEnterStatAllocation(EntityPiece player)
+    {
+        // Activate zoomed offset level up camera
+
+        magnifyFocusCam.Follow = player.transform;
+
+        magnifyFocusCam.enabled = true;
+    }
+
+    private void OnExitStatAllocation()
+    {
+        // Deactivate zoomed offset level up camera, go back to normal
+        magnifyFocusCam.enabled = false;
     }
 
     private void OnFullInventory(EntityPiece player)

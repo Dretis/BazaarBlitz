@@ -4,6 +4,7 @@ using UnityEngine;
 using LitMotion;
 using TMPro;
 using static UnityEngine.RuleTile.TilingRuleOutput;
+using System.Linq;
 
 public class SpinDiceInfoHolder : MonoBehaviour
 {
@@ -21,6 +22,9 @@ public class SpinDiceInfoHolder : MonoBehaviour
 
     [Header("Die Info")]
     [SerializeField] private Action.WeaponTypes statType;
+    //[SerializeField] private bool isSpeedDie = false;
+    [SerializeField] private int index; // 0 = default, 1 = speed
+    [SerializeField] private bool currentSelectedDie = true;
     [SerializeField] private TMP_ColorGradient defaultStatGradient;
     [SerializeField] private TMP_ColorGradient buffedStatGradient;
     [SerializeField] private List<TextMeshPro> diceStatNumbers; // TMP for 3D objects
@@ -28,19 +32,22 @@ public class SpinDiceInfoHolder : MonoBehaviour
     [SerializeField] GameObject effectUsePrefab;
 
     [Header("Listen on Event Channels")]
-    //public PlayerEventChannelSO m_NextPlayerTurn;
+    public PlayerEventChannelSO m_NextPlayerTurn;
     public PlayerEventChannelSO m_DiceRollPrep;
     public PlayerEventChannelSO m_DiceRollUndo;
     public IntEventChannelSO m_RollForMovement;
+    public IntEventChannelSO m_ChangeToMoveDie;
 
     public PlayerEventChannelSO m_EnterLevelUp; //maybe temp
 
     private void OnEnable()
     {
-        //m_NextPlayerTurn.OnEventRaised += OnNextPlayerTurn;
+        m_NextPlayerTurn.OnEventRaised += OnNextPlayerTurn;
         m_DiceRollPrep.OnEventRaised += OnDiceRollPrep;
         m_DiceRollUndo.OnEventRaised += OnDiceRollUndo;
         m_RollForMovement.OnEventRaised += OnRollForMovement;
+        m_ChangeToMoveDie.OnEventRaised += OnChangeToMoveDie;
+
 
         m_EnterLevelUp.OnEventRaised += OnEnterLevelUp;
     }
@@ -51,19 +58,33 @@ public class SpinDiceInfoHolder : MonoBehaviour
         m_DiceRollPrep.OnEventRaised -= OnDiceRollPrep;
         m_DiceRollUndo.OnEventRaised -= OnDiceRollUndo;
         m_RollForMovement.OnEventRaised -= OnRollForMovement;
+        m_ChangeToMoveDie.OnEventRaised -= OnChangeToMoveDie;
 
         m_EnterLevelUp.OnEventRaised -= OnEnterLevelUp;
 
         transform.localScale = Vector3.zero;
     }
 
+    private void OnNextPlayerTurn(EntityPiece p)
+    {
+        if (GameplayTest.instance.currentPlayer != assignedPlayer) return;
+
+        switch (index)
+        {
+            case 0:
+                currentSelectedDie = true;
+                break;
+            case 1:
+                currentSelectedDie = false;
+                break;
+        }
+    }
+
     private void OnDiceRollPrep(EntityPiece p)
     {
         if (GameplayTest.instance.currentPlayer != assignedPlayer) return;
 
-        //transform.position = p.transform.position + new Vector3(0, yOffset, zOffset);
         UpdateDiceNumbers(p);
-        DiceAppear(scaleDuration);
 
         // Make more dice based on roll mods
         if (p.currentStatsModifier.rollModifier > 0)
@@ -85,8 +106,10 @@ public class SpinDiceInfoHolder : MonoBehaviour
                 //    .AddTo(this.gameObject);
             }
         }
-        
-        //currentCoroutine = StartCoroutine(DelayDiceRollPrep(p, 0.05f));
+        if (!currentSelectedDie) return;
+
+        //transform.position = p.transform.position + new Vector3(0, yOffset, zOffset);
+        DiceAppear(scaleDuration);
     }
 
     private void OnDiceRollUndo(EntityPiece p)
@@ -104,6 +127,11 @@ public class SpinDiceInfoHolder : MonoBehaviour
     private void OnRollForMovement(int roll)
     {
         if (GameplayTest.instance.currentPlayer != assignedPlayer) return;
+        if (!currentSelectedDie)
+        {
+            if (isChildDie) Destroy(gameObject);
+            return;
+        }
 
         if (effectUsePrefab)
         {
@@ -115,6 +143,22 @@ public class SpinDiceInfoHolder : MonoBehaviour
         }
 
         DiceDisappear(scaleDuration);
+    }
+
+    private void OnChangeToMoveDie(int i)
+    {
+        if (GameplayTest.instance.currentPlayer != assignedPlayer) return;
+
+        if (i == index)
+        {
+            currentSelectedDie = true;
+            DiceAppear(0.5f);
+        }
+        else
+        {
+            currentSelectedDie = false;
+            DiceDisappear(0.2f);
+        }
     }
 
     private void OnEnterLevelUp(EntityPiece p)
@@ -131,10 +175,16 @@ public class SpinDiceInfoHolder : MonoBehaviour
 
     private void DiceAppear(float duration)
     {
+        if(!currentSelectedDie && isChildDie)
+        {
+            return;
+        }
+
         if (currentMotion.IsActive()) currentMotion.Cancel();
 
         currentMotion = LMotion.Create(transform.localScale, Vector3.one * endScale, duration)
-            .WithEase(Ease.InQuad)
+            //.WithEase(Ease.InQuad)
+            .WithEase(Ease.OutBack)
             .Bind(x => transform.localScale = x)
             .AddTo(this.gameObject);
 
@@ -173,9 +223,16 @@ public class SpinDiceInfoHolder : MonoBehaviour
 
         Debug.Log($"Flat Mode: {flatMoveMod} | Mult Mod: {multMoveMod}");
 
+        var ti = (int)statType;
+        var die = new List<int> { 1,2,3,4,5,6 };
+        if (statType == Action.WeaponTypes.Speed)
+        {
+            die = p.entityStats.dieConfigs[(int)Action.WeaponTypes.Speed].GetAllFaceValues().ToList();
+        }
+
         for(int i = 0; i < diceStatNumbers.Count; i++)
         {
-            int number = (((i + 1) * multMoveMod) + flatMoveMod);
+            int number = ((die[i] * multMoveMod) + flatMoveMod);
 
             diceStatNumbers[i].colorGradientPreset = gradient;
             diceStatNumbers[i].text = "" + number;

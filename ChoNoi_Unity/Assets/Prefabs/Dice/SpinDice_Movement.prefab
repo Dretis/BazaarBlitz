@@ -1153,7 +1153,9 @@ MonoBehaviour:
   zOffset: -2
   scaleDuration: 0.2
   endScale: 1.25
-  statType: 3
+  statType: 4
+  index: 0
+  currentSelectedDie: 1
   defaultStatGradient: {fileID: 11400000, guid: 1521ae9c30ba71141a3c9e228cb072dc, type: 2}
   buffedStatGradient: {fileID: 11400000, guid: f25b05b0fcb78f847ae57a08f4783412, type: 2}
   diceStatNumbers:
@@ -1164,7 +1166,9 @@ MonoBehaviour:
   - {fileID: 4701922145727829205}
   - {fileID: 4701922145728842775}
   effectUsePrefab: {fileID: 4568632827120603810, guid: af75fb0ff141ccf4bb2ab85c4a605c90, type: 3}
+  m_NextPlayerTurn: {fileID: 11400000, guid: 45e13c3cd9283b74989c51218c39f6c2, type: 2}
   m_DiceRollPrep: {fileID: 11400000, guid: 9e449a1e468efff46b833c09542c6b5f, type: 2}
   m_DiceRollUndo: {fileID: 11400000, guid: c893b6f1be9cffb4b87d121e14d423c7, type: 2}
   m_RollForMovement: {fileID: 11400000, guid: d015287f1c859dc49a75cff91e2028a9, type: 2}
+  m_ChangeToMoveDie: {fileID: 11400000, guid: 5aa1fd405bcfa124797166414d53b2fa, type: 2}
   m_EnterLevelUp: {fileID: 11400000, guid: 2e765a5770dc0604e9dbf9fa24b60fba, type: 2}

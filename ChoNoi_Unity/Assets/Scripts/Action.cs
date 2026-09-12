@@ -16,7 +16,8 @@ public class Action : ScriptableObject
         Melee, 
         Gun, 
         Magic, 
-        Special 
+        Speed,
+        Movement
     }
 
     public string actionName;

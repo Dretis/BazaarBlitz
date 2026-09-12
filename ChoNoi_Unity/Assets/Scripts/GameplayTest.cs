@@ -37,6 +37,7 @@ public class GameplayTest : MonoBehaviour
     [Space]
     private int selectedItemIndex = -1; // -1 = currently not remembering an item in use | CHANGE THIS PART LATER
     public bool playerUsedItem = false; // please change these down the line
+    public bool usingSpeedDieToMove = false;
 
     //public Dictionary<Vector2Int, GameObject> map = new Dictionary<Vector2Int, GameObject>();
     //public Dictionary<Vector2Int, GameObject> unitPos = new Dictionary<Vector2Int, GameObject>();
@@ -74,6 +75,7 @@ public class GameplayTest : MonoBehaviour
         InVendor,
         RockPaperScissors,
         LevelUp,
+        BlessingTree,
         CombatSelector,
         CombatTime,
 
@@ -137,9 +139,6 @@ public class GameplayTest : MonoBehaviour
     private float oldRep = 0;
 
     // ui stuff for levelup;
-    private int attSelected = 1;
-    private int diceSelected = 1;
-    private int pointsLeft = 0;
     private int currentPlayerInitialHealth = 0; // for pawn shop healing
 
     //ui to remove for levelup - Nam
@@ -641,8 +640,9 @@ public class GameplayTest : MonoBehaviour
     private void OnTryDiceRollPrep(EntityPiece p)
     {
         // For now level up happens right before you roll dice
-        if (p.canLevelUp() && !ThisPlayerMustFight(p)) {
+        if (p.CanLevelUp() && !ThisPlayerMustFight(p)) {
 
+            expectedPhase = GamePhase.LevelUp;
             m_EnterLevelUp.RaiseEvent(p);
         }
         else if (!ThisPlayerMustFight(p))
@@ -663,23 +663,59 @@ public class GameplayTest : MonoBehaviour
 
     void CalculateDiceRoll()
     {
-        diceRoll = Random.Range(1, 7); // Roll from 1 to 6
-
-        var rollsRemaining = currentPlayer.currentStatsModifier.rollModifier;
-        while (rollsRemaining > 0)
+        diceRoll = Random.Range(0, 6); // Roll from 0 to 5
+        Debug.Log($"Movement | Rolled [{diceRoll}]");
+        var p = currentPlayer;
+        if (usingSpeedDieToMove)
         {
-            Debug.Log($"Rolls Left{rollsRemaining}");
-            diceRoll += Random.Range(1, 7); // roll again until there's no more
-            rollsRemaining--;
+            // use speed die face values
+            p.health -= 25;
+
+            DieConfig die = p.entityStats.dieConfigs[(int)(Action.WeaponTypes.Speed)];
+
+            int speedRollValue = die[diceRoll];
+            int additionalRollValue;
+
+            var rollsRemaining = currentPlayer.currentStatsModifier.rollModifier;
+            while (rollsRemaining > 0)
+            {
+                //Debug.Log($"Rolls Left{rollsRemaining}");
+                additionalRollValue = Random.Range(0, 6); // roll again until there's no more
+                speedRollValue += die[additionalRollValue];
+                rollsRemaining--;
+            }
+
+            speedRollValue *= currentPlayer.currentStatsModifier.movementMultModifier;
+            speedRollValue += currentPlayer.currentStatsModifier.movementFlatModifier;
+
+            diceRoll = speedRollValue;
+
+            currentPlayer.movementTotal = currentPlayer.movementLeft = speedRollValue;
+
+            m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
+            m_RollForMovement.RaiseEvent(speedRollValue);
+            m_PlayerMovedOnBoard.RaiseEvent(); // idk why this has to be a seperate event
         }
+        else
+        {
+            diceRoll += 1; // Roll from 1 to 6
 
-        // Apply movement item effects.
-        diceRoll *= currentPlayer.currentStatsModifier.movementMultModifier;
-        diceRoll += currentPlayer.currentStatsModifier.movementFlatModifier;
+            var rollsRemaining = currentPlayer.currentStatsModifier.rollModifier;
+            while (rollsRemaining > 0)
+            {
+                Debug.Log($"Rolls Left{rollsRemaining}");
+                diceRoll += 1 + Random.Range(0, 6); // roll again until there's no more
+                rollsRemaining--;
+            }
 
-        currentPlayer.movementTotal = currentPlayer.movementLeft = diceRoll;
-        m_RollForMovement.RaiseEvent(diceRoll);
-        m_PlayerMovedOnBoard.RaiseEvent(); // idk why this has to be a seperate event
+            // Apply movement item effects.
+            diceRoll *= currentPlayer.currentStatsModifier.movementMultModifier;
+            diceRoll += currentPlayer.currentStatsModifier.movementFlatModifier;
+
+            currentPlayer.movementTotal = currentPlayer.movementLeft = diceRoll;
+            m_RollForMovement.RaiseEvent(diceRoll);
+            m_PlayerMovedOnBoard.RaiseEvent(); // idk why this has to be a seperate event
+        }
     }
 
     void PickDirection(EntityPiece p)
@@ -1418,6 +1454,9 @@ public class GameplayTest : MonoBehaviour
         }
         else
         {
+            // Interest logic here TEMPORARY
+            currentPlayer.heldPoints += (int)(currentPlayer.currentStatsModifier.interestRate * currentPlayer.storestockTotal);
+
             // Regular turn end logic
             //if (currentPlayerInitialNode.playerOccupied == currentPlayer)
             if (currentPlayerInitialNode.playersOccupied.Contains(currentPlayer))
@@ -1443,7 +1482,7 @@ public class GameplayTest : MonoBehaviour
             }
 
             isStockingStore = false; // let next player access inventory
-
+            usingSpeedDieToMove = false;
             playerUsedItem = false; // let next player access inventory
             selectedItemIndex = -1;
 
@@ -1943,7 +1982,7 @@ public class GameplayTest : MonoBehaviour
 
         // prob have a cutscene play instead
         store.LevelUpStore();
-
+        currentPlayer.CalculateStorestockTotal();
         currentPlayer.heldPoints -= 150;
         m_UpdatePlayerScore.RaiseEvent(store.playerOwner.id);
 
@@ -1983,6 +2022,9 @@ public class GameplayTest : MonoBehaviour
 
         recentStockedItems.Clear();
         m_ExitInventory.RaiseEvent();
+
+        // temporary
+        player.CalculateStorestockTotal();
     }
 
     public void UpdateStorefrontVisual(MapNode node)

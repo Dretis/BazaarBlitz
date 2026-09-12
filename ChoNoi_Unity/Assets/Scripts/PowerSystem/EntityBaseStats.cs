@@ -9,6 +9,7 @@ public class EntityBaseStats
         Strength,
         Dex,
         Int,
+        Speed,
         Count
     }
 

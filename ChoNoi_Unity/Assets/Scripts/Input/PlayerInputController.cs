@@ -45,6 +45,7 @@ public class PlayerInputController : MonoBehaviour
     public PlayerEventChannelSO m_DiceRollUndo;
     public PlayerEventChannelSO m_DiceRollPrep;
     public PlayerEventChannelSO m_TryDiceRollPrep;
+    public IntEventChannelSO m_ChangeToMoveDie;
 
     public VoidEventChannelSO m_DiceRolled;
     public IntEventChannelSO m_RollForMovement;
@@ -58,6 +59,7 @@ public class PlayerInputController : MonoBehaviour
 
     public VoidEventChannelSO m_ExitInventory; // also listening
     public VoidEventChannelSO m_ExitLevelUp;
+    public VoidEventChannelSO m_ExitBlessingsTree;
 
     public VoidEventChannelSO m_HoldPlayerInfo;
     public VoidEventChannelSO m_ReleasePlayerInfo;
@@ -99,6 +101,8 @@ public class PlayerInputController : MonoBehaviour
     public PlayerEventChannelSO m_InitiateCombatOnPassBy;
 
     public PlayerEventChannelSO m_EnterLevelUp;
+    public PlayerEventChannelSO m_EnterStatAllocation;
+    public PlayerEventChannelSO m_EnterBlessingsTree;
 
     public EntityActionEventChannelSO m_BothActionsSelected;
     public PlayerEventChannelSO m_SwapPhase;
@@ -335,6 +339,10 @@ public class PlayerInputController : MonoBehaviour
             case GamePhase.LevelUp:
                 m_ExitLevelUp.RaiseEvent();
                 break;
+            case GamePhase.BlessingTree:
+                m_ExitBlessingsTree.RaiseEvent();
+                m_EnterStatAllocation.RaiseEvent(assignedPlayer);
+                break;
         }
         //SwitchActionMap(previousGamePhase);
     }
@@ -466,6 +474,30 @@ public class PlayerInputController : MonoBehaviour
                 break;
             case GamePhase.GameOver:
                 Debug.Log("NO | Game Finished, go to results scene?");
+                break;
+        }
+    }
+
+    private void OnChange()
+    {
+        switch (GameplayTest.instance.phase)
+        {
+            case GamePhase.RollDice:
+                if (assignedPlayer.currentStatsModifier.canUseSpeedDie && assignedPlayer.health > 25)
+                {
+                    // swap to the other die not being shown
+                    // temp
+                    if (GameplayTest.instance.usingSpeedDieToMove)
+                    {
+                        GameplayTest.instance.usingSpeedDieToMove = false;
+                        m_ChangeToMoveDie.RaiseEvent(0);
+                    }
+                    else
+                    {
+                        GameplayTest.instance.usingSpeedDieToMove = true;
+                        m_ChangeToMoveDie.RaiseEvent(1);
+                    }
+                }
                 break;
         }
     }
@@ -626,7 +658,10 @@ public class PlayerInputController : MonoBehaviour
                 //LevelUp(currentPlayer);
                 playerInput.SwitchCurrentActionMap("UI");
                 break;
-
+            case GamePhase.BlessingTree:
+                //LevelUp(currentPlayer);
+                playerInput.SwitchCurrentActionMap("UI");
+                break;
             // Confirmation Phase
             case GamePhase.ConfirmContinue:
                 playerInput.SwitchCurrentActionMap("Confirmation");

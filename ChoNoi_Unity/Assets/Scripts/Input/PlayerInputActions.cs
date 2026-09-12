@@ -821,6 +821,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Change"",
+                    ""type"": ""Button"",
+                    ""id"": ""07f530cd-029f-49d2-b7a2-b6527d690162"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -887,6 +896,28 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""No"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""691cd287-3b25-4f81-819a-497a10be19c0"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""Change"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""28f4c1ad-4f12-4de4-b0cf-f31b4c48cfc2"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Change"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1845,6 +1876,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Confirmation = asset.FindActionMap("Confirmation", throwIfNotFound: true);
         m_Confirmation_Yes = m_Confirmation.FindAction("Yes", throwIfNotFound: true);
         m_Confirmation_No = m_Confirmation.FindAction("No", throwIfNotFound: true);
+        m_Confirmation_Change = m_Confirmation.FindAction("Change", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -2356,6 +2388,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private List<IConfirmationActions> m_ConfirmationActionsCallbackInterfaces = new List<IConfirmationActions>();
     private readonly InputAction m_Confirmation_Yes;
     private readonly InputAction m_Confirmation_No;
+    private readonly InputAction m_Confirmation_Change;
     /// <summary>
     /// Provides access to input actions defined in input action map "Confirmation".
     /// </summary>
@@ -2375,6 +2408,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Confirmation/No".
         /// </summary>
         public InputAction @No => m_Wrapper.m_Confirmation_No;
+        /// <summary>
+        /// Provides access to the underlying input action "Confirmation/Change".
+        /// </summary>
+        public InputAction @Change => m_Wrapper.m_Confirmation_Change;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -2407,6 +2444,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @No.started += instance.OnNo;
             @No.performed += instance.OnNo;
             @No.canceled += instance.OnNo;
+            @Change.started += instance.OnChange;
+            @Change.performed += instance.OnChange;
+            @Change.canceled += instance.OnChange;
         }
 
         /// <summary>
@@ -2424,6 +2464,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @No.started -= instance.OnNo;
             @No.performed -= instance.OnNo;
             @No.canceled -= instance.OnNo;
+            @Change.started -= instance.OnChange;
+            @Change.performed -= instance.OnChange;
+            @Change.canceled -= instance.OnChange;
         }
 
         /// <summary>
@@ -3122,6 +3165,13 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnNo(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Change" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnChange(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

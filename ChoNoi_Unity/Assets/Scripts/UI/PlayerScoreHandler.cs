@@ -67,6 +67,21 @@ public class PlayerScoreHandler : MonoBehaviour
     [SerializeField] private GameObject playerInfoInvHolder;
     [SerializeField] private List<Image> playerInfoInvItems = new List<Image>();
 
+    [Header("\"More Info\" UI Talent Elements")]
+    [SerializeField] private CanvasGroup unlockTalentGroup;
+
+    [SerializeField] private CanvasGroup moneyInterestGroup;
+    [SerializeField] private TextMeshProUGUI moneyInterestText;
+
+    [SerializeField] private CanvasGroup powerGroup;
+    [SerializeField] private CanvasGroup speedDiceGroup;
+    [SerializeField] private List<TextMeshProUGUI> speedDiceNumber = new List<TextMeshProUGUI>();
+
+    public CanvasGroup UnlockTalentGroup => unlockTalentGroup;
+    public CanvasGroup MoneyInterestGroup => moneyInterestGroup;
+    public CanvasGroup PowerGroup => powerGroup;
+    public CanvasGroup SpeedDiceGroup => speedDiceGroup;
+
     [Header("Active Effects / Buffs Indicator")]
     [SerializeField] private GameObject effectIndicatorPrefab;
     [SerializeField] private RectTransform activeEffectsGridContainer;
@@ -99,7 +114,7 @@ public class PlayerScoreHandler : MonoBehaviour
         playerHPNumber = assignedPlayer.health;
 
         //Debug.Log($"playerInfoDiceNumbers[{i}] = {playerInfoDiceHolder[i]}");
-
+        /*
         playerInfoDiceNumber.Add(null);
         var tempDiceList = new List<TextMeshProUGUI>();
 
@@ -108,7 +123,7 @@ public class PlayerScoreHandler : MonoBehaviour
             tempDiceList.Add(child.gameObject.GetComponentInChildren<TextMeshProUGUI>());
         }
         playerInfoDiceNumber = tempDiceList;
-
+        */
         playerInfoInvItems.Add(null);
         var tempInvList = new List<Image>();
         foreach (Transform child in playerInfoInvHolder.transform)
@@ -130,6 +145,10 @@ public class PlayerScoreHandler : MonoBehaviour
         //redStamp.enabled = false;
         //blueStamp.enabled = false;
         //orangeStamp.enabled = false;
+        unlockTalentGroup.alpha = 1;
+        moneyInterestGroup.alpha = 0;
+        powerGroup.alpha = 0;
+        speedDiceGroup.alpha = 0;
     }
 
     public void DisablePlayerScore()
@@ -152,6 +171,8 @@ public class PlayerScoreHandler : MonoBehaviour
         UpdateInfoDiceNumbers();
 
         UpdateInfoInvItems();
+
+        UpdateMoneyInterest(); // maybe only if you have interest
     }
 
     public void SetPlayerName(string newName)
@@ -348,19 +369,26 @@ public class PlayerScoreHandler : MonoBehaviour
         UpdateDiceStat(Action.WeaponTypes.Melee);
         UpdateDiceStat(Action.WeaponTypes.Gun);
         UpdateDiceStat(Action.WeaponTypes.Magic);
+        UpdateDiceStat(Action.WeaponTypes.Speed);
     }
 
     public void UpdateDiceStat(Action.WeaponTypes type)
     {
         var player = assignedPlayer;
         var ti = (int)type; // type index
+        float statDieFlatMod = 0;
+        float statDieMultMod = 1;
 
-        var statDieFlatMod = player.currentStatsModifier.dieModifiers[ti].finalResultFlatModifier;
-        var statDieMultMod = player.currentStatsModifier.dieModifiers[ti].finalResultMultModifier;
+        if (type != Action.WeaponTypes.Speed)
+        {
+            statDieFlatMod = player.currentStatsModifier.dieModifiers[ti].finalResultFlatModifier;
+            statDieMultMod = player.currentStatsModifier.dieModifiers[ti].finalResultMultModifier;
+        }
+
         var diceGradient = actionTypeGradients[ti];
 
         // Buffed gradient
-        if (!(statDieFlatMod == 0 && statDieMultMod == 1)) diceGradient = actionTypeGradients[3];
+        if (!(statDieFlatMod == 0 && statDieMultMod == 1)) diceGradient = actionTypeGradients[4];
 
         DieConfig die = player.entityStats.dieConfigs[(int)type];
 
@@ -383,6 +411,11 @@ public class PlayerScoreHandler : MonoBehaviour
                 die = player.intDie;
                 start = 12;
                 end = 18;
+                break;
+            case Action.WeaponTypes.Speed:
+                die = player.spdDie;
+                start = 18;
+                end = 24;
                 break;
         }
 
@@ -418,6 +451,16 @@ public class PlayerScoreHandler : MonoBehaviour
             else
                 playerInfoInvItems[i].enabled = false;
         }
+    }
+    
+    public void UpdateMoneyInterest()
+    {
+        var ratePercentage = assignedPlayer.currentStatsModifier.interestRate * 100;
+        int interest = (int)(assignedPlayer.currentStatsModifier.interestRate * assignedPlayer.storestockTotal);
+
+        // change this to work with localized strings
+        moneyInterestText.text = $"<color=#FFF5C6>Storestock Total: </color=><b>{assignedPlayer.storestockTotal}<sprite=\"Coin Icon\" index=0></b>\r" +
+                                 $"\n<color=#FFF5C6>{ratePercentage}% Interest: </color=> <b>+{interest}<sprite=\"Coin Icon\" index=0></b>";
     }
 
     public void RefreshActiveEffects()

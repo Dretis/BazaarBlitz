@@ -48,6 +48,7 @@ public class ScoreManager : MonoBehaviour
     public PlayerEventChannelSO m_UndoPassByPawnShop;
 
     public VoidEventChannelSO m_ExitLevelUp;
+    public ItemEventChannelSO m_PlayerPickedFirstBlessing;
 
     public PlayerEventChannelSO m_RefreshedActiveEffects;
 
@@ -77,6 +78,7 @@ public class ScoreManager : MonoBehaviour
         m_UndoPassByPawnShop.OnEventRaised += OnUndoPassByPawnShop;
 
         m_ExitLevelUp.OnEventRaised += OnExitLevelUp;
+        m_PlayerPickedFirstBlessing.OnEventRaised += OnPlayerPickedFirstBlessing;
 
         m_RefreshedActiveEffects.OnEventRaised += OnRefreshedActiveEffects;
 
@@ -108,6 +110,7 @@ public class ScoreManager : MonoBehaviour
         m_UndoPassByPawnShop.OnEventRaised -= OnUndoPassByPawnShop;
 
         m_ExitLevelUp.OnEventRaised -= OnExitLevelUp;
+        m_PlayerPickedFirstBlessing.OnEventRaised -= OnPlayerPickedFirstBlessing;
 
         m_RefreshedActiveEffects.OnEventRaised -= OnRefreshedActiveEffects;
 
@@ -244,7 +247,7 @@ public class ScoreManager : MonoBehaviour
     private void OnHoldPlayerInfo()
     {
         // Lift up scoreboard to show additional info
-        currentMotion = LMotion.Create(scoreContainerTransform.anchoredPosition, new Vector2(0, 150), 0.25f)
+        currentMotion = LMotion.Create(scoreContainerTransform.anchoredPosition, new Vector2(0, 150+58), 0.25f)
             //.WithEase(Ease.InQuad)
             .WithEase(Ease.OutBack)
             .BindToAnchoredPosition(scoreContainerTransform);
@@ -266,6 +269,7 @@ public class ScoreManager : MonoBehaviour
         //UpdateInfoInvItemsForPlayer(ps.id);
         var id = ps.id;
         playerScoreHandlers[id].UpdateInfoInvItems();
+        playerScoreHandlers[id].UpdateMoneyInterest();
     }
     private void OnFinishedUsedItem()
     {
@@ -279,6 +283,30 @@ public class ScoreManager : MonoBehaviour
         Debug.Log("updating");
         var id = currentPlayer.id;
         playerScoreHandlers[id].UpdateScore();
+    }
+
+    private void OnPlayerPickedFirstBlessing(ItemStats blessing)
+    {
+        var id = currentPlayer.id;
+        playerScoreHandlers[id].UnlockTalentGroup.alpha = 0;
+        Debug.Log($"{blessing.itemName} |{blessing.category}");
+        switch (blessing.category)
+        {
+            case ItemStats.ItemCategory.Wealth:
+                // Show interest rate
+                playerScoreHandlers[id].MoneyInterestGroup.alpha = 1;
+                break;
+            case ItemStats.ItemCategory.Power:
+                // show advantage mults
+                //Debug.Log($"How");
+                playerScoreHandlers[id].PowerGroup.alpha = 1;
+                break;
+            case ItemStats.ItemCategory.Speed:
+                // show Speed dice
+                //Debug.Log($"CORRECT!");
+                playerScoreHandlers[id].SpeedDiceGroup.alpha = 1;
+                break;
+        }
     }
 
     private void OnPlayerWon(EntityPiece winner)

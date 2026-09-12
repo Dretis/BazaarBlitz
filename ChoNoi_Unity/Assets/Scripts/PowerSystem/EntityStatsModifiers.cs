@@ -25,20 +25,41 @@ public class EntityStatsModifiers
     // List of all stats
     public DieModifier[] dieModifiers = new DieModifier[(int)EntityBaseStats.DieTypes.Count];
 
+    [Header("General Mods")]
+    [Range(0, 1)] public float deathLossRatio = 0.5f;
+    public float interestRate = 0; // Wealth Blessing
+    public int rollModifier;
+
+    [Header("Movement-based Mods")]
+    public int movementFlatModifier = 0;
+    public int movementMultModifier = 1;
+    public int movementTempoScale = 0; // Tempo-Velocity Blessing
+    public bool canUseSpeedDie = false;
+
+    [Header("Combat Mods")]
+    public float strongMultModifier = 0; // Power Blessing
+    public float neutralMultModifier = 0; // Power Blessing
+    public float resistMultModifier = 0; // Power Blessing
+    public bool canInflictWrath = false;
+    public bool hasGreed = false;
+
+    [Header("Survival-based Mods")]
     public float defenseModifier = 0;
     public float lifestealMult = 0;
     public int healthRegen = 0;
-    public int rollModifier;
+
     public int maxHealthFlatModifier = 0;
     public int maxHealthMultModifier = 1;
-    public int movementFlatModifier = 0;
-    public int movementMultModifier = 1;
+
+    [Header("Trap-based Mods")]
     public MapNode warpDestination = null;
     public WarpMode warpMode = WarpMode.None;
-
+    
     public bool canStealOnPassBy = false;
     public bool canInitiateCombatOnPassBy = false;
     public bool canStopOnStoreOnPassBy = false;
+
+
     public float ApplyDieModifier(EntityBaseStats.DieTypes dieType, float baseRollValue)
     {
         Debug.Log("Original Roll" + baseRollValue);

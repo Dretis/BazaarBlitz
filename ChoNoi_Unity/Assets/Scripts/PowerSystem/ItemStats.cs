@@ -25,6 +25,7 @@ public class ItemStats : ScriptableObject, IStatModifierChanger
     public enum ItemType
     {
         Generic,
+        Blessing,
         TargetSelect,
         Deployable, // for traps
         Buff,
@@ -35,12 +36,15 @@ public class ItemStats : ScriptableObject, IStatModifierChanger
     // Item 'Category' is based on what it looks like
     public enum ItemCategory
     {
+        Wealth,
+        Power,
+        Speed,
         Misc,
         Cube,
         Fruit,
         Drink,
         Food,
-        Flower
+        Flower,
     }
     public enum ItemRarity
     {
@@ -51,12 +55,15 @@ public class ItemStats : ScriptableObject, IStatModifierChanger
     }
 
     public int Duration => duration;
+    public bool IsPermanent => isPermanent;
+    public bool ClearAfterCombat => clearAfterCombat;
 
     public string itemName;
-    [SerializeField]
-    private int duration = 1;
+    [SerializeField] private int duration = 1;
+    [SerializeField] private bool isPermanent;
     public bool showAsEffect = true;
     public bool usableInCombat = true;
+    public bool clearAfterCombat = false;
 
     [Header("Grouping Info")]
     public ItemType type;
@@ -91,7 +98,7 @@ public class ItemStats : ScriptableObject, IStatModifierChanger
             effectStartTurn = Mathf.Min(effectStartTurn, effectEndTurn); // Must be less than or equal to effectEndTurn.
 
             // Apply mod effect if in range of start and end turns.
-            if (currentTurn >= effectStartTurn && currentTurn <= effectEndTurn)
+            if ((currentTurn >= effectStartTurn && currentTurn <= effectEndTurn) || isPermanent)
             {
                 Debug.Log("Current Turn: " + currentTurn);
                 Debug.Log("My effect is activating.");

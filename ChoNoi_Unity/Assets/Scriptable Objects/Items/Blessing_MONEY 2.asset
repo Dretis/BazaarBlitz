@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdd1368eedb123d4db8a885acb84d3a9, type: 3}
+  m_Name: Blessing_MONEY 2
+  m_EditorClassIdentifier: 
+  itemName: Wealth
+  duration: -1
+  isPermanent: 1
+  showAsEffect: 1
+  usableInCombat: 1
+  type: 1
+  category: 0
+  itemSprite: {fileID: 659351505, guid: 3b4e24068f8a85b459748a5e40e3a8ff, type: 3}
+  effectDescription: "Gain <color=#FFD65D>+1% interest</color> every turn, but drop
+    an <color=red>additional 10%<sprite=\"Coin Icon\" index=0></color> on death.\n\n<color=#FFD65D>[Interest]</color>:
+    \nEarn <sprite=\"Coin Icon\" index=0> based on the total item value in your storefronts."
+  flavorText: '"Invest for success :)"'
+  l_itemName:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 87807010068647936
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  l_effect:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 87807036509540352
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  l_flavor:
+    m_TableReference:
+      m_TableCollectionName: GUID:c5a5d24bd5dd6a1459756bb15eaa5fc3
+    m_TableEntryReference:
+      m_KeyId: 3088281653248
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  basePrice: 9999
+  modifiers: []
+  references:
+    version: 2
+    RefIds: []

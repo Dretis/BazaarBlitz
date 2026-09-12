@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdd1368eedb123d4db8a885acb84d3a9, type: 3}
+  m_Name: TestOP
+  m_EditorClassIdentifier: 
+  itemName: OP
+  duration: -1
+  isPermanent: 1
+  showAsEffect: 1
+  usableInCombat: 1
+  type: 0
+  category: 0
+  itemSprite: {fileID: -1632524520, guid: 9d26dc8b0ce291d4f99ba311039ee9b7, type: 3}
+  effectDescription: guh
+  flavorText: '"kill them all"'
+  l_itemName:
+    m_TableReference:
+      m_TableCollectionName: GUID:c5a5d24bd5dd6a1459756bb15eaa5fc3
+    m_TableEntryReference:
+      m_KeyId: 1651082416128
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  l_effect:
+    m_TableReference:
+      m_TableCollectionName: GUID:c5a5d24bd5dd6a1459756bb15eaa5fc3
+    m_TableEntryReference:
+      m_KeyId: 3088281653248
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  l_flavor:
+    m_TableReference:
+      m_TableCollectionName: GUID:c5a5d24bd5dd6a1459756bb15eaa5fc3
+    m_TableEntryReference:
+      m_KeyId: 3088281653248
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  basePrice: -67
+  modifiers:
+  - {fileID: 11400000, guid: e71aa8a723fffac4eaa197dd7a52e9e6, type: 2}
+  - {fileID: 11400000, guid: 4d17a2b5125c2dc4e9c448677d224bbe, type: 2}
+  - {fileID: 11400000, guid: 18f104533345a7c48906f1950cf891e9, type: 2}
+  - {fileID: 11400000, guid: 585b781ae7ef33846b1132c1f16b70c2, type: 2}
+  references:
+    version: 2
+    RefIds: []

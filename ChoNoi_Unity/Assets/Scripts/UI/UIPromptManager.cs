@@ -676,6 +676,9 @@ public class UIPromptManager : MonoBehaviour
         ClearInputText();
 
         HideMenuPrompt();
+
+        inputPrompt.text = "<sprite name=down><color=white></color> Augment Face";
+        inputPrompt.text += "\n<sprite name=right><color=white></color> Finish";
     }
 
     private void OnExitLevelUp()

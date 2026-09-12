@@ -12,6 +12,7 @@ public class StoreManager : MonoBehaviour
     [Header("Store Stats")]
     public int storeLevel = 1;
     public float storePriceMultiplier = 1;
+    public float storeBaseMult = 0.2f;
     public int storeHeldCoins = 0;
     
     private void Awake()
@@ -33,7 +34,15 @@ public class StoreManager : MonoBehaviour
     {
         storeLevel += 1;
         node.storeLevelIndicator.text += "*";
-        storePriceMultiplier += 0.2f;
+        //storePriceMultiplier += 0.2f;
+        storePriceMultiplier = 1 + storeBaseMult * storeLevel;
+    }
+
+    public void EnhanceStore()
+    {
+        // make the star color cool
+        storeBaseMult = 0.3f;
+        storePriceMultiplier = storeBaseMult * storeLevel;
     }
 
     public void BuyItem(EntityPiece buyer, ItemStats item, int index)
@@ -45,7 +54,7 @@ public class StoreManager : MonoBehaviour
         buyer.heldPoints -= finalItemPrice;
         buyer.ReputationPoints += 20 + (finalItemPrice / 10);
         buyer.inventory.Add(item);
-
+        playerOwner.CalculateStorestockTotal();
         // subtract value of item from buyer buyer.heldPoints
         // add value of item to playerOwner
         playerOwner.heldPoints += finalItemPrice;

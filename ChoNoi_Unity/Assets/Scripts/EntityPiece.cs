@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using static Febucci.UI.TextAnimatorSettings;
 
 public class EntityPiece : MonoBehaviour
 {
@@ -43,6 +44,7 @@ public class EntityPiece : MonoBehaviour
     [Header("Additional Info")]
     [Range(1, 10)] public int inventoryLimit = 8;
     [Range(0, 6)] public int storeCount = 0;
+    public int storestockTotal = 0;
 
     [Header("Overworld Info")]
     public int movementTotal;
@@ -80,6 +82,7 @@ public class EntityPiece : MonoBehaviour
     public DieConfig strDie => entityStats.dieConfigs[(int)EntityBaseStats.DieTypes.Strength];
     public DieConfig dexDie => entityStats.dieConfigs[(int)EntityBaseStats.DieTypes.Dex];
     public DieConfig intDie => entityStats.dieConfigs[(int)EntityBaseStats.DieTypes.Int];
+    public DieConfig spdDie => entityStats.dieConfigs[(int)EntityBaseStats.DieTypes.Speed];
 
     [Header("Combat Info")]
     //public int combatSceneIndex = -1; // -1 indicates player is not in battle
@@ -114,24 +117,29 @@ public class EntityPiece : MonoBehaviour
         }
     }
 
-    [Serializable, Inspectable]
-    public class ActiveEffect
-    {
-        public ItemStats originalItem;
-        public int turnsRemaining;
-    }
-
     public EntityStatsModifiers currentStatsModifier;
 
     public List<ItemStats> inventory = new();
     public List<int> lootOdds;
 
+    [Serializable, Inspectable]
+    public class ActiveEffect
+    {
+        public ItemStats originalItem;
+        public int turnsRemaining;
+        public bool isPermanent;
+    }
+
     [SerializeField]
     public List<ActiveEffect> activeEffects = new();
+
+    [Header("Blessing Category Count")]
+    public List<int> blessingCategoryCounter; // 0 = wealth, 1 = power, 2 = speed
 
     [Header("Broadcast On Event Channels")]
     public PlayerEventChannelSO m_RefreshedActiveEffects;
 
+    #region Item Active Effect Functions
     /// <summary>
     /// Add a specified item to this player's list of active stat modifier effects
     /// </summary>
@@ -152,7 +160,8 @@ public class EntityPiece : MonoBehaviour
             activeEffects.Add(new ActiveEffect
             {
                 originalItem = item,
-                turnsRemaining = duration
+                turnsRemaining = duration,
+                isPermanent = item.IsPermanent
             });
         }
     }
@@ -190,7 +199,7 @@ public class EntityPiece : MonoBehaviour
         {
             activeEffects[i].turnsRemaining--;
 
-            if (activeEffects[i].turnsRemaining < 0)
+            if ((activeEffects[i].turnsRemaining < 0) && !activeEffects[i].isPermanent)
             {
                 activeEffects.RemoveAt(i);
                 i--;
@@ -205,7 +214,7 @@ public class EntityPiece : MonoBehaviour
         {
             activeEffects[effectIndex].turnsRemaining--;
 
-            if (activeEffects[effectIndex].turnsRemaining < 0)
+            if (activeEffects[effectIndex].turnsRemaining < 0 && !activeEffects[effectIndex].isPermanent)
             {
                 activeEffects.RemoveAt(effectIndex);
             }
@@ -232,6 +241,7 @@ public class EntityPiece : MonoBehaviour
         activeEffects.RemoveAll(effect => effectsToRemove.Contains(effect));
         RefreshStatModifiers();
     }
+    #endregion
 
     // Start is called before the first frame update
     void Start()
@@ -250,7 +260,26 @@ public class EntityPiece : MonoBehaviour
         */
     }
 
-    public bool canLevelUp() {
+    public void CalculateStorestockTotal()
+    {
+        var finalItemPrice = 0;
+        storestockTotal = 0;
+
+        foreach (var store in ownedStores)
+        {
+            foreach(var item in store.storeInventory)
+            {
+                if (item == null) return; 
+
+                finalItemPrice = (int)(item.basePrice * store.storePriceMultiplier);
+                storestockTotal += finalItemPrice;
+            }
+        }
+
+        Debug.Log($"Calulcated Storestock Total = {storestockTotal}");
+    }
+
+    public bool CanLevelUp() {
         levelThreshold = ( RenownLevel * 100 ) * ( Mathf.Pow(1.15f, RenownLevel-1) );
         // 100, 230, 396, 608, 874... Every level costs around 30% more (should be tuned in testing).
         if (ReputationPoints >= levelThreshold) {

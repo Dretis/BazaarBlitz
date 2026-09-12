@@ -239,22 +239,22 @@ public class CombatManager : MonoBehaviour
         Action attack = attackerAction;
         Action defend = defenderAction;
 
-        float damageTypeMultiplier = 1f; // Attacker deals this much times more damage
+        //float damageTypeMultiplier = 1f; // Attacker deals this much times more damage
         if (attack.type == defend.type)
         {
-            damageTypeMultiplier = 1.5f; // Neutral
+            //damageTypeMultiplier = 1.5f; // Neutral
             damageTypeAdvantage = TypeAdvantage.Neutral;
         }
         else if ((attack.type == Action.WeaponTypes.Melee && defend.type == Action.WeaponTypes.Gun)
                || (attack.type == Action.WeaponTypes.Gun && defend.type == Action.WeaponTypes.Magic)
                || (attack.type == Action.WeaponTypes.Magic && defend.type == Action.WeaponTypes.Melee))
         {
-            damageTypeMultiplier = 1f; // Incorrect defense option
+            //damageTypeMultiplier = 1f; // Incorrect defense option
             damageTypeAdvantage = TypeAdvantage.Resist;
         }
         else
         {
-            damageTypeMultiplier = 2f; // Super effective
+            //damageTypeMultiplier = 2f; // Super effective
             damageTypeAdvantage = TypeAdvantage.Strong;
         }
 
@@ -268,6 +268,7 @@ public class CombatManager : MonoBehaviour
     }
     
     // This script begins the actual combat calculations up to the point of deciding the RNG values of both sides.
+    /*
     public void DiceRolls() {
 
         int rolledFaceAttack = Random.Range(0, 6); // Which dice index was selected
@@ -368,30 +369,30 @@ public class CombatManager : MonoBehaviour
         StartCoroutine(DiceRollAnimation(0.5f, damage, (int)defenseScore));
 
     }
-
+    */
     public void PlayOutPhase(int damage, int defenseScore) {
         Action attack = attackerAction;
         Action defend = defenderAction;
 
         float damageTypeMultiplier = 1f; // Attacker deals this much times more damage
-        if (attack.type == defend.type)
+        switch (damageTypeAdvantage)
         {
-            damageTypeMultiplier = 1.5f; // Neutral
-            damageTypeAdvantage = TypeAdvantage.Neutral;
+            case TypeAdvantage.Strong:
+                damageTypeMultiplier = 2f;
+                damageTypeMultiplier += attacker.currentStatsModifier.strongMultModifier -
+                                        defender.currentStatsModifier.resistMultModifier;
+                break;
+            case TypeAdvantage.Resist:
+                damageTypeMultiplier = 1f;
+                damageTypeMultiplier += attacker.currentStatsModifier.resistMultModifier -
+                                        defender.currentStatsModifier.strongMultModifier;
+                break;
+            default: // Neutral
+                damageTypeMultiplier = 1.5f;
+                damageTypeMultiplier += attacker.currentStatsModifier.neutralMultModifier -
+                                        defender.currentStatsModifier.neutralMultModifier;
+                break;
         }
-        else if ( (attack.type == Action.WeaponTypes.Melee && defend.type == Action.WeaponTypes.Gun)
-               || (attack.type == Action.WeaponTypes.Gun && defend.type == Action.WeaponTypes.Magic)
-               || (attack.type == Action.WeaponTypes.Magic && defend.type == Action.WeaponTypes.Melee) )
-        {
-            damageTypeMultiplier = 1f; // Incorrect defense option
-            damageTypeAdvantage = TypeAdvantage.Resist;
-        }
-        else
-        {
-            damageTypeMultiplier = 2f; // Super effective
-            damageTypeAdvantage = TypeAdvantage.Strong;
-        }
-
         damage = damage * 10 - (int)defender.currentStatsModifier.defenseModifier;
 
         if (damage < 0) { // negative defense mod debuff?   
@@ -399,7 +400,10 @@ public class CombatManager : MonoBehaviour
         }
 
         finalDamage = (int)(damage * (1 - (0.1f * defenseScore)) * damageTypeMultiplier);
-        
+
+        Debug.Log($"PlayOutPhase | Final Type Mult = x{damageTypeMultiplier}");
+        Debug.Log($"PlayOutPhase | Final Damage Calculation = [Base DMG: {damage}] x (1 - (0.1f x [DEF Roll: {defenseScore}])) x {damageTypeMultiplier}");
+        Debug.Log($"PlayOutPhase | Final Damage Dealt = {finalDamage}");
         // if something like cloth was used, it seperately reduces damage by a percent (ex 20 means 20% of damage is negated).
 
 
@@ -1008,7 +1012,8 @@ public class CombatManager : MonoBehaviour
 
             // Add defender's points to attacker's points 
             // Take points from the loser
-            float lostPoints = 0.5f * loser.heldPoints;
+            //float lostPoints = 0.5f * loser.heldPoints;
+            float lostPoints = loser.currentStatsModifier.deathLossRatio * loser.heldPoints;
             if(lostPoints > 0)
             {
                 winner.heldPoints += Mathf.FloorToInt(lostPoints);

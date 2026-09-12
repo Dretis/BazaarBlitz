@@ -21,11 +21,11 @@ public class ActiveEffectIndicatorHandler : MonoBehaviour
         Debug.Log($"{originalItem} | Duration Left: {duration}");
         if (duration < 0)
         {
-            Debug.Log("something went wrong, negative item duration");
-            durationLeft.text = "?";
+            //Debug.Log("something went wrong, negative item duration");
+            durationLeft.text = "";
         }
         else if (duration == 0)
-            durationLeft.text = "";
+            durationLeft.text = "-";
         else if (duration >= 100)
             durationLeft.text = "!!";
         else
