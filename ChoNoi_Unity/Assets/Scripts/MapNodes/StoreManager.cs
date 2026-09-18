@@ -30,12 +30,27 @@ public class StoreManager : MonoBehaviour
         // storeInventory = Enumerable.Repeat<ItemStats>(null, storeCapacity).ToList();
     }
 
+    public void SetStore(StoreManager s)
+    {
+        playerOwner = s.playerOwner;
+        storeLevel = s.storeLevel;
+
+        for (int i = 1; i < storeLevel; i++)
+        {
+            node.storeLevelIndicator.text += "*";
+        }
+
+        storeInventory = s.storeInventory;
+
+        storePriceMultiplier = 1 + storeBaseMult * (storeLevel - 1);
+    }
+
     public void LevelUpStore()
     {
         storeLevel += 1;
         node.storeLevelIndicator.text += "*";
         //storePriceMultiplier += 0.2f;
-        storePriceMultiplier = 1 + storeBaseMult * storeLevel;
+        storePriceMultiplier = 1 + storeBaseMult * (storeLevel - 1);
     }
 
     public void EnhanceStore()

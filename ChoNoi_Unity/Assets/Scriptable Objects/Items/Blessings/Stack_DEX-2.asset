@@ -10,37 +10,34 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fdd1368eedb123d4db8a885acb84d3a9, type: 3}
-  m_Name: Blessing_POWER 2
+  m_Name: Stack_DEX-2
   m_EditorClassIdentifier: 
-  itemName: Wrath
+  itemName: GUN DEF-2
   duration: -1
   isPermanent: 1
   showAsEffect: 1
+  canStack: 1
   usableInCombat: 1
-  type: 1
-  category: 1
-  itemSprite: {fileID: 851462705, guid: ff53bdc6d0cd8f14397b116f3a6398d6, type: 3}
-  effectDescription: 'In combat, boost your <color=orange>Advantage</color> effectiveness
-    by 40%.
-
-
-    Reduce your <color=#FF96A6>Neutral</color> and <color=grey>Disadvantage</color>
-    effectiveness by 20%.'
-  flavorText: '"kill them all"'
+  clearAfterCombat: 1
+  type: 5
+  category: 3
+  itemSprite: {fileID: -5650371, guid: cb512c0c6c3fdde499fdd890e21c38ed, type: 3}
+  effectDescription: help me
+  flavorText: '"AHHHHHHHHHH"'
   l_itemName:
     m_TableReference:
-      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+      m_TableCollectionName: GUID:c5a5d24bd5dd6a1459756bb15eaa5fc3
     m_TableEntryReference:
-      m_KeyId: 87807184660746240
+      m_KeyId: 1651082416128
       m_Key: 
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
   l_effect:
     m_TableReference:
-      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+      m_TableCollectionName: GUID:c5a5d24bd5dd6a1459756bb15eaa5fc3
     m_TableEntryReference:
-      m_KeyId: 87807222673723392
+      m_KeyId: 3088281653248
       m_Key: 
     m_FallbackState: 0
     m_WaitForCompletion: 0
@@ -54,9 +51,9 @@ MonoBehaviour:
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
-  basePrice: -444
+  basePrice: -1
   modifiers:
-  - {fileID: 11400000, guid: 5b594193ba67910469cd9a883f0a33b4, type: 2}
+  - {fileID: 11400000, guid: 6a18856dc9a3a7047a0590fd5ce51310, type: 2}
   references:
     version: 2
     RefIds: []

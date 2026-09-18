@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using LitMotion;
+using LitMotion.Extensions;
 using static GameplayTest;
+using UnityEngine.UI;
 
-public class UIRestockSelectorManager : MonoBehaviour
+public class UIRenovateSelectorManager : MonoBehaviour
 {
     public enum RenovateSelectorPhase
     {
@@ -15,6 +18,7 @@ public class UIRestockSelectorManager : MonoBehaviour
     }
     private EntityPiece promptedPlayer;
     private MapNode selectedNode;
+    private StoreManager selectedStore;
     private int selectedStorestock;
 
     [SerializeField] private RenovateSelectorPhase renovatePhase;
@@ -39,11 +43,13 @@ public class UIRestockSelectorManager : MonoBehaviour
     [Header("Broadcast on Event Channel")]
     public PlayerEventChannelSO m_TryRestockStore; // also listening
     public VoidEventChannelSO m_CancelRestockStore; // also listening
+    public NodeEventChannelSO m_UpgradeStore;
+    public NodeEventChannelSO m_TryRelocateStore;
 
     [Header("Listen on Event Channel")]
     public PlayerEventChannelSO m_AskRenovateStore; // originally to m_AskRestockStore
     public NodeEventChannelSO m_RestockStore;
-    public NodeEventChannelSO m_UpgradeStore;
+    //public NodeEventChannelSO m_UpgradeStore;
 
     public NodeEventChannelSO m_PromptRenovateOptions;
     public VoidEventChannelSO m_BackRenovateStore;
@@ -87,7 +93,7 @@ public class UIRestockSelectorManager : MonoBehaviour
         renovatePhase = RenovateSelectorPhase.OwnedStoreboats;
 
         DeactivateAskGroup();
-        m_TryRestockStore.RaiseEvent(promptedPlayer);
+        m_TryRestockStore.RaiseEvent(promptedPlayer); // this shows baots
         //m_RestockStore.RaiseEvent(currentPlayer.occupiedNode);
     }
 
@@ -99,43 +105,80 @@ public class UIRestockSelectorManager : MonoBehaviour
 
     public void ConfirmRestockButton()
     {
-        if (selectedStorestock < 3)
+        if (selectedStorestock < 3
+            && promptedPlayer.inventory.Count != 0)
         {
             DeactivateAskGroup();
             DeactivateSelectorContainer();
             m_RestockStore.RaiseEvent(selectedNode);
         }
+        else
+        {
+            ShakeAskGroup();
+        }
     }
 
     public void ConfirmUpgradeButton()
     {
-        if (promptedPlayer.heldPoints >= 150)
+        if (promptedPlayer.heldPoints >= 150 &&
+            promptedPlayer.RenownLevel >= selectedStore.storeLevel)
         {
             DeactivateAskGroup();
             DeactivateSelectorContainer();
             m_UpgradeStore.RaiseEvent(selectedNode);
         }
+        else
+        {
+            ShakeAskGroup();
+        }
+    }
+
+    public void ConfirmRelocateButton()
+    {
+        if (promptedPlayer.currentStatsModifier.canUseRelocate
+            && promptedPlayer.heldPoints >= 100)
+        {
+            DeactivateAskGroup();
+            DeactivateSelectorContainer();
+            //m_UpgradeStore.RaiseEvent(selectedNode);
+            m_TryRelocateStore.RaiseEvent(selectedNode);
+        }
+        else
+        {
+            ShakeAskGroup();
+        }
     }
 
     public void HoverRestockButton()
     {
-        renovateAskText.text = "Supply additional items from your inventory.";
-
-        if(selectedStorestock >= 3)
+        if (selectedStorestock >= 3)
         {
+            renovateAskText.text = "<color=grey>Supply additional items from your inventory.";
             renovateAskText.text += "\n<size=24><color=red>[!] Unable to stock, store is full.";
         }
+        else if(promptedPlayer.inventory.Count == 0)
+        {
+            renovateAskText.text = "<color=grey>Supply additional items from your inventory.";
+            renovateAskText.text += "\n<size=24><color=red>[!] Cannot stock due to lack of inventory items.";
+        }
+        else
+            renovateAskText.text = "Supply additional items from your inventory.";
     }
 
     public void HoverUpgradeButton()
     {
-        if (promptedPlayer.heldPoints < 150)
+        if (promptedPlayer.RenownLevel < selectedStore.storeLevel)
         {
-            renovateAskText.text = "Increase this storefront prices by 20% for <color=red>150</color><sprite=\"Coin Icon\" index=0>.";
+            renovateAskText.text = "<color=grey>Increase this storefront prices by 20% for 150<sprite=\"Coin Icon\" index=0 tint=1>.";
+            renovateAskText.text += "\n<size=24><color=red>[!] Cannot exceed stars past your Level + 1.";
+        }
+        else if (promptedPlayer.heldPoints >= 150)
+        {
+            renovateAskText.text = "Increase this storefront prices by 20% for <color=yellow>150</color><sprite=\"Coin Icon\" index=0>.";
         }
         else
         {
-            renovateAskText.text = "Increase this storefront prices by 20% for <color=yellow>150</color><sprite=\"Coin Icon\" index=0>.";
+            renovateAskText.text = "Increase this storefront prices by 20% for <color=red>150</color><sprite=\"Coin Icon\" index=0>.";
             //renovateAskText.text = "Spend <color=yellow>150</color><sprite=\"Coin Icon\" index=0> to increase prices by 20% for this storefront.";
         }
         /*
@@ -145,6 +188,27 @@ public class UIRestockSelectorManager : MonoBehaviour
             renovateAskText.text += "\n<size=24><color=red>[!] Unable to upgrade, lack of <sprite=\"Coin Icon\" index=0>.";
         }
         */
+    }
+
+    public void HoverRelocateButton()
+    {
+        if (!promptedPlayer.currentStatsModifier.canUseRelocate) 
+        {
+            renovateAskText.text = "<color=grey>Move this storefront to an Open Space for 100<sprite=\"Coin Icon\" index=0 tint=1>.";
+        } 
+        else if(promptedPlayer.heldPoints < 100)
+        {
+            renovateAskText.text = "Move this storefront to an Open Space for <color=red>100</color><sprite=\"Coin Icon\" index=0>.";
+        }
+        else
+        {
+            renovateAskText.text = "Move this storefront to an Open Space for <color=yellow>100</color><sprite=\"Coin Icon\" index=0>.";
+        }
+
+        if (!promptedPlayer.currentStatsModifier.canUseRelocate)
+        {
+            renovateAskText.text += "\n<size=24><color=red>[!] Requires the Blessing of Luxury.";
+        }
     }
     #endregion Button Functions
 
@@ -160,6 +224,14 @@ public class UIRestockSelectorManager : MonoBehaviour
         restockAskGroup.alpha = 1.0f;
         restockAskGroup.interactable = true;
         restockAskGroup.blocksRaycasts = true;
+    }
+    private void ShakeAskGroup()
+    {
+        var rect = restockAskGroup.GetComponent<RectTransform>();
+
+        LMotion.Shake.Create(0f, 10f, .5f)
+                .WithFrequency(5)
+                .BindToAnchoredPositionX(rect);
     }
 
     private void OnAskRenovateStore(EntityPiece entity)
@@ -218,19 +290,44 @@ public class UIRestockSelectorManager : MonoBehaviour
         renovateOptionsButtonContainer.interactable = true;
 
         selectedNode = node;
-        var selectedStore = node.GetComponent<StoreManager>();
+        selectedStore = node.GetComponent<StoreManager>();
         selectedStorestock = 0;
         foreach (ItemStats item in selectedStore.storeInventory)
         {
             if (item != null) selectedStorestock++;
         }
         // Show prompt to Restock or Renovate!
-        if (selectedStorestock >= 3)
+        var restockOptionImage = renovateOptionsButtonHolders[0].GetComponent<Image>();
+        var upgradeOptionImage = renovateOptionsButtonHolders[1].GetComponent<Image>();
+        var relocateOptionImage = renovateOptionsButtonHolders[2].GetComponent<Image>();
+        if (selectedStorestock < 3 && promptedPlayer.inventory.Count != 0)
         {
-            // Grey out restock option
-            Debug.Log("you can't restock a full store!!");
-
+            restockOptionImage.color = Color.white;
         }
+        else
+        {
+            restockOptionImage.color = Color.grey;
+        }
+
+        if(promptedPlayer.heldPoints >= 150
+            && promptedPlayer.RenownLevel >= selectedStore.storeLevel)
+        {
+            upgradeOptionImage.color = Color.white;
+        }
+        else
+        {
+            upgradeOptionImage.color = Color.grey;
+        }
+
+        if (promptedPlayer.currentStatsModifier.canUseRelocate)
+        {
+            relocateOptionImage.color = Color.white;
+        }
+        else
+        {
+            relocateOptionImage.color = Color.grey;
+        }
+
 
         EventSystem.current.SetSelectedGameObject(renovateOptionsButtonHolders[0]);
     }

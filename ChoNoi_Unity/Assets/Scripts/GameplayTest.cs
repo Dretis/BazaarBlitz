@@ -118,14 +118,14 @@ public class GameplayTest : MonoBehaviour
     public TextMeshProUGUI turnText;
 
     public GameObject encounterScreen;
-    public TextMeshProUGUI p1fight;
-    public TextMeshProUGUI p2fight;
-    public TextMeshProUGUI resultInfo;
+    //public TextMeshProUGUI p1fight;
+    //public TextMeshProUGUI p2fight;
+    //public TextMeshProUGUI resultInfo;
     //public bool encounterOver = false;
 
-    public GameObject storeScreen;
-    public TextMeshProUGUI storeListings;
-    public TextMeshProUGUI storeListingsLabel;
+    //public GameObject storeScreen;
+    //public TextMeshProUGUI storeListings;
+    //public TextMeshProUGUI storeListingsLabel;
 
     public MapNode wantedNode;
     private SceneGameManager sceneManager;
@@ -140,14 +140,6 @@ public class GameplayTest : MonoBehaviour
 
     // ui stuff for levelup;
     private int currentPlayerInitialHealth = 0; // for pawn shop healing
-
-    //ui to remove for levelup - Nam
-    //public Canvas levelUpScreen;
-    //public TextMeshProUGUI remainingSP;
-    //public TextMeshProUGUI upgradeTooltip;
-    //public GameObject diceStats;
-    //public List<DiceStatSelectionHandler> playerDiceNumbers = new List<DiceStatSelectionHandler>();
-    //public TextMeshProUGUI storestockTooltip;
     public int[] costArray = { 0, 1, 1, 2, 2, 2, 3, 3, 3, 4, 5, 999 };
 
     public Canvas howToPlayScreen;
@@ -238,6 +230,7 @@ public class GameplayTest : MonoBehaviour
     [Header("Listen on Event Channels")]
     public PlayerEventChannelSO m_TryDiceRollPrep;
     public VoidEventChannelSO m_DiceRolled;
+    public IntEventChannelSO m_ChangeToMoveDie;
 
     [Header("LS - Item Usage Events")]
     public IntItemEventChannelSO m_TryUseItemAt;
@@ -254,6 +247,7 @@ public class GameplayTest : MonoBehaviour
     public PlayerEventChannelSO m_BuildStore; //Listening to this one
     public NodeEventChannelSO m_RestockStore;
     public NodeEventChannelSO m_UpgradeStore;
+    public NodeEventChannelSO m_TryRelocateStore;
     public PlayerEventChannelSO m_FinishStockingStore;
 
     public VoidEventChannelSO m_ExitRaycastedTile; //Listening to this one
@@ -320,8 +314,11 @@ public class GameplayTest : MonoBehaviour
         //m_ExitRaycastedTile.OnEventRaised += OnDisableFreeview;
 
         m_BuildStore.OnEventRaised += BuildStore;
+
         m_RestockStore.OnEventRaised += OnRestockStore;
         m_UpgradeStore.OnEventRaised += OnUpgradeStore;
+        m_TryRelocateStore.OnEventRaised += OnTryRelocateStore;
+
         m_FinishStockingStore.OnEventRaised += AddRecentStockIntoStore;
         m_ItemStocked.OnEventRaised += TrackItemFromPlayerInventory;
 
@@ -367,6 +364,8 @@ public class GameplayTest : MonoBehaviour
         m_BuildStore.OnEventRaised -= BuildStore;
         m_RestockStore.OnEventRaised -= OnRestockStore;
         m_UpgradeStore.OnEventRaised -= OnUpgradeStore;
+        m_TryRelocateStore.OnEventRaised -= OnTryRelocateStore;
+
         m_FinishStockingStore.OnEventRaised -= AddRecentStockIntoStore;
         m_ItemStocked.OnEventRaised -= TrackItemFromPlayerInventory;
 
@@ -692,6 +691,11 @@ public class GameplayTest : MonoBehaviour
 
             currentPlayer.movementTotal = currentPlayer.movementLeft = speedRollValue;
 
+            if (p.currentStatsModifier.redirectOnSpeedDie)
+            {
+                p.previousNode = null;
+            }
+
             m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
             m_RollForMovement.RaiseEvent(speedRollValue);
             m_PlayerMovedOnBoard.RaiseEvent(); // idk why this has to be a seperate event
@@ -803,8 +807,11 @@ public class GameplayTest : MonoBehaviour
         }
         else if (wantedNode != null) // Go to that new node and occupy it
         {
-            if (wantedNode.modifier == MapNode.Modifier.Rafflesia) {
+            if (wantedNode.modifier == MapNode.Modifier.Rafflesia) 
+            {
                 wantedNode.modifier = MapNode.Modifier.None;
+
+                TryCalculateTempoBuff(p);
                 p.movementLeft = 0;
 
                 rollTypewriter.ShowText("");
@@ -997,6 +1004,7 @@ public class GameplayTest : MonoBehaviour
         // Player has not started combat
         else
         {
+            TryCalculateTempoBuff(p);
             //var otherPlayer = p.occupiedNode.playerOccupied;
 
             playersOnCurrentNode = m.playersOccupied;
@@ -1084,6 +1092,17 @@ public class GameplayTest : MonoBehaviour
                 p.occupiedNodeCopy = p.occupiedNode;
                 p.traveledNodes.Clear();
                 p.traveledNodes.Add(p.occupiedNode);
+
+                if (p.currentStatsModifier.canUseSpeedDie && p.health <= 25)
+                {
+                    // swap to the other die not being shown
+                    // temp
+                    if (usingSpeedDieToMove)
+                    {
+                        usingSpeedDieToMove = false;
+                        m_ChangeToMoveDie.RaiseEvent(0);
+                    }
+                }
 
                 m_DiceRollPrep.RaiseEvent(p);
             }
@@ -1428,7 +1447,7 @@ public class GameplayTest : MonoBehaviour
         phase = GamePhase.EndTurn;
         //encounterOver = false;
         encounterScreen.SetActive(false);
-        storeScreen.SetActive(false);
+        //storeScreen.SetActive(false);
         //m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
         m_ExitStorefront.RaiseEvent();
     }
@@ -1927,18 +1946,26 @@ public class GameplayTest : MonoBehaviour
         p.storeCount++;
         //p.heldPoints -= 200;
 
-        m_UpdatePlayerScore.RaiseEvent(p.id);
-        // Raise an eventchannel for BuildAStore to replace the code in here, replace ALOT OF THE CODE EHRE PLEASE
-        Debug.Log("I am a store");
+        ShowStore(p, p.occupiedNode); 
+
         GameObject tileObject = p.occupiedNode.gameObject;
-        tileObject.tag = "Store";
-
-        tileObject.GetComponent<SpriteRenderer>().color = p.playerColor;
-        var node = tileObject.GetComponent<MapNode>();
-
         StoreManager store = tileObject.AddComponent<StoreManager>();
         store.playerOwner = p;
+        p.ownedStores.Add(store);
 
+        StartCoroutine(DelayRestockStore(p, 1f));
+        //m_RestockStore.RaiseEvent(p.occupiedNode);
+    }
+
+    private void ShowStore(EntityPiece p, MapNode m)
+    {
+        Debug.Log("I am a store");
+        GameObject tileObject = m.gameObject;
+        tileObject.tag = "Store";
+
+        //tileObject.GetComponent<SpriteRenderer>().color = p.playerColor;
+        var node = tileObject.GetComponent<MapNode>();
+        node.GetComponent<SpriteRenderer>().color = p.playerColor;
         //Show store boat now
         node.storefrontVisual.enabled = true;
         node.storefrontVisual.GetComponent<SpriteRenderer>().color = p.playerColor;
@@ -1946,12 +1973,27 @@ public class GameplayTest : MonoBehaviour
         node.stockGroup.alpha = 1;
         node.stockGroup.GetComponent<Image>().color = p.playerColor;
         node.stockGroup.GetComponent<Image>().color -= new Color(0, 0, 0, .25f);
-        p.ownedStores.Add(store);
+    }
 
-        //isStockingStore = true;
+    private void RemoveStore(MapNode m)
+    {
+        Debug.Log("I no longer a store");
+        GameObject tileObject = m.gameObject;
+        tileObject.tag = "Encounter";
 
-        StartCoroutine(DelayRestockStore(p, 1f));
-        //m_RestockStore.RaiseEvent(p.occupiedNode);
+        tileObject.GetComponent<SpriteRenderer>().color = Color.white;
+        var node = tileObject.GetComponent<MapNode>();
+
+        //Show store boat now
+        node.storefrontVisual.enabled = false;
+        node.storefrontVisual.GetComponent<SpriteRenderer>().color = Color.white;
+
+        node.stockGroup.alpha = 0;
+        node.stockGroup.GetComponent<Image>().color = Color.white;
+        node.stockGroup.GetComponent<Image>().color -= new Color(0, 0, 0, .25f);
+
+        var store = node.GetComponent<StoreManager>();
+        Destroy(store);
     }
 
     private IEnumerator DelayRestockStore(EntityPiece p, float delay)
@@ -1991,6 +2033,20 @@ public class GameplayTest : MonoBehaviour
         expectedPhase = GamePhase.EndTurn;
 
         node.pd_nUpgradeStore.Play();
+    }
+    
+    public void OnTryRelocateStore(MapNode node)
+    {
+        //var store = node.GetComponent<StoreManager>();
+        currentRestockNode = node;
+        currentPlayer.currentStatsModifier.warpMode = EntityStatsModifiers.WarpMode.OpenSpaces;
+
+        m_EnableFreeview.RaiseEvent();
+        m_EnterRaycastTargetSelection.RaiseEvent();
+
+        //phase = GamePhase.EndTurn;
+        phase = GamePhase.RaycastTargetSelection;
+        expectedPhase = GamePhase.EndTurn;
     }
 
     public void TrackItemFromPlayerInventory(int index, ItemStats itemStats)
@@ -2148,6 +2204,45 @@ public class GameplayTest : MonoBehaviour
 
     public void OnSelectRaycastTarget()
     {
+        StoreManager store = null;
+        if (RaycastTiles.tileSelected.TryGetComponent<StoreManager>(out StoreManager s))
+        {
+            Debug.Log($"There is a store at {RaycastTiles.tileSelected}. Owned by { s.playerOwner}");
+            store = s;
+        }
+
+        switch (currentPlayer.currentStatsModifier.warpMode)
+        {
+            case EntityStatsModifiers.WarpMode.Tiles:
+                if (RaycastTiles.tileSelected != null)
+                    WarpConfirmed(currentPlayer);
+                break;
+            case EntityStatsModifiers.WarpMode.Players:
+                if (RaycastTiles.tileSelected.playersOccupied.Count != 0)
+                    WarpConfirmed(currentPlayer);
+                break;
+            case EntityStatsModifiers.WarpMode.Marigold:
+                if (RaycastTiles.tileSelected.GetComponent<StoreManager>() && 
+                    RaycastTiles.tileSelected.modifier == MapNode.Modifier.None)
+                {
+                    PlantConfirmed(currentPlayer, MapNode.Modifier.Marigold);
+                }
+                break;
+            case EntityStatsModifiers.WarpMode.Rafflesia:
+                if (RaycastTiles.tileSelected.modifier == MapNode.Modifier.None)
+                {
+                    PlantConfirmed(currentPlayer, MapNode.Modifier.Rafflesia);
+                }
+                break;
+            case EntityStatsModifiers.WarpMode.OpenSpaces:
+                if (RaycastTiles.tileSelected.tag == "Encounter")
+                {
+                    RelocateStoreConfirmed(currentPlayer, RaycastTiles.tileSelected);
+                }
+                break;
+
+        }
+        /*
         if (currentPlayer.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Tiles)
         {
             if (RaycastTiles.tileSelected != null)
@@ -2160,17 +2255,10 @@ public class GameplayTest : MonoBehaviour
         }
         else if (currentPlayer.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Marigold)
         {
-            if (RaycastTiles.tileSelected.CompareTag("Store") && RaycastTiles.tileSelected.modifier == MapNode.Modifier.None)
+            if (RaycastTiles.tileSelected.modifier == MapNode.Modifier.None)
             {
-                PlantConfirmed(currentPlayer, MapNode.Modifier.Marigold);
+                PlantConfirmed(currentPlayer, MapNode.Modifier.Rafflesia);
             }
-            /*
-            else
-            {
-                m_ExitRaycastTargetSelection.RaiseEvent(); // prevents getting stuck, but we should probably add a warning
-                phase = GamePhase.InitialTurnMenu;
-            }
-            */
         }
         else if (currentPlayer.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Rafflesia)
         {
@@ -2179,6 +2267,7 @@ public class GameplayTest : MonoBehaviour
                 PlantConfirmed(currentPlayer, MapNode.Modifier.Rafflesia);
             }
         }
+        */
     }
 
     private void WarpConfirmed(EntityPiece p)
@@ -2201,6 +2290,32 @@ public class GameplayTest : MonoBehaviour
 
         m_DisableFreeview.RaiseEvent();
         phase = GamePhase.InitialTurnMenu;
+    }
+
+    private void RelocateStoreConfirmed(EntityPiece p, MapNode node2)
+    {
+        p.heldPoints -= 100;
+        //currentRestockNode
+        // Copy the store manager over to the new selected node
+        var originalStore = currentRestockNode.GetComponent<StoreManager>();
+        var newStoreLocation = node2;
+
+        var newStore = node2.gameObject.AddComponent<StoreManager>();
+        newStore.SetStore(originalStore);
+
+        p.ownedStores.Remove(originalStore);
+        p.ownedStores.Add(newStore);
+
+        //currentRestockNode.gameObject.tag = "Encounter";
+        RemoveStore(currentRestockNode);
+        ShowStore(p, node2);
+        UpdateStorefrontVisual(node2);
+        //node2.GetComponent<SpriteRenderer>().color = p.playerColor;
+
+        m_ExitRaycastTargetSelection.RaiseEvent();
+        m_DisableFreeview.RaiseEvent();
+        // put cutscene  event raise event here??
+        phase = expectedPhase;
     }
 
     private void PlantItemOnSpaceSelection(EntityPiece p, MapNode.Modifier modifier)
@@ -2284,6 +2399,48 @@ public class GameplayTest : MonoBehaviour
                 m_UpdatePlayerScore.RaiseEvent(player.id);
             }
         }
+    }
+
+    private void TryCalculateTempoBuff(EntityPiece p)
+    {
+        if (p.currentStatsModifier.movementTempoScale == 0) return;
+
+        var tempoFormula = p.currentStatsModifier.movementTempoScale * (int)((p.movementTotal - p.movementLeft) / 2);
+
+        if (tempoFormula == 0) return;
+
+        Debug.Log($"TryCalculateTempoBuff | ATK Buff = {(int)((p.movementTotal - p.movementLeft) / p.currentStatsModifier.movementTempoScale)}");
+        var tempoTempItem = ScriptableObject.CreateInstance<ItemStats>();
+
+        tempoTempItem.name = "TempoItem";
+        tempoTempItem.showAsEffect = false;
+        tempoTempItem.modifiers = new List<StatModifierChangerSO>();
+        //tempoTempItem.canStack = false;
+
+        var tempoAtkBuff = ScriptableObject.CreateInstance<AllDiesFinalValueMod>();
+        //tempoAtkBuff.flatAtkModifier = (int)((p.movementTotal - p.movementLeft) / p.currentStatsModifier.movementTempoScale);
+        tempoAtkBuff.flatAtkModifier = tempoFormula;
+        tempoAtkBuff.multModifier = 1;
+        tempoAtkBuff.activateEffectStartTurn = 1;
+        tempoAtkBuff.activateEffectEndTurn = 1;
+        tempoTempItem.name = $"TempoAtkBuff +{tempoAtkBuff.flatAtkModifier}";
+
+        //Debug.Log($"tempoAtkBuff | {tempoAtkBuff} ");
+        //Debug.Log($"flatAtkModifier | {tempoAtkBuff.flatAtkModifier} ");
+        //Debug.Log($"activateEffectStartTurn | {tempoAtkBuff.activateEffectStartTurn} ");
+        //Debug.Log($"activateEffectEndTurn | {tempoAtkBuff.activateEffectEndTurn} ");
+
+        tempoTempItem.modifiers.Add(tempoAtkBuff);
+
+        currentPlayer.AddItemToActiveEffects(tempoTempItem.Duration, tempoTempItem);
+
+        currentPlayer.UpdateStatModifier(new EntityPiece.ActiveEffect
+        {
+            originalItem = tempoTempItem,
+            turnsRemaining = 1,
+            isPermanent = false,
+            clearAfterCombat = false
+        });
     }
 
     // Old Level up stuff

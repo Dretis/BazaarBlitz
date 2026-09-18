@@ -329,9 +329,14 @@ public class UIPromptManager : MonoBehaviour
     private void DisplayRollPrompt(EntityPiece ps)
     {
         // This will get swapped out with a menu selection
-        inputPrompt.text = "<sprite name=down><color=white></color> Roll Dice";
-        inputPrompt.text += "\n<sprite name=right><color=white></color> Back";
-
+        var rollPrompt = "";
+        if (ps.currentStatsModifier.canUseSpeedDie && ps.health > 25)
+        {
+            rollPrompt += "<sprite name=up><color=white></color> Swap Die\n";
+        }
+        rollPrompt += "<sprite name=down><color=white></color> Roll Die";
+        rollPrompt += "\n<sprite name=right><color=white></color> Back";
+        inputPrompt.text = rollPrompt;
         //rollTypewriter.ShowText("<size=84><bounce a=.3>Rolling...</>");
         //LMotion.Punch.Create(0, 25, 0.5f)
         //    .WithDampingRatio(0f)
@@ -683,7 +688,7 @@ public class UIPromptManager : MonoBehaviour
 
     private void OnExitLevelUp()
     {
-        DisplayRollPrompt(null);
+        DisplayRollPrompt(currentPlayer);
         m_DiceRollPrep.RaiseEvent(currentPlayer);
     }
 

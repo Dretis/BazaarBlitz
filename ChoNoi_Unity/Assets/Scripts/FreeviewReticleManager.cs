@@ -76,6 +76,11 @@ public class FreeviewReticleManager : MonoBehaviour
                 {
                     reticle.color = targetedColor;
                 }
+                else if (wm == EntityStatsModifiers.WarpMode.OpenSpaces // Relocate Store
+                    && node.CompareTag("Encounter"))
+                {
+                    reticle.color = targetedColor;
+                }
                 else 
                     reticle.color = invalidTargetColor;
             }

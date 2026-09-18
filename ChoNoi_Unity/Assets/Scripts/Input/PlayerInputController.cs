@@ -82,6 +82,7 @@ public class PlayerInputController : MonoBehaviour
     public VoidEventChannelSO m_CancelBuildStore;
     public PlayerEventChannelSO m_AskRestockStore;
     public PlayerEventChannelSO m_TryRestockStore;
+    public NodeEventChannelSO m_TryRelocateStore;
 
     public NodeEventChannelSO m_LandOnStorefront;
     public VoidEventChannelSO m_ExitStorefront;
@@ -140,6 +141,7 @@ public class PlayerInputController : MonoBehaviour
 
         m_AskRestockStore.OnEventRaised += OnAskRestockStore;
         m_TryRestockStore.OnEventRaised += OnTryRestockStore;
+        m_TryRelocateStore.OnEventRaised += OnTryRelocateStore;
 
         //m_BackRenovateStore.OnEventRaised += OnCancelRestockStore;
         m_RestockStore.OnEventRaised += OnRestockStore;
@@ -190,6 +192,7 @@ public class PlayerInputController : MonoBehaviour
 
         m_AskRestockStore.OnEventRaised -= OnAskRestockStore;
         m_TryRestockStore.OnEventRaised -= OnTryRestockStore;
+        m_TryRelocateStore.OnEventRaised -= OnTryRelocateStore;
 
         //m_BackRenovateStore.OnEventRaised -= OnCancelRestockStore;
         m_RestockStore.OnEventRaised -= OnRestockStore;
@@ -419,6 +422,11 @@ public class PlayerInputController : MonoBehaviour
     private void OnFreeviewExit()
     {
         //SwitchActionMap(previousGamePhase);
+        if (previousGamePhase == GamePhase.PreStockStore)
+        {
+            m_BackRenovateStore.RaiseEvent();
+        }
+
         m_DisableFreeview.RaiseEvent();
         //SwitchActionMap(GamePhase.InitialTurnMenu); // Should be whatever the one it was before
     }
@@ -757,6 +765,8 @@ public class PlayerInputController : MonoBehaviour
     {
         if (!playerInput.inputIsActive) return;
         //freeviewReticle.SetActive(false);
+
+        Debug.Log($"Freeview Disabled | previous phase = {previousGamePhase}");
         SwitchActionMap(previousGamePhase); // Should be whatever the one it was before
     }
 
@@ -792,6 +802,12 @@ public class PlayerInputController : MonoBehaviour
     private void OnTryRestockStore(EntityPiece ps)
     {
         previousGamePhase = GamePhase.PreStockStore;
+    }
+
+    private void OnTryRelocateStore(MapNode storeNode1)
+    {
+        previousGamePhase = GamePhase.PreStockStore;
+        //m_EnableFreeview.RaiseEvent();
     }
 
     private void OnCancelRestockStore()

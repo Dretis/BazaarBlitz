@@ -576,11 +576,11 @@ public class UICombatOverlayManager : MonoBehaviour
     {
         var activeEffects = entity.activeEffects;
 
-        //DestroyAllActiveEffects();
+        DestroyAllActiveEffects(gridContainer);
 
         //Debug.Log("spawning");
 
-        //heldItemHolders.Clear();
+        //heldItemHolders.Clear(gridContainer);
         var activeEffectsParentTransform = gridContainer.transform;
 
         foreach (var effect in activeEffects)
@@ -590,6 +590,18 @@ public class UICombatOverlayManager : MonoBehaviour
                 var indicator = Instantiate(effectIndicatorPrefab, gridContainer);
                 indicator.GetComponent<ActiveEffectIndicatorHandler>().UpdateEffectInfo(effect);
             }
+        }
+    }
+    private void DestroyAllActiveEffects(RectTransform gridContainer)
+    {
+        // Gets rid of all the held item containers in the inventory UI
+
+        //var inventoryParentTransform = inventoryGridContainer.transform;
+        var activeEffectsParentTransform = gridContainer.transform;
+
+        for (int i = activeEffectsParentTransform.childCount - 1; i >= 0; i--)
+        {
+            Destroy(activeEffectsParentTransform.GetChild(i).gameObject);
         }
     }
 
@@ -603,14 +615,17 @@ public class UICombatOverlayManager : MonoBehaviour
         //Debug.Log($"{entity} is {attacking} | Attacker: {CombatManager.Instance.attacker}");
 
         // Get all the die mods for this player
-        var strDieFlatMod = entity.currentStatsModifier.dieModifiers[0].finalResultFlatModifier;
+        var strDieAtkFlatMod = entity.currentStatsModifier.dieModifiers[0].finalResultAtkFlatModifier;
+        var strDieDefFlatMod = entity.currentStatsModifier.dieModifiers[0].finalResultDefFlatModifier;
         var strDieMultMod = entity.currentStatsModifier.dieModifiers[0].finalResultMultModifier;
 
 
-        var dexDieFlatMod = entity.currentStatsModifier.dieModifiers[1].finalResultFlatModifier;
+        var dexDieAtkFlatMod = entity.currentStatsModifier.dieModifiers[1].finalResultAtkFlatModifier;
+        var dexDieDefFlatMod = entity.currentStatsModifier.dieModifiers[1].finalResultDefFlatModifier;
         var dexDieMultMod = entity.currentStatsModifier.dieModifiers[1].finalResultMultModifier;
 
-        var intDieFlatMod = entity.currentStatsModifier.dieModifiers[2].finalResultFlatModifier;
+        var intDieAtkFlatMod = entity.currentStatsModifier.dieModifiers[2].finalResultAtkFlatModifier;
+        var intDieDefFlatMod = entity.currentStatsModifier.dieModifiers[2].finalResultDefFlatModifier;
         var intDieMultMod = entity.currentStatsModifier.dieModifiers[2].finalResultMultModifier;
 
 
@@ -630,34 +645,30 @@ public class UICombatOverlayManager : MonoBehaviour
         // the following code is ABSOLUTELY DISGUSTING
         var faceIndex = 0;
         var dieNumber = -1;
+        var baseDieNumber = -1;
         //string sizeChange = "";
         //float diceScaleMult = 1;
 
         for (int i = 0; i < 6; i++)
         {
+            baseDieNumber = entity.strDie[faceIndex];
 
             if (attacking)
             {
-                if (strDieFlatMod == 0 && strDieMultMod == 1) diceNumbers[i].colorGradientPreset = actionTypeGradients[0];
-                else diceNumbers[i].colorGradientPreset = actionTypeGradients[3];
+                //if (strDieAtkFlatMod == 0 && strDieMultMod == 1) diceNumbers[i].colorGradientPreset = actionTypeGradients[0];
+                //else diceNumbers[i].colorGradientPreset = actionTypeGradients[3];
 
-                dieNumber = (int)((entity.strDie[faceIndex] * strDieMultMod) + strDieFlatMod);
-
-                //sizeChange = GetDiceNumberSize(dieNumber);
+                dieNumber = (int)((entity.strDie[faceIndex] * strDieMultMod) + strDieAtkFlatMod);
             }
             else
             {
-                dieNumber = entity.strDie[faceIndex];
-
-                diceNumbers[i].colorGradientPreset = actionTypeGradients[0];
+                //dieNumber = entity.strDie[faceIndex];
+                dieNumber = (int)((entity.strDie[faceIndex]) + strDieDefFlatMod);
             }
 
-            //sizeChange = GetDiceNumberSize(dieNumber);
-            //diceScaleMult = GetDiceNumberScale(dieNumber);
-            //diceScale[i].transform.localScale = Vector3.one * diceScaleMult;
-
+            SetDiceNumberColorGradient(Action.WeaponTypes.Melee, diceNumbers[i], baseDieNumber, dieNumber);
             diceNumbers[i].text = $"{dieNumber}";
-            //diceNumbers[i].text = $"{((entity.strDie[faceIndex] * strDieMultMod) + strDieFlatMod)}";
+
             faceIndex++;
         }
 
@@ -665,29 +676,26 @@ public class UICombatOverlayManager : MonoBehaviour
 
         for (int i = 6; i < 12; i++)
         {
+            baseDieNumber = entity.dexDie[faceIndex];
+
             if (attacking)
             {
-                if (dexDieFlatMod == 0 && dexDieMultMod == 1) diceNumbers[i].colorGradientPreset = actionTypeGradients[1];
-                else diceNumbers[i].colorGradientPreset = actionTypeGradients[3];
+                //if (dexDieAtkFlatMod == 0 && dexDieMultMod == 1) diceNumbers[i].colorGradientPreset = actionTypeGradients[1];
+                //else diceNumbers[i].colorGradientPreset = actionTypeGradients[3];
 
-                dieNumber = (int)((entity.dexDie[faceIndex] * dexDieMultMod) + dexDieFlatMod);
+                dieNumber = (int)((entity.dexDie[faceIndex] * dexDieMultMod) + dexDieAtkFlatMod);
 
-                //diceNumbers[i].text = $"{(int)((entity.dexDie[faceIndex] * dexDieMultMod) + dexDieFlatMod)}";
+                //diceNumbers[i].text = $"{(int)((entity.dexDie[faceIndex] * dexDieMultMod) + dexDieAtkFlatMod)}";
             }
             else
             {
-                dieNumber = entity.dexDie[faceIndex];
-
-                diceNumbers[i].colorGradientPreset = actionTypeGradients[1];
-                //diceNumbers[i].text = $"{entity.dexDie[faceIndex]}";
+                //dieNumber = entity.dexDie[faceIndex];
+                dieNumber = (int)((entity.dexDie[faceIndex]) + dexDieDefFlatMod);
             }
 
-            //sizeChange = GetDiceNumberSize(dieNumber);
-            //diceScaleMult = GetDiceNumberScale(dieNumber);
-            //diceScale[i].transform.localScale = Vector3.one * diceScaleMult;
-
+            SetDiceNumberColorGradient(Action.WeaponTypes.Gun, diceNumbers[i], baseDieNumber, dieNumber);
             diceNumbers[i].text = $"{dieNumber}";
-            //diceNumbers[i].text = $"{((entity.dexDie[faceIndex] * dexDieMultMod) + dexDieFlatMod)}";
+
             faceIndex++;
         }
 
@@ -695,31 +703,37 @@ public class UICombatOverlayManager : MonoBehaviour
 
         for (int i = 12; i < 18; i++)
         {
+            baseDieNumber = entity.intDie[faceIndex];
+
             if (attacking)
             {
-                if (intDieFlatMod == 0 && intDieMultMod == 1) diceNumbers[i].colorGradientPreset = actionTypeGradients[2];
-                else diceNumbers[i].colorGradientPreset = actionTypeGradients[3];
+                //if (intDieAtkFlatMod == 0 && intDieMultMod == 1) diceNumbers[i].colorGradientPreset = actionTypeGradients[2];
+                //else diceNumbers[i].colorGradientPreset = actionTypeGradients[3];
 
-                dieNumber = (int)((entity.intDie[faceIndex] * intDieMultMod) + intDieFlatMod);
+                dieNumber = (int)((entity.intDie[faceIndex] * intDieMultMod) + intDieAtkFlatMod);
 
-                //diceNumbers[i].text = $"{(int)((entity.intDie[faceIndex] * intDieMultMod) + intDieFlatMod)}";
+                //diceNumbers[i].text = $"{(int)((entity.intDie[faceIndex] * intDieMultMod) + intDieAtkFlatMod)}";
             }
             else
             {
-                dieNumber = entity.intDie[faceIndex];
-
-                diceNumbers[i].colorGradientPreset = actionTypeGradients[2];
-                //diceNumbers[i].text = $"{entity.intDie[faceIndex]}";
+                //dieNumber = entity.intDie[faceIndex];
+                dieNumber = (int)((entity.intDie[faceIndex]) + intDieDefFlatMod);
             }
 
-            //sizeChange = GetDiceNumberSize(dieNumber);
-            //diceScaleMult = GetDiceNumberScale(dieNumber);
-            //diceScale[i].transform.localScale = Vector3.one * diceScaleMult;
-
+            SetDiceNumberColorGradient(Action.WeaponTypes.Magic, diceNumbers[i], baseDieNumber, dieNumber);
             diceNumbers[i].text = $"{dieNumber}";
-            //diceNumbers[i].text = $"{((entity.intDie[faceIndex] * intDieMultMod) + intDieFlatMod)}";
+
             faceIndex++;
         }
+    }
+
+    private void SetDiceNumberColorGradient(Action.WeaponTypes type, TextMeshProUGUI diceNumText, int baseValue, int finalValue)
+    {
+        TMP_ColorGradient typeGradient = actionTypeGradients[(int)type];
+
+        if (finalValue > baseValue) diceNumText.colorGradientPreset = actionTypeGradients[3]; // higher green color
+        else if (finalValue < baseValue) diceNumText.colorGradientPreset = actionTypeGradients[4]; // lower red color
+        else diceNumText.colorGradientPreset = typeGradient;
     }
 
     public string GetDiceNumberSize(int dieNumber)
@@ -891,7 +905,13 @@ public class UICombatOverlayManager : MonoBehaviour
         }
         if (items != null) // Items Gained
         {
-            rewardInfo += $"+1 {items[0].itemName}\n+1 {items[1].itemName}";
+            //rewardInfo += $"+1 {items[0].itemName}" +
+            //             $"\n+1 {items[1].itemName}";
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                rewardInfo += $"+1 {items[i].itemName}\n";
+            }
         }
 
         rewardsText.ShowText(rewardInfo);
@@ -1013,6 +1033,9 @@ public class UICombatOverlayManager : MonoBehaviour
     {
         UpdateDiceStats(thisCombatManager.player1, leftDiceStat);
         UpdateDiceStats(thisCombatManager.player2, rightDiceStat);
+
+        UpdateActiveEffects(thisCombatManager.player1, leftActiveEffectsGridContainer);
+        UpdateActiveEffects(thisCombatManager.player2, rightActiveEffectsGridContainer);
 
         UpdateInputPrompts(attacker);
         ShowVSHeader();

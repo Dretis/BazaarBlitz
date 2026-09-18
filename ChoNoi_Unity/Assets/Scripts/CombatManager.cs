@@ -13,7 +13,12 @@ public class CombatManager : MonoBehaviour
         Neutral,
         Strong
     }
+    [Header("DEF Shred Item Procs")] //temp
+    [SerializeField] private List<ItemStats> strDefShreds; // replace this code later with something that
+    [SerializeField] private List<ItemStats> dexDefShreds; // is more intuitive / modular
+    [SerializeField] private List<ItemStats> intDefShreds;
 
+    [Space]
     public TypeAdvantage damageTypeAdvantage;
 
     public int turnCount = 0;
@@ -426,7 +431,7 @@ public class CombatManager : MonoBehaviour
 
         DieConfig die = attacker.entityStats.dieConfigs[ti];
 
-        var statDieFlatMod = attacker.currentStatsModifier.dieModifiers[ti].finalResultFlatModifier;
+        var statDieFlatMod = attacker.currentStatsModifier.dieModifiers[ti].finalResultAtkFlatModifier;
         var statDieMultMod = attacker.currentStatsModifier.dieModifiers[ti].finalResultMultModifier;
 
         var addRollMod = attacker.currentStatsModifier.rollModifier;
@@ -452,10 +457,23 @@ public class CombatManager : MonoBehaviour
     private int CalculateDefenderCombatRoll()
     {
         int rolledFaceIndex = Random.Range(0, 6); // Which dice index was selected
+        int baseRollValue = 0;
+        int defenseScore = 0; // Every point of this reduces damage by 10%. Can be increased by items or dice pips
 
         Action defend = defenderAction;
+        var ti = (int)defend.type;
 
-        int defenseScore = 0; // Every point of this reduces damage by 10%. Can be increased by items or dice pips
+        DieConfig die = defender.entityStats.dieConfigs[ti];
+
+        var statDieFlatDefMod = defender.currentStatsModifier.dieModifiers[ti].finalResultDefFlatModifier;
+
+        // Calculation of def roll here
+        rolledFaceIndex = Random.Range(0, 6);
+
+        baseRollValue = die[rolledFaceIndex];
+
+        defenseScore = (int)((baseRollValue) + statDieFlatDefMod);
+        /*
         switch (defend.type)
         {
             case Action.WeaponTypes.Melee:
@@ -473,8 +491,10 @@ public class CombatManager : MonoBehaviour
                 defenseScore = 0;
                 break;
         }
+        */
         Debug.Log($"defenseScore = {defenseScore}");
         defenseRoll = defenseScore;
+
         // Send events so that everyone can see what was rolled on either side after a moment. Assumed to start the animation
         m_StoreDiceRolled.RaiseEvent(defender, defenseScore, defenderAction.type);
         return defenseScore;
@@ -536,11 +556,11 @@ public class CombatManager : MonoBehaviour
     private void OnAttackImpact()
     {
         Debug.Log("animation attack heard and calling damamge deal");
-        dealDamage(finalDamage);
+        DealDamage(finalDamage);
     }
 
     // Final parts of the turn here, where we actually deal damage and soon after flip phases
-    private void dealDamage(int damageToDeal) {
+    private void DealDamage(int damageToDeal) {
         // damage was set earlier in combat calulations.
 
         Debug.Log("Final Damage: " + damageToDeal);
@@ -549,12 +569,73 @@ public class CombatManager : MonoBehaviour
 
         attacker.health += (int)(damageToDeal * attacker.currentStatsModifier.lifestealMult); // Attacker heals if they have lifesteal
 
+        TryApplyDefShred();
+
         m_DamageTaken.RaiseEvent(defender, damageToDeal, damageTypeAdvantage);
 
         combatUIManager.UpdateActionText(attacker, Action.PhaseTypes.Attack);
         combatUIManager.UpdateActionText(defender, Action.PhaseTypes.Defend);
 
         StartCoroutine(PhaseEndDelay(0.75f));
+    }
+
+    private void TryApplyDefShred()
+    {
+        //if (attacker.currentStatsModifier.strongDefRollShred  > 0 ||
+        //    attacker.currentStatsModifier.neutralDefRollShred > 0 ||
+        //    attacker.currentStatsModifier.resistDefRollShred  > 0)
+        //    return;
+
+        var defType = defenderAction.type;
+        ItemStats shredItem = null;
+        List<ItemStats> defShredProcs = new List<ItemStats>();
+
+        switch (defType)
+        {
+            case Action.WeaponTypes.Melee:
+                defShredProcs = strDefShreds;
+                break;
+            case Action.WeaponTypes.Gun:
+                defShredProcs = dexDefShreds;
+                break;
+            case Action.WeaponTypes.Magic:
+                defShredProcs = intDefShreds;
+                break;
+            default:
+                Debug.Log("????");
+                break;
+        }
+
+        // following code needs to change, not modular
+        switch (damageTypeAdvantage)
+        {
+            case TypeAdvantage.Strong:
+                if (attacker.currentStatsModifier.strongDefRollShred > 0)
+                {
+                    shredItem = defShredProcs[attacker.currentStatsModifier.strongDefRollShred - 1];
+                    defender.AddItemToActiveEffects(shredItem.Duration, shredItem);
+                    defender.RefreshStatModifiers();
+                }
+                break;
+            case TypeAdvantage.Neutral:
+                if (attacker.currentStatsModifier.neutralDefRollShred > 0)
+                {
+                    shredItem = defShredProcs[attacker.currentStatsModifier.neutralDefRollShred - 1];
+                    defender.AddItemToActiveEffects(shredItem.Duration, shredItem);
+                    defender.RefreshStatModifiers();
+                }
+                break;
+            default: // Resist
+                if (attacker.currentStatsModifier.resistDefRollShred > 0)
+                {
+                    shredItem = defShredProcs[attacker.currentStatsModifier.resistDefRollShred - 1];
+                    defender.AddItemToActiveEffects(shredItem.Duration, shredItem);
+                    defender.RefreshStatModifiers();
+                }
+                break;
+        }
+
+        //defender.AddItemToActiveEffects(shredItem.Duration, shredItem);
     }
 
     private void endPhase() {
@@ -868,7 +949,7 @@ public class CombatManager : MonoBehaviour
         PlayOutPhase(damageRoll, defenseRoll); // Now that we know the base damage, we can simply progress with combat after counting type advantage.
 
     }
-
+    /*
     public IEnumerator AttackAndDefendAnimation(float animationTime, int damageToDeal)
     {
         // It was mentioned some stuff like the defense animation could be tuned in the animation timeline, but this
@@ -879,7 +960,7 @@ public class CombatManager : MonoBehaviour
         dealDamage(damageToDeal);
 
     }
-
+    */
     
     public IEnumerator PhaseEndDelay(float animationTime) // Exists so there's a half a second or something before the phase ends
     {
@@ -960,7 +1041,15 @@ public class CombatManager : MonoBehaviour
         {
             Debug.Log("Won against wildlife enemy");
             List<ItemStats> newlyGainedItems = new List<ItemStats>();
-            for (int i = 0; i < 2; i++) {
+            var numOfItemDrops = 2;
+
+            if (winner.currentStatsModifier.canGreedOnKill)
+            {
+                numOfItemDrops++;
+            }
+
+            for (int i = 0; i < numOfItemDrops; i++)
+            {
                 int loot = Random.Range(0, 100);
 
                 int itemDropIndex = 0;
@@ -980,7 +1069,8 @@ public class CombatManager : MonoBehaviour
             }
 
             var gainedPoints = 0;
-            if (player2.heldPoints > 0) {
+            if (player2.heldPoints > 0) 
+            {
                 gainedPoints = player2.heldPoints; // Take ALL of the wildlife's points
                 player1.heldPoints += player2.heldPoints;
                 player2.heldPoints = 0;
@@ -1058,7 +1148,8 @@ public class CombatManager : MonoBehaviour
             Debug.Log("Something went really wrong!?");
         }
 
-
+        winner.ClearAfterCombatActiveEffects();
+        loser.ClearAfterCombatActiveEffects();
 
         yield return new WaitForSeconds(animationTime);
 

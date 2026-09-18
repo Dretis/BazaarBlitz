@@ -10,32 +10,34 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fdd1368eedb123d4db8a885acb84d3a9, type: 3}
-  m_Name: Blessing_Center
+  m_Name: Stack_STR-2
   m_EditorClassIdentifier: 
-  itemName: Center
+  itemName: STR DEF-2
   duration: -1
   isPermanent: 1
-  showAsEffect: 0
+  showAsEffect: 1
+  canStack: 1
   usableInCombat: 1
-  type: 1
+  clearAfterCombat: 1
+  type: 5
   category: 3
-  itemSprite: {fileID: 1352237737, guid: 1a256cb03922d984191af8c9b02a58ec, type: 3}
-  effectDescription: despite everything, its you
-  flavorText: '"it me :>"'
+  itemSprite: {fileID: -1847430807, guid: cb512c0c6c3fdde499fdd890e21c38ed, type: 3}
+  effectDescription: help me
+  flavorText: '"AHHHHHHHHHH"'
   l_itemName:
     m_TableReference:
-      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+      m_TableCollectionName: GUID:c5a5d24bd5dd6a1459756bb15eaa5fc3
     m_TableEntryReference:
-      m_KeyId: 88042309361225728
+      m_KeyId: 1651082416128
       m_Key: 
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
   l_effect:
     m_TableReference:
-      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+      m_TableCollectionName: GUID:c5a5d24bd5dd6a1459756bb15eaa5fc3
     m_TableEntryReference:
-      m_KeyId: 88042581605109760
+      m_KeyId: 3088281653248
       m_Key: 
     m_FallbackState: 0
     m_WaitForCompletion: 0
@@ -50,7 +52,8 @@ MonoBehaviour:
     m_WaitForCompletion: 0
     m_LocalVariables: []
   basePrice: -1
-  modifiers: []
+  modifiers:
+  - {fileID: 11400000, guid: d81f605849af2b940a5a2d0e241de88d, type: 2}
   references:
     version: 2
     RefIds: []

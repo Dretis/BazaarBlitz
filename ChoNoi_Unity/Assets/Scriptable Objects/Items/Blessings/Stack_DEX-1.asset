@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdd1368eedb123d4db8a885acb84d3a9, type: 3}
+  m_Name: Stack_DEX-1
+  m_EditorClassIdentifier: 
+  itemName: GUN DEF-1
+  duration: -1
+  isPermanent: 1
+  showAsEffect: 1
+  canStack: 1
+  usableInCombat: 1
+  clearAfterCombat: 1
+  type: 5
+  category: 3
+  itemSprite: {fileID: -5650371, guid: cb512c0c6c3fdde499fdd890e21c38ed, type: 3}
+  effectDescription: help me
+  flavorText: '"AHHHH"'
+  l_itemName:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 88042309361225728
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  l_effect:
+    m_TableReference:
+      m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
+    m_TableEntryReference:
+      m_KeyId: 88042581605109760
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  l_flavor:
+    m_TableReference:
+      m_TableCollectionName: GUID:c5a5d24bd5dd6a1459756bb15eaa5fc3
+    m_TableEntryReference:
+      m_KeyId: 3088281653248
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  basePrice: -1
+  modifiers:
+  - {fileID: 11400000, guid: add51273be08d134e8dd93b7548d5007, type: 2}
+  references:
+    version: 2
+    RefIds: []

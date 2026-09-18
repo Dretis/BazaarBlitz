@@ -193,6 +193,12 @@ public class TimelineSignalResponder : MonoBehaviour
                 GameplayTest.instance.expectedPhase = GameplayTest.GamePhase.LevelUp;
                 m_EnterBlessingsTree.RaiseEvent(assignedPlayer);
                 break;
+            case 6:
+                // Blessing again
+                GameplayTest.instance.phase = GameplayTest.GamePhase.BlessingTree;
+                GameplayTest.instance.expectedPhase = GameplayTest.GamePhase.LevelUp;
+                m_EnterBlessingsTree.RaiseEvent(assignedPlayer);
+                break;
             default:
                 //m_EnterLevelUp.RaiseEvent(assignedPlayer);
                 GameplayTest.instance.phase = GameplayTest.GamePhase.LevelUp;

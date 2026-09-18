@@ -22,6 +22,7 @@ public class CombatDiceInfoHolder : MonoBehaviour
     [SerializeField] private Action.WeaponTypes statType;
     [SerializeField] private TMP_ColorGradient defaultStatGradient;
     [SerializeField] private TMP_ColorGradient buffedStatGradient;
+    [SerializeField] private TMP_ColorGradient debuffedStatGradient;
     [SerializeField] private List<TextMeshPro> diceStatNumbers; // TMP for 3D objects
 
     [SerializeField] private GameObject effectUsePrefab;
@@ -129,11 +130,12 @@ public class CombatDiceInfoHolder : MonoBehaviour
 
         DieConfig die = p.entityStats.dieConfigs[ti];
 
-        var statDieFlatMod = p.currentStatsModifier.dieModifiers[ti].finalResultFlatModifier;
+        var statDieAtkFlatMod = p.currentStatsModifier.dieModifiers[ti].finalResultAtkFlatModifier;
+        var statDieDefFlatMod = p.currentStatsModifier.dieModifiers[ti].finalResultDefFlatModifier;
         var statDieMultMod = p.currentStatsModifier.dieModifiers[ti].finalResultMultModifier;
 
-        TMP_ColorGradient gradient;
-
+        //TMP_ColorGradient gradient;
+        /*
         if ((statDieFlatMod == 0 && statDieMultMod == 1) || !attacking)
         {
             gradient = defaultStatGradient;
@@ -142,31 +144,41 @@ public class CombatDiceInfoHolder : MonoBehaviour
         {
             gradient = buffedStatGradient;
         }
-
+        */
         //Debug.Log($"Flat Mode: {statDieFlatMod} | Mult Mod: {statDieMultMod}");
 
         for (int i = 0; i < diceStatNumbers.Count; i++)
         {
             // $"{(int)((entity.intDie[faceIndex] * intDieMultMod) + intDieFlatMod)}";
-            int number = (int)((die[i] * statDieMultMod) + statDieFlatMod); ;// (((i + 1) * multMoveMod) + flatMoveMod);
+            int number = die[i];// (((i + 1) * multMoveMod) + flatMoveMod);
+            if (attacking)
+            {
+                number = (int)((die[i] * statDieMultMod) + statDieAtkFlatMod);
+            }
+            else
+            {
+                number = (int)((die[i]) + statDieDefFlatMod);
+            }
             string sizeChange = "";
 
-            diceStatNumbers[i].colorGradientPreset = gradient;
-            /*
-            if (attacking && !(number - 1 > diceNumberSizes.Length))
-            {
-                sizeChange = $"<size={diceNumberSizes[number - 1]}>";
-            }
-            else if (!(die[i] - 1 > diceNumberSizes.Length))
-            {
-                sizeChange = $"<size={diceNumberSizes[die[i]]}>";
-            }
-            */
-            if (attacking)
-                diceStatNumbers[i].text = $"{sizeChange}{number}";
-            else
-                diceStatNumbers[i].text = $"{sizeChange}{die[i]}";
+            //diceStatNumbers[i].colorGradientPreset = gradient;
+            SetDiceNumberColorGradient(diceStatNumbers[i], die[i], number);
+
+            //if (attacking)
+            //    diceStatNumbers[i].text = $"{sizeChange}{number}";
+            //else
+            //    diceStatNumbers[i].text = $"{sizeChange}{die[i]}";
+            
+            diceStatNumbers[i].text = $"{sizeChange}{number}";
         }
+    }
+    private void SetDiceNumberColorGradient(TextMeshPro diceNumText, int baseValue, int finalValue)
+    {
+        TMP_ColorGradient typeGradient = defaultStatGradient;
+
+        if (finalValue > baseValue) diceNumText.colorGradientPreset = buffedStatGradient; // higher green color
+        else if (finalValue < baseValue) diceNumText.colorGradientPreset = debuffedStatGradient; // lower red color
+        else diceNumText.colorGradientPreset = defaultStatGradient;
     }
 
     public void SetupCombatDice(EntityPiece p, Action action)

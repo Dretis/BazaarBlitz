@@ -10,25 +10,30 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fdd1368eedb123d4db8a885acb84d3a9, type: 3}
-  m_Name: Blessing_MONEY 2
+  m_Name: Blessing_POWER 1
   m_EditorClassIdentifier: 
-  itemName: Wealth
+  itemName: Power
   duration: -1
   isPermanent: 1
   showAsEffect: 1
+  canStack: 0
   usableInCombat: 1
+  clearAfterCombat: 0
   type: 1
-  category: 0
-  itemSprite: {fileID: 659351505, guid: 3b4e24068f8a85b459748a5e40e3a8ff, type: 3}
-  effectDescription: "Gain <color=#FFD65D>+1% interest</color> every turn, but drop
-    an <color=red>additional 10%<sprite=\"Coin Icon\" index=0></color> on death.\n\n<color=#FFD65D>[Interest]</color>:
-    \nEarn <sprite=\"Coin Icon\" index=0> based on the total item value in your storefronts."
-  flavorText: '"Invest for success :)"'
+  category: 1
+  itemSprite: {fileID: 1641993918, guid: ff53bdc6d0cd8f14397b116f3a6398d6, type: 3}
+  effectDescription: 'In combat, boost your <color=orange>Advantage</color> effectiveness
+    by 40%.
+
+
+    Reduce your <color=#FF96A6>Neutral</color> and <color=grey>Disadvantage</color>
+    effectiveness by 20%.'
+  flavorText: '"kill them all"'
   l_itemName:
     m_TableReference:
       m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
     m_TableEntryReference:
-      m_KeyId: 87807010068647936
+      m_KeyId: 87807092327337984
       m_Key: 
     m_FallbackState: 0
     m_WaitForCompletion: 0
@@ -37,7 +42,7 @@ MonoBehaviour:
     m_TableReference:
       m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
     m_TableEntryReference:
-      m_KeyId: 87807036509540352
+      m_KeyId: 87807131497943040
       m_Key: 
     m_FallbackState: 0
     m_WaitForCompletion: 0
@@ -51,8 +56,9 @@ MonoBehaviour:
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
-  basePrice: 9999
-  modifiers: []
+  basePrice: -44
+  modifiers:
+  - {fileID: 11400000, guid: 5b594193ba67910469cd9a883f0a33b4, type: 2}
   references:
     version: 2
     RefIds: []

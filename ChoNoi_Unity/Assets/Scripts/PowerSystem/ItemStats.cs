@@ -56,12 +56,14 @@ public class ItemStats : ScriptableObject, IStatModifierChanger
 
     public int Duration => duration;
     public bool IsPermanent => isPermanent;
+    public bool CanStack => canStack;
     public bool ClearAfterCombat => clearAfterCombat;
 
     public string itemName;
     [SerializeField] private int duration = 1;
     [SerializeField] private bool isPermanent;
     public bool showAsEffect = true;
+    [SerializeField] private bool canStack = false;
     public bool usableInCombat = true;
     public bool clearAfterCombat = false;
 

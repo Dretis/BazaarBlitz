@@ -128,6 +128,7 @@ public class EntityPiece : MonoBehaviour
         public ItemStats originalItem;
         public int turnsRemaining;
         public bool isPermanent;
+        public bool clearAfterCombat;
     }
 
     [SerializeField]
@@ -151,7 +152,7 @@ public class EntityPiece : MonoBehaviour
         var sameEffect = activeEffects.Find(activeEffect => (UnityEngine.Object) activeEffect.originalItem == item);
 
         // Refresh effect if same item has been used before. Otherwise, add new effect.
-        if (sameEffect != null)
+        if (sameEffect != null && !item.CanStack)
         {
             sameEffect.turnsRemaining = duration;
         }
@@ -161,7 +162,8 @@ public class EntityPiece : MonoBehaviour
             {
                 originalItem = item,
                 turnsRemaining = duration,
-                isPermanent = item.IsPermanent
+                isPermanent = item.IsPermanent,
+                clearAfterCombat = item.ClearAfterCombat,
             });
         }
     }
@@ -223,6 +225,20 @@ public class EntityPiece : MonoBehaviour
         {
             Debug.Log("Effect not found");
         }
+    }
+
+    public void ClearAfterCombatActiveEffects()
+    {
+        for (int i = 0; i < activeEffects.Count; i++)
+        {
+            if (activeEffects[i].clearAfterCombat)
+            {
+                activeEffects.RemoveAt(i);
+                i--;
+            }
+        }
+
+        RefreshStatModifiers();
     }
 
     public void RemoveItemEffectOnUse(HashSet<string> itemNames)

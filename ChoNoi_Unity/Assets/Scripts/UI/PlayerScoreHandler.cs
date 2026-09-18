@@ -381,14 +381,20 @@ public class PlayerScoreHandler : MonoBehaviour
 
         if (type != Action.WeaponTypes.Speed)
         {
-            statDieFlatMod = player.currentStatsModifier.dieModifiers[ti].finalResultFlatModifier;
+            statDieFlatMod = player.currentStatsModifier.dieModifiers[ti].finalResultAtkFlatModifier;
             statDieMultMod = player.currentStatsModifier.dieModifiers[ti].finalResultMultModifier;
+        }
+        else
+        {
+            statDieFlatMod = player.currentStatsModifier.movementFlatModifier;
+            statDieMultMod = player.currentStatsModifier.movementMultModifier;
         }
 
         var diceGradient = actionTypeGradients[ti];
 
         // Buffed gradient
         if (!(statDieFlatMod == 0 && statDieMultMod == 1)) diceGradient = actionTypeGradients[4];
+        else if (!(statDieFlatMod == 0 && statDieMultMod == 1)) diceGradient = actionTypeGradients[5];
 
         DieConfig die = player.entityStats.dieConfigs[(int)type];
 
@@ -420,13 +426,25 @@ public class PlayerScoreHandler : MonoBehaviour
         }
 
         var faceIndex = 0;
+        int baseFaceValue;
         int finalFaceValue;
 
         for (int i = start; i < end; i++)
         {
-            finalFaceValue = (int)((die[faceIndex] * statDieMultMod) + statDieFlatMod);
+            baseFaceValue = die[faceIndex];
+            finalFaceValue = (int)((baseFaceValue * statDieMultMod) + statDieFlatMod);
+
+            //Debug.Log($"BASE | {type}[{faceIndex}] = {baseFaceValue}");
+            //Debug.Log($"FINAL | {type}[{faceIndex}] = {finalFaceValue}");
+            //Debug.Log($"CALC | ({baseFaceValue} x {statDieMultMod}) + {statDieFlatMod})");
+
+            //playerInfoDiceNumber[i].colorGradientPreset = diceGradient;
+            if (finalFaceValue > baseFaceValue) diceGradient = actionTypeGradients[4];
+            else if (finalFaceValue < baseFaceValue) diceGradient = actionTypeGradients[5];
+            else diceGradient = actionTypeGradients[ti];
 
             playerInfoDiceNumber[i].colorGradientPreset = diceGradient;
+
             playerInfoDiceNumber[i].text = $"{finalFaceValue}";
 
             faceIndex++;

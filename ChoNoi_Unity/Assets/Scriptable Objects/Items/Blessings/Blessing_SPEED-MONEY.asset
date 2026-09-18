@@ -10,23 +10,25 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fdd1368eedb123d4db8a885acb84d3a9, type: 3}
-  m_Name: Blessing_MONEY-POWER
+  m_Name: Blessing_SPEED-MONEY
   m_EditorClassIdentifier: 
-  itemName: Greed
+  itemName: Rush
   duration: -1
   isPermanent: 1
   showAsEffect: 1
+  canStack: 0
   usableInCombat: 1
+  clearAfterCombat: 0
   type: 1
-  category: 0
-  itemSprite: {fileID: 21300000, guid: 3604ae3115d246e4eb731c90f77e5b5b, type: 3}
-  effectDescription: gimme gimme
-  flavorText: '"invest into death"'
+  category: 2
+  itemSprite: {fileID: 21300000, guid: b9eccf13579a0be4f8583d4ee6d1fbfc, type: 3}
+  effectDescription: zoomy
+  flavorText: '"Invest for success :)"'
   l_itemName:
     m_TableReference:
       m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
     m_TableEntryReference:
-      m_KeyId: 87807862955200512
+      m_KeyId: 87807687406800896
       m_Key: 
     m_FallbackState: 0
     m_WaitForCompletion: 0
@@ -35,7 +37,7 @@ MonoBehaviour:
     m_TableReference:
       m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
     m_TableEntryReference:
-      m_KeyId: 87807905032458240
+      m_KeyId: 87807833725095936
       m_Key: 
     m_FallbackState: 0
     m_WaitForCompletion: 0
@@ -49,9 +51,8 @@ MonoBehaviour:
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
-  basePrice: 0
-  modifiers:
-  - {fileID: 11400000, guid: 5b594193ba67910469cd9a883f0a33b4, type: 2}
+  basePrice: 21
+  modifiers: []
   references:
     version: 2
     RefIds: []

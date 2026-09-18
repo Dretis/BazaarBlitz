@@ -7,6 +7,7 @@ using LitMotion;
 using LitMotion.Extensions;
 using System.Collections;
 using Coffee.UIEffects;
+using FishNet.Demo.AdditiveScenes;
 
 
 public class ScoreManager : MonoBehaviour
@@ -202,6 +203,8 @@ public class ScoreManager : MonoBehaviour
     {
         // Update specific player score on the scoreboard based on their ID.
         playerScoreHandlers[id].UpdateScore();
+
+        playerScoreHandlers[id].RefreshActiveEffects();
     }
 
     private void ChangeCurrentPlayer(EntityPiece ps)

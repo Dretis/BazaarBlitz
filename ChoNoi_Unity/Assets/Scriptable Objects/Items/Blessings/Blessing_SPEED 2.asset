@@ -10,28 +10,25 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fdd1368eedb123d4db8a885acb84d3a9, type: 3}
-  m_Name: Blessing_POWER 1
+  m_Name: Blessing_SPEED 2
   m_EditorClassIdentifier: 
-  itemName: Power
+  itemName: Pride
   duration: -1
   isPermanent: 1
   showAsEffect: 1
+  canStack: 0
   usableInCombat: 1
+  clearAfterCombat: 0
   type: 1
-  category: 1
-  itemSprite: {fileID: 1641993918, guid: ff53bdc6d0cd8f14397b116f3a6398d6, type: 3}
-  effectDescription: 'In combat, boost your <color=orange>Advantage</color> effectiveness
-    by 40%.
-
-
-    Reduce your <color=#FF96A6>Neutral</color> and <color=grey>Disadvantage</color>
-    effectiveness by 20%.'
-  flavorText: '"kill them all"'
+  category: 2
+  itemSprite: {fileID: 21300000, guid: 98e40c3430a111e449a80f786eee40f8, type: 3}
+  effectDescription: zoomy
+  flavorText: '"gotta go fast man"'
   l_itemName:
     m_TableReference:
       m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
     m_TableEntryReference:
-      m_KeyId: 87807092327337984
+      m_KeyId: 87807486558359552
       m_Key: 
     m_FallbackState: 0
     m_WaitForCompletion: 0
@@ -40,7 +37,7 @@ MonoBehaviour:
     m_TableReference:
       m_TableCollectionName: GUID:865869e127e5c0e41827bd9ad9d40b55
     m_TableEntryReference:
-      m_KeyId: 87807131497943040
+      m_KeyId: 87807496347865088
       m_Key: 
     m_FallbackState: 0
     m_WaitForCompletion: 0
@@ -54,9 +51,9 @@ MonoBehaviour:
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
-  basePrice: -44
+  basePrice: 0
   modifiers:
-  - {fileID: 11400000, guid: 5b594193ba67910469cd9a883f0a33b4, type: 2}
+  - {fileID: 11400000, guid: a1273d3af42f16440b23c1e78f0d0530, type: 2}
   references:
     version: 2
     RefIds: []

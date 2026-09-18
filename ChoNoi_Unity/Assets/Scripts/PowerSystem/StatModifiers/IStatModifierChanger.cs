@@ -18,13 +18,13 @@ public abstract class StatModifierChangerSO : ScriptableObject, IStatModifierCha
     {
         get;
     }
-
+    public bool canStack = false;
     // Minimum of 1.
     public int activateEffectStartTurn;
 
     // Maximum of Duration.
     public int activateEffectEndTurn;
-
+    [Space]
     public Sprite effectIcon;
 
     public abstract EntityStatsModifiers ApplyStatModChanges(EntityStatsModifiers currentStats, int currentTurn);

@@ -19,7 +19,8 @@ public class EntityStatsModifiers
         Tiles,
         Players,
         Marigold,
-        Rafflesia
+        Rafflesia,
+        OpenSpaces
     }
 
     // List of all stats
@@ -27,21 +28,31 @@ public class EntityStatsModifiers
 
     [Header("General Mods")]
     [Range(0, 1)] public float deathLossRatio = 0.5f;
-    public float interestRate = 0; // Wealth Blessing
     public int rollModifier;
+
+    [Header("Store / Money Mods")]
+    public float interestRate = 0; // Wealth Blessing
+    public float storeLevelMultModifier = 0; // Wealth 2 - Luxury Blessing
+    public bool canUseRelocate = false; // Wealth 2 - Luxury Blessing
+    public bool canRenovateOnPass = false; // Rush Delivery Blessing
 
     [Header("Movement-based Mods")]
     public int movementFlatModifier = 0;
     public int movementMultModifier = 1;
     public int movementTempoScale = 0; // Tempo-Velocity Blessing
-    public bool canUseSpeedDie = false;
+    public bool canUseSpeedDie = false; // Speed 1
+    public bool redirectOnSpeedDie = false; // Speed 2
 
     [Header("Combat Mods")]
     public float strongMultModifier = 0; // Power Blessing
     public float neutralMultModifier = 0; // Power Blessing
     public float resistMultModifier = 0; // Power Blessing
-    public bool canInflictWrath = false;
-    public bool hasGreed = false;
+    [Space]
+    //public bool canInflictWrath = false;
+    public int strongDefRollShred = 0; // Power 2 - Wrath
+    public int neutralDefRollShred = 0; // Power 2 - Wrath
+    public int resistDefRollShred = 0; // Power 2 - Wrath
+    public bool canGreedOnKill = false;
 
     [Header("Survival-based Mods")]
     public float defenseModifier = 0;
@@ -51,7 +62,7 @@ public class EntityStatsModifiers
     public int maxHealthFlatModifier = 0;
     public int maxHealthMultModifier = 1;
 
-    [Header("Trap-based Mods")]
+    [Header("Target Select-based Mods")]
     public MapNode warpDestination = null;
     public WarpMode warpMode = WarpMode.None;
     
@@ -66,7 +77,7 @@ public class EntityStatsModifiers
 
         var dieMod = dieModifiers[(int)dieType];
         baseRollValue *= dieMod.finalResultMultModifier;
-        baseRollValue += dieMod.finalResultFlatModifier;
+        baseRollValue += dieMod.finalResultAtkFlatModifier;
 
         Debug.Log("New Roll after item effect:" + baseRollValue);
 
@@ -78,6 +89,7 @@ public class EntityStatsModifiers
 public class DieModifier
 {
     // Offset the final result by this value
-    public float finalResultFlatModifier = 0;
+    public float finalResultAtkFlatModifier = 0;
+    public float finalResultDefFlatModifier = 0;
     public float finalResultMultModifier = 1;
 }
