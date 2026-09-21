@@ -1040,6 +1040,21 @@ public class GameplayTest : MonoBehaviour
                 }
                 else
                 {
+                    if (p.currentStatsModifier.canAutoUpgradeOnLand
+                        && store.storeLevel <= p.RenownLevel)
+                    {
+                        // Refine the store you landed on for free - Rush Blessing
+
+                        //m_UpgradeStore.RaiseEvent(m);
+                        store.LevelUpStore();
+                        currentPlayer.CalculateStorestockTotal();
+                        m_UpdatePlayerScore.RaiseEvent(store.playerOwner.id);
+
+                        phase = GamePhase.IncidentHappening;
+                        expectedPhase = GamePhase.PreStockStore;
+
+                        m.pd_nUpgradeStore.Play();
+                    }
                     // Restock any store
 
                     Debug.Log($"Ask if {p.entityName} wants to restock");
@@ -1474,7 +1489,11 @@ public class GameplayTest : MonoBehaviour
         else
         {
             // Interest logic here TEMPORARY
-            currentPlayer.heldPoints += (int)(currentPlayer.currentStatsModifier.interestRate * currentPlayer.storestockTotal);
+            if (p.currentStatsModifier.interestRate != 0)
+            {
+                p.CalculateStorestockTotal();
+            }
+            p.heldPoints += (int)(currentPlayer.currentStatsModifier.interestRate * currentPlayer.storestockTotal);
 
             // Regular turn end logic
             //if (currentPlayerInitialNode.playerOccupied == currentPlayer)

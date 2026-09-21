@@ -149,7 +149,7 @@ public class EntityPiece : MonoBehaviour
     public void AddItemToActiveEffects(int duration, ItemStats item)
     {
 
-        var sameEffect = activeEffects.Find(activeEffect => (UnityEngine.Object) activeEffect.originalItem == item);
+        var sameEffect = activeEffects.Find(activeEffect => activeEffect.originalItem == item);
 
         // Refresh effect if same item has been used before. Otherwise, add new effect.
         if (sameEffect != null && !item.CanStack)
@@ -285,10 +285,11 @@ public class EntityPiece : MonoBehaviour
         {
             foreach(var item in store.storeInventory)
             {
-                if (item == null) return; 
-
-                finalItemPrice = (int)(item.basePrice * store.storePriceMultiplier);
-                storestockTotal += finalItemPrice;
+                if (item != null)
+                {
+                    finalItemPrice = (int)(item.basePrice * store.storePriceMultiplier);
+                    storestockTotal += finalItemPrice;
+                }
             }
         }
 

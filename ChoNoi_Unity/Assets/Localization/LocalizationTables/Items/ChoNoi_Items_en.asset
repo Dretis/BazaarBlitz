@@ -495,9 +495,17 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 87807459953889280
-    m_Localized: "Unlock <sprite=3> <color=#77FFCD>Speed</color> as an augmentable
-      Stat Die.\n\nCan move with the \n<sprite=3> <color=#77FFCD>Speed</color> die,
-      but take <color=green>25 HP</color> on use."
+    m_Localized: 'Unlock <sprite=3> <color=#77FFCD>Speed</color> as an augmentable
+      Stat Die.
+
+
+      Can swap to the <sprite=3> <color=#77FFCD>Speed</color> die
+      to move, but take <color=green>25 HP</color> on use.
+
+
+      Cannot turn in
+      stamps or heal at <color=yellow>Central Exchange</color> while moving with
+      <sprite=3> <color=#77FFCD>Speed</color>.'
     m_Metadata:
       m_Items: []
   - m_Id: 87807862955200512
@@ -513,11 +521,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 87807833725095936
-    m_Localized: 'After landing, can <color=#FFEFB1>Renovate</color> any owned storefront
-      that you passed.
+    m_Localized: 'Upon landing on an owned storefront, <color=#FFEFB1>Refine</color>
+      it for free.
 
 
-      Active if you do not initiate combat upon landing.'
+      Cannot exceed the store''s star cap.'
     m_Metadata:
       m_Items: []
   - m_Id: 87807905032458240

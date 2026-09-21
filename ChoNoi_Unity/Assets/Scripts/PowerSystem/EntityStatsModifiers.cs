@@ -34,7 +34,7 @@ public class EntityStatsModifiers
     public float interestRate = 0; // Wealth Blessing
     public float storeLevelMultModifier = 0; // Wealth 2 - Luxury Blessing
     public bool canUseRelocate = false; // Wealth 2 - Luxury Blessing
-    public bool canRenovateOnPass = false; // Rush Delivery Blessing
+    public bool canAutoUpgradeOnLand = false; // Rush Delivery Blessing
 
     [Header("Movement-based Mods")]
     public int movementFlatModifier = 0;

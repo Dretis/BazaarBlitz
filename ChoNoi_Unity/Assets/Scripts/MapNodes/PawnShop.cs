@@ -57,6 +57,8 @@ public class PawnShop : MapNode
 
         Debug.Log($"Passed MapNode - {name}");
 
+        if (gp.usingSpeedDieToMove) return;
+
         SnapshotEntity(p);
 
         var repGained = 75 * Mathf.Pow(1.5f, p.stamps.Count - 1);
@@ -106,6 +108,8 @@ public class PawnShop : MapNode
         //p.health = currentPlayerInitialHealth; // revert healing back
 
         //if (snapshotStamps == null) return;
+        var gp = GameplayTest.instance;
+        if (gp.usingSpeedDieToMove) return;
 
         p.health = snapshotHealths[^1];
         p.heldPoints = snapshotPoints[^1];
