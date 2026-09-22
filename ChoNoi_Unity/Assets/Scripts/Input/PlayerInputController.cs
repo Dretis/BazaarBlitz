@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Core;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
@@ -128,8 +129,6 @@ public class PlayerInputController : MonoBehaviour
 
     private void OnEnable()
     {
-        m_DiceRollPrep.OnEventRaised += OnDiceRollPrep;
-
         m_EnableFreeview.OnEventRaised += FreeviewEnabled;
         m_DisableFreeview.OnEventRaised += FreeviewDisabled;
 
@@ -179,8 +178,6 @@ public class PlayerInputController : MonoBehaviour
 
     private void OnDisable()
     {
-        m_DiceRollPrep.OnEventRaised -= OnDiceRollPrep;
-
         m_EnableFreeview.OnEventRaised -= FreeviewEnabled;
         m_DisableFreeview.OnEventRaised -= FreeviewDisabled;
 
@@ -247,7 +244,7 @@ public class PlayerInputController : MonoBehaviour
         var p = GameplayTest.instance.currentPlayer;
         Debug.Log("roll pressed as message");
         previousGamePhase = GamePhase.InitialTurnMenu;
-        m_TryDiceRollPrep.RaiseEvent(p);
+        GameplayTest.instance.QueueCommand(new GameCommand(GameCommandType.InitialTurnMenuRollMoveDie));
         //SwitchActionMap(GamePhase.RollDice);
     }
 
@@ -693,6 +690,61 @@ public class PlayerInputController : MonoBehaviour
         Debug.Log($"Player [{playerInput.playerIndex}] | {playerInput.currentActionMap}");
         Debug.Log($"currActionMap | {currActionMap}");
     }
+    
+    public void SwitchActionMapRewrite(GameplayTest.GamePhase phase)
+    {
+        var desiredActionMapName = phase switch
+        {
+            // Pick choices
+            GamePhase.InitialTurnMenu => "Initial Turn Menu",
+            GamePhase.RaycastTargetSelection => ("Freeview"),
+            GamePhase.Freeview => ("Freeview"),
+            GamePhase.Inventory => ("UI"),
+            GamePhase.DiscardItem => ("UI"),
+            // Roll Phase 
+            GamePhase.RollDice => ("Confirmation"),
+            // Pick Direction to Go Phase
+            GamePhase.PickDirection => ("Moving"),
+            GamePhase.BuildingStore => ("UI"),
+            GamePhase.InStore => ("UI"),
+            GamePhase.PreStockStore => ("UI"),
+            GamePhase.StockStore => ("UI"),
+            GamePhase.InVendor => ("Confirmation"),
+            GamePhase.EndTurn => ("Combat"),
+            GamePhase.LevelUp =>
+                //LevelUp(currentPlayer);
+                ("UI"),
+            GamePhase.BlessingTree =>
+                //LevelUp(currentPlayer);
+                ("UI"),
+            // Confirmation Phase
+            GamePhase.ConfirmContinue => ("Confirmation"),
+            GamePhase.CombatSelector => ("UI"),
+            GamePhase.CombatTime => ("Combat"),
+            GamePhase.GameOver => ("Confirmation"),
+            _ => String.Empty
+        };
+        
+        if (!playerInput.inputIsActive) return;
+
+        if (desiredActionMapName == String.Empty)
+        {
+            return;
+        }
+        
+        if (desiredActionMapName == playerInput.currentActionMap.name)
+        {
+            return;
+        }
+        
+        playerInput.currentActionMap.Disable();
+        playerInput.SwitchCurrentActionMap(desiredActionMapName);
+        playerInput.currentActionMap.Enable();
+        currActionMap = playerInput.currentActionMap;
+        
+        Debug.Log($"Player [{playerInput.playerIndex}] | {playerInput.currentActionMap}");
+        Debug.Log($"currActionMap | {currActionMap}");
+    }
 
     private void SetCurrentPlayer(EntityPiece player)
     {
@@ -744,13 +796,6 @@ public class PlayerInputController : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         gamepad.SetMotorSpeeds(0, 0);
-    }
-
-    private void OnDiceRollPrep(EntityPiece player)
-    {
-        if (!playerInput.inputIsActive) return;
-
-        SwitchActionMap(GamePhase.RollDice);
     }
 
     private void FreeviewEnabled()

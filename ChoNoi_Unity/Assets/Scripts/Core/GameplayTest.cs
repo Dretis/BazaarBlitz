@@ -1,11 +1,15 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using TMPro;
-using DG.Tweening;
 using System.Linq;
+using Core;
+using Core.Events;
+using DG.Tweening;
 using Febucci.UI.Core;
+using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
-using System.Collections; 
+using Random = UnityEngine.Random;
 
 public class GameplayTest : MonoBehaviour
 {
@@ -38,7 +42,7 @@ public class GameplayTest : MonoBehaviour
     private int selectedItemIndex = -1; // -1 = currently not remembering an item in use | CHANGE THIS PART LATER
     public bool playerUsedItem = false; // please change these down the line
     public bool usingSpeedDieToMove = false;
-
+    
     //public Dictionary<Vector2Int, GameObject> map = new Dictionary<Vector2Int, GameObject>();
     //public Dictionary<Vector2Int, GameObject> unitPos = new Dictionary<Vector2Int, GameObject>();
 
@@ -268,7 +272,7 @@ public class GameplayTest : MonoBehaviour
     {
         if(seed == -1)
         {
-            seed = System.DateTime.Now.Millisecond;
+            seed = DateTime.Now.Millisecond;
         }
 
         Random.InitState(seed);
@@ -298,8 +302,7 @@ public class GameplayTest : MonoBehaviour
     private void OnEnable()
     {
         m_NextTurnRound.OnEventRaised += OnNextTurnRound;
-
-        m_TryDiceRollPrep.OnEventRaised += OnTryDiceRollPrep;
+        
         m_DiceRolled.OnEventRaised += CalculateDiceRoll;
         m_ItemBought.OnEventRaised += ConfirmPurchase;
 
@@ -346,8 +349,7 @@ public class GameplayTest : MonoBehaviour
     private void OnDisable()
     {
         m_NextTurnRound.OnEventRaised -= OnNextTurnRound;
-
-        m_TryDiceRollPrep.OnEventRaised -= OnTryDiceRollPrep;
+        
         m_DiceRolled.OnEventRaised -= CalculateDiceRoll;
         m_ItemBought.OnEventRaised -= ConfirmPurchase;
 
@@ -515,84 +517,191 @@ public class GameplayTest : MonoBehaviour
             rollTypewriter.ShowText("" + currentPlayer.movementLeft);
         }
 #endif
-        switch (phase)
+        TickGame();
+    }
+
+    #region Sample Partial Rewrite
+
+    [Header("Rewrite")]
+
+    [SerializeField]
+    private UIPromptManager _uiPromptManager;
+
+    [SerializeField]
+    private GameStateEventChannelSO _gameStateUpdatedEventChannel;
+
+    [SerializeField]
+    private PlayerInputController[] _inputControllers;
+
+    private GameState _currentGameState = new()
+    {
+        GamePhase = GamePhase.InitialTurnMenu
+    };
+
+    private Queue<GameCommand> _commandQueue = new();
+
+    public void QueueCommand(GameCommand command)
+    {
+        _commandQueue.Enqueue(command);
+    }
+
+    private void TickGame()
+    {
+        // SYNC IN (connect rewrite system to the actual system so the rewrite demo works)
+        _currentGameState.GamePhase = phase;
+        _currentGameState.CurrentPlayer = currentPlayer;
+        
+        // Have the new state just copy the previous state, but it gets modified by the 
+        GameState newState = _currentGameState;
+        GameState prevState = _currentGameState;
+        
+        // Process one command per frame to keep things simple
+        bool isCmdToProcess = _commandQueue.TryDequeue(out GameCommand command);
+
+        // CORE GAME LOGIC
+        switch (newState.GamePhase)
         {
+            // Pick choices
+            case GamePhase.InitialTurnMenu:
+                // Can move this whole block into a separate function if you want to keep functions small (matter of opinion i guess)
+                if (!isCmdToProcess)
+                {
+                    break;
+                }
+                
+                // Partial rewrite handles case where you enter movement dice roll
+                if (command.Type is GameCommandType.InitialTurnMenuRollMoveDie)
+                {
+                    var p = newState.CurrentPlayer;
+                    if (p.CanLevelUp() && !ThisPlayerMustFight(p)) {
+
+                        expectedPhase = GamePhase.LevelUp;
+                        // not part of rewrite so go back to using the events
+                        m_EnterLevelUp.RaiseEvent(p);
+                    }
+                    else if (!ThisPlayerMustFight(p))
+                    {
+                        // no events just update the state
+                        // We can roll dice yay
+                        newState.GamePhase = GamePhase.RollDice;
+                    }
+                    else
+                    {
+                        // In Combat
+                        newState.GamePhase = GamePhase.EncounterTime;
+                    }
+                }
+                break;
+            
             // Checks item effects on player
             case GamePhase.ItemSelection:
-                SelectItem(currentPlayer);
+                newState.GamePhase = SelectItem(currentPlayer);
                 break;
 
             case GamePhase.RaycastTargetSelection:
-                SelectRaycastTarget(currentPlayer);
                 break;
-
-            // Pick choices
-            case GamePhase.InitialTurnMenu:
-                InitialTurnMenu(currentPlayer, currentPlayer.occupiedNode);
-                break;
-
+            
             case GamePhase.Inventory:
-                OpenInventory(currentPlayer);
                 break;
 
             // Roll Phase 
             case GamePhase.RollDice:
-                //RollDice(currentPlayer);
                 break;
 
             // Pick Direction to Go Phase
             case GamePhase.PickDirection:
-                PickDirection(currentPlayer);
                 break;
 
             // Move-to Node Phase
+            // Why do we need different phases for pass by and move around?
             case GamePhase.MoveAround:
-                MoveAround(currentPlayer);
+                newState.GamePhase = MoveAround(currentPlayer);
                 break;
 
             case GamePhase.PassBy:
+                // This is broken by the rewrite, so you move around forever...
+                // because this method modifies the phase directly through battle starting, which doesn't work with this rewrite
+                // some work to make it work I guess
                 PassBy(currentPlayer, currentPlayer.occupiedNode);
                 break;
 
             // Battle-Event Phase
             case GamePhase.EncounterTime:
+                // probably also doesn't work
                 EncounterTime(currentPlayer, currentPlayer.occupiedNode);
                 break;
 
             case GamePhase.StockStore:
+                // probably also doesn't work
                 StockStore(currentPlayer, currentPlayer.occupiedNode);
                 break;
 
             case GamePhase.OverturnStore:
+                // probably also doesn't work
                 OverturnStore(currentPlayer, currentPlayer.occupiedNode);
                 break;
 
             case GamePhase.RockPaperScissors:
+                // probably also doesn't work
                 RockPaperScissors(currentPlayer);
                 break;
 
             case GamePhase.LevelUp:
+                // probably also doesn't work
                 LevelUp(currentPlayer);
                 break;
 
             // Confirmation Phase
             case GamePhase.ConfirmContinue:
+                // probably also doesn't work
                 ConfirmContinue(currentPlayer);
                 break;
 
             // End of turn, next player!
             case GamePhase.EndTurn:
+                // probably also doesn't work
                 EndOfTurn(currentPlayer);
                 break;
 
             // Game over! Someone has won!
             case GamePhase.EndGame:
+                // probably also doesn't work
                 EndGame();
                 break;
         }
+
+        FrameGameState frameGameState = new FrameGameState()
+        {
+            NewState = newState,
+            PrevState = prevState
+        };
+        
+        // Input
+        foreach (var inputController in _inputControllers)
+        {
+            inputController.SwitchActionMapRewrite(_currentGameState.GamePhase);
+        }
+
+        // Handle all the UI and presentation stuff here or in the below event
+        _uiPromptManager.UpdateUI(frameGameState);
+        
+        // Can also use events I guess
+        // ANYTHING THAT LISTENS HERE SHOULD NEVERRRRRR CHANGE THE GAME STATE IN ANY WAY
+        // GAME STATE IS DONNNNE AFTER CORE LOGIC RUNS
+        // THE ORDER THAT THINGS EXECUTE FROM THIS EVENT SHOULDN'T MATTER
+        // BECAUSE THE ORDER IS NON DETERMINISTIC IF YOU SUBSCRIBE IN AWAKE
+        // SO RACE CONDITIONS ARE BADDDDDDDDDDDDDDDDDDDDDDD
+        _gameStateUpdatedEventChannel?.RaiseEvent(frameGameState);
+        
+        _currentGameState = newState;
+        
+        // SYNC OUT (connect rewritten system to the existing system so the rewrite demo works)
+        phase = _currentGameState.GamePhase;
     }
 
-    private void SelectItem(EntityPiece p)
+    #endregion
+
+    private GamePhase SelectItem(EntityPiece p)
     {
         /*
         // all items active for debug
@@ -611,53 +720,7 @@ public class GameplayTest : MonoBehaviour
 
         ApplyItemEffectsOnTurnStart(p);
 
-        phase = GamePhase.InitialTurnMenu;
-    }
-
-    private void InitialTurnMenu(EntityPiece p, MapNode m)
-    {
-        if (freeviewEnabled)
-            return;
-    }
-
-    private void OpenInventory(EntityPiece p)
-    {
-        /*
-        if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.Mouse1))
-        {
-            // Undo rolling, back to menu
-            m_ExitInventory.RaiseEvent();
-
-            m_PlayerUndidSomething.RaiseEvent();
-
-            phase = GamePhase.InitialTurnMenu;
-        }
-        */
-    }
-
-    //ORIGINALLY: void RollDice(EntityPiece p)
-    private void OnTryDiceRollPrep(EntityPiece p)
-    {
-        // For now level up happens right before you roll dice
-        if (p.CanLevelUp() && !ThisPlayerMustFight(p)) {
-
-            expectedPhase = GamePhase.LevelUp;
-            m_EnterLevelUp.RaiseEvent(p);
-        }
-        else if (!ThisPlayerMustFight(p))
-        {
-            // Regular behavior, roll for movement
-            m_DiceRollPrep.RaiseEvent(p);
-        }
-        else
-        {
-
-            //TEMPORARY, REMOVE THIS LATER
-            //m_DiceRollUndo.RaiseEvent(p);
-
-            // In Combat
-            phase = GamePhase.EncounterTime;
-        }
+        return GamePhase.InitialTurnMenu;
     }
 
     void CalculateDiceRoll()
@@ -722,30 +785,8 @@ public class GameplayTest : MonoBehaviour
         }
     }
 
-    void PickDirection(EntityPiece p)
-    {
-        /*
-        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
-            wantedNode = p.occupiedNode.north;
-
-        if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
-            wantedNode = p.occupiedNode.east;
-
-        if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
-            wantedNode = p.occupiedNode.south;
-
-        if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
-            wantedNode = p.occupiedNode.west;
-
-        if (wantedNode != null && !(wantedNode == p.previousNode && p.traveledNodes.Count <= 1) )
-        {
-            phase = GamePhase.MoveAround;
-        }
-        */
-    }
-
     #region Node-based Functions
-    void MoveAround(EntityPiece p)
+    GamePhase MoveAround(EntityPiece p)
     {
         var lastEle = p.traveledNodes.Count;
         var lastNode = p.traveledNodes[lastEle - 1];
@@ -798,7 +839,7 @@ public class GameplayTest : MonoBehaviour
             rollTypewriter.ShowText(roll);
 
             p.transform.DOMove(lastNode.transform.position, .25f)
-                .SetEase(DG.Tweening.Ease.OutQuint);
+                .SetEase(Ease.OutQuint);
 
             wantedNode = null;
             m_PlayerUndidSomething.RaiseEvent();
@@ -827,9 +868,7 @@ public class GameplayTest : MonoBehaviour
 
                 p.traveledNodes.Clear();
                 p.traveledNodes.Add(p.occupiedNode);
-                phase = GamePhase.EncounterTime; // next phase
-                return;
-
+                return GamePhase.EncounterTime;
             }
             p.traveledNodes.Add(p.occupiedNode);
             p.occupiedNode = wantedNode;
@@ -843,15 +882,16 @@ public class GameplayTest : MonoBehaviour
                 rollTypewriter.ShowText(roll);
 
             p.transform.DOMove(wantedNode.transform.position, .25f)
-                .SetEase(DG.Tweening.Ease.OutQuint);
+                .SetEase(Ease.OutQuint);
 
 
             wantedNode = null;
             m_PlayerMovedOnBoard.RaiseEvent();
 
-            phase = GamePhase.PassBy;
+            return GamePhase.PassBy;
         }
 
+        return GamePhase.MoveAround;
     }
 
     private List<EntityPiece> GetOtherPlayersOnNode(EntityPiece p)
@@ -2195,11 +2235,6 @@ public class GameplayTest : MonoBehaviour
 
         string roll = "";
         rollTypewriter.ShowText(roll);
-    }
-
-    public void SelectRaycastTarget(EntityPiece p)
-    {
-
     }
 
     public void OnSelectRaycastTarget()

@@ -1,6 +1,8 @@
 using FMODUnity;
 using System.Collections;
 using System.Collections.Generic;
+using Core;
+using Core.Events;
 using UnityEngine;
 
 public class SoundManager : MonoBehaviour
@@ -27,9 +29,7 @@ public class SoundManager : MonoBehaviour
     public VoidEventChannelSO m_PlayerMovedOnBoard;
     public VoidEventChannelSO m_PlayerUndidSomething;
     public PlayerEventChannelSO m_PassByStamp;
-    public PlayerEventChannelSO m_DiceRollPrep;
     public IntEventChannelSO m_RollForMovement;
-    public PlayerEventChannelSO m_DiceRollUndo;
 
     [Space]
     public VoidEventChannelSO m_EnableFreeview;
@@ -120,8 +120,6 @@ public class SoundManager : MonoBehaviour
         m_PassByStamp.OnEventRaised += PlayStampSound;
         m_PlayerMovedOnBoard.OnEventRaised += PlayMoveSound;
         m_PlayerUndidSomething.OnEventRaised += PlayUndoSound;
-        m_DiceRollPrep.OnEventRaised += PlayDiceRollSound;
-        m_DiceRollUndo.OnEventRaised += StopDiceRollSound;
         m_RollForMovement.OnEventRaised += PlayDiceHitSound;
         m_ItemUsed.OnEventRaised += PlayUseItemSound;
         m_PlayerScoreDecreased.OnEventRaised += PlayCurrencyDecreasedSound;
@@ -183,8 +181,6 @@ public class SoundManager : MonoBehaviour
         m_PassByStamp.OnEventRaised -= PlayStampSound;
         m_PlayerMovedOnBoard.OnEventRaised -= PlayMoveSound;
         m_PlayerUndidSomething.OnEventRaised -= PlayUndoSound;
-        m_DiceRollPrep.OnEventRaised -= PlayDiceRollSound;
-        m_DiceRollUndo.OnEventRaised -= StopDiceRollSound;
         m_RollForMovement.OnEventRaised -= PlayDiceHitSound;
         m_ItemUsed.OnEventRaised -= PlayUseItemSound;
         m_PlayerScoreDecreased.OnEventRaised -= PlayCurrencyDecreasedSound;
@@ -281,27 +277,6 @@ public class SoundManager : MonoBehaviour
     {
         //Debug.Log("Stamp sound");
         AudioHelper.PlayOneShotWithParameters("event:/Stamp", this.transform.position, ("SoundVolume", SFXVolume));
-    }
-
-    private void PlayDiceRollSound(EntityPiece entity)
-    {
-        diceRollInstance = FMODUnity.RuntimeManager.CreateInstance("event:/RollDice");
-        diceRollInstance.setParameterByName("SoundVolume", SFXVolume);
-        diceRollInstance.start();
-    }
-
-    private void StopDiceRollSound()
-    {
-        Debug.Log("stopped dice roll sound");
-        diceRollInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
-        diceRollInstance.release();
-    }
-
-    private void StopDiceRollSound(EntityPiece entity)
-    {
-        Debug.Log("stopped dice roll sound");
-        diceRollInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
-        diceRollInstance.release();
     }
 
     private void PlayDiceHitSound(int diceValue)
@@ -494,7 +469,7 @@ public class SoundManager : MonoBehaviour
 
     private void OnEnterLevelUp(EntityPiece entity)
     {
-        StopDiceRollSound(entity);
+        StopDiceRollSound();
         //PlayCurrencyIncreasedSound(0);
         PlayLevelUpSound();
     }
@@ -523,4 +498,40 @@ public class SoundManager : MonoBehaviour
 
         PlayDiceHitSound((int)rolledNumber);
     }
+    
+    #region REWRITE
+    public GameStateEventChannelSO _gameStateEventChannel;
+
+    private void HandleGameState(FrameGameState state)
+    {
+        if (!state.DidChangePhases())
+        {
+            return;
+        }
+
+        if (state.NewState.GamePhase is GameplayTest.GamePhase.RollDice)
+        {
+            PlayDiceRollSound();
+        }
+        else if (state.PrevState.GamePhase is GameplayTest.GamePhase.RollDice)
+        {
+            StopDiceRollSound();
+        }
+    }
+    
+    private void PlayDiceRollSound()
+    {
+        diceRollInstance = FMODUnity.RuntimeManager.CreateInstance("event:/RollDice");
+        diceRollInstance.setParameterByName("SoundVolume", SFXVolume);
+        diceRollInstance.start();
+    }
+    
+    private void StopDiceRollSound()
+    {
+        Debug.Log("stopped dice roll sound");
+        diceRollInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+        diceRollInstance.release();
+    }
+    
+    #endregion
 }

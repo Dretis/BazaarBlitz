@@ -5,6 +5,8 @@ using Febucci.UI.Core;
 using LitMotion;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
+using Core;
+using Core.Events;
 using LitMotion.Extensions;
 using UnityEngine.Localization;
 using UnityEngine.Localization.SmartFormat.PersistentVariables;
@@ -132,7 +134,6 @@ public class UIPromptManager : MonoBehaviour
 
         m_TryDiceRollPrep.OnEventRaised += OnTryDiceRollPrep;
         m_DiceRollPrep.OnEventRaised += DisplayRollPrompt;
-        m_DiceRollUndo.OnEventRaised += DisplayInitialMenu;
 
         m_NextPlayerTurn.OnEventRaised += OnNextPlayerTurn;
         m_NextTurnRound.OnEventRaised += OnNextTurnRound;
@@ -143,7 +144,6 @@ public class UIPromptManager : MonoBehaviour
 
         m_LandOnVendor.OnEventRaised += OnLandOnVendor;
 
-        m_OpenInventory.OnEventRaised += HideInitialMenu;
         m_ExitInventory.OnEventRaised += DisplayInitialMenu;
 
         m_RestockStore.OnEventRaised += ClearInputText;
@@ -153,7 +153,6 @@ public class UIPromptManager : MonoBehaviour
         m_CancelBuildStore.OnEventRaised += OnCancelBuildStore;
         m_FinishStockingStore.OnEventRaised += OnFinishStockingStore;
 
-        m_WarpStarted.OnEventRaised += OnWarpStarted;
         m_WarpOver.OnEventRaised += OnWarpOver;
 
         m_OverturnOpportunity.OnEventRaised += DisplayOverturnChoices;
@@ -161,7 +160,6 @@ public class UIPromptManager : MonoBehaviour
         m_FinishedUsedItem.OnEventRaised += StrikethroughInventoryPrompt;
 
         m_EnableFreeview.OnEventRaised += DisplayFreeviewPrompt;
-        m_EnableFreeview.OnEventRaised += HideInitialMenu;
         m_DisableFreeview.OnEventRaised += DisplayInitialMenu;
 
         m_EnterLevelUp.OnEventRaised += OnEnterLevelUp;
@@ -181,7 +179,6 @@ public class UIPromptManager : MonoBehaviour
 
         m_TryDiceRollPrep.OnEventRaised -= OnTryDiceRollPrep;
         m_DiceRollPrep.OnEventRaised -= DisplayRollPrompt;
-        m_DiceRollUndo.OnEventRaised -= DisplayInitialMenu;
 
         m_NextPlayerTurn.OnEventRaised -= OnNextPlayerTurn;
         m_NextTurnRound.OnEventRaised -= OnNextTurnRound;
@@ -192,8 +189,6 @@ public class UIPromptManager : MonoBehaviour
 
         m_LandOnVendor.OnEventRaised -= OnLandOnVendor;
 
-        m_EnableFreeview.OnEventRaised -= DisplayFreeviewPrompt;
-        m_OpenInventory.OnEventRaised -= HideInitialMenu;
         m_ExitInventory.OnEventRaised -= DisplayInitialMenu;
 
         m_RestockStore.OnEventRaised -= ClearInputText;
@@ -203,7 +198,6 @@ public class UIPromptManager : MonoBehaviour
         m_CancelBuildStore.OnEventRaised -= OnCancelBuildStore;
         m_FinishStockingStore.OnEventRaised -= OnFinishStockingStore;
 
-        m_WarpStarted.OnEventRaised -= OnWarpStarted;
         m_WarpOver.OnEventRaised -= OnWarpOver;
 
         m_OverturnOpportunity.OnEventRaised -= DisplayOverturnChoices;
@@ -228,7 +222,6 @@ public class UIPromptManager : MonoBehaviour
     {
         currentPlayer = ps;
 
-        DisplayInitialMenu(ps);
         NormalizeInventoryPrompt(ps);
         ContextualizeMovePrompt(ps);
 
@@ -341,8 +334,6 @@ public class UIPromptManager : MonoBehaviour
         //LMotion.Punch.Create(0, 25, 0.5f)
         //    .WithDampingRatio(0f)
         //   .BindToAnchoredPositionX(movePromptText.GetComponent<RectTransform>());
-
-        HideInitialMenu();
     }
 
     private void DisplayFreeviewPrompt()
@@ -355,19 +346,7 @@ public class UIPromptManager : MonoBehaviour
         inputPrompt.text += "\n<sprite name=right><color=white></color> Back";
         //inputPrompt.text += "\n<color=white>[Scroll Wheel]</color> Zoom In/Out";
     }
-
-    private void DisplayInitialMenu(EntityPiece ps)
-    {
-        ClearInputText();
-        NormalizeBuildPrompt(ps);
-        if (GameplayTest.instance.phase == GameplayTest.GamePhase.PickDirection 
-            || GameplayTest.instance.phase == GameplayTest.GamePhase.CombatSelector)
-            return;
-
-        //menuPrompt.alpha = 1;
-        ShowMenuPrompt();
-    }
-
+    
     private void DisplayInitialMenu()
     {
         //ClearInputText();
@@ -383,20 +362,50 @@ public class UIPromptManager : MonoBehaviour
         //menuPrompt.alpha = 1;
         ShowMenuPrompt();
     }
+    
+    #region REWRITE
+    
+    /// <summary>
+    /// Partial rewrite to just handle the InitialMenu
+    /// </summary>
+    /// <param name="gameState"></param>
+    public void UpdateUI(FrameGameState gameState)
+    {
+        if (gameState.DidChangePhases())
+        {
+            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.InitialTurnMenu)
+            {
+                DisplayInitialMenu(gameState.NewState.CurrentPlayer);
+            }
+            else
+            {
+                HideInitialMenu();
+            }
+        }
+    }
+    
+    private void DisplayInitialMenu(EntityPiece ps)
+    {
+        ClearInputText();
+        NormalizeBuildPrompt(ps);
+        // This thing here makes me feel like the rewrite is gonna introduce some bugs but oh well
+        /*if (GameplayTest.instance.phase == GameplayTest.GamePhase.PickDirection 
+            || GameplayTest.instance.phase == GameplayTest.GamePhase.CombatSelector)
+            return;
 
-    private void HideInitialMenu(EntityPiece ps)
+        //menuPrompt.alpha = 1;*/
+        ShowMenuPrompt();
+    }
+    
+    private void HideInitialMenu()
     {
         //menuPrompt.alpha = 0;
         inputPrompt.text = "";
         HideMenuPrompt();
     }
 
-    private void HideInitialMenu()
-    {
-        //menuPrompt.alpha = 0;
-        HideMenuPrompt();
-    }
-
+    #endregion
+    
     private void ScaleRectToOne(RectTransform rect, float duration)
     {
         LMotion.Create(rect.localScale, Vector3.one, duration)
@@ -658,14 +667,6 @@ public class UIPromptManager : MonoBehaviour
     private void OnFinishStockingStore(EntityPiece ep)
     {
         inventoryLimitText.text = $"{ep.inventory.Count}/{ep.inventoryLimit}";
-    }
-
-    private void OnWarpStarted(EntityPiece ep)
-    {
-        if(GameplayTest.instance.expectedPhase == GameplayTest.GamePhase.InitialTurnMenu)
-        {
-            HideInitialMenu();
-        }
     }
 
     private void OnWarpOver(EntityPiece ep)

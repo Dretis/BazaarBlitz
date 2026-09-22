@@ -2,6 +2,8 @@ using UnityEngine;
 using Cinemachine;
 using static UnityEngine.EventSystems.EventTrigger;
 using System.Collections.Generic;
+using Core;
+using Core.Events;
 
 public class CameraObserver : MonoBehaviour
 {
@@ -74,7 +76,6 @@ public class CameraObserver : MonoBehaviour
         m_FreeviewReticleMove.OnEventRaised += OnFreeviewReticleMove;
 
         m_RollForMovement.OnEventRaised += OnRollForMovement;
-        m_DiceRollPrep.OnEventRaised += OnDiceRollPrep;
         m_DiceRollUndo.OnEventRaised += OnDiceRollUndo;
 
         m_EnterLevelUp.OnEventRaised += OnEnterLevelUp;
@@ -104,6 +105,8 @@ public class CameraObserver : MonoBehaviour
         m_RestockStore.OnEventRaised += OnRestockStore;
 
         m_PlayerWon.OnEventRaised += OnPlayerWon;
+        
+        _gameStateEventChannel.OnEventRaised += UpdateCameraObserver;
     }
 
     private void OnDisable()
@@ -114,7 +117,6 @@ public class CameraObserver : MonoBehaviour
         m_FreeviewReticleMove.OnEventRaised -= OnFreeviewReticleMove;
 
         m_RollForMovement.OnEventRaised -= OnRollForMovement;
-        m_DiceRollPrep.OnEventRaised -= OnDiceRollPrep;
         m_DiceRollUndo.OnEventRaised -= OnDiceRollUndo;
 
         m_EnterLevelUp.OnEventRaised -= OnEnterLevelUp;
@@ -144,6 +146,8 @@ public class CameraObserver : MonoBehaviour
         m_RestockStore.OnEventRaised -= OnRestockStore;
 
         m_PlayerWon.OnEventRaised -= OnPlayerWon;
+        
+        _gameStateEventChannel.OnEventRaised -= UpdateCameraObserver;
     }
 
     // Start is called before the first frame update
@@ -214,13 +218,6 @@ public class CameraObserver : MonoBehaviour
     private void OnRollForMovement(int roll)
     {
         zoomedInCam.enabled = false;
-    }
-
-    private void OnDiceRollPrep(EntityPiece player)
-    {
-        zoomedInCam.Follow = player.transform;
-
-        zoomedInCam.enabled = true;
     }
 
     private void OnDiceRollUndo(EntityPiece player)
@@ -372,4 +369,23 @@ public class CameraObserver : MonoBehaviour
         }
     }
     */
+    
+    #region REWRITE
+    
+    public GameStateEventChannelSO _gameStateEventChannel;
+    
+    /// <summary>
+    /// Partial rewrite that only covers the logic when in dice roll
+    /// </summary>
+    /// <param name="gameState"></param>
+    public void UpdateCameraObserver(FrameGameState gameState)
+    {
+        if (gameState.NewState.GamePhase is GameplayTest.GamePhase.RollDice)
+        {
+            zoomedInCam.Follow = gameState.NewState.CurrentPlayer.transform;
+            zoomedInCam.enabled = true;
+        }
+    }
+    
+    #endregion
 }

@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using Core;
+using Core.Events;
 using UnityEngine;
 using LitMotion;
 using UnityEngine.Rendering.Universal;
@@ -25,7 +27,6 @@ public class AnimationManager : MonoBehaviour
     private void OnEnable()
     {
         m_NextPlayerTurn.OnEventRaised += SetCurrentPlayerAnimator;
-        m_DiceRollPrep.OnEventRaised += DiceIsRolling;
         m_DiceThrown.OnEventRaised += DiceIsThrown;
         m_ResetToIdle.OnEventRaised += ResetToIdleAnim;
         m_EnterLevelUp.OnEventRaised += OnEnterLevelUp;
@@ -33,12 +34,13 @@ public class AnimationManager : MonoBehaviour
 
         m_CheerForPlayer.OnEventRaised += OnCheerForPlayer;
         m_DamageTakenOnPlayer.OnEventRaised += OnDamageTakenOnPlayer;
+
+        _gameStateEventChannel.OnEventRaised += HandleGameState;
     }
 
     private void OnDisable()
     {
         m_NextPlayerTurn.OnEventRaised -= SetCurrentPlayerAnimator;
-        m_DiceRollPrep.OnEventRaised -= DiceIsRolling;
         m_DiceThrown.OnEventRaised -= DiceIsThrown;
         m_ResetToIdle.OnEventRaised -= ResetToIdleAnim;
         m_EnterLevelUp.OnEventRaised -= OnEnterLevelUp;
@@ -46,6 +48,8 @@ public class AnimationManager : MonoBehaviour
 
         m_CheerForPlayer.OnEventRaised -= OnCheerForPlayer;
         m_DamageTakenOnPlayer.OnEventRaised -= OnDamageTakenOnPlayer;
+        
+        _gameStateEventChannel.OnEventRaised -= HandleGameState;
     }
 
     private void SetCurrentPlayerAnimator(EntityPiece entity)
@@ -53,14 +57,6 @@ public class AnimationManager : MonoBehaviour
         if (currentAnimator != null)
             ResetToIdleAnim(null);
         currentAnimator = entity.GetComponentInChildren<Animator>();
-    }
-
-    private void DiceIsRolling(EntityPiece entity)
-    {
-        // currentAnimator = entity.GetComponentInChildren<Animator>();
-
-        if (currentAnimator != null)
-            currentAnimator.SetBool("Dice Rolling", true);
     }
 
     private void DiceIsThrown(int roll)
@@ -170,4 +166,27 @@ public class AnimationManager : MonoBehaviour
         yield return null;
     }
 
+    #region REWRITE
+    
+    public GameStateEventChannelSO _gameStateEventChannel;
+
+    private void HandleGameState(FrameGameState state)
+    {
+        if (!state.DidChangePhases())
+        {
+            return;
+        }
+
+        if (currentAnimator == null)
+        {
+            return;
+        }
+
+        if (state.NewState.GamePhase is GameplayTest.GamePhase.RollDice)
+        {
+            currentAnimator.SetBool("Dice Rolling", true);
+        }
+    }
+    
+    #endregion
 }

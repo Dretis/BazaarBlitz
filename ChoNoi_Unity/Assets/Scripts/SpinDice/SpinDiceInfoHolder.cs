@@ -5,6 +5,8 @@ using LitMotion;
 using TMPro;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 using System.Linq;
+using Core;
+using Core.Events;
 
 public class SpinDiceInfoHolder : MonoBehaviour
 {
@@ -43,27 +45,45 @@ public class SpinDiceInfoHolder : MonoBehaviour
     private void OnEnable()
     {
         m_NextPlayerTurn.OnEventRaised += OnNextPlayerTurn;
-        m_DiceRollPrep.OnEventRaised += OnDiceRollPrep;
         m_DiceRollUndo.OnEventRaised += OnDiceRollUndo;
         m_RollForMovement.OnEventRaised += OnRollForMovement;
         m_ChangeToMoveDie.OnEventRaised += OnChangeToMoveDie;
-
-
+        
         m_EnterLevelUp.OnEventRaised += OnEnterLevelUp;
+
+        _gameStateEventChannel.OnEventRaised += UpdateSpinDiceInfoHolder;
     }
 
     private void OnDisable()
     {
         //m_NextPlayerTurn.OnEventRaised -= OnNextPlayerTurn;
-        m_DiceRollPrep.OnEventRaised -= OnDiceRollPrep;
         m_DiceRollUndo.OnEventRaised -= OnDiceRollUndo;
         m_RollForMovement.OnEventRaised -= OnRollForMovement;
         m_ChangeToMoveDie.OnEventRaised -= OnChangeToMoveDie;
 
         m_EnterLevelUp.OnEventRaised -= OnEnterLevelUp;
+        
+        _gameStateEventChannel.OnEventRaised -= UpdateSpinDiceInfoHolder;
 
         transform.localScale = Vector3.zero;
     }
+    
+    #region REWRITE
+
+    public GameStateEventChannelSO _gameStateEventChannel;
+    
+    private void UpdateSpinDiceInfoHolder(FrameGameState state)
+    {
+        if (state.DidChangePhases())
+        {
+            if (state.NewState.GamePhase is GameplayTest.GamePhase.RollDice)
+            {
+                OnDiceRollPrep(state.NewState.CurrentPlayer);
+            }
+        }
+    }
+    
+    #endregion
 
     private void OnNextPlayerTurn(EntityPiece p)
     {
