@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 7525a07c969ef074598655628fd8d44d
+guid: ab738ed460273744c8dce176d1cf2e7d
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -48,7 +48,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 512
+  spritePixelsToUnits: 384
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -110,127 +110,85 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Monster_Boba_Atk_Sheet_0
+      name: Iron_Sheet_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 91.5
-        width: 102.333336
-        height: 91.5
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        y: 690
+        width: 802
+        height: 700
+      alignment: 9
+      pivot: {x: 0.46, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6c8db5fc55b4b874dbfd4bc42a8ea082
-      internalID: -1199247976
+      spriteID: 187d8bb5fa8a1034ea53034bf2180c1a
+      internalID: -1357280853
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Monster_Boba_Atk_Sheet_1
+      name: Iron_Sheet_1
       rect:
         serializedVersion: 2
-        x: 102
-        y: 91.5
-        width: 102.333336
-        height: 91.5
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 828
+        y: 690
+        width: 596
+        height: 700
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 01056d86902c6be458140b1314534f30
-      internalID: 1012818497
+      spriteID: 2e4e5e4783a93b746ae8e42d88fc6a1b
+      internalID: -1910445756
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Monster_Boba_Atk_Sheet_2
+      name: Iron_Sheet_2
       rect:
         serializedVersion: 2
-        x: 204
-        y: 91.5
-        width: 102.333336
-        height: 91.5
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 18
+        y: 0
+        width: 858
+        height: 689
+      alignment: 9
+      pivot: {x: 0.71, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4b70fd8eb5f64ac499a8b01856641ca4
-      internalID: -1641797369
+      spriteID: dd43179aac7b16f469286ee186ef2b69
+      internalID: 1677037093
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Monster_Boba_Atk_Sheet_3
+      name: Iron_Sheet_3
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0.5
-        width: 102.333336
-        height: 91.5
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 902
+        y: 0
+        width: 1028
+        height: 686
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 47bc43803dfdc1c498047061c74175ad
-      internalID: -1339574618
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Monster_Boba_Atk_Sheet_4
-      rect:
-        serializedVersion: 2
-        x: 102
-        y: 0.5
-        width: 102.333336
-        height: 91.5
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 3ef5f75c9b9a2eb48ac6f2ce3272595b
-      internalID: 1305820821
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Monster_Boba_Atk_Sheet_5
-      rect:
-        serializedVersion: 2
-        x: 204
-        y: 0.5
-        width: 102.333336
-        height: 91.5
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 608c1c56369c6f24990c1c0b3e3652e8
-      internalID: 1907889907
+      spriteID: bd11ba192e314364395978c027b8046d
+      internalID: -8265552
       vertices: []
       indices: 
       edges: []
@@ -246,12 +204,10 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Monster_Boba_Atk_Sheet_0: -1199247976
-      Monster_Boba_Atk_Sheet_1: 1012818497
-      Monster_Boba_Atk_Sheet_2: -1641797369
-      Monster_Boba_Atk_Sheet_3: -1339574618
-      Monster_Boba_Atk_Sheet_4: 1305820821
-      Monster_Boba_Atk_Sheet_5: 1907889907
+      Iron_Sheet_0: -1357280853
+      Iron_Sheet_1: -1910445756
+      Iron_Sheet_2: 1677037093
+      Iron_Sheet_3: -8265552
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

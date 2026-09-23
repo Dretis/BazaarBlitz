@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 7525a07c969ef074598655628fd8d44d
+guid: aea29811c52445746aa53f28fb562852
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -43,11 +43,11 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
-  alignment: 0
-  spritePivot: {x: 0.5, y: 0.5}
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0}
   spritePixelsToUnits: 512
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
@@ -110,127 +110,85 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Monster_Boba_Atk_Sheet_0
+      name: Enemy_Rice_Sheet_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 91.5
-        width: 102.333336
-        height: 91.5
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        y: 467
+        width: 510
+        height: 467
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6c8db5fc55b4b874dbfd4bc42a8ea082
-      internalID: -1199247976
+      spriteID: 043c99662b2112246adaa447759e4c66
+      internalID: -1285902677
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Monster_Boba_Atk_Sheet_1
+      name: Enemy_Rice_Sheet_1
       rect:
         serializedVersion: 2
-        x: 102
-        y: 91.5
-        width: 102.333336
-        height: 91.5
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 510
+        y: 467
+        width: 510
+        height: 467
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 01056d86902c6be458140b1314534f30
-      internalID: 1012818497
+      spriteID: 77255853002bb0847856f308d92423e5
+      internalID: -593500939
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Monster_Boba_Atk_Sheet_2
-      rect:
-        serializedVersion: 2
-        x: 204
-        y: 91.5
-        width: 102.333336
-        height: 91.5
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 4b70fd8eb5f64ac499a8b01856641ca4
-      internalID: -1641797369
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Monster_Boba_Atk_Sheet_3
+      name: Enemy_Rice_Sheet_2
       rect:
         serializedVersion: 2
         x: 0
-        y: 0.5
-        width: 102.333336
-        height: 91.5
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        y: 0
+        width: 510
+        height: 467
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 47bc43803dfdc1c498047061c74175ad
-      internalID: -1339574618
+      spriteID: 3cd4e83b1f02f7e4895d96ffe5905917
+      internalID: -667206128
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Monster_Boba_Atk_Sheet_4
+      name: Enemy_Rice_Sheet_3
       rect:
         serializedVersion: 2
-        x: 102
-        y: 0.5
-        width: 102.333336
-        height: 91.5
-      alignment: 0
-      pivot: {x: 0, y: 0}
+        x: 510
+        y: 0
+        width: 510
+        height: 467
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3ef5f75c9b9a2eb48ac6f2ce3272595b
-      internalID: 1305820821
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Monster_Boba_Atk_Sheet_5
-      rect:
-        serializedVersion: 2
-        x: 204
-        y: 0.5
-        width: 102.333336
-        height: 91.5
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 608c1c56369c6f24990c1c0b3e3652e8
-      internalID: 1907889907
+      spriteID: 87843eaf4b050e44eac97ce8c9c6e699
+      internalID: -1378029706
       vertices: []
       indices: 
       edges: []
@@ -246,12 +204,10 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Monster_Boba_Atk_Sheet_0: -1199247976
-      Monster_Boba_Atk_Sheet_1: 1012818497
-      Monster_Boba_Atk_Sheet_2: -1641797369
-      Monster_Boba_Atk_Sheet_3: -1339574618
-      Monster_Boba_Atk_Sheet_4: 1305820821
-      Monster_Boba_Atk_Sheet_5: 1907889907
+      Enemy_Rice_Sheet_0: -1285902677
+      Enemy_Rice_Sheet_1: -593500939
+      Enemy_Rice_Sheet_2: -667206128
+      Enemy_Rice_Sheet_3: -1378029706
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
