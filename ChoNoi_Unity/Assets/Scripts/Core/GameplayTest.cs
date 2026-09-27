@@ -559,6 +559,39 @@ public class GameplayTest : MonoBehaviour
         bool isCmdToProcess = _commandQueue.TryDequeue(out GameCommand command);
 
         // CORE GAME LOGIC
+        CoreGameLogic(prevState, ref newState, isCmdToProcess, command);
+
+        FrameGameState frameGameState = new FrameGameState()
+        {
+            NewState = newState,
+            PrevState = prevState
+        };
+        
+        // Input
+        foreach (var inputController in _inputControllers)
+        {
+            inputController.SwitchActionMapRewrite(_currentGameState.GamePhase);
+        }
+
+        // Handle all the UI and presentation stuff here or in the below event
+        _uiPromptManager.UpdateUI(frameGameState);
+        
+        // Can also use events I guess
+        // ANYTHING THAT LISTENS HERE SHOULD NEVERRRRRR CHANGE THE GAME STATE IN ANY WAY
+        // GAME STATE IS DONNNNE AFTER CORE LOGIC RUNS
+        // THE ORDER THAT THINGS EXECUTE FROM THIS EVENT SHOULDN'T MATTER
+        // BECAUSE THE ORDER IS NON DETERMINISTIC IF YOU SUBSCRIBE IN AWAKE
+        // SO RACE CONDITIONS ARE BADDDDDDDDDDDDDDDDDDDDDDD
+        _gameStateUpdatedEventChannel?.RaiseEvent(frameGameState);
+        
+        _currentGameState = newState;
+        
+        // SYNC OUT (connect rewritten system to the existing system so the rewrite demo works)
+        phase = _currentGameState.GamePhase;
+    }
+
+    private void CoreGameLogic(GameState prevState, ref GameState newState, bool isCmdToProcess, GameCommand command)
+    {
         switch (newState.GamePhase)
         {
             // Pick choices
@@ -572,24 +605,7 @@ public class GameplayTest : MonoBehaviour
                 // Partial rewrite handles case where you enter movement dice roll
                 if (command.Type is GameCommandType.InitialTurnMenuRollMoveDie)
                 {
-                    var p = newState.CurrentPlayer;
-                    if (p.CanLevelUp() && !ThisPlayerMustFight(p)) {
-
-                        expectedPhase = GamePhase.LevelUp;
-                        // not part of rewrite so go back to using the events
-                        m_EnterLevelUp.RaiseEvent(p);
-                    }
-                    else if (!ThisPlayerMustFight(p))
-                    {
-                        // no events just update the state
-                        // We can roll dice yay
-                        newState.GamePhase = GamePhase.RollDice;
-                    }
-                    else
-                    {
-                        // In Combat
-                        newState.GamePhase = GamePhase.EncounterTime;
-                    }
+                    HandleTryDiceRoll(prevState, ref newState);
                 }
                 break;
             
@@ -669,34 +685,28 @@ public class GameplayTest : MonoBehaviour
                 EndGame();
                 break;
         }
+    }
 
-        FrameGameState frameGameState = new FrameGameState()
-        {
-            NewState = newState,
-            PrevState = prevState
-        };
-        
-        // Input
-        foreach (var inputController in _inputControllers)
-        {
-            inputController.SwitchActionMapRewrite(_currentGameState.GamePhase);
+    private void HandleTryDiceRoll(GameState prevState, ref GameState newState)
+    {
+        var p = newState.CurrentPlayer;
+        if (p.CanLevelUp() && !ThisPlayerMustFight(p)) {
+
+            expectedPhase = GamePhase.LevelUp;
+            // not part of rewrite so go back to using the events
+            m_EnterLevelUp.RaiseEvent(p);
         }
-
-        // Handle all the UI and presentation stuff here or in the below event
-        _uiPromptManager.UpdateUI(frameGameState);
-        
-        // Can also use events I guess
-        // ANYTHING THAT LISTENS HERE SHOULD NEVERRRRRR CHANGE THE GAME STATE IN ANY WAY
-        // GAME STATE IS DONNNNE AFTER CORE LOGIC RUNS
-        // THE ORDER THAT THINGS EXECUTE FROM THIS EVENT SHOULDN'T MATTER
-        // BECAUSE THE ORDER IS NON DETERMINISTIC IF YOU SUBSCRIBE IN AWAKE
-        // SO RACE CONDITIONS ARE BADDDDDDDDDDDDDDDDDDDDDDD
-        _gameStateUpdatedEventChannel?.RaiseEvent(frameGameState);
-        
-        _currentGameState = newState;
-        
-        // SYNC OUT (connect rewritten system to the existing system so the rewrite demo works)
-        phase = _currentGameState.GamePhase;
+        else if (!ThisPlayerMustFight(p))
+        {
+            // no events just update the state
+            // We can roll dice yay
+            newState.GamePhase = GamePhase.RollDice;
+        }
+        else
+        {
+            // In Combat
+            newState.GamePhase = GamePhase.EncounterTime;
+        }
     }
 
     #endregion

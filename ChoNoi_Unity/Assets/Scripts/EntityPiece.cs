@@ -1,6 +1,7 @@
 using Febucci.UI.Core;
 using System;
 using System.Collections.Generic;
+using Core.Events;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -97,6 +98,22 @@ public class EntityPiece : MonoBehaviour
     public List<Action> attackActions;
     public List<Action> defendActions;
     public CombatUIManager.FightingPosition fightingPosition; // Just for the combat, will change
+
+    public GameStateEventChannelSO _gameStateEvent;
+
+    private void Awake()
+    {
+        _gameStateEvent.OnEventRaised += DisplayEntityFromGameState;
+    }
+
+    private void DisplayEntityFromGameState(FrameGameState gameState)
+    {
+        var currentPlayerState = gameState.NewState.Players;
+        var prevPlayerStates = gameState.PrevState.Players;
+        
+        if (prevPlayerStates[id].playerColor != currentPlayerState[id].playerColor)
+            playerSprite.color = currentPlayerState[id].playerColor;
+    }
 
     private void OnEnable()
     {
