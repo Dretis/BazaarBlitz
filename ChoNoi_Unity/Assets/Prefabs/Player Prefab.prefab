@@ -22635,26 +22635,36 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 188957564c85adc4a8e2ce5c7b8466f5, type: 2}
   - {fileID: 11400000, guid: 5b8f525effb08414abb503dfc27d55f6, type: 2}
   fightingPosition: 0
+  _gameStateEvent: {fileID: 11400000, guid: 113369b80091b3346b620c7e0c0d9b8c, type: 2}
   currentStatsModifier:
     dieModifiers:
-    - finalResultFlatModifier: 0
+    - finalResultAtkFlatModifier: 0
+      finalResultDefFlatModifier: 0
       finalResultMultModifier: 1
-    - finalResultFlatModifier: 0
+    - finalResultAtkFlatModifier: 0
+      finalResultDefFlatModifier: 0
       finalResultMultModifier: 1
-    - finalResultFlatModifier: 0
+    - finalResultAtkFlatModifier: 0
+      finalResultDefFlatModifier: 0
       finalResultMultModifier: 1
     deathLossRatio: 0.5
-    interestRate: 0
     rollModifier: 0
+    interestRate: 0
+    storeLevelMultModifier: 0
+    canUseRelocate: 0
+    canRenovateOnPass: 0
     movementFlatModifier: 0
     movementMultModifier: 1
     movementTempoScale: 0
     canUseSpeedDie: 0
+    redirectOnSpeedDie: 0
     strongMultModifier: 0
     neutralMultModifier: 0
     resistMultModifier: 0
-    canInflictWrath: 0
-    hasGreed: 0
+    strongDefRollShred: 0
+    neutralDefRollShred: 0
+    resistDefRollShred: 0
+    canGreedOnKill: 0
     defenseModifier: 0
     lifestealMult: 0
     healthRegen: 0

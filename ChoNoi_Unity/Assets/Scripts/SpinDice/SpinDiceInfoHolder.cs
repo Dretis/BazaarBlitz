@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using LitMotion;
 using TMPro;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 using System.Linq;
 using Core;
 using Core.Events;
@@ -76,9 +75,18 @@ public class SpinDiceInfoHolder : MonoBehaviour
     {
         if (state.DidChangePhases())
         {
+            if (state.NewState.GamePhase is GameplayTest.GamePhase.InitialTurnMenu)
+            {
+                OnDiceRollUndo(state.NewState.CurrentPlayer);
+            }
             if (state.NewState.GamePhase is GameplayTest.GamePhase.RollDice)
             {
                 OnDiceRollPrep(state.NewState.CurrentPlayer);
+            }
+            if (state.PrevState.GamePhase is GameplayTest.GamePhase.RollDice &&
+                state.NewState.GamePhase is GameplayTest.GamePhase.PickDirection)
+            {
+                OnRollForMovement(state.NewState.MoveDieRoll);
             }
         }
     }

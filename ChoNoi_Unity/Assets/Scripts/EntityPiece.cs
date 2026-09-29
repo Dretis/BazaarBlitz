@@ -103,7 +103,7 @@ public class EntityPiece : MonoBehaviour
 
     private void Awake()
     {
-        _gameStateEvent.OnEventRaised += DisplayEntityFromGameState;
+        //_gameStateEvent.OnEventRaised += DisplayEntityFromGameState;
     }
 
     private void DisplayEntityFromGameState(FrameGameState gameState)
@@ -111,8 +111,8 @@ public class EntityPiece : MonoBehaviour
         var currentPlayerState = gameState.NewState.Players;
         var prevPlayerStates = gameState.PrevState.Players;
         
-        if (prevPlayerStates[id].playerColor != currentPlayerState[id].playerColor)
-            playerSprite.color = currentPlayerState[id].playerColor;
+        //if (prevPlayerStates[id].playerColor != currentPlayerState[id].playerColor)
+        //    playerSprite.color = currentPlayerState[id].playerColor;
     }
 
     private void OnEnable()

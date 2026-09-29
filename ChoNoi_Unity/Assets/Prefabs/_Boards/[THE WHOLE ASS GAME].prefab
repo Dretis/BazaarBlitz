@@ -2823,6 +2823,15 @@ MonoBehaviour:
   m_TryAugmentDieFaceValue: {fileID: 11400000, guid: 54e16fb7a5ff63d409085a638eba2c40, type: 2}
   m_RecieveVendorItem: {fileID: 11400000, guid: 951f9f6bcf8b1554ebb26e55e07e88b8, type: 2}
   m_FighterSelected: {fileID: 11400000, guid: b696f39d908595b43aa55322bfb1971d, type: 2}
+  _uiPromptManager: {fileID: 0}
+  _gameStateUpdatedEventChannel: {fileID: 0}
+  _inputControllers: []
+  _currentGameState:
+    LastGamePhase: 0
+    GamePhase: 0
+    CurrentPlayer: {fileID: 0}
+    CurrentPlayerHasUsedItem: 0
+    MoveDieRoll: 0
 --- !u!1 &6700546163183720011
 GameObject:
   m_ObjectHideFlags: 0
@@ -4780,6 +4789,7 @@ MonoBehaviour:
   m_ExitLevelUp: {fileID: 11400000, guid: 0ced05665b46bb549b612dc3b7cba01f, type: 2}
   m_CheerForPlayer: {fileID: 11400000, guid: 81a6536ab588985478055afd174d4c5d, type: 2}
   m_DamageTakenOnPlayer: {fileID: 11400000, guid: d15909efd6b34da489f89641fa2d772e, type: 2}
+  _gameStateEventChannel: {fileID: 0}
 --- !u!114 &6700546163640213547
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6011,6 +6021,7 @@ MonoBehaviour:
   m_ConfirmBuildStore: {fileID: 11400000, guid: f4bf13c62fafdfa4da428cfbf244c5e3, type: 2}
   m_RestockStore: {fileID: 11400000, guid: 45d6b055127905e4cb2609426a521e19, type: 2}
   m_PlayerWon: {fileID: 11400000, guid: 30be4a0c1ed8bdc43b43a3dc867dd37d, type: 2}
+  _gameStateEventChannel: {fileID: 0}
 --- !u!114 &6700546163881176788
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8379,6 +8390,7 @@ MonoBehaviour:
   m_PlayerUndidSomething: {fileID: 11400000, guid: 42d98c829d9faf44680a0974c08d3121, type: 2}
   m_IncidentStarted: {fileID: 11400000, guid: fbbbe6e31fced7641b6b92ac4a0ea4c9, type: 2}
   m_PlayerWon: {fileID: 11400000, guid: 30be4a0c1ed8bdc43b43a3dc867dd37d, type: 2}
+  _gameStateEventChannel: {fileID: 11400000, guid: 113369b80091b3346b620c7e0c0d9b8c, type: 2}
 --- !u!1 &6700546164497167229
 GameObject:
   m_ObjectHideFlags: 0

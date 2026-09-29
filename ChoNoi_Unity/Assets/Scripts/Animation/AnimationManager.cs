@@ -70,7 +70,7 @@ public class AnimationManager : MonoBehaviour
 
         // Get current animation 
         var state = currentAnimator.GetCurrentAnimatorStateInfo(0);
-        Debug.Log($"Current Animation State Length:{state.length}");
+        //Debug.Log($"Current Animation State Length:{state.length}");
 
         // Send in the duration of the dice throw animation to eventually reset to idle animation
         StartCoroutine(ToBoingAnimAfter(state.length)); // placeholder, change later
@@ -181,10 +181,25 @@ public class AnimationManager : MonoBehaviour
         {
             return;
         }
+        if (state.NewState.GamePhase is GameplayTest.GamePhase.InitialTurnMenu)
+        {
+            // reset to idle
+            currentAnimator.SetTrigger("ToIdle");
+            currentAnimator.SetBool("Dice Rolling", false);
+            currentAnimator.SetBool("Dice Thrown", false);
+            currentAnimator.SetBool("Moving", false);
+        }
 
         if (state.NewState.GamePhase is GameplayTest.GamePhase.RollDice)
         {
             currentAnimator.SetBool("Dice Rolling", true);
+        }
+
+        if (state.PrevState.GamePhase is GameplayTest.GamePhase.RollDice &&
+            state.NewState.GamePhase is GameplayTest.GamePhase.PickDirection)
+        {
+            // Player rolled for move
+            DiceIsThrown(state.NewState.MoveDieRoll);
         }
     }
     

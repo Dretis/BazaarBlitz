@@ -58,14 +58,16 @@ public class CombatInputSystem : MonoBehaviour
         player2 = combatManager.player2;
 
         // Set up inputs to the correct player side
-        var player1Config = PlayerConfigurationManager.instance.GetPlayerConfig(combatManager.player1.id);
-        player1input = player1Config.Input;
+        //var player1Config = PlayerConfigurationManager.instance.GetPlayerConfig(combatManager.player1.id);
+        //player1input = player1Config.Input;
+        player1input = GameplayTest.instance.GetInputController(combatManager.player1.id);
 
         if (!combatManager.player2.isEnemy)
         {
             // Only put a player input for P2 if in a pvp fight
-            var player2Config = PlayerConfigurationManager.instance.GetPlayerConfig(combatManager.player2.id);
-            player2input = player2Config.Input;
+            //var player2Config = PlayerConfigurationManager.instance.GetPlayerConfig(combatManager.player2.id);
+            //player2input = player2Config.Input;
+            player2input = GameplayTest.instance.GetInputController(combatManager.player2.id);
         }
 
         // Case when both players share a controller

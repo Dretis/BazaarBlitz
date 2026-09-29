@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Core;
 using Core.Events;
 using UnityEngine;
+using UnityEngine.Analytics;
 
 public class SoundManager : MonoBehaviour
 {
@@ -91,10 +92,6 @@ public class SoundManager : MonoBehaviour
     public EntityActionPhaseEventChannelSO m_ActionSelected;
     public PlayerFloatActionTypeEventChannelSO m_StoreDiceRolled;
     public DamageEventChannelSO m_DamageTaken;
-
-    private bool startedBattleMusic = false;
-
-
     private void Awake()
     {
         DontDestroyOnLoad(this.gameObject);
@@ -113,12 +110,13 @@ public class SoundManager : MonoBehaviour
 
     private void OnEnable()
     {
+        _gameStateEventChannel.OnEventRaised += HandleGameState;
         //World Events
         m_ReturnToMainMenu.OnEventRaised += OnReturnToMainMenu;
         m_EnteredCombatScene.OnEventRaised += StopOverworldMusic;
         m_EnteredOverworldScene.OnEventRaised += PlayOverworldMusic;
         m_PassByStamp.OnEventRaised += PlayStampSound;
-        m_PlayerMovedOnBoard.OnEventRaised += PlayMoveSound;
+        //m_PlayerMovedOnBoard.OnEventRaised += PlayMoveSound;
         m_PlayerUndidSomething.OnEventRaised += PlayUndoSound;
         m_RollForMovement.OnEventRaised += PlayDiceHitSound;
         m_ItemUsed.OnEventRaised += PlayUseItemSound;
@@ -174,12 +172,13 @@ public class SoundManager : MonoBehaviour
 
     private void OnDisable()
     {
+        _gameStateEventChannel.OnEventRaised -= HandleGameState;
         //World Events
         m_ReturnToMainMenu.OnEventRaised -= OnReturnToMainMenu;
         m_EnteredCombatScene.OnEventRaised -= StopOverworldMusic;
         m_EnteredOverworldScene.OnEventRaised -= PlayOverworldMusic;
         m_PassByStamp.OnEventRaised -= PlayStampSound;
-        m_PlayerMovedOnBoard.OnEventRaised -= PlayMoveSound;
+        //m_PlayerMovedOnBoard.OnEventRaised -= PlayMoveSound;
         m_PlayerUndidSomething.OnEventRaised -= PlayUndoSound;
         m_RollForMovement.OnEventRaised -= PlayDiceHitSound;
         m_ItemUsed.OnEventRaised -= PlayUseItemSound;
@@ -516,6 +515,28 @@ public class SoundManager : MonoBehaviour
         else if (state.PrevState.GamePhase is GameplayTest.GamePhase.RollDice)
         {
             StopDiceRollSound();
+        }
+
+        if (state.NewState.GamePhase is GameplayTest.GamePhase.PickDirection)
+        {
+            if (state.PrevState.GamePhase is GameplayTest.GamePhase.RollDice)
+            {
+                PlayDiceHitSound(state.NewState.MoveDieRoll);
+            }
+            else if (state.PrevState.GamePhase is GameplayTest.GamePhase.MoveAround)
+            {
+                PlayUndoSound();
+            }
+            else
+            {
+                PlayMoveSound();
+            }
+        }
+
+        if (state.NewState.GamePhase is GameplayTest.GamePhase.CombatTime)
+        {
+            // Play some swooshy wavy enter fight sfx
+            // Also change the music variant to Upbeat/Combat
         }
     }
     

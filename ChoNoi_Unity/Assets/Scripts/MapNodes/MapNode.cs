@@ -99,8 +99,6 @@ public class MapNode : MonoBehaviour
     public virtual void PassByThisNode(EntityPiece p)
     {
         // Current player passed this node
-        if (p.movementLeft == 0) return;
-
         Debug.Log($"Passed MapNode - {name} | Tag: {tag}");
     }
 

@@ -6,6 +6,8 @@ using TMPro;
 using DG.Tweening;
 using UnityEngine.EventSystems;
 using System.Linq;
+using Core.Events;
+using System;
 
 public class UIInventoryManager : MonoBehaviour
 {
@@ -89,6 +91,25 @@ public class UIInventoryManager : MonoBehaviour
     public PlayerEventChannelSO m_FullInventory;
 
 
+    public GameStateEventChannelSO _gameStateEvent;
+
+    private void UpdateUIFromGameState(FrameGameState gameState)
+    {
+        if (gameState.DidChangePhases())
+        {
+            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.Inventory)
+            {
+                DisplayInventory(gameState.NewState.CurrentPlayer);
+            }
+            else
+            {
+                HideInventory();
+                HideStoreStock();
+                HideConfirmGroup();
+            }
+        }
+    }
+
     private void OnEnable()
     {
         inventoryGroup.alpha = 0;
@@ -115,6 +136,8 @@ public class UIInventoryManager : MonoBehaviour
         m_TryUseItemAt.OnEventRaised += OnTryUseItemAt;
 
         m_FullInventory.OnEventRaised += OnFullInventory;
+
+        _gameStateEvent.OnEventRaised += UpdateUIFromGameState;
     }
 
     private void OnDisable()
@@ -133,6 +156,8 @@ public class UIInventoryManager : MonoBehaviour
         m_TryUseItemAt.OnEventRaised -= OnTryUseItemAt;
 
         m_FullInventory.OnEventRaised -= OnFullInventory;
+
+        _gameStateEvent.OnEventRaised -= UpdateUIFromGameState;
     }
 
     private void SpawnItemsInInventory(EntityPiece entity)
@@ -179,7 +204,7 @@ public class UIInventoryManager : MonoBehaviour
 
     private void DisplayInventory(EntityPiece entity)
     {
-        Debug.Log("wtf how");
+        //Debug.Log("wtf how");
 
         FadeTo(inventoryGroup, 1, 0.25f);
 
@@ -349,7 +374,7 @@ public class UIInventoryManager : MonoBehaviour
 
     public void HideSelectedItemDetails()
     {
-        selectedItemIcon.sprite = null;
+        //selectedItemIcon.sprite = null;
         selectedItemIcon.enabled = false;
 
         selectedItemInfo[0].text = "";

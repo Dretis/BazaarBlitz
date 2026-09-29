@@ -19,9 +19,7 @@ public class PlayerInputController : MonoBehaviour
         PS,
         Switch
     }
-    //private PlayerInputController instance;
-    //[SerializeField] private List<PlayerConfiguration> playerConfigs;
-    private PlayerInputActions playerInputActions; 
+    public PlayerInput PlayerInput => playerInput;
 
     [SerializeField] private CurrentDevice device;
     //[SerializeField] private EntityPiece currentPlayer;
@@ -233,69 +231,79 @@ public class PlayerInputController : MonoBehaviour
     #region 'Inital Turn Menu' Action Map
     private void OnView()
     {
-        Debug.Log("menu item pressed as message");
+        Debug.Log("View pressed as message");
         previousGamePhase = GamePhase.InitialTurnMenu;
-        m_EnableFreeview.RaiseEvent();
+        //m_EnableFreeview.RaiseEvent();
+        GameplayTest.instance.QueueCommand(new ITMCommand(ITMCommand.ITMAction.View));
         //FreeviewEnabled(GamePhase.InitialTurnMenu);
     }
 
     private void OnRoll()
     {
-        var p = GameplayTest.instance.currentPlayer;
-        Debug.Log("roll pressed as message");
+        //var p = GameplayTest.instance.currentPlayer;
+        Debug.Log("Roll pressed as message");
         previousGamePhase = GamePhase.InitialTurnMenu;
-        GameplayTest.instance.QueueCommand(new GameCommand(GameCommandType.InitialTurnMenuRollMoveDie));
+
+        GameplayTest.instance.QueueCommand(new ITMCommand(ITMCommand.ITMAction.Roll));
+
+        //GameplayTest.instance.QueueCommand(new GameCommand(GameCommandType.InitialTurnMenuRollMoveDie));
         //SwitchActionMap(GamePhase.RollDice);
     }
 
     private void OnInv()
     {
-        Debug.Log("inventorty pressed as message");
-        if (!GameplayTest.instance.playerUsedItem)
-        {
-            var p = GameplayTest.instance.currentPlayer;
+        Debug.Log("Inv pressed as message");
 
-            playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
-            playerInput.uiInputModule.actionsAsset = playerInput.actions;
+        GameplayTest.instance.QueueCommand(new ITMCommand(ITMCommand.ITMAction.Inv));
 
-            previousGamePhase = GamePhase.InitialTurnMenu;
+        //if (!GameplayTest.instance.playerUsedItem)
+        //{
+        //    var p = GameplayTest.instance.currentPlayer;
 
-            SwitchActionMap(GamePhase.Inventory);
-            m_OpenInventory.RaiseEvent(p);
-        }
-        else
-        {
-            // play some nuh-uh sound
-        }
+        //    playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
+        //    playerInput.uiInputModule.actionsAsset = playerInput.actions;
+
+        //    previousGamePhase = GamePhase.InitialTurnMenu;
+
+        //    SwitchActionMap(GamePhase.Inventory);
+        //    m_OpenInventory.RaiseEvent(p);
+        //}
+        //else
+        //{
+        //    // play some nuh-uh sound
+        //}
     }
 
     private void OnBuild()
     {
         Debug.Log("Build presed");
-        var p = GameplayTest.instance.currentPlayer;
-        if (p.occupiedNode.tag == "Encounter"
-            && p.storeCount < GameplayTest.instance.currentRuleset.storeLimit
-            && !p.currentStates.Contains(EntityPiece.State.Fighting))
-        {
-            playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
-            playerInput.uiInputModule.actionsAsset = playerInput.actions;
 
-            previousGamePhase = GamePhase.InitialTurnMenu;
+        GameplayTest.instance.QueueCommand(new ITMCommand(ITMCommand.ITMAction.Build));
 
-            m_TryBuildStore.RaiseEvent(p);
-            SwitchActionMap(GamePhase.BuildingStore);
-            //Debug.Log("Built a store");
-            // Build a store in the current tile
-            //m_BuildStore.RaiseEvent(currentPlayer);
-            //m_RestockStore.RaiseEvent(currentPlayer.occupiedNode);
-            //SwitchActionMap(GamePhase.StockStore);
+        //var p = GameplayTest.instance.currentPlayer;
+        //if (p.occupiedNode.tag == "Encounter"
+        //    && p.storeCount < GameplayTest.instance.currentRuleset.storeLimit
+        //    && !p.currentStates.Contains(EntityPiece.State.Fighting))
+        //{
+        //    playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
+        //    playerInput.uiInputModule.actionsAsset = playerInput.actions;
 
-        }
-        else
-        {
-            Debug.Log("Can't build store");
-            // Give some notification/play some nuh-uh sound
-        }
+        //    previousGamePhase = GamePhase.InitialTurnMenu;
+
+        //    m_TryBuildStore.RaiseEvent(p);
+        //    SwitchActionMap(GamePhase.BuildingStore);
+        //    //Debug.Log("Built a store");
+        //    // Build a store in the current tile
+        //    //m_BuildStore.RaiseEvent(currentPlayer);
+        //    //m_RestockStore.RaiseEvent(currentPlayer.occupiedNode);
+        //    //SwitchActionMap(GamePhase.StockStore);
+
+        //}
+        //else
+        //{
+        //    Debug.Log("Can't build store");
+        //    // Give some notification/play some nuh-uh sound
+        //}
 
     }
 
@@ -317,6 +325,10 @@ public class PlayerInputController : MonoBehaviour
     #endregion
 
     # region 'UI' Action Map
+    private void OnNavigate()
+    {
+        //Debug.Log($"Player ID: {playerInput.playerIndex} - UI Action Map | Navigating...");
+    }
     private void OnCancel()
     {
         // Not in a game session
@@ -352,51 +364,57 @@ public class PlayerInputController : MonoBehaviour
     #region 'Moving' Action Map
     private void OnMove(InputValue value)
     {
-        var gp = GameplayTest.instance;
-        var p = GameplayTest.instance.currentPlayer;
+        var direction = value.Get<Vector2>();
+        GameplayTest.instance.QueueCommand(new MovingCommand(direction));
 
-        var x = value.Get<Vector2>().x;
-        var y = value.Get<Vector2>().y;
+        //var gp = GameplayTest.instance;
+        //var p = GameplayTest.instance.currentPlayer;
 
-        float angle = Mathf.Atan2(y, x) * Mathf.Rad2Deg;
+        //var x = value.Get<Vector2>().x;
+        //var y = value.Get<Vector2>().y;
 
-        Debug.Log($"MOVING | {value.Get<Vector2>()} | Angle: {angle}\'");
-        // Angles | 0 = Right, 90 = Up, 180 = Left, -90 = Down
+        //float angle = Mathf.Atan2(y, x) * Mathf.Rad2Deg;
 
-        if (angle <= 135 && angle >= 45)
-        {
-            //Debug.Log("MOVE UP/NORTH");
-            gp.wantedNode = p.occupiedNode.north;
-        }
-        else if (angle < 45 && angle > -45 && x != 0)
-        {
-            //Debug.Log("MOVE RIGHT/EAST");
-            gp.wantedNode = p.occupiedNode.east;
-            p.playerSprite.flipX = true;
-        }
-        else if (angle <= -45 && angle >= -135)
-        {
-            //Debug.Log("MOVE DOWN/SOUTH");
-            gp.wantedNode = p.occupiedNode.south;
-        }
-        else if (angle < -135 || angle > 135)
-        {
-            //Debug.Log("MOVE LEFT/WEST");
-            gp.wantedNode = p.occupiedNode.west;
-            p.playerSprite.flipX = false;
-        }
+        //Debug.Log($"MOVING | {value.Get<Vector2>()} | Angle: {angle}\'");
+        //// Angles | 0 = Right, 90 = Up, 180 = Left, -90 = Down
 
-        if(gp.wantedNode != null && !(gp.wantedNode == p.previousNode && p.traveledNodes.Count <= 1))
-        {
-            GameplayTest.instance.phase = GamePhase.MoveAround;
-            // prob replace this part w/ an event call
-        }
+        //if (angle <= 135 && angle >= 45)
+        //{
+        //    //Debug.Log("MOVE UP/NORTH");
+        //    gp.wantedNode = p.occupiedNode.north;
+        //}
+        //else if (angle < 45 && angle > -45 && x != 0)
+        //{
+        //    //Debug.Log("MOVE RIGHT/EAST");
+        //    gp.wantedNode = p.occupiedNode.east;
+        //    p.playerSprite.flipX = true;
+        //}
+        //else if (angle <= -45 && angle >= -135)
+        //{
+        //    //Debug.Log("MOVE DOWN/SOUTH");
+        //    gp.wantedNode = p.occupiedNode.south;
+        //}
+        //else if (angle < -135 || angle > 135)
+        //{
+        //    //Debug.Log("MOVE LEFT/WEST");
+        //    gp.wantedNode = p.occupiedNode.west;
+        //    p.playerSprite.flipX = false;
+        //}
+
+        //if(gp.wantedNode != null && !(gp.wantedNode == p.previousNode && p.traveledNodes.Count <= 1))
+        //{
+        //    GameplayTest.instance.phase = GamePhase.MoveAround;
+        //    // prob replace this part w/ an event call
+        //}
     }
 
     private void OnToggleFreeview()
     {
-        previousGamePhase = GamePhase.PickDirection;
-        m_EnableFreeview.RaiseEvent();
+        //previousGamePhase = GamePhase.PickDirection;
+        //m_EnableFreeview.RaiseEvent();
+
+        GameplayTest.instance.QueueCommand(new ITMCommand(ITMCommand.ITMAction.Inv));
+        //GameplayTest.instance.QueueCommand(new GenericCommand());
     }
     #endregion
 
@@ -405,6 +423,9 @@ public class PlayerInputController : MonoBehaviour
     {
         freeviewMoveInput = value.Get<Vector2>();
         m_FreeviewReticleMove.RaiseEvent(freeviewMoveInput);
+
+        //var freeviewMoveInput = value.Get<Vector2>();
+        //GameplayTest.instance.QueueCommand(new MovingCommand(freeviewMoveInput));
     }
 
     private void OnFreeviewExamine()
@@ -418,93 +439,98 @@ public class PlayerInputController : MonoBehaviour
 
     private void OnFreeviewExit()
     {
-        //SwitchActionMap(previousGamePhase);
-        if (previousGamePhase == GamePhase.PreStockStore)
-        {
-            m_BackRenovateStore.RaiseEvent();
-        }
+        GameplayTest.instance.QueueCommand(new FreeviewExitCommand());
+        //if (previousGamePhase == GamePhase.PreStockStore)
+        //{
+        //    m_BackRenovateStore.RaiseEvent();
+        //}
 
-        m_DisableFreeview.RaiseEvent();
-        //SwitchActionMap(GamePhase.InitialTurnMenu); // Should be whatever the one it was before
+        //m_DisableFreeview.RaiseEvent();
     }
     #endregion
 
     #region 'Confirmation' Action Map
     private void OnYes()
     {
-        switch (GameplayTest.instance.phase)
-        {
-            case GamePhase.RollDice:
-                m_DiceRolled.RaiseEvent(); // Player proceeds with rolling the dice to move
-                //m_RollForMovement.RaiseEvent(33);
-                //currentPlayer.movementTotal = currentPlayer.movementLeft = 33;
-                SwitchActionMap(GamePhase.PickDirection);
-                break;
-            case GamePhase.InVendor:
-                Debug.Log($"{assignedPlayer} buys from vendor");
-                m_BuyFromVendor.RaiseEvent(assignedPlayer);
-                //GameplayTest.instance.phase = GamePhase.EndTurn;
-                GameplayTest.instance.phase = GamePhase.ConfirmContinue;
-                break;
-            case GamePhase.ConfirmContinue:
-                Debug.Log("confirm to continued!");
-                GameplayTest.instance.ConfirmContinue();
-                break;
-            case GamePhase.GameOver:
-                Debug.Log("YES | Game Finished, go to results scene?");
-                m_ReturnToMainMenu.RaiseEvent();
-                break;
-        }
+        GameplayTest.instance.QueueCommand(new ConfirmationYesCommand());
+
+        //switch (GameplayTest.instance.phase)
+        //{
+        //    case GamePhase.RollDice:
+        //        m_DiceRolled.RaiseEvent(); // Player proceeds with rolling the dice to move
+        //        //m_RollForMovement.RaiseEvent(33);
+        //        //currentPlayer.movementTotal = currentPlayer.movementLeft = 33;
+        //        SwitchActionMap(GamePhase.PickDirection);
+        //        break;
+        //    case GamePhase.InVendor:
+        //        Debug.Log($"{assignedPlayer} buys from vendor");
+        //        m_BuyFromVendor.RaiseEvent(assignedPlayer);
+        //        //GameplayTest.instance.phase = GamePhase.EndTurn;
+        //        GameplayTest.instance.phase = GamePhase.ConfirmContinue;
+        //        break;
+        //    case GamePhase.ConfirmContinue:
+        //        Debug.Log("confirm to continued!");
+        //        GameplayTest.instance.ConfirmContinue();
+        //        break;
+        //    case GamePhase.GameOver:
+        //        Debug.Log("YES | Game Finished, go to results scene?");
+        //        m_ReturnToMainMenu.RaiseEvent();
+        //        break;
+        //}
     }
 
     private void OnNo()
     {
-        switch (GameplayTest.instance.phase)
-        {
-            case GamePhase.RollDice:
-                Debug.Log("undo confirm pressed");
-                if(previousGamePhase == GamePhase.InitialTurnMenu)
-                {
-                    m_DiceRollUndo.RaiseEvent(GameplayTest.instance.currentPlayer);
-                    SwitchActionMap(GamePhase.InitialTurnMenu);
-                }
-                break;
-            case GamePhase.InVendor:
-                Debug.Log($"{assignedPlayer} leaves the vendor");
-                m_ExitVendor.RaiseEvent();
-                GameplayTest.instance.phase = GamePhase.EndTurn;
-                break;
-            case GamePhase.ConfirmContinue:
-                GameplayTest.instance.ConfirmContinue();
-                break;
-            case GamePhase.GameOver:
-                Debug.Log("NO | Game Finished, go to results scene?");
-                break;
-        }
+        GameplayTest.instance.QueueCommand(new ConfirmationNoCommand());
+
+        //switch (GameplayTest.instance.phase)
+        //{
+        //    case GamePhase.RollDice:
+        //        Debug.Log("undo confirm pressed");
+        //        if(previousGamePhase == GamePhase.InitialTurnMenu)
+        //        {
+        //            m_DiceRollUndo.RaiseEvent(GameplayTest.instance.currentPlayer);
+        //            SwitchActionMap(GamePhase.InitialTurnMenu);
+        //        }
+        //        break;
+        //    case GamePhase.InVendor:
+        //        Debug.Log($"{assignedPlayer} leaves the vendor");
+        //        m_ExitVendor.RaiseEvent();
+        //        GameplayTest.instance.phase = GamePhase.EndTurn;
+        //        break;
+        //    case GamePhase.ConfirmContinue:
+        //        GameplayTest.instance.ConfirmContinue();
+        //        break;
+        //    case GamePhase.GameOver:
+        //        Debug.Log("NO | Game Finished, go to results scene?");
+        //        break;
+        //}
     }
 
     private void OnChange()
     {
-        switch (GameplayTest.instance.phase)
-        {
-            case GamePhase.RollDice:
-                if (assignedPlayer.currentStatsModifier.canUseSpeedDie && assignedPlayer.health > 25)
-                {
-                    // swap to the other die not being shown
-                    // temp
-                    if (GameplayTest.instance.usingSpeedDieToMove)
-                    {
-                        GameplayTest.instance.usingSpeedDieToMove = false;
-                        m_ChangeToMoveDie.RaiseEvent(0);
-                    }
-                    else
-                    {
-                        GameplayTest.instance.usingSpeedDieToMove = true;
-                        m_ChangeToMoveDie.RaiseEvent(1);
-                    }
-                }
-                break;
-        }
+        GameplayTest.instance.QueueCommand(new ConfirmationChangeCommand());
+
+        //switch (GameplayTest.instance.phase)
+        //{
+        //    case GamePhase.RollDice:
+        //        if (assignedPlayer.currentStatsModifier.canUseSpeedDie && assignedPlayer.health > 25)
+        //        {
+        //            // swap to the other die not being shown
+        //            // temp
+        //            if (GameplayTest.instance.usingSpeedDieToMove)
+        //            {
+        //                GameplayTest.instance.usingSpeedDieToMove = false;
+        //                m_ChangeToMoveDie.RaiseEvent(0);
+        //            }
+        //            else
+        //            {
+        //                GameplayTest.instance.usingSpeedDieToMove = true;
+        //                m_ChangeToMoveDie.RaiseEvent(1);
+        //            }
+        //        }
+        //        break;
+        //}
     }
     #endregion
 

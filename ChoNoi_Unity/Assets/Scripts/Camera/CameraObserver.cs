@@ -380,10 +380,32 @@ public class CameraObserver : MonoBehaviour
     /// <param name="gameState"></param>
     public void UpdateCameraObserver(FrameGameState gameState)
     {
-        if (gameState.NewState.GamePhase is GameplayTest.GamePhase.RollDice)
+        if (gameState.DidChangePhases())
         {
-            zoomedInCam.Follow = gameState.NewState.CurrentPlayer.transform;
-            zoomedInCam.enabled = true;
+            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.InitialTurnMenu)
+            {
+                zoomedInCam.enabled = false;
+                ReturnTargetFocusToCurrentPlayer();
+            }
+
+            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.RollDice)
+            {
+                zoomedInCam.Follow = gameState.NewState.CurrentPlayer.transform;
+                zoomedInCam.enabled = true;
+            }
+
+            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.PickDirection)
+            {
+                if(gameState.PrevState.GamePhase is GameplayTest.GamePhase.RollDice)
+                    zoomedInCam.enabled = false;
+                else
+                    ReturnTargetFocusToCurrentPlayer();
+            }
+
+            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.Freeview)
+            {
+                SwitchFocusToReticle();
+            }
         }
     }
     

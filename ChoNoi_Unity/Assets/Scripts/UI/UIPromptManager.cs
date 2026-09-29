@@ -79,7 +79,7 @@ public class UIPromptManager : MonoBehaviour
     public PlayerEventChannelSO m_NextPlayerTurn;
     public IntEventChannelSO m_NextTurnRound;
 
-    public PlayerEventChannelSO m_EncounterDecisions;
+    //public PlayerEventChannelSO m_EncounterDecisions;
     public NodeEventChannelSO m_LandOnStorefront;
     public ItemEventChannelSO m_ItemSold;
 
@@ -138,7 +138,7 @@ public class UIPromptManager : MonoBehaviour
         m_NextPlayerTurn.OnEventRaised += OnNextPlayerTurn;
         m_NextTurnRound.OnEventRaised += OnNextTurnRound;
         //m_NextPlayerTurn.OnEventRaised += NormalizeInventoryPrompt; //temp
-        m_EncounterDecisions.OnEventRaised += DisplayEncounterChoices;
+        //m_EncounterDecisions.OnEventRaised += DisplayEncounterChoices;
         m_LandOnStorefront.OnEventRaised += DisplayStorefrontPrompt;
         m_ItemSold.OnEventRaised += DisplayLeavePrompt;
 
@@ -183,7 +183,7 @@ public class UIPromptManager : MonoBehaviour
         m_NextPlayerTurn.OnEventRaised -= OnNextPlayerTurn;
         m_NextTurnRound.OnEventRaised -= OnNextTurnRound;
         //m_NextPlayerTurn.OnEventRaised -= NormalizeInventoryPrompt; //temp
-        m_EncounterDecisions.OnEventRaised -= DisplayEncounterChoices;
+        //m_EncounterDecisions.OnEventRaised -= DisplayEncounterChoices;
         m_LandOnStorefront.OnEventRaised -= DisplayStorefrontPrompt;
         m_ItemSold.OnEventRaised -= DisplayLeavePrompt;
 
@@ -377,9 +377,30 @@ public class UIPromptManager : MonoBehaviour
             {
                 DisplayInitialMenu(gameState.NewState.CurrentPlayer);
             }
+            else if (gameState.NewState.GamePhase is GameplayTest.GamePhase.BuildingStore)
+            {
+                OnTryBuildStore(gameState.NewState.CurrentPlayer);
+            }
             else
             {
                 HideInitialMenu();
+            }
+
+            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.Freeview)
+            {
+                rolledNumber.text = "";
+            }
+
+            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.PickDirection)
+            {
+                string roll = $"{gameState.NewState.MovementLeft}";
+                rollTypewriter.ShowText(roll);
+                //rolledNumber.text = roll;
+            }
+
+            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.EncounterTime)
+            {
+                rolledNumber.text = "";
             }
         }
     }

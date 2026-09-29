@@ -1,3 +1,4 @@
+using Core.Events;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -26,35 +27,78 @@ public class AvailableNodeIndicator : MonoBehaviour
     public PlayerEventChannelSO m_NextPlayerTurn;
 
     public VoidEventChannelSO m_DiceRolled;
-    public VoidEventChannelSO m_PlayerMovedOnBoard;
+    //public VoidEventChannelSO m_PlayerMovedOnBoard;
     public VoidEventChannelSO m_PlayerUndidSomething; // is this going back while moving??
 
     public VoidEventChannelSO m_IncidentStarted;
 
     public PlayerEventChannelSO m_PlayerWon;
+    [Space]
+    public GameStateEventChannelSO _gameStateEventChannel;
 
     private void OnEnable()
     {
         m_NextPlayerTurn.OnEventRaised += OnNextPlayerTurn;
         m_DiceRolled.OnEventRaised += OnDiceRolled;
-        m_PlayerMovedOnBoard.OnEventRaised += OnPlayerMovedOnBoard;
+        //m_PlayerMovedOnBoard.OnEventRaised += OnPlayerMovedOnBoard;
         m_PlayerUndidSomething.OnEventRaised += OnPlayerUndidSomething;
 
         m_IncidentStarted.OnEventRaised += OnIncidentStarted;
 
         m_PlayerWon.OnEventRaised += OnPlayerWon;
+
+        _gameStateEventChannel.OnEventRaised += HandleGameState;
     }
 
     private void OnDisable()
     {
         m_NextPlayerTurn.OnEventRaised -= OnNextPlayerTurn;
         m_DiceRolled.OnEventRaised -= OnDiceRolled;
-        m_PlayerMovedOnBoard.OnEventRaised -= OnPlayerMovedOnBoard;
+        //m_PlayerMovedOnBoard.OnEventRaised -= OnPlayerMovedOnBoard;
         m_PlayerUndidSomething.OnEventRaised -= OnPlayerUndidSomething;
 
         m_IncidentStarted.OnEventRaised -= OnIncidentStarted;
 
         m_PlayerWon.OnEventRaised -= OnPlayerWon;
+
+        _gameStateEventChannel.OnEventRaised -= HandleGameState;
+    }
+
+    private void HandleGameState(FrameGameState state)
+    {
+        if (!state.DidChangePhases())
+        {
+            return;
+        }
+
+        if (state.NewState.GamePhase is GameplayTest.GamePhase.InitialTurnMenu)
+        {
+            HideNodeIndicators();
+        }
+
+        if (state.NewState.GamePhase is GameplayTest.GamePhase.RollDice)
+        {
+            //ShowNodeIndicators();
+        }
+        else if (state.PrevState.GamePhase is GameplayTest.GamePhase.RollDice)
+        {
+            //HideNodeIndicators();
+        }
+
+        if (state.NewState.GamePhase is GameplayTest.GamePhase.PickDirection)
+        {
+            //OnPlayerMovedOnBoard();
+            SetTargetNode(currentPlayer.occupiedNode);
+            if (state.NewState.MovementLeft <= 0)
+                HideNodeIndicators();
+            else
+                ShowNodeIndicators();
+        }
+
+        if (state.NewState.GamePhase is GameplayTest.GamePhase.EncounterTime)
+        {
+            HideNodeIndicators();
+        }
     }
 
     // Update is called once per frame
