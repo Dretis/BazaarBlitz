@@ -39,7 +39,7 @@ public class CombatInputSystem : MonoBehaviour
         m_EnteredOverworldScene.OnEventRaised += DisableCombatInput;
         m_PlayerActionSelected.OnEventRaised += OnPlayerActionSelected;
 
-        EnableCombatInput();
+        //EnableCombatInput();
     }
     void OnDisable()
     {
@@ -60,14 +60,16 @@ public class CombatInputSystem : MonoBehaviour
         // Set up inputs to the correct player side
         //var player1Config = PlayerConfigurationManager.instance.GetPlayerConfig(combatManager.player1.id);
         //player1input = player1Config.Input;
-        player1input = GameplayTest.instance.GetInputController(combatManager.player1.id);
+        //player1input = GameplayTest.instance.GetInputController(combatManager.player1.id);
+        player1input = GameplayTest.instance.GetInputController(combatManager.player1.id).PlayerInput;
 
         if (!combatManager.player2.isEnemy)
         {
             // Only put a player input for P2 if in a pvp fight
             //var player2Config = PlayerConfigurationManager.instance.GetPlayerConfig(combatManager.player2.id);
             //player2input = player2Config.Input;
-            player2input = GameplayTest.instance.GetInputController(combatManager.player2.id);
+            //player2input = GameplayTest.instance.GetInputController(combatManager.player2.id);
+            player2input = GameplayTest.instance.GetInputController(combatManager.player2.id).PlayerInput;
         }
 
         // Case when both players share a controller
@@ -75,6 +77,7 @@ public class CombatInputSystem : MonoBehaviour
         {
             sharedController = true;
         }
+        EnableCombatInput();
     }
 
     private void EnableCombatInput()
@@ -93,8 +96,8 @@ public class CombatInputSystem : MonoBehaviour
     private void DisableCombatInput()
     {
         //combatInput.enabled = false;
-        player1input.currentActionMap.Disable();
-        if (!combatManager.player2.isEnemy) player2input.currentActionMap.Disable();
+        //player1input.currentActionMap.Disable();
+        //if (!combatManager.player2.isEnemy) player2input.currentActionMap.Disable();
         // i need this scritp atm so controller input doesnt just disappear randomly after combat
     }
 

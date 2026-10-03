@@ -85,6 +85,11 @@ namespace Core
         
     }
     
+    public struct FreeviewExamineCommand : ICommand
+    {
+        
+    }
+    
     public struct ConfirmationYesCommand : ICommand
     {
         

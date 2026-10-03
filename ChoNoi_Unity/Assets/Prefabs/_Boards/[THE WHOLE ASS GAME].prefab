@@ -2724,6 +2724,12 @@ MonoBehaviour:
   phase: 0
   expectedPhase: 22
   winner: {fileID: 0}
+  _isPlayerConfigurationManagerMissing: 0
+  debugPresetPalettes:
+  - {fileID: 11400000, guid: c9a41851deac784409f96d565cbea4a7, type: 2}
+  - {fileID: 11400000, guid: 2abf46780a4a6b543b1aec37ac66a0cb, type: 2}
+  - {fileID: 11400000, guid: f65d457d6122a5c46b963e62c70cb533, type: 2}
+  - {fileID: 11400000, guid: 4bfdffc9671c6f049bf7c6bfd1dfd86d, type: 2}
   debugPhaseText: {fileID: 6700546163252136677}
   turnOffMonsterEncounters: 0
   playerUnits:
@@ -2795,7 +2801,6 @@ MonoBehaviour:
   m_AskRestockStore: {fileID: 11400000, guid: ee264eb89bdfc1145b0e87dc55c121be, type: 2}
   m_StealOnPassBy: {fileID: 11400000, guid: 1d00bb47d6ddfd74abef5ca674e588cd, type: 2}
   m_InitiateCombatOnPassBy: {fileID: 11400000, guid: 738add0769a4e0047bfef96c86d9f906, type: 2}
-  m_StopOnStoreOnPassBy: {fileID: 11400000, guid: fb2c2ec21fc8d414db8431c8c21563f1, type: 2}
   m_EnterRaycastTargetSelection: {fileID: 11400000, guid: 1543442f686f62745abebe40d74bf2cf, type: 2}
   m_ExitRaycastTargetSelection: {fileID: 11400000, guid: 772ef068b81dce340bf549ac7425179c, type: 2}
   m_NextPlayerTurn: {fileID: 11400000, guid: 45e13c3cd9283b74989c51218c39f6c2, type: 2}
@@ -2823,8 +2828,8 @@ MonoBehaviour:
   m_TryAugmentDieFaceValue: {fileID: 11400000, guid: 54e16fb7a5ff63d409085a638eba2c40, type: 2}
   m_RecieveVendorItem: {fileID: 11400000, guid: 951f9f6bcf8b1554ebb26e55e07e88b8, type: 2}
   m_FighterSelected: {fileID: 11400000, guid: b696f39d908595b43aa55322bfb1971d, type: 2}
-  _uiPromptManager: {fileID: 0}
-  _gameStateUpdatedEventChannel: {fileID: 0}
+  _gameStateUpdatedEventChannel: {fileID: 11400000, guid: 113369b80091b3346b620c7e0c0d9b8c, type: 2}
+  _inputControllerPrefab: {fileID: 8184592382734835342, guid: 55735af4b26789a4094dea8489060239, type: 3}
   _inputControllers: []
   _currentGameState:
     LastGamePhase: 0
@@ -2832,6 +2837,7 @@ MonoBehaviour:
     CurrentPlayer: {fileID: 0}
     CurrentPlayerHasUsedItem: 0
     MoveDieRoll: 0
+    MovementLeft: 0
 --- !u!1 &6700546163183720011
 GameObject:
   m_ObjectHideFlags: 0
@@ -4671,8 +4677,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c5f1549c5a20d2479654a13e145deb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainCanvas: {fileID: 6700546164631942688}
-  storefrontCanvas: {fileID: 6700546164360089051}
+  actionAssetToUse: {fileID: -944628639613478452, guid: 26bb27642ad641c4691ff8463cbc2a11, type: 3}
+  overlayCanvas: {fileID: 6700546164631942688}
+  cameraCanvas: {fileID: 6700546164360089051}
   m_LandOnStorefront: {fileID: 11400000, guid: f648c693d8451764f96f063b6b3da44b, type: 2}
   m_ExitStorefront: {fileID: 11400000, guid: 410e906b10aa4ae49ab7395fffa23d79, type: 2}
 --- !u!1 &6700546163582042018
@@ -8386,7 +8393,6 @@ MonoBehaviour:
   nearbyNodesOffset: {x: 0, y: 0.2, z: 0}
   m_NextPlayerTurn: {fileID: 11400000, guid: 45e13c3cd9283b74989c51218c39f6c2, type: 2}
   m_DiceRolled: {fileID: 11400000, guid: fb9fa3f55f7f0924db5a635622936326, type: 2}
-  m_PlayerMovedOnBoard: {fileID: 11400000, guid: 3e053258b5caff14898c85eb40602276, type: 2}
   m_PlayerUndidSomething: {fileID: 11400000, guid: 42d98c829d9faf44680a0974c08d3121, type: 2}
   m_IncidentStarted: {fileID: 11400000, guid: fbbbe6e31fced7641b6b92ac4a0ea4c9, type: 2}
   m_PlayerWon: {fileID: 11400000, guid: 30be4a0c1ed8bdc43b43a3dc867dd37d, type: 2}

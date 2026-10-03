@@ -8,6 +8,7 @@ using UnityEngine.EventSystems;
 using System.Linq;
 using Core.Events;
 using System;
+using UnityEngine.InputSystem.UI;
 
 public class UIInventoryManager : MonoBehaviour
 {
@@ -23,6 +24,7 @@ public class UIInventoryManager : MonoBehaviour
 
     private int currentPlayerIndex;
     private StoreManager selectedStore;
+    [SerializeField] private MultiplayerEventSystem _eventSystem;
 
     [Header("Main Inventory")]
     [SerializeField] private Canvas inventoryCanvas;
@@ -197,7 +199,8 @@ public class UIInventoryManager : MonoBehaviour
 
             if (i == 0)
             {
-                EventSystem.current.SetSelectedGameObject(item);
+                //_eventSystem.SetSelectedGameObject(item);
+                _eventSystem.SetSelectedGameObject(item);
             }
         }
     }
@@ -302,7 +305,8 @@ public class UIInventoryManager : MonoBehaviour
 
             heldItemHolders[i].GetComponent<InventorySelectionHandler>().UpdateItemInfo(entity, itemToSpawn);
         }
-        EventSystem.current.SetSelectedGameObject(heldItemHolders[0]);
+        //_eventSystem.SetSelectedGameObject(heldItemHolders[0]);
+        _eventSystem.SetSelectedGameObject(heldItemHolders[0]);
     }
 
     private void DestroyAllHeldItems()
@@ -460,7 +464,7 @@ public class UIInventoryManager : MonoBehaviour
         selectedItemIndex = index;
         selectedItem = item;
 
-        EventSystem.current.SetSelectedGameObject(confirmButtonHolders[0]);
+        _eventSystem.SetSelectedGameObject(confirmButtonHolders[0]);
     }
 
     public void ConfirmUseItem()
@@ -473,7 +477,7 @@ public class UIInventoryManager : MonoBehaviour
     {
         HideConfirmGroup();
 
-        EventSystem.current.SetSelectedGameObject(heldItemHolders[selectedItemIndex]);
+        _eventSystem.SetSelectedGameObject(heldItemHolders[selectedItemIndex]);
     }
 
     public void OnUseItemAt(int index, ItemStats item)

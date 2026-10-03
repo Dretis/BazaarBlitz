@@ -7,6 +7,9 @@ public class PlayerCosmeticManager : MonoBehaviour
     public string playerName;
     public Color playerColor;
 
+    [SerializeField] private PlayerColorPalettePreset palettePreset;
+    public PlayerColorPalettePreset PalettePreset { get { return palettePreset; } set { palettePreset = value; } }
+
     [Header("Color Palettes")]
     [SerializeField] private int baggiePaletteColorCount = 8;
     public List<Color> baggieColorPalette = new List<Color>();
@@ -19,22 +22,40 @@ public class PlayerCosmeticManager : MonoBehaviour
     public List<Action> attackActions;
     public List<Action> defendActions;
     */
-    /*
+
+    #if UNITY_EDITOR
     private void OnValidate()
     {
-        var baggiePaletteCount = baggieColorPalette.Count;
+        //Debug.Log("PlayerCosmeticManager | OnValidate");
+        if (palettePreset is null) return;
+        //Debug.Log("PlayerCosmeticManager | i am changing shit");
 
-        for (int i = baggiePaletteCount; i < baggiePaletteColorCount; i++)
+        var colorPal = new List<Color>(palettePreset.baggieColorPalette);
+        var boatPal = new List<Color>(palettePreset.boatColorPalette);
+
+        var baggiePaletteCount = baggieColorPalette.Count;
+        baggieColorPalette.Clear();
+
+        for (int i = 0; i < baggiePaletteColorCount; i++)
         {
-           baggieColorPalette.Add(Color.white);
+            baggieColorPalette.Add(colorPal[i]);
         }
 
         var boatPaletteCount = boatColorPalette.Count;
+        boatColorPalette.Clear();
 
-        for (int i = boatPaletteCount; i < boatPaletteColorCount; i++)
+        for (int i = 0; i < boatPaletteColorCount; i++)
         {
-            boatColorPalette.Add(Color.grey);
+            boatColorPalette.Add(boatPal[i]);
         }
+
+        playerColor = palettePreset.mainColor;
+        playerName = palettePreset.presetName;
     }
-    */
+    
+    public void ManualValidate()
+    {
+        OnValidate();
+    }
+    #endif
 }

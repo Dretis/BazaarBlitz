@@ -12,9 +12,12 @@ using UnityEngine.Localization;
 using UnityEngine.Localization.SmartFormat.PersistentVariables;
 using UnityEngine.Localization.Components;
 using UnityEngine.UI;
+using UnityEngine.InputSystem.UI;
 
 public class UIPromptManager : MonoBehaviour
 {
+    [SerializeField] private MultiplayerEventSystem _eventSystem;
+
     private bool NextPlayerGoIsRunning = false;
     private Coroutine oldNextPlayerGo;
     private EntityPiece currentPlayer;
@@ -37,7 +40,7 @@ public class UIPromptManager : MonoBehaviour
 
 
     [SerializeField] private TextMeshProUGUI rolledNumber;
-    [SerializeField] private TextMeshProUGUI movementRoll;
+    //[SerializeField] private TextMeshProUGUI movementRoll;
 
     [Space]
     [SerializeField] private CanvasGroup promptInstructionGroup;
@@ -112,6 +115,8 @@ public class UIPromptManager : MonoBehaviour
 
     public VoidEventChannelSO m_HoldPlayerInfo;
     public VoidEventChannelSO m_ReleasePlayerInfo;
+    [Space]
+    public GameStateEventChannelSO _gameStateEvent;
 
     private void Start()
     {
@@ -121,7 +126,7 @@ public class UIPromptManager : MonoBehaviour
         backseatGroup.interactable = false;
 
         rolledNumber.text = "";
-        movementRoll.text = "-";
+        //movementRoll.text = "-";
 
         promptInstructionGroup.alpha = 0;
         promptInstructionGroup.interactable = false;
@@ -171,6 +176,8 @@ public class UIPromptManager : MonoBehaviour
 
         m_HoldPlayerInfo.OnEventRaised += OnHoldPlayerInfo;
         m_ReleasePlayerInfo.OnEventRaised += OnReleasePlayerInfo;
+
+        _gameStateEvent.OnEventRaised += UpdateUIFromGameState;
     }
 
     private void OnDisable()
@@ -216,6 +223,8 @@ public class UIPromptManager : MonoBehaviour
 
         m_HoldPlayerInfo.OnEventRaised -= OnHoldPlayerInfo;
         m_ReleasePlayerInfo.OnEventRaised -= OnReleasePlayerInfo;
+
+        _gameStateEvent.OnEventRaised -= UpdateUIFromGameState;
     }
 
     private void OnNextPlayerTurn(EntityPiece ps)
@@ -234,7 +243,7 @@ public class UIPromptManager : MonoBehaviour
             goTurnMotion.TryCancel();
         }
         
-        oldNextPlayerGo = StartCoroutine(NotifyNextPlayerGo(ps));
+        //oldNextPlayerGo = StartCoroutine(NotifyNextPlayerGo(ps));
     }
 
     private void OnNextTurnRound(int round)
@@ -369,7 +378,7 @@ public class UIPromptManager : MonoBehaviour
     /// Partial rewrite to just handle the InitialMenu
     /// </summary>
     /// <param name="gameState"></param>
-    public void UpdateUI(FrameGameState gameState)
+    public void UpdateUIFromGameState(FrameGameState gameState)
     {
         if (gameState.DidChangePhases())
         {
@@ -498,14 +507,14 @@ public class UIPromptManager : MonoBehaviour
     private void ClearInputText()
     {
         inputPrompt.text = "";
-        movementRoll.text = "";
+        //movementRoll.text = "";
         rollTypewriter.StartDisappearingText();
     }
 
     private void ClearInputText(MapNode node)
     {
         inputPrompt.text = "";
-        movementRoll.text = "";
+        //movementRoll.text = "";
     }
 
     private void DisplayStorefrontPrompt(MapNode mapNode)
@@ -668,7 +677,7 @@ public class UIPromptManager : MonoBehaviour
             promptInstructionText.text += "\n<color=#D94A45>[!] You have no items to stock.";
         }
 
-        EventSystem.current.SetSelectedGameObject(promptConfirmButtonHolders[0]);
+        _eventSystem.SetSelectedGameObject(promptConfirmButtonHolders[0]);
     }
 
     private void OnBuildStore(EntityPiece ep)
@@ -717,14 +726,14 @@ public class UIPromptManager : MonoBehaviour
     private void OnIncidentStarted()
     {
         HideMenuPrompt();
-        turnTypewriter.ShowText("");
+        //turnTypewriter.ShowText("");
         inputPrompt.text = "";
     }
 
     private void OnPlayerWon(EntityPiece winner)
     {
         rolledNumber.enabled = false;
-        turnTypewriter.ShowText("");
+        //turnTypewriter.ShowText("");
     }
 
     private void OnHoldPlayerInfo()

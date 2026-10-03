@@ -5,34 +5,43 @@ using UnityEngine.InputSystem.UI;
 
 public class EventSystemEnabler : MonoBehaviour
 {
-    //[SerializeField] private InputActionAsset actionAssetToUse;
+    [SerializeField] private InputActionAsset actionAssetToUse;
     private InputSystemUIInputModule _inputSystemUIInputModule;
     private MultiplayerEventSystem _eventSystem;
 
     [Header("PlayerRoots")]
-    [SerializeField] private GameObject mainCanvas;
-    [SerializeField] private GameObject storefrontCanvas;
+    [SerializeField] private GameObject overlayCanvas;
+    [SerializeField] private GameObject cameraCanvas;
 
     [Header("Listen on Event Channels")]
+    //public PlayerEventChannelSO m_NextPlayerTurn;
     public NodeEventChannelSO m_LandOnStorefront;
     public VoidEventChannelSO m_ExitStorefront;
 
+
+
     private void OnEnable()
     {
+        //m_NextPlayerTurn.OnEventRaised += OnNextPlayerTurn;
         m_LandOnStorefront.OnEventRaised += OnLandOnStorefront;
         m_ExitStorefront.OnEventRaised += OnExitStorefront;
+
+        _inputSystemUIInputModule.actionsAsset = actionAssetToUse;
     }
 
     private void OnDisable()
     {
+        //m_NextPlayerTurn.OnEventRaised -= OnNextPlayerTurn;
         m_LandOnStorefront.OnEventRaised -= OnLandOnStorefront;
         m_ExitStorefront.OnEventRaised -= OnExitStorefront;
     }
 
-    void Start()
+    void Awake()
     {
         _inputSystemUIInputModule = GetComponent<InputSystemUIInputModule>();
         _eventSystem = GetComponent<MultiplayerEventSystem>();
+
+        actionAssetToUse = _inputSystemUIInputModule.actionsAsset;
     }
 
     private void ChangePlayerRoot(GameObject o)
@@ -40,14 +49,26 @@ public class EventSystemEnabler : MonoBehaviour
         _eventSystem.playerRoot = o;
     }
 
+    public void EnablePlayerCanvases()
+    {
+        overlayCanvas.SetActive(true);
+        cameraCanvas.SetActive(true);
+    }
+    
+    public void DisablePlayerCanvases()
+    {
+        overlayCanvas.SetActive(false);
+        cameraCanvas.SetActive(false);
+    }
+    
     private void OnLandOnStorefront(MapNode node)
     {
-        ChangePlayerRoot(storefrontCanvas);
+        ChangePlayerRoot(cameraCanvas);
     }
 
     private void OnExitStorefront()
     {
-        ChangePlayerRoot(mainCanvas);
+        ChangePlayerRoot(overlayCanvas);
     }
 
     /*

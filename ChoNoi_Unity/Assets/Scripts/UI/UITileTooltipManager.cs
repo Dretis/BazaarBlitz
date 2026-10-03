@@ -58,7 +58,7 @@ public class UITileTooltipManager : MonoBehaviour
         vcam.Follow = node.transform;
 
         FadeTo(tileInfoGroup, 1, 0.25f);
-        Debug.Log(node.gameObject);
+        //Debug.Log(node.gameObject);
 
         // Storefront Tile
         if (node.TryGetComponent<StoreManager>(out StoreManager store))

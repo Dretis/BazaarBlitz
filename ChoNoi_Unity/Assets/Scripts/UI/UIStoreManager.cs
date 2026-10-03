@@ -110,6 +110,8 @@ public class UIStoreManager : MonoBehaviour
     // Set dependencies here and in Inspector (if needed)
     private void Start()
     {
+        if (GetComponent<Canvas>().worldCamera is null)
+            GetComponent<Canvas>().worldCamera = Camera.main.transform.GetChild(0).GetComponent<Camera>();
         //customerObject.SetActive(false);
         storekeeperVisual.enabled = false;
         customerVisual.enabled = false;

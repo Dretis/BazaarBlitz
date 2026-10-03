@@ -19,6 +19,8 @@ public class PlayerInputController : MonoBehaviour
         PS,
         Switch
     }
+
+    private GameplayTest _gameplayTest;
     public PlayerInput PlayerInput => playerInput;
 
     [SerializeField] private CurrentDevice device;
@@ -30,7 +32,6 @@ public class PlayerInputController : MonoBehaviour
     [SerializeField] private InputActionMap currActionMap;
 
     [Header("Freeview Variables")]
-    [SerializeField] private GameObject freeviewReticle;
     [SerializeField] private int freeviewSpeed;
     private Rigidbody2D freeviewRb;
     private Vector2 freeviewMoveInput;
@@ -110,19 +111,15 @@ public class PlayerInputController : MonoBehaviour
 
     public PlayerEventChannelSO m_PlayerWon;
 
-    public void InitializePlayer(PlayerConfiguration pc)
+    public void Initialize()
     {
-        //playerConfig = pc;
-        // set color palette for player based on player config here
-        //playerConfig.Input.onActionTriggered
-    }
-
-    private void Start()
-    {
-        playerInput = GetComponent<PlayerInput>();
-
         Debug.Log(playerInput.currentActionMap);
         currActionMap = playerInput.currentActionMap;
+
+        playerInput.SwitchCurrentActionMap("UI"); // FUCK YOU
+        playerInput.currentActionMap.Disable();
+        playerInput.SwitchCurrentActionMap("Initial Turn Menu");
+        playerInput.currentActionMap.Enable();
     }
 
     private void OnEnable()
@@ -223,11 +220,6 @@ public class PlayerInputController : MonoBehaviour
         m_ReturnToMainMenu.OnEventRaised -= OnReturnToMainMenu;
     }
 
-    private void FixedUpdate()
-    {
-        //freeviewRb.velocity = freeviewMoveInput * freeviewSpeed; // Moving reticle during Freeview
-    }
-
     #region 'Inital Turn Menu' Action Map
     private void OnView()
     {
@@ -325,9 +317,14 @@ public class PlayerInputController : MonoBehaviour
     #endregion
 
     # region 'UI' Action Map
-    private void OnNavigate()
+    private void OnNavigate(InputValue value)
     {
-        //Debug.Log($"Player ID: {playerInput.playerIndex} - UI Action Map | Navigating...");
+        Debug.Log($"Player ID: {playerInput.playerIndex} - UI Action Map | Navigating... | {value.Get()}");
+    }
+    
+    private void OnSubmit()
+    {
+        Debug.Log($"Player ID: {playerInput.playerIndex} - UI Action Map | Submiting...");
     }
     private void OnCancel()
     {
@@ -431,10 +428,12 @@ public class PlayerInputController : MonoBehaviour
     private void OnFreeviewExamine()
     {
         m_TryExamineTile.RaiseEvent(GameObject.Find("Freeview Reticle").transform.position); //change this code later
-        if (GameplayTest.instance.phase == GamePhase.RaycastTargetSelection)
-        {
-            GameplayTest.instance.OnSelectRaycastTarget();
-        }
+        //if (GameplayTest.instance.phase == GamePhase.RaycastTargetSelection)
+        //{
+        //    GameplayTest.instance.OnSelectRaycastTarget();
+        //}
+
+        GameplayTest.instance.QueueCommand(new FreeviewExamineCommand());
     }
 
     private void OnFreeviewExit()
@@ -769,7 +768,7 @@ public class PlayerInputController : MonoBehaviour
         currActionMap = playerInput.currentActionMap;
         
         Debug.Log($"Player [{playerInput.playerIndex}] | {playerInput.currentActionMap}");
-        Debug.Log($"currActionMap | {currActionMap}");
+        //Debug.Log($"currActionMap | {currActionMap}");
     }
 
     private void SetCurrentPlayer(EntityPiece player)
@@ -777,13 +776,19 @@ public class PlayerInputController : MonoBehaviour
         //currentPlayer = player;
         var p = GameplayTest.instance.currentPlayer;
 
+        var e = GetComponentInChildren<EventSystemEnabler>();
+        Debug.Log($"SetCurrentPlayer | e: {e} ");
         if (assignedPlayer != p)
         {
+            if (e != null) e.DisablePlayerCanvases();
+            //playerInput.currentActionMap.Disable();
             playerInput.DeactivateInput();
             Debug.Log($"SetCurrentPlayer | Player ID: {playerInput.playerIndex} deactivated input.");
         }
         else
         {
+            if (e != null) e.EnablePlayerCanvases();
+
             Debug.Log($"SetCurrentPlayer | Player ID: {playerInput.playerIndex} activated input!");
             playerInput.ActivateInput();
             playerInput.SwitchCurrentActionMap("UI"); // FUCK YOU
@@ -912,6 +917,7 @@ public class PlayerInputController : MonoBehaviour
 
     private void OnFinishStockingStore(EntityPiece ps)
     {
+        // PUT THIS LOGIC INTO GAMEPLAYTEST / CORE GAME LOGIC
         if (!playerInput.inputIsActive) return;
 
         if (previousGamePhase == GamePhase.EncounterTime ||
@@ -1096,6 +1102,39 @@ public class PlayerInputController : MonoBehaviour
 
             // Boat Colors
             assignedPlayer.pBoatLoader.SetInspectorPalette(boatPal);
+        }
+    }
+
+    // REWRITE
+    public void AssignPlayerToController(EntityPiece entity, GameplayTest gt)
+    {
+        _gameplayTest = gt;
+
+        //assign entitypiece to the controller w/ the same ID
+        if (entity.id == playerInput.playerIndex)
+        {
+            assignedPlayer = entity; // This should never change after this
+
+            var playerCosmeticManager = GetComponent<PlayerCosmeticManager>();
+
+            if(TryGetComponent<PlayerCosmeticManager>(out PlayerCosmeticManager pcs))
+            {
+                var colorPal = new List<Color>(playerCosmeticManager.baggieColorPalette);
+                var boatPal = new List<Color>(playerCosmeticManager.boatColorPalette);
+
+                assignedPlayer.entityName = playerCosmeticManager.playerName;
+                assignedPlayer.playerColor = playerCosmeticManager.playerColor;
+
+                assignedPlayer.gameObject.GetComponent<PlayerPaletteLoader>().SetInspectorPalette(colorPal);
+                assignedPlayer.dustCloud.GetComponent<PlayerPaletteLoader>().SetInspectorPalette(colorPal);
+
+                // Boat Colors
+                assignedPlayer.pBoatLoader.SetInspectorPalette(boatPal);
+            }
+            else
+            {
+                Debug.Log("No PlayerCosmeticManager detected in PlayerInputController.");
+            }
         }
     }
 

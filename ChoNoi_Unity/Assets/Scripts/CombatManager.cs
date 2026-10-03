@@ -740,10 +740,8 @@ public class CombatManager : MonoBehaviour
         EntityPiece winner;
         EntityPiece loser;
 
-        bool player1Wins;
         if (player2.health <= 0) 
         { // Player 1 wins
-            player1Wins = true;
             //m_EntityDied.RaiseEvent(player2, null);
             player2.health = player2.maxHealth;
 
@@ -753,7 +751,6 @@ public class CombatManager : MonoBehaviour
         } 
         else 
         { // Player 2 wins
-            player1Wins = false;
             //m_EntityDied.RaiseEvent(player1, null);
             player1.health = player1.maxHealth;
 

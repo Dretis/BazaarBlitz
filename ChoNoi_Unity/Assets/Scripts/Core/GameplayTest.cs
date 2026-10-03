@@ -12,8 +12,7 @@ using UnityEngine.InputSystem.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
-using UnityEngine.InputSystem.LowLevel;
-using Unity.VisualScripting;
+using UnityEngine.InputSystem.XInput;
 
 public class GameplayTest : MonoBehaviour
 {
@@ -26,6 +25,8 @@ public class GameplayTest : MonoBehaviour
     public EntityPiece winner;
 
     [Header("Debugging")]
+    [SerializeField] private bool _isPlayerConfigurationManagerMissing = false;
+    [SerializeField] private List<PlayerColorPalettePreset> debugPresetPalettes;
     [SerializeField] private TextMeshProUGUI debugPhaseText;
     [SerializeField] private bool turnOffMonsterEncounters = false;
 
@@ -418,6 +419,7 @@ public class GameplayTest : MonoBehaviour
         else
         {
             Debug.Log("[ :( ] Started game from UnityEditor (Wrong in the real game)");
+            _isPlayerConfigurationManagerMissing = true;
             //currentRuleset.numberOfPlayers = playerUnits.Count;
         }
 
@@ -434,6 +436,8 @@ public class GameplayTest : MonoBehaviour
             playerUnits.Remove(playerUnits[^1]);
         }
 
+        _inputControllers = new PlayerInputController[playerUnits.Count];
+
         foreach (var player in playerUnits)
         {
             nextPlayers.Add(player);
@@ -443,7 +447,29 @@ public class GameplayTest : MonoBehaviour
             //initialNode.playerOccupied = player;
             initialNode.playersOccupied.Add(player);
 
-            m_AssignPlayerToController.RaiseEvent(player);
+            //m_AssignPlayerToController.RaiseEvent(player);
+
+            var inputController = Instantiate(_inputControllerPrefab);
+
+            inputController.name = $"Player Input Controller [{player.id}]";
+            if (inputController.TryGetComponent<PlayerInputController>(out PlayerInputController pic))
+            {
+                #if UNITY_EDITOR
+                if (_isPlayerConfigurationManagerMissing)
+                {
+                    var playerCosmeticManager = pic.GetComponent<PlayerCosmeticManager>();
+                    playerCosmeticManager.PalettePreset = debugPresetPalettes[player.id];
+                    playerCosmeticManager.ManualValidate();
+                }
+                #endif
+
+                pic.Initialize();
+                pic.AssignPlayerToController(player, this);
+                _inputControllers[player.id] = pic;
+
+                //TEMP
+                DontDestroyOnLoad(_inputControllers[player.id]);
+            }
         }
 
         // Get the player at the start of the list.
@@ -545,12 +571,11 @@ public class GameplayTest : MonoBehaviour
     #region Sample Partial Rewrite
 
     [Header("Rewrite")]
-
-    [SerializeField]
-    private UIPromptManager _uiPromptManager;
-
     [SerializeField]
     private GameStateEventChannelSO _gameStateUpdatedEventChannel;
+
+    [SerializeField]
+    private GameObject _inputControllerPrefab;
 
     [SerializeField]
     private PlayerInputController[] _inputControllers;
@@ -569,9 +594,9 @@ public class GameplayTest : MonoBehaviour
     }
 
     // TEMPORARY, DELETE LATER
-    public PlayerInput GetInputController(int id)
+    public PlayerInputController GetInputController(int id)
     {
-        return _inputControllers[id].PlayerInput;
+        return _inputControllers[id];
     }
 
     private void TickGame()
@@ -603,7 +628,7 @@ public class GameplayTest : MonoBehaviour
         }
 
         // Handle all the UI and presentation stuff here or in the below event
-        _uiPromptManager.UpdateUI(frameGameState);
+        //_uiPromptManager.UpdateUI(frameGameState);
         
         // Can also use events I guess
         // ANYTHING THAT LISTENS HERE SHOULD NEVERRRRRR CHANGE THE GAME STATE IN ANY WAY
@@ -680,6 +705,11 @@ public class GameplayTest : MonoBehaviour
 
                 // Insert FreeviewExamineCommand here
 
+                if (cmd is FreeviewExamineCommand)
+                {
+                    HandleTryFreeviewExamine(prevState, ref newState);
+                }
+                
                 if (cmd is FreeviewExitCommand)
                 {
                     HandleTryFreeviewExit(prevState, ref newState);
@@ -900,10 +930,10 @@ public class GameplayTest : MonoBehaviour
 
     private void HandleTryBuildStore(GameState prevState, ref GameState newState)
     {
-        var p = GameplayTest.instance.currentPlayer;
+        var p = currentPlayer;
 
         if (p.occupiedNode.tag == "Encounter"
-            && p.storeCount < GameplayTest.instance.currentRuleset.storeLimit
+            && p.storeCount < currentRuleset.storeLimit
             && !p.currentStates.Contains(EntityPiece.State.Fighting))
         {
             newState.GamePhase = GamePhase.BuildingStore;
@@ -984,8 +1014,6 @@ public class GameplayTest : MonoBehaviour
 
         if (newState.LastGamePhase is GamePhase.InitialTurnMenu)
         {
-            //m_DiceRollUndo.RaiseEvent(GameplayTest.instance.currentPlayer);
-            //SwitchActionMap(GamePhase.InitialTurnMenu);
             newState.GamePhase = GamePhase.InitialTurnMenu;
         }
     }
@@ -1840,10 +1868,11 @@ public class GameplayTest : MonoBehaviour
             isStockingStore = false; // let next player access inventory
             usingSpeedDieToMove = false;
             playerUsedItem = false; // let next player access inventory
+            _currentGameState.CurrentPlayerHasUsedItem = false;
             selectedItemIndex = -1;
 
             m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
-            rollTypewriter.ShowText("");
+            //rollTypewriter.ShowText("");
 
 
             playersActed++;
@@ -1906,6 +1935,8 @@ public class GameplayTest : MonoBehaviour
 
     public void SetupNextPlayer()
     {
+        _inputControllers[currentPlayer.id].SwitchActionMapRewrite(_currentGameState.GamePhase);
+
         // Put current player back to normal pos
         currentPlayer.transform.position += new Vector3(0, 0, .05f);
         // Change to the next player in the list.
@@ -2067,6 +2098,7 @@ public class GameplayTest : MonoBehaviour
                 currentPlayer.inventory.RemoveAt(index);
                 selectedItemIndex = -1;
                 playerUsedItem = true;
+                _currentGameState.CurrentPlayerHasUsedItem = true;
 
                 Debug.Log("OnFinishedUsedItem() | ItemType.TargetSelect");
                 break;
@@ -2075,7 +2107,7 @@ public class GameplayTest : MonoBehaviour
                 currentPlayer.inventory.RemoveAt(index);
                 selectedItemIndex = -1;
                 playerUsedItem = true;
-
+                _currentGameState.CurrentPlayerHasUsedItem = true;
                 //m_DisableFreeview.RaiseEvent();
                 //phase = GamePhase.InitialTurnMenu;
 
@@ -2163,6 +2195,7 @@ public class GameplayTest : MonoBehaviour
 
                 currentPlayer.inventory.RemoveAt(index);
                 playerUsedItem = true;
+                _currentGameState.CurrentPlayerHasUsedItem = true;
                 selectedItemIndex = -1;
 
                 Debug.Log("Used normal item");
@@ -2532,7 +2565,8 @@ public class GameplayTest : MonoBehaviour
         rollTypewriter.ShowText(roll);
     }
 
-    public void OnSelectRaycastTarget()
+    // originally OnSelectRaycastTarget()
+    public void HandleTryFreeviewExamine(GameState prevState, ref GameState newState)
     {
         StoreManager store = null;
         if (RaycastTiles.tileSelected.TryGetComponent<StoreManager>(out StoreManager s))
@@ -2572,32 +2606,6 @@ public class GameplayTest : MonoBehaviour
                 break;
 
         }
-        /*
-        if (currentPlayer.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Tiles)
-        {
-            if (RaycastTiles.tileSelected != null)
-                WarpConfirmed(currentPlayer);
-        }
-        else if (currentPlayer.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Players)
-        {
-            if (RaycastTiles.tileSelected.playersOccupied.Count != 0)
-                WarpConfirmed(currentPlayer);
-        }
-        else if (currentPlayer.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Marigold)
-        {
-            if (RaycastTiles.tileSelected.modifier == MapNode.Modifier.None)
-            {
-                PlantConfirmed(currentPlayer, MapNode.Modifier.Rafflesia);
-            }
-        }
-        else if (currentPlayer.currentStatsModifier.warpMode == EntityStatsModifiers.WarpMode.Rafflesia)
-        {
-            if (RaycastTiles.tileSelected.modifier == MapNode.Modifier.None)
-            {
-                PlantConfirmed(currentPlayer, MapNode.Modifier.Rafflesia);
-            }
-        }
-        */
     }
 
     private void WarpConfirmed(EntityPiece p)
@@ -2775,139 +2783,4 @@ public class GameplayTest : MonoBehaviour
             clearAfterCombat = false
         });
     }
-
-    // Old Level up stuff
-    /*
-    private void OnEnterLevelUp(EntityPiece p)
-    {
-        pointsLeft = 5;
-        p.unspentLevelUpPoints += 5;
-        p.maxHealth += 10;
-        p.health += 10;
-        p.RenownLevel += 1;
-
-        UpdatePlayerDiceStats(p, diceStats);
-        m_UpdatePlayerScore.RaiseEvent(p.id);
-
-        levelUpScreen.enabled = true; // we need to put the UI stuff in its own script
-        remainingSP.text = $"Remaining SP: {p.unspentLevelUpPoints}";
-
-    }
-
-    private void OnExitLevelUp()
-    {
-        // make this shit cooler
-        levelUpScreen.enabled = false;
-    }
-
-    // I ripped this from another script, delete this later
-    public void UpdatePlayerDiceStats(EntityPiece entity, GameObject diceStats)
-    {
-        // Visually updates the dice stats ui based on the entity and side
-        playerDiceNumbers.Clear();
-
-        // Goes through the diceStats UI List and finds the text components
-        foreach (Transform child in diceStats.transform)
-        {
-            playerDiceNumbers.Add(child.GetComponentInChildren<DiceStatSelectionHandler>());
-
-            //EventSystem.current.SetSelectedGameObject(child.gameObject);
-        }
-
-        EventSystem.current.SetSelectedGameObject(playerDiceNumbers[0].gameObject);
-
-        UpdatePlayerDiceStatsInLevelUp(entity);
-    }
-
-    public void UpdatePlayerDiceStatsInLevelUp(EntityPiece entity)
-    {
-        // like the other function but it doesn't reset the button position
-        var faceIndex = 0;
-
-        for (int i = 0; i < 6; i++)
-        {
-            playerDiceNumbers[i].SetDieFaceValue(entity.strDie[faceIndex]);
-            faceIndex++;
-
-        }
-
-        faceIndex = 0;
-
-        for (int i = 6; i < 12; i++)
-        {
-            playerDiceNumbers[i].SetDieFaceValue(entity.dexDie[faceIndex]);
-            faceIndex++;
-        }
-
-        faceIndex = 0;
-
-        for (int i = 12; i < 18; i++)
-        {
-            playerDiceNumbers[i].SetDieFaceValue(entity.intDie[faceIndex]);
-            faceIndex++;
-        }
-    }
-
-    private void OnTryAugmentDieFaceValue(Action.WeaponTypes diceType, int diceIndex)
-    {
-        Debug.Log($"checking if can upgradfe | {diceType} Dice at id{diceIndex} is []");
-       // Debug.Log($"cpsts {costArray[diceIndex]} SP, player has {currentPlayer.unspentLevelUpPoints}");
-        // Check if current player has enough SP to augment this die face
-
-        var selectedDie = currentPlayer.strDie[diceIndex];
-
-        switch (diceType)
-        {
-            case Action.WeaponTypes.Melee:
-                selectedDie = currentPlayer.strDie[diceIndex];
-                break;
-
-            case Action.WeaponTypes.Gun:
-                selectedDie = currentPlayer.dexDie[diceIndex];
-                break;
-
-            case Action.WeaponTypes.Magic:
-                selectedDie = currentPlayer.intDie[diceIndex];
-                break;
-        }
-
-        Debug.Log($"Selected Die [{selectedDie}]");
-
-        if (costArray[selectedDie] <= currentPlayer.unspentLevelUpPoints)
-        {
-            Debug.Log("it can!!!");
-            currentPlayer.unspentLevelUpPoints -= costArray[selectedDie];
-
-            switch (diceType)
-            {
-                case Action.WeaponTypes.Melee:
-                    currentPlayer.strDie[diceIndex]++;
-                    break;
-
-                case Action.WeaponTypes.Gun:
-                    currentPlayer.dexDie[diceIndex]++;
-                    break;
-
-                case Action.WeaponTypes.Magic:
-                    currentPlayer.intDie[diceIndex]++;
-                    break;
-            }
-
-            // broadcast that it did in fact upgrade
-            m_AugmentedDieFaceValue.RaiseEvent();
-            UpdatePlayerDiceStatsInLevelUp(currentPlayer);
-            remainingSP.text = $"Remaining SP: {currentPlayer.unspentLevelUpPoints}";
-            if(currentPlayer.unspentLevelUpPoints <= 0)
-            {
-                m_ExitLevelUp.RaiseEvent();
-            }
-        }
-        else
-        {
-            // Can't augment, fail L bozo
-            Debug.Log("failed to augment wtf how");
-            m_FailAugmentDieFaceValue.RaiseEvent();
-        }
-    }
-    */
 }

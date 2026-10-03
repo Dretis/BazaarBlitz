@@ -100,6 +100,7 @@ public class InventorySelectionHandler : MonoBehaviour, ISubmitHandler, IPointer
 
     public void OnSubmit(BaseEventData eventData)
     {
+        Debug.Log($"OnSubmit | InventorySelectionHandler |{eventData}");
         if (heldItem == null) return;
 
         if(GameplayTest.instance.phase == GameplayTest.GamePhase.StockStore) 
