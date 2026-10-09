@@ -18,7 +18,7 @@
                     "name": "Roll",
                     "type": "Button",
                     "id": "719716d2-b1d1-4a96-a333-fdc6f58c007f",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -1698,6 +1698,76 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "CombatRoll",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Inactive",
+            "id": "87ec3a2b-8829-4004-ade7-4b97da9836cf",
+            "actions": [
+                {
+                    "name": "Quack",
+                    "type": "Button",
+                    "id": "1798d260-66db-4f3c-919c-578c0189147d",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Info",
+                    "type": "Button",
+                    "id": "3b9b7870-c7cc-4496-8ce0-3d36e4190e72",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "Press(behavior=2)",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "60391375-7cc1-4878-b98a-bafdb990acfa",
+                    "path": "<Gamepad>/{Submit}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Quack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "eff067ec-d8f5-482b-b565-227004c67c75",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Quack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5da6021a-b276-45f3-8887-67d341cacbb8",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Info",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9e8af016-12cb-46c0-96be-963fd8cedec0",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Info",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

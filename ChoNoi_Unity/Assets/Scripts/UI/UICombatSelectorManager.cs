@@ -1,10 +1,16 @@
+using Core.Events;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
 
 public class UICombatSelectorManager : MonoBehaviour
 {
+    [SerializeField] private MultiplayerEventSystem _eventSystem;
+    public GameStateEventChannelSO _gameStateEvent;
+
     [Header("UI Elements")]
     public CanvasGroup selectorInstructionGroup;
     public CanvasGroup combatSelectorContainer;
@@ -18,12 +24,27 @@ public class UICombatSelectorManager : MonoBehaviour
     {
         m_LandOnMultipleEntities.OnEventRaised += OnLandOnMutipleEntities;
         m_FighterSelecteed.OnEventRaised += OnFighterSelected;
+
+        _gameStateEvent.OnEventRaised += UpdateUIFromGameState;
     }
 
     private void OnDisable()
     {
         m_LandOnMultipleEntities.OnEventRaised -= OnLandOnMutipleEntities;
         m_FighterSelecteed.OnEventRaised -= OnFighterSelected;
+
+        _gameStateEvent.OnEventRaised -= UpdateUIFromGameState;
+    }
+
+    private void UpdateUIFromGameState(FrameGameState gameState)
+    {
+        if (gameState.DidChangePhases())
+        {
+            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.CombatSelector)
+            {
+                //OnLandOnMutipleEntities(gameState.NewState.CurrentPlayer.OccupiedNode.playersOccupied);
+            }
+        }
     }
 
     private void Start()
@@ -77,7 +98,7 @@ public class UICombatSelectorManager : MonoBehaviour
 
             if (firstFighter)
             {
-                EventSystem.current.SetSelectedGameObject(fighter);
+                _eventSystem.SetSelectedGameObject(fighter);
                 firstFighter = false;
             }
         }

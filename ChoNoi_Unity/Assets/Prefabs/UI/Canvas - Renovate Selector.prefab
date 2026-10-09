@@ -163,7 +163,7 @@ RectTransform:
   m_GameObject: {fileID: 777054853413194761}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 9125831747129980447}
@@ -253,6 +253,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c64304f7dd403f479fcb5090b283be2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _eventSystem: {fileID: 0}
+  _gameStateEvent: {fileID: 11400000, guid: 113369b80091b3346b620c7e0c0d9b8c, type: 2}
   renovatePhase: 0
   storeboatSelectorPrefab: {fileID: 2278519661202275820, guid: 747b19b4d740aa3478e35ec71bbec424, type: 3}
   selectorInstructionGroup: {fileID: 8183498722212129542}

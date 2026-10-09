@@ -13,6 +13,7 @@ using UnityEngine.Localization.SmartFormat.PersistentVariables;
 using UnityEngine.Localization.Components;
 using UnityEngine.UI;
 using UnityEngine.InputSystem.UI;
+using Unity.VisualScripting;
 
 public class UIPromptManager : MonoBehaviour
 {
@@ -28,10 +29,10 @@ public class UIPromptManager : MonoBehaviour
 
     [SerializeField] private TAnimCore rollTextAnimator;
     [SerializeField] private TypewriterCore rollTypewriter;
-    [SerializeField] private TypewriterCore turnTypewriter;
+    [SerializeField] private TypewriterCore turnTypewriter; // move to UICurrentTurnOverlayManager
 
     [Header("UI Elements")]
-    [SerializeField] private TextMeshProUGUI turnRoundIndicator;
+    [SerializeField] private TextMeshProUGUI turnRoundIndicator; // move to UICurrentTurnOverlayManager
 
     [SerializeField] private TextMeshProUGUI inputPrompt;
     private RectTransform inputPromptTransform;
@@ -70,7 +71,7 @@ public class UIPromptManager : MonoBehaviour
 
     [Header("Broadcast on Event Channels")]
     public PlayerEventChannelSO m_ConfirmBuildStore;
-    public VoidEventChannelSO m_CancelBuildStore; // also listening
+    //public VoidEventChannelSO m_CancelBuildStore; // also listening
     public NodeEventChannelSO m_RestockStore; // also listening
 
     [Header("Listen on Event Channels")]
@@ -80,7 +81,6 @@ public class UIPromptManager : MonoBehaviour
     public PlayerEventChannelSO m_DiceRollUndo;
 
     public PlayerEventChannelSO m_NextPlayerTurn;
-    public IntEventChannelSO m_NextTurnRound;
 
     //public PlayerEventChannelSO m_EncounterDecisions;
     public NodeEventChannelSO m_LandOnStorefront;
@@ -89,7 +89,7 @@ public class UIPromptManager : MonoBehaviour
     public NodeEventChannelSO m_LandOnVendor;
 
     public PlayerEventChannelSO m_OpenInventory;
-    public VoidEventChannelSO m_ExitInventory;
+    //public VoidEventChannelSO m_ExitInventory;
 
     public PlayerEventChannelSO m_TryBuildStore;
     public PlayerEventChannelSO m_BuildStore; // also listening
@@ -141,7 +141,6 @@ public class UIPromptManager : MonoBehaviour
         m_DiceRollPrep.OnEventRaised += DisplayRollPrompt;
 
         m_NextPlayerTurn.OnEventRaised += OnNextPlayerTurn;
-        m_NextTurnRound.OnEventRaised += OnNextTurnRound;
         //m_NextPlayerTurn.OnEventRaised += NormalizeInventoryPrompt; //temp
         //m_EncounterDecisions.OnEventRaised += DisplayEncounterChoices;
         m_LandOnStorefront.OnEventRaised += DisplayStorefrontPrompt;
@@ -149,13 +148,13 @@ public class UIPromptManager : MonoBehaviour
 
         m_LandOnVendor.OnEventRaised += OnLandOnVendor;
 
-        m_ExitInventory.OnEventRaised += DisplayInitialMenu;
+        //m_ExitInventory.OnEventRaised += DisplayInitialMenu;
 
-        m_RestockStore.OnEventRaised += ClearInputText;
+        //m_RestockStore.OnEventRaised += ClearInputText;
 
         m_TryBuildStore.OnEventRaised += OnTryBuildStore;
         m_BuildStore.OnEventRaised += OnBuildStore;
-        m_CancelBuildStore.OnEventRaised += OnCancelBuildStore;
+        //m_CancelBuildStore.OnEventRaised += OnCancelBuildStore;
         m_FinishStockingStore.OnEventRaised += OnFinishStockingStore;
 
         m_WarpOver.OnEventRaised += OnWarpOver;
@@ -188,7 +187,6 @@ public class UIPromptManager : MonoBehaviour
         m_DiceRollPrep.OnEventRaised -= DisplayRollPrompt;
 
         m_NextPlayerTurn.OnEventRaised -= OnNextPlayerTurn;
-        m_NextTurnRound.OnEventRaised -= OnNextTurnRound;
         //m_NextPlayerTurn.OnEventRaised -= NormalizeInventoryPrompt; //temp
         //m_EncounterDecisions.OnEventRaised -= DisplayEncounterChoices;
         m_LandOnStorefront.OnEventRaised -= DisplayStorefrontPrompt;
@@ -196,13 +194,13 @@ public class UIPromptManager : MonoBehaviour
 
         m_LandOnVendor.OnEventRaised -= OnLandOnVendor;
 
-        m_ExitInventory.OnEventRaised -= DisplayInitialMenu;
+        //m_ExitInventory.OnEventRaised -= DisplayInitialMenu;
 
-        m_RestockStore.OnEventRaised -= ClearInputText;
+        //m_RestockStore.OnEventRaised -= ClearInputText;
 
         m_TryBuildStore.OnEventRaised -= OnTryBuildStore;
         m_BuildStore.OnEventRaised -= OnBuildStore;
-        m_CancelBuildStore.OnEventRaised -= OnCancelBuildStore;
+        //m_CancelBuildStore.OnEventRaised -= OnCancelBuildStore;
         m_FinishStockingStore.OnEventRaised -= OnFinishStockingStore;
 
         m_WarpOver.OnEventRaised -= OnWarpOver;
@@ -244,11 +242,6 @@ public class UIPromptManager : MonoBehaviour
         }
         
         //oldNextPlayerGo = StartCoroutine(NotifyNextPlayerGo(ps));
-    }
-
-    private void OnNextTurnRound(int round)
-    {
-        turnRoundIndicator.text = round.ToString();
     }
 
     private IEnumerator NotifyNextPlayerGo(EntityPiece ps)
@@ -385,6 +378,11 @@ public class UIPromptManager : MonoBehaviour
             if (gameState.NewState.GamePhase is GameplayTest.GamePhase.InitialTurnMenu)
             {
                 DisplayInitialMenu(gameState.NewState.CurrentPlayer);
+
+                if(gameState.PrevState.GamePhase is GameplayTest.GamePhase.BuildingStore)
+                {
+                    HidePromptInstruction();
+                }
             }
             else if (gameState.NewState.GamePhase is GameplayTest.GamePhase.BuildingStore)
             {
@@ -410,6 +408,15 @@ public class UIPromptManager : MonoBehaviour
             if (gameState.NewState.GamePhase is GameplayTest.GamePhase.EncounterTime)
             {
                 rolledNumber.text = "";
+            }
+
+
+            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.StockStore)
+            {
+                if (gameState.PrevState.GamePhase is GameplayTest.GamePhase.BuildingStore)
+                {
+                    ClearInputText();
+                }
             }
         }
     }
@@ -658,7 +665,8 @@ public class UIPromptManager : MonoBehaviour
 
     public void CancelBuildStoreButton()
     {
-        m_CancelBuildStore.RaiseEvent();
+        //m_CancelBuildStore.RaiseEvent();
+        GameplayTest.instance.QueueCommand(new UICancelCommand());
     }
     // end of button functions
 

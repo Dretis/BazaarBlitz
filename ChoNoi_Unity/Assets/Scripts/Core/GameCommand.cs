@@ -70,6 +70,22 @@ namespace Core
         }
     }
 
+    public struct UICancelCommand : ICommand
+    {
+        // Basically pressing Back in a UI
+    }
+    public struct InventoryUseItemCommand : ICommand
+    {
+        public int Index; // Position in Inventory
+        public ItemStats Item;
+
+        public InventoryUseItemCommand(int index, ItemStats item)
+        {
+            Index = index;
+            Item = item;
+        }
+    }
+
     public struct BuildStoreCommand : ICommand
     {
         public int ItemCount; // useless?

@@ -449,7 +449,7 @@ RectTransform:
   m_GameObject: {fileID: 8794041951004778637}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7625369314884990569}
@@ -536,6 +536,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe843ff5b11731e4495c50b1024167db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _eventSystem: {fileID: 0}
+  _gameStateEvent: {fileID: 11400000, guid: 113369b80091b3346b620c7e0c0d9b8c, type: 2}
   selectorInstructionGroup: {fileID: 5417487158228938639}
   combatSelectorContainer: {fileID: 7853943505605566947}
   fighterSelectorPrefab: {fileID: 8966432283654011677, guid: 7981f9f7fa1f0dd47b8ff8377c9dad6e, type: 3}

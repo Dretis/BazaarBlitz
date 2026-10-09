@@ -7,9 +7,14 @@ using LitMotion;
 using LitMotion.Extensions;
 using static GameplayTest;
 using UnityEngine.UI;
+using UnityEngine.InputSystem.UI;
+using Core.Events;
+using System;
 
 public class UIRenovateSelectorManager : MonoBehaviour
 {
+    [SerializeField] private MultiplayerEventSystem _eventSystem;
+    public GameStateEventChannelSO _gameStateEvent;
     public enum RenovateSelectorPhase
     {
         AskPrompt,
@@ -56,7 +61,7 @@ public class UIRenovateSelectorManager : MonoBehaviour
 
     private void OnEnable()
     {
-        m_AskRenovateStore.OnEventRaised += OnAskRenovateStore;
+        //m_AskRenovateStore.OnEventRaised += OnAskRenovateStore;
 
         m_TryRestockStore.OnEventRaised += OnTryRestockStore;
         m_CancelRestockStore.OnEventRaised += OnCancelRestockStore;
@@ -65,11 +70,13 @@ public class UIRenovateSelectorManager : MonoBehaviour
 
         m_PromptRenovateOptions.OnEventRaised += OnPromptRenovateOptions;
         m_BackRenovateStore.OnEventRaised += OnBackRenovateStore;
+
+        _gameStateEvent.OnEventRaised += UpdateUIFromGameState;
     }
 
     private void OnDisable()
     {
-        m_AskRenovateStore.OnEventRaised -= OnAskRenovateStore;
+        //m_AskRenovateStore.OnEventRaised -= OnAskRenovateStore;
 
         m_TryRestockStore.OnEventRaised -= OnTryRestockStore;
         m_CancelRestockStore.OnEventRaised -= OnCancelRestockStore;
@@ -78,6 +85,19 @@ public class UIRenovateSelectorManager : MonoBehaviour
 
         m_PromptRenovateOptions.OnEventRaised -= OnPromptRenovateOptions;
         m_BackRenovateStore.OnEventRaised -= OnBackRenovateStore;
+
+        _gameStateEvent.OnEventRaised -= UpdateUIFromGameState;
+    }
+
+    private void UpdateUIFromGameState(FrameGameState gameState)
+    {
+        if (gameState.DidChangePhases())
+        {
+            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.PreStockStore)
+            {
+                OnAskRenovateStore(gameState.NewState.CurrentPlayer);
+            }
+        }
     }
 
     private void Start()
@@ -254,7 +274,7 @@ public class UIRenovateSelectorManager : MonoBehaviour
         restockAskButtonContainer.gameObject.SetActive(true);
         restockAskButtonContainer.interactable = true;
 
-        EventSystem.current.SetSelectedGameObject(restockAskButtonHolders[0]);
+        _eventSystem.SetSelectedGameObject(restockAskButtonHolders[0]);
     }
 
     private void OnTryRestockStore(EntityPiece entity)
@@ -329,7 +349,7 @@ public class UIRenovateSelectorManager : MonoBehaviour
         }
 
 
-        EventSystem.current.SetSelectedGameObject(renovateOptionsButtonHolders[0]);
+        _eventSystem.SetSelectedGameObject(renovateOptionsButtonHolders[0]);
     }
 
     private void OnBackRenovateStore()
@@ -337,10 +357,11 @@ public class UIRenovateSelectorManager : MonoBehaviour
         switch(renovatePhase)
         {
             case RenovateSelectorPhase.AskPrompt:
-                GameplayTest.instance.phase = GamePhase.EndTurn;
+                GameplayTest.instance.phase = GamePhase.EndTurn; // change this
                 break;
             case RenovateSelectorPhase.OwnedStoreboats:
-                m_AskRenovateStore.RaiseEvent(promptedPlayer);
+                //m_AskRenovateStore.RaiseEvent(promptedPlayer);
+                OnAskRenovateStore(promptedPlayer);
                 break;
             case RenovateSelectorPhase.RenovateOptions:
                 DestroyAllStoreboatSelectors();
@@ -385,7 +406,7 @@ public class UIRenovateSelectorManager : MonoBehaviour
 
             if (firstBoat)
             {
-                EventSystem.current.SetSelectedGameObject(fighter);
+                _eventSystem.SetSelectedGameObject(fighter);
                 firstBoat = false;
             }
         }

@@ -5,6 +5,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Playables;
 
+// THIS NEEDS TO BE ABLE TO QUEUE COMMANDS TO GAMEPLAYTEST
+// REMOVE ALL UPDATES TO CHANGING THE GAME PHASE IN THIS SCRIPT
 public class TimelineSignalResponder : MonoBehaviour
 {
     // Can call specific events from Timeline, also holds the playabledirectors
@@ -144,6 +146,7 @@ public class TimelineSignalResponder : MonoBehaviour
     public void FinishBuildingStore()
     {
         m_BuildStore.RaiseEvent(assignedPlayer);
+        GameplayTest.instance.phase = GameplayTest.GamePhase.StockStore; // change this
     }
 
     public void SignalWarpStarted()

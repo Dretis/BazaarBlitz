@@ -5,14 +5,10 @@ using System.Linq;
 using Core;
 using Core.Events;
 using DG.Tweening;
-using Febucci.UI.Core;
 using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem.UI;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
-using UnityEngine.InputSystem.XInput;
 
 public class GameplayTest : MonoBehaviour
 {
@@ -62,6 +58,8 @@ public class GameplayTest : MonoBehaviour
 
     public enum GamePhase
     {
+        StartTurn,
+
         InitialTurnMenu,
         ItemSelection,
         RaycastTargetSelection,
@@ -83,13 +81,14 @@ public class GameplayTest : MonoBehaviour
 
         InVendor,
         RockPaperScissors,
-        LevelUp,
+        LevelUp, // change name to 'StatAllocation' ?
         BlessingTree,
         CombatSelector,
         CombatTime,
 
         ConfirmContinue,
         EndTurn,
+        StartRound,
         IncidentHappening,
 
         EndGame,
@@ -110,7 +109,7 @@ public class GameplayTest : MonoBehaviour
     //public int storeLimit = 4;
     //public int playerCount = 4;
 
-    public int turnRound = 1; // Round based on every player has had a turn
+    //public int turnRound = 1; // Round based on every player has had a turn
     private int playersActed = 0; // goes up every time a unique players turn is done
 
     public List<SpecialIncidents> matchIncidents; // list of periodic incidents for this specific board
@@ -122,19 +121,9 @@ public class GameplayTest : MonoBehaviour
     public List<ItemStats> recentStockedItems;
     public int emptyStockCount = 3;
 
-    [SerializeField] private TypewriterCore rollTypewriter;
+    //[SerializeField] private TypewriterCore rollTypewriter;
     public TextMeshProUGUI topLeftText;
     public TextMeshProUGUI turnText;
-
-    public GameObject encounterScreen;
-    //public TextMeshProUGUI p1fight;
-    //public TextMeshProUGUI p2fight;
-    //public TextMeshProUGUI resultInfo;
-    //public bool encounterOver = false;
-
-    //public GameObject storeScreen;
-    //public TextMeshProUGUI storeListings;
-    //public TextMeshProUGUI storeListingsLabel;
 
     public MapNode wantedNode;
     private SceneGameManager sceneManager;
@@ -164,8 +153,6 @@ public class GameplayTest : MonoBehaviour
     public VoidEventChannelSO m_GameStart;
     public PlayerEventChannelSO m_PlayerWon;
     public PlayerListEventChannelSO m_ResultFinalScores;
-
-    public IntEventChannelSO m_NextTurnRound;
 
     public PlayerEventChannelSO m_EnterLevelUp;
 
@@ -306,8 +293,6 @@ public class GameplayTest : MonoBehaviour
 
     private void OnEnable()
     {
-        //m_NextTurnRound.OnEventRaised += OnNextTurnRound;
-        
         //m_DiceRolled.OnEventRaised += CalculateDiceRoll;
         m_ItemBought.OnEventRaised += ConfirmPurchase;
 
@@ -352,9 +337,7 @@ public class GameplayTest : MonoBehaviour
     }
 
     private void OnDisable()
-    {
-        //m_NextTurnRound.OnEventRaised -= OnNextTurnRound;
-        
+    {  
         //m_DiceRolled.OnEventRaised -= CalculateDiceRoll;
         m_ItemBought.OnEventRaised -= ConfirmPurchase;
 
@@ -408,7 +391,7 @@ public class GameplayTest : MonoBehaviour
         sceneManager = GameObject.FindGameObjectWithTag("SceneManager").GetComponent<SceneGameManager>();
         //playerUnits.AddRange(FindObjectsOfType<EntityPiece>());
         //nextPlayers = playerUnits;
-        encounterScreen.SetActive(false);
+
         if(PlayerConfigurationManager.instance != null)
         {
             Debug.Log("[ :) ] Started game from PrepScene (Correct)");
@@ -481,6 +464,7 @@ public class GameplayTest : MonoBehaviour
 
         //m_GameStart.RaiseEvent();
         //Debug.Log("m_GameStart raised!!");
+        _currentGameState.Round = 1;
     }
 
     private void Start()
@@ -527,42 +511,42 @@ public class GameplayTest : MonoBehaviour
             //currentPlayer.movementLeft = 1;
             //rollTypewriter.ShowText(""+currentPlayer.movementLeft);
             _currentGameState.MovementLeft = 1;
-            rollTypewriter.ShowText($"{_currentGameState.MovementLeft}");
+            //rollTypewriter.ShowText($"{_currentGameState.MovementLeft}");
         }
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             _currentGameState.MovementLeft = 2;
-            rollTypewriter.ShowText($"{_currentGameState.MovementLeft}");
+            //rollTypewriter.ShowText($"{_currentGameState.MovementLeft}");
         }
         if (Input.GetKeyDown(KeyCode.Alpha3))
         {
             _currentGameState.MovementLeft = 3;
-            rollTypewriter.ShowText($"{_currentGameState.MovementLeft}");
+            //rollTypewriter.ShowText($"{_currentGameState.MovementLeft}");
         }
         if (Input.GetKeyDown(KeyCode.Alpha4))
         {
             _currentGameState.MovementLeft = 4;
-            rollTypewriter.ShowText($"{_currentGameState.MovementLeft}");
+            //rollTypewriter.ShowText($"{_currentGameState.MovementLeft}");
         }
         if (Input.GetKeyDown(KeyCode.Alpha5))
         {
             _currentGameState.MovementLeft = 5;
-            rollTypewriter.ShowText($"{_currentGameState.MovementLeft}");
+            //rollTypewriter.ShowText($"{_currentGameState.MovementLeft}");
         }
         if (Input.GetKeyDown(KeyCode.Alpha6))
         {
             _currentGameState.MovementLeft = 6;
-            rollTypewriter.ShowText($"{_currentGameState.MovementLeft}");
+            //rollTypewriter.ShowText($"{_currentGameState.MovementLeft}");
         }
         if (Input.GetKeyDown(KeyCode.Alpha9))
         {
             _currentGameState.MovementLeft = 9;
-            rollTypewriter.ShowText($"{_currentGameState.MovementLeft}");
+            //rollTypewriter.ShowText($"{_currentGameState.MovementLeft}");
         }
         if (Input.GetKeyDown(KeyCode.Alpha0))
         {
             _currentGameState.MovementLeft = 100;
-            rollTypewriter.ShowText($"{_currentGameState.MovementLeft}");
+            //rollTypewriter.ShowText($"{_currentGameState.MovementLeft}");
         }
 #endif
         TickGame();
@@ -583,14 +567,20 @@ public class GameplayTest : MonoBehaviour
     [SerializeField]
     private GameState _currentGameState = new()
     {
-        GamePhase = GamePhase.InitialTurnMenu
+        GamePhase = GamePhase.StartTurn
     };
 
     private Queue<ICommand> _commandQueue = new();
+    private Queue<ICutscene> _cutsceneQueue = new();
+    private ICutscene _currentCutscene;
 
     public void QueueCommand(ICommand cmd)
     {
         _commandQueue.Enqueue(cmd);
+    }
+    public void QueueCutscene(ICutscene newCutscene)
+    {
+        _cutsceneQueue.Enqueue(newCutscene);
     }
 
     // TEMPORARY, DELETE LATER
@@ -601,6 +591,18 @@ public class GameplayTest : MonoBehaviour
 
     private void TickGame()
     {
+        if (_currentCutscene != null && !_currentCutscene.IsFinished())
+        {
+            // skip doing core logic, state doesn't change
+            // maybe have a cutscene phase, but then you'll need to keep the desired phase like you do already I think so you know what to return to
+            Debug.Log("TickGame | Cutscene is playing...");
+            return;
+        }
+        else
+        {
+            _currentCutscene = null;
+        }
+
         // SYNC IN (connect rewrite system to the actual system so the rewrite demo works)
         _currentGameState.GamePhase = phase;
         _currentGameState.CurrentPlayer = currentPlayer;
@@ -626,10 +628,9 @@ public class GameplayTest : MonoBehaviour
         {
             inputController.SwitchActionMapRewrite(_currentGameState.GamePhase);
         }
-
         // Handle all the UI and presentation stuff here or in the below event
         //_uiPromptManager.UpdateUI(frameGameState);
-        
+
         // Can also use events I guess
         // ANYTHING THAT LISTENS HERE SHOULD NEVERRRRRR CHANGE THE GAME STATE IN ANY WAY
         // GAME STATE IS DONNNNE AFTER CORE LOGIC RUNS
@@ -639,15 +640,35 @@ public class GameplayTest : MonoBehaviour
         _gameStateUpdatedEventChannel?.RaiseEvent(frameGameState);
         
         _currentGameState = newState;
-        
+
         // SYNC OUT (connect rewritten system to the existing system so the rewrite demo works)
         phase = _currentGameState.GamePhase;
+
+        // Cutscene Time
+        if (_currentCutscene == null && _cutsceneQueue.Count != 0)
+        {
+            Debug.Log("Playing cutscene");
+            _currentCutscene = _cutsceneQueue.Dequeue();
+            _currentCutscene.Play(prevState, newState);
+        }
     }
 
     private void CoreGameLogic(GameState prevState, ref GameState newState, bool isCmdToProcess, ICommand cmd)
     {
         switch (newState.GamePhase)
         {
+            case GamePhase.StartTurn:
+                // Just indicates the start of a player's turn
+                Debug.Log("CoreGameLogic | StartTurn");
+                newState.GamePhase = GamePhase.ItemSelection;
+                break;
+
+            // Checks item effects on player
+            case GamePhase.ItemSelection:
+                //newState.LastGamePhase = GamePhase.InitialTurnMenu;
+                newState.GamePhase = SelectItem(currentPlayer);
+                break;
+
             // Pick choices
             case GamePhase.InitialTurnMenu:
                 // Can move this whole block into a separate function if you want to keep functions small (matter of opinion i guess)
@@ -674,11 +695,6 @@ public class GameplayTest : MonoBehaviour
                             break;
                     }
                 }
-                break;
-            
-            // Checks item effects on player
-            case GamePhase.ItemSelection:
-                newState.GamePhase = SelectItem(currentPlayer);
                 break;
 
             case GamePhase.Freeview:
@@ -722,6 +738,20 @@ public class GameplayTest : MonoBehaviour
                     break;
                 }
 
+                if (cmd is UICancelCommand)
+                {
+                    // basically what m_ExitInventory was
+                    HandleInventoryExit(prevState, ref newState);
+                    //newState.GamePhase = newState.LastGamePhase;
+                }
+                
+                if (cmd is InventoryUseItemCommand invUseItemCommand)
+                {
+                    var index = invUseItemCommand.Index;
+                    var item = invUseItemCommand.Item;
+                    // basically what m_ExitInventory was
+                    HandleInventoryUseItem(prevState, ref newState, index, item);
+                }
                 // UI Submit/Confirm Command
                 //if (cmd is InventoryCommand)
                 //{
@@ -734,6 +764,20 @@ public class GameplayTest : MonoBehaviour
                 //{
                 //    HandleInventoryExit(prevState, ref newState);
                 //}
+                break;
+
+            case GamePhase.BuildingStore:
+                if (!isCmdToProcess)
+                {
+                    break;
+                }
+
+                if (cmd is UICancelCommand)
+                {
+                    // basically what m_CancelBuildStore was
+                    //HandleBuildCancel(prevState, ref newState);
+                    newState.GamePhase = newState.LastGamePhase;
+                }
                 break;
 
             // Roll Phase 
@@ -819,9 +863,13 @@ public class GameplayTest : MonoBehaviour
                 // HandleStockItem(prevState, ref newState);
 
                 // UI Cancel Command required
-                // HandleFinishStockStore(prevState, ref newState);
+                if (cmd is UICancelCommand)
+                {
+                    // basically what m_FinishStockingStore was
+                    // HandleFinishStockStore(prevState, ref newState);
+                }
 
-                // probably also doesn't work
+                // remove this
                 StockStore(currentPlayer, currentPlayer.occupiedNode);
                 break;
 
@@ -836,8 +884,15 @@ public class GameplayTest : MonoBehaviour
                 break;
 
             case GamePhase.LevelUp:
-                // dunno if keep
-                // probably also doesn't work
+                if (!isCmdToProcess)
+                {
+                    break;
+                }
+                // UI
+                if (cmd is ConfirmationYesCommand)
+                {
+                    //HandleLevelUpExit
+                }
                 LevelUp(currentPlayer);
                 break;
 
@@ -864,9 +919,12 @@ public class GameplayTest : MonoBehaviour
             // End of turn, next player!
             case GamePhase.EndTurn:
                 // probably also doesn't work
-                newState.GamePhase = EndOfTurn(currentPlayer);
+                newState.GamePhase = EndOfTurn(prevState, ref newState);
                 break;
-
+            case GamePhase.StartRound:
+                // Just indicates the start of a player's turn
+                newState.GamePhase = HandleNextTurnRound(newState.Round);
+                break;
             // Game over! Someone has won!
             case GamePhase.EndGame:
                 // probably also doesn't work
@@ -916,7 +974,7 @@ public class GameplayTest : MonoBehaviour
 
             //playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
             //playerInput.uiInputModule.actionsAsset = playerInput.actions;
-
+            newState.LastGamePhase = prevState.GamePhase;
             newState.GamePhase = GamePhase.Inventory;
 
             //SwitchActionMap(GamePhase.Inventory);
@@ -936,6 +994,7 @@ public class GameplayTest : MonoBehaviour
             && p.storeCount < currentRuleset.storeLimit
             && !p.currentStates.Contains(EntityPiece.State.Fighting))
         {
+            newState.LastGamePhase = prevState.GamePhase;
             newState.GamePhase = GamePhase.BuildingStore;
             //playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
             //playerInput.uiInputModule.actionsAsset = playerInput.actions;
@@ -1037,6 +1096,22 @@ public class GameplayTest : MonoBehaviour
                 m_ChangeToMoveDie.RaiseEvent(1); // have the SpinDie itself listen to _gameStateUpdatedEventChannel
             }
         }
+    }
+    
+    private void HandleInventoryExit(GameState prevState, ref GameState newState)
+    {
+        newState.GamePhase = newState.LastGamePhase; // maybe to an ExpectedPhase instead?
+    }
+    
+    private void HandleInventoryUseItem(GameState prevState, ref GameState newState, int index, ItemStats item)
+    {
+        Debug.Log($"HandleInventoryUseItem | Use {item} at index {index}");
+
+        //newState.CurrentPlayer.inventory.RemoveAt(index);
+        //newState.CurrentPlayer.AddItemToActiveEffects();
+
+        newState.LastGamePhase = GamePhase.InitialTurnMenu;
+        newState.GamePhase = GamePhase.IncidentHappening; // play the cutscene
     }
     
     private void HandleSomething(GameState prevState, ref GameState newState)
@@ -1565,7 +1640,7 @@ public class GameplayTest : MonoBehaviour
 
     private GamePhase InitiateCombat(EntityPiece p, MapNode m)
     {
-        rollTypewriter.ShowText("");
+        //rollTypewriter.ShowText("");
         playersOnCurrentNode = m.playersOccupied;
         var otherPlayers = GetOtherPlayersOnNode(p);
 
@@ -1810,7 +1885,6 @@ public class GameplayTest : MonoBehaviour
     {
         phase = GamePhase.EndTurn;
         //encounterOver = false;
-        encounterScreen.SetActive(false);
         //storeScreen.SetActive(false);
         //m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
         m_ExitStorefront.RaiseEvent();
@@ -1824,14 +1898,16 @@ public class GameplayTest : MonoBehaviour
     }
 
     #region End-of-Turn Functions
-    GamePhase EndOfTurn(EntityPiece p)
+    GamePhase EndOfTurn(GameState prevState, ref GameState newState)
     {
+        var p = newState.CurrentPlayer;
         if(p.inventory.Count > p.inventoryLimit)
         {
             // Player has too many items
             Debug.Log($"{p.entityName} HAS TOO MANY ITEMS");
             //phase = GamePhase.DiscardItem;
             StartCoroutine(DelayFullInventory(p, .25f));
+            newState.LastGamePhase = prevState.GamePhase;
             return GamePhase.DiscardItem;
             //m_FullInventory.RaiseEvent(p);
             //phase = GamePhase.DiscardItem;
@@ -1853,9 +1929,6 @@ public class GameplayTest : MonoBehaviour
             oldPoints = 0;
             oldRep = 0;
 
-            p.occupiedNode.playersOccupied.Add(p); // update to have that player in that node now
-            p.occupiedNodeCopy = p.occupiedNode;
-
             // Was in a third-party situation and is the last one standing!!
             if (p.occupiedNode.playersOccupied.Count == 1 &&
                 p.currentStates.Contains(EntityPiece.State.FightingParty))
@@ -1868,7 +1941,7 @@ public class GameplayTest : MonoBehaviour
             isStockingStore = false; // let next player access inventory
             usingSpeedDieToMove = false;
             playerUsedItem = false; // let next player access inventory
-            _currentGameState.CurrentPlayerHasUsedItem = false;
+            newState.CurrentPlayerHasUsedItem = false;
             selectedItemIndex = -1;
 
             m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
@@ -1878,25 +1951,24 @@ public class GameplayTest : MonoBehaviour
             playersActed++;
             if (playersActed == currentRuleset.numberOfPlayers)
             {
-                Debug.Log($"Round {turnRound} over.");
-                turnRound++;
+                Debug.Log($"Round {newState.Round} over.");
+                //turnRound++;
                 playersActed = 0;
 
+                newState.Round++;
                 // Raise event that round is over with the current round #.
-                m_NextTurnRound.RaiseEvent(turnRound);
-                return OnNextTurnRound(turnRound);
-                //SetupNextPlayer();
+                return GamePhase.StartRound;
             }
             else
             {
                 //StartCoroutine(DelaySetupNextPlayer(.25f));
                 SetupNextPlayer();
-                return GamePhase.ItemSelection;
+                return GamePhase.StartTurn;
             }
         }
     }
 
-    public GamePhase OnNextTurnRound(int round)
+    public GamePhase HandleNextTurnRound(int round)
     {
         bool active = false;
         foreach (SpecialIncidents incidents in matchIncidents)
@@ -1904,7 +1976,7 @@ public class GameplayTest : MonoBehaviour
             switch (incidents)
             {
                 case SpecialIncidents.Train:
-                    if (round % 6 == 0)
+                    if (round != 1 &&round % 6 == 0)
                     {
                         //m_ActivateIncidentTrain.RaiseEvent();
                         incidentsToActivate.Add(SpecialIncidents.Train);
@@ -1929,12 +2001,16 @@ public class GameplayTest : MonoBehaviour
         {
             //DelaySetupNextPlayer(0.25f);
             SetupNextPlayer();
-            return GamePhase.ItemSelection;
+            return GamePhase.StartTurn;
         }
     }
 
     public void SetupNextPlayer()
     {
+        // previous player is put on the spot they landed at
+        currentPlayer.occupiedNode.playersOccupied.Add(currentPlayer); // update to have that player in that node now
+        currentPlayer.occupiedNodeCopy = currentPlayer.occupiedNode;
+
         _inputControllers[currentPlayer.id].SwitchActionMapRewrite(_currentGameState.GamePhase);
 
         // Put current player back to normal pos
@@ -2137,26 +2213,6 @@ public class GameplayTest : MonoBehaviour
         }
         else
         {
-            // Ask player for confirmation to use item [YES/NO]
-            // Raise some event here to show prompt
-            // ...
-
-            // For when player says YES (PUT THIS IN A SEPERATE FUNCTION)
-            // play the PD_UseItem timeline asset here
-
-            // get signalled from the end of timeline sequence to actually give item effect (SEPERATE FUNCTION)
-            /*
-            currentPlayer.AddItemToActiveEffects(currentPlayer.inventory[index].Duration, currentPlayer.inventory[index]);
-
-            currentPlayer.UpdateStatModifier(new EntityPiece.ActiveEffect
-            {
-                originalItem = currentPlayer.inventory[index],
-                turnsRemaining = currentPlayer.inventory[index].Duration - 1
-            });
-
-            ApplyItemEffectsOnTurnStart(currentPlayer);
-            */
-
             // Item Used is a Deployable / Trap / Placeable
             if (currentPlayer.currentStatsModifier.warpMode != EntityStatsModifiers.WarpMode.None)
             {
@@ -2200,6 +2256,7 @@ public class GameplayTest : MonoBehaviour
 
                 Debug.Log("Used normal item");
                 m_ExitInventory.RaiseEvent();
+                _currentGameState.GamePhase = _currentGameState.LastGamePhase;
             }
         }
     }
@@ -2560,9 +2617,6 @@ public class GameplayTest : MonoBehaviour
         // remove this
         Debug.Log("StopOnStore");
         currentPlayer.movementLeft = 0;
-
-        string roll = "";
-        rollTypewriter.ShowText(roll);
     }
 
     // originally OnSelectRaycastTarget()

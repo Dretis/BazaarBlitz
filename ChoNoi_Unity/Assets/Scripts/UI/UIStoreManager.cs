@@ -7,11 +7,15 @@ using UnityEngine.EventSystems;
 using Febucci.UI.Core;
 using LitMotion;
 using LitMotion.Extensions;
+using Core.Events;
+using UnityEngine.InputSystem.UI;
 
 
 public class UIStoreManager : MonoBehaviour
 {
-    // CHANGE THIS SCRIPTS NAME, THIS ONE IS ONLY HANDLING STOREFRONT UI
+    [SerializeField] private MultiplayerEventSystem _eventSystem;
+    public GameStateEventChannelSO _gameStateEvent;
+
     private StoreSelectionHandler selectedStoreHandler;
 
     [Header("UI Elements")]
@@ -81,7 +85,7 @@ public class UIStoreManager : MonoBehaviour
     // Subscribe to event(s)
     private void OnEnable()
     {
-        m_LandOnStorefront.OnEventRaised += EnterStorefront;
+        //m_LandOnStorefront.OnEventRaised += EnterStorefront;
         m_ExitStorefront.OnEventRaised += ExitStorefront;
         m_HoverItemInStorefront.OnEventRaised += HighlightItem;
         m_StockItems.OnEventRaised += StockItems;
@@ -91,12 +95,14 @@ public class UIStoreManager : MonoBehaviour
 
         // Can you even listen to your own event?
         m_ItemBought.OnEventRaised += FinishShopping;
+
+        _gameStateEvent.OnEventRaised += UpdateUIFromGameState;
     }
 
     // Unsubscribe to event(s) to avoid errors
     private void OnDisable()
     {
-        m_LandOnStorefront.OnEventRaised -= EnterStorefront;
+        //m_LandOnStorefront.OnEventRaised -= EnterStorefront;
         m_ExitStorefront.OnEventRaised -= ExitStorefront;
         m_HoverItemInStorefront.OnEventRaised -= HighlightItem;
         m_StockItems.OnEventRaised -= StockItems;
@@ -105,6 +111,19 @@ public class UIStoreManager : MonoBehaviour
         m_RemoveItemAt.OnEventRaised -= OnRemoveItemStockAt;
 
         m_ItemBought.OnEventRaised -= FinishShopping;
+
+        _gameStateEvent.OnEventRaised -= UpdateUIFromGameState;
+    }
+    private void UpdateUIFromGameState(FrameGameState gameState)
+    {
+        if (gameState.DidChangePhases())
+        {
+            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.InStore)
+            {
+                var storeNode = gameState.NewState.CurrentPlayer.occupiedNode;
+                EnterStorefront(storeNode);
+            }
+        }
     }
 
     // Set dependencies here and in Inspector (if needed)
@@ -164,7 +183,7 @@ public class UIStoreManager : MonoBehaviour
             if (i == 0)
             {
                 Debug.Log($"ID: {storeHandler.itemIndex} | {storeHandler.HeldItem}");
-                EventSystem.current.SetSelectedGameObject(item);
+                _eventSystem.SetSelectedGameObject(item);
             }
         }
     }
@@ -207,7 +226,7 @@ public class UIStoreManager : MonoBehaviour
             if (i == 0)
             {
                 Debug.Log($"ID: {storeHandler.itemIndex} | {storeHandler.HeldItem}");
-                EventSystem.current.SetSelectedGameObject(item);
+                _eventSystem.SetSelectedGameObject(item);
             }
         }
 
@@ -269,22 +288,6 @@ public class UIStoreManager : MonoBehaviour
         MoveCustomerBoat();
 
         ChangeStorekeeperSpeed(1f);
-        /*
-        StockItems(stockedItems);
-
-        // If no item exists that is affordable to the player, enter Death's Row.
-        if (!stockedItems.Where(item => item != null).ToList().
-            Exists(item => currentPlayer.heldPoints >= item.basePrice))
-        {
-            // Note: Need to display Death's Row notice somehow. Maybe have an icon in the overworld?
-            currentPlayer.isInDeathsRow = true;
-            // Force player to buy cheapest item in the store.
-            var cheapestItem = stockedItems.Where(item => item != null).
-                OrderBy(i => i.basePrice).FirstOrDefault();
-            // Note: I don't think the SPACE bar prompt is displaying. UI Issue.
-            EnableItemSelection(stockedItems.FindIndex(item => item == cheapestItem));
-        }
-        */
     }
 
     private void SetStorekeeperPalette(EntityPiece storeOwner)
@@ -369,7 +372,7 @@ public class UIStoreManager : MonoBehaviour
     private void FinishShopping(ItemStats item)
     {
         // Disable buying of all other items.
-        DisableItemSelections();
+        //DisableItemSelections();
 
         //if (currentPlayer.currentStates.Contains(EntityPiece.State.DeathsRow))
         var goodbye = "\"Enjoy your brand new " + item.itemName + "! \nThank you for your patronage, and we hope to see you very soon!\"";
@@ -440,7 +443,7 @@ public class UIStoreManager : MonoBehaviour
         //confirmBuyGroup.gameObject.SetActive(true);
         ChangeStorekeeperSpeed(2f);
         ShowConfirmBuyGroup();
-        EventSystem.current.SetSelectedGameObject(confirmYesButton);
+        _eventSystem.SetSelectedGameObject(confirmYesButton);
     }
 
     private void ChangeStorekeeperSpeed(float speed)
@@ -463,7 +466,7 @@ public class UIStoreManager : MonoBehaviour
         storeInputPrompt.text = "<sprite=4> Select \t <sprite=0> Buy Item";
         ChangeStorekeeperSpeed(1f);
         HideConfirmBuyGroup();
-        EventSystem.current.SetSelectedGameObject(selectedStoreHandler.gameObject);
+        _eventSystem.SetSelectedGameObject(selectedStoreHandler.gameObject);
     }
 
     public void ShowConfirmBuyGroup()
@@ -560,7 +563,7 @@ public class UIStoreManager : MonoBehaviour
     private void EnableItemSelection(int index)
     {
         storeItemHolders[index].GetComponent<Button>().interactable = true;
-        EventSystem.current.SetSelectedGameObject(storeItemHolders[index]);
+        _eventSystem.SetSelectedGameObject(storeItemHolders[index]);
         /*
         itemButtons[index].interactable = true;
         itemSelectionHandlers[index].enabled = true;

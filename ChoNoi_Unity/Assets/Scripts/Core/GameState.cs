@@ -23,6 +23,8 @@ namespace Core
 
         public int MoveDieRoll; // originally diceRoll | aka MovementTotal
         public int MovementLeft; // originally in EntityPiece
+
+        public int Round;
     }
 
     /// <summary>
@@ -35,7 +37,7 @@ namespace Core
 
     public struct PlayerState
     {
-        public EntityPieceThing EntityPiece;
+        public EntityPieceData EntityPiece;
         public Color playerColor; // idk man
     }
 
@@ -52,11 +54,11 @@ namespace Core
         public int favoredAttack;
         public float spawnRarityModifier;
 
-        public EntityPieceThing EntityPiece;
+        public EntityPieceData EntityPiece;
     }
 
     // Change into a class instead of struct?
-    public struct EntityPieceThing
+    public struct EntityPieceData
     {
         //public bool isEnemy;
         //public int favoredAttack;
@@ -79,7 +81,7 @@ namespace Core
 
         [Header("Overworld Info")] // move to GameplayTest or GameState?
         public MapNode OccupiedNode;     // Node player is currently on
-        public MapNode OccupiedNodeCopy; // Node player's initial node at the start of the turn
+        public MapNode InitialNode; // Node player's initial node at the start of the turn
         public MapNode PreviousNode;     // Node player just walked on last turn. They can't go back this way.
         public List<MapNode> TraveledNodes; // Tracks the nodes the player has gone to
 

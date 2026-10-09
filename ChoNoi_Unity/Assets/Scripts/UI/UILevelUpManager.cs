@@ -8,9 +8,14 @@ using UnityEditor;
 using UnityEngine.UI;
 using LitMotion;
 using LitMotion.Extensions;
+using UnityEngine.InputSystem.UI;
+using Core.Events;
 
 public class UILevelUpManager : MonoBehaviour
 {
+    [SerializeField] private MultiplayerEventSystem _eventSystem;
+    public GameStateEventChannelSO _gameStateEvent;
+    [Space]
     private EntityPiece currentPlayer;
     [SerializeField] private CanvasGroup statAllocationGroup;
     [SerializeField] private RectTransform backgroundStripParent;
@@ -58,6 +63,8 @@ public class UILevelUpManager : MonoBehaviour
 
         m_HoldPlayerInfo.OnEventRaised += OnHoldPlayerInfo;
         m_ReleasePlayerInfo.OnEventRaised += OnReleasePlayerInfo;
+
+        _gameStateEvent.OnEventRaised += UpdateUIFromGameState;
     }
 
     private void OnDisable()
@@ -70,6 +77,19 @@ public class UILevelUpManager : MonoBehaviour
 
         m_HoldPlayerInfo.OnEventRaised -= OnHoldPlayerInfo;
         m_ReleasePlayerInfo.OnEventRaised -= OnReleasePlayerInfo;
+
+        _gameStateEvent.OnEventRaised -= UpdateUIFromGameState;
+    }
+
+    private void UpdateUIFromGameState(FrameGameState gameState)
+    {
+        if (gameState.DidChangePhases())
+        {
+            if(gameState.NewState.GamePhase is GameplayTest.GamePhase.LevelUp)
+            {
+                //OnEnterStatAllocation(gameState.NewState.CurrentPlayer);
+            }
+        }
     }
 
     private void Start()
@@ -89,12 +109,12 @@ public class UILevelUpManager : MonoBehaviour
         {
             playerDiceNumbers.Add(child.GetComponentInChildren<DiceStatSelectionHandler>());
 
-            //EventSystem.current.SetSelectedGameObject(child.gameObject);
+            //_eventSystem.SetSelectedGameObject(child.gameObject);
         }
 
         UpdatePlayerDiceStatsInLevelUp(entity);
 
-        EventSystem.current.SetSelectedGameObject(playerDiceNumbers[0].gameObject);
+        _eventSystem.SetSelectedGameObject(playerDiceNumbers[0].gameObject);
     }
 
     public void UpdatePlayerDiceStatsInLevelUp(EntityPiece entity)
@@ -208,7 +228,7 @@ public class UILevelUpManager : MonoBehaviour
     }
     private void OnExitStatAllocation()
     {
-        EventSystem.current.SetSelectedGameObject(null);
+        _eventSystem.SetSelectedGameObject(null);
         //statAllocationGroup.alpha = 0f;
         statAllocationGroup.interactable = false;
         statAllocationGroup.blocksRaycasts = false;

@@ -33,7 +33,7 @@ public class SpinDiceInfoHolder : MonoBehaviour
     [SerializeField] GameObject effectUsePrefab;
 
     [Header("Listen on Event Channels")]
-    public PlayerEventChannelSO m_NextPlayerTurn;
+    //public PlayerEventChannelSO m_NextPlayerTurn;
     public PlayerEventChannelSO m_DiceRollPrep;
     public PlayerEventChannelSO m_DiceRollUndo;
     public IntEventChannelSO m_RollForMovement;
@@ -43,7 +43,7 @@ public class SpinDiceInfoHolder : MonoBehaviour
 
     private void OnEnable()
     {
-        m_NextPlayerTurn.OnEventRaised += OnNextPlayerTurn;
+        //m_NextPlayerTurn.OnEventRaised += OnNextPlayerTurn;
         m_DiceRollUndo.OnEventRaised += OnDiceRollUndo;
         m_RollForMovement.OnEventRaised += OnRollForMovement;
         m_ChangeToMoveDie.OnEventRaised += OnChangeToMoveDie;
@@ -73,8 +73,21 @@ public class SpinDiceInfoHolder : MonoBehaviour
     
     private void UpdateSpinDiceInfoHolder(FrameGameState state)
     {
-        if (state.DidChangePhases())
+        if (state.DidChangePhases() &&
+            state.NewState.CurrentPlayer == assignedPlayer)
         {
+            if (state.NewState.GamePhase is GameplayTest.GamePhase.StartTurn)
+            {
+                switch (index)
+                {
+                    case 0:
+                        currentSelectedDie = true;
+                        break;
+                    case 1:
+                        currentSelectedDie = false;
+                        break;
+                }
+            }
             if (state.NewState.GamePhase is GameplayTest.GamePhase.InitialTurnMenu)
             {
                 OnDiceRollUndo(state.NewState.CurrentPlayer);
@@ -92,21 +105,6 @@ public class SpinDiceInfoHolder : MonoBehaviour
     }
     
     #endregion
-
-    private void OnNextPlayerTurn(EntityPiece p)
-    {
-        if (GameplayTest.instance.currentPlayer != assignedPlayer) return;
-
-        switch (index)
-        {
-            case 0:
-                currentSelectedDie = true;
-                break;
-            case 1:
-                currentSelectedDie = false;
-                break;
-        }
-    }
 
     private void OnDiceRollPrep(EntityPiece p)
     {

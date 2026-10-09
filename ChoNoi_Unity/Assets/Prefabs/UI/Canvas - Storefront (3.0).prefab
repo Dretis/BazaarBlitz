@@ -1871,7 +1871,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 1
+  m_PresetInfoIsWorld: 0
 --- !u!114 &5585159370509857723
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1901,6 +1901,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8b6c89497cf2be48af541774b3d67bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _eventSystem: {fileID: 0}
+  _gameStateEvent: {fileID: 11400000, guid: 113369b80091b3346b620c7e0c0d9b8c, type: 2}
   storefrontFullGroup: {fileID: 5585159371541399194}
   itemButtons:
   - {fileID: 0}

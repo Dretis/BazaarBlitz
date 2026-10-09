@@ -31,11 +31,6 @@ public class PlayerInputController : MonoBehaviour
 
     [SerializeField] private InputActionMap currActionMap;
 
-    [Header("Freeview Variables")]
-    [SerializeField] private int freeviewSpeed;
-    private Rigidbody2D freeviewRb;
-    private Vector2 freeviewMoveInput;
-
     [Header("Broadcast on Event Channels")]
     public VoidEventChannelSO m_EnableFreeview; // also listening
     public VoidEventChannelSO m_DisableFreeview;
@@ -57,7 +52,7 @@ public class PlayerInputController : MonoBehaviour
     public VoidEventChannelSO m_BackRenovateStore;
     public NodeEventChannelSO m_RestockStore; // also listening
 
-    public VoidEventChannelSO m_ExitInventory; // also listening
+    //public VoidEventChannelSO m_ExitInventory; // also listening
     public VoidEventChannelSO m_ExitLevelUp;
     public VoidEventChannelSO m_ExitBlessingsTree;
 
@@ -75,7 +70,6 @@ public class PlayerInputController : MonoBehaviour
     [Header("Listen on Event Channels")]
     public PlayerEventChannelSO m_AssignPlayerToController;
     public PlayerEventChannelSO m_NextPlayerTurn;
-    public IntEventChannelSO m_NextTurnRound;
     [Space]
     // Store-based Event Channels
     public PlayerEventChannelSO m_ConfirmBuildStore;
@@ -128,7 +122,6 @@ public class PlayerInputController : MonoBehaviour
         m_DisableFreeview.OnEventRaised += FreeviewDisabled;
 
         m_NextPlayerTurn.OnEventRaised += SetCurrentPlayer;
-        m_NextTurnRound.OnEventRaised += OnNextTurnRound;
 
         m_ConfirmBuildStore.OnEventRaised += OnConfirmBuildStore;
         m_CancelBuildStore.OnEventRaised += OnCancelBuildStore;
@@ -138,7 +131,7 @@ public class PlayerInputController : MonoBehaviour
         m_TryRelocateStore.OnEventRaised += OnTryRelocateStore;
 
         //m_BackRenovateStore.OnEventRaised += OnCancelRestockStore;
-        m_RestockStore.OnEventRaised += OnRestockStore;
+        //m_RestockStore.OnEventRaised += OnRestockStore;
         m_FinishStockingStore.OnEventRaised += OnFinishStockingStore;
 
         m_LandOnStorefront.OnEventRaised += OnLandOnStorefront;
@@ -161,7 +154,7 @@ public class PlayerInputController : MonoBehaviour
         m_EnterLevelUp.OnEventRaised += OnEnterLevelUp;
         m_ExitLevelUp.OnEventRaised += OnExitLevelUp;
 
-        m_ExitInventory.OnEventRaised += OnExitInventory;
+        //m_ExitInventory.OnEventRaised += OnExitInventory;
         m_FullInventory.OnEventRaised += OnFullInventory;
 
         m_BothActionsSelected.OnEventRaised += OnBothActionsSelected;
@@ -177,7 +170,6 @@ public class PlayerInputController : MonoBehaviour
         m_DisableFreeview.OnEventRaised -= FreeviewDisabled;
 
         m_NextPlayerTurn.OnEventRaised -= SetCurrentPlayer;
-        m_NextTurnRound.OnEventRaised -= OnNextTurnRound;
 
         m_ConfirmBuildStore.OnEventRaised -= OnConfirmBuildStore;
         m_CancelBuildStore.OnEventRaised -= OnCancelBuildStore;
@@ -187,7 +179,7 @@ public class PlayerInputController : MonoBehaviour
         m_TryRelocateStore.OnEventRaised -= OnTryRelocateStore;
 
         //m_BackRenovateStore.OnEventRaised -= OnCancelRestockStore;
-        m_RestockStore.OnEventRaised -= OnRestockStore;
+        //m_RestockStore.OnEventRaised -= OnRestockStore;
         m_FinishStockingStore.OnEventRaised -= OnFinishStockingStore;
 
         m_LandOnStorefront.OnEventRaised -= OnLandOnStorefront;
@@ -210,7 +202,7 @@ public class PlayerInputController : MonoBehaviour
         m_EnterLevelUp.OnEventRaised -= OnEnterLevelUp;
         m_ExitLevelUp.OnEventRaised -= OnExitLevelUp;
 
-        m_ExitInventory.OnEventRaised -= OnExitInventory;
+        //m_ExitInventory.OnEventRaised -= OnExitInventory;
         m_FullInventory.OnEventRaised -= OnFullInventory;
 
         m_BothActionsSelected.OnEventRaised -= OnBothActionsSelected;
@@ -226,7 +218,7 @@ public class PlayerInputController : MonoBehaviour
         Debug.Log("View pressed as message");
         previousGamePhase = GamePhase.InitialTurnMenu;
         //m_EnableFreeview.RaiseEvent();
-        GameplayTest.instance.QueueCommand(new ITMCommand(ITMCommand.ITMAction.View));
+        _gameplayTest.QueueCommand(new ITMCommand(ITMCommand.ITMAction.View));
         //FreeviewEnabled(GamePhase.InitialTurnMenu);
     }
 
@@ -236,9 +228,9 @@ public class PlayerInputController : MonoBehaviour
         Debug.Log("Roll pressed as message");
         previousGamePhase = GamePhase.InitialTurnMenu;
 
-        GameplayTest.instance.QueueCommand(new ITMCommand(ITMCommand.ITMAction.Roll));
+        _gameplayTest.QueueCommand(new ITMCommand(ITMCommand.ITMAction.Roll));
 
-        //GameplayTest.instance.QueueCommand(new GameCommand(GameCommandType.InitialTurnMenuRollMoveDie));
+        //_gameplayTest.QueueCommand(new GameCommand(GameCommandType.InitialTurnMenuRollMoveDie));
         //SwitchActionMap(GamePhase.RollDice);
     }
 
@@ -246,7 +238,7 @@ public class PlayerInputController : MonoBehaviour
     {
         Debug.Log("Inv pressed as message");
 
-        GameplayTest.instance.QueueCommand(new ITMCommand(ITMCommand.ITMAction.Inv));
+        _gameplayTest.QueueCommand(new ITMCommand(ITMCommand.ITMAction.Inv));
 
         //if (!GameplayTest.instance.playerUsedItem)
         //{
@@ -270,7 +262,7 @@ public class PlayerInputController : MonoBehaviour
     {
         Debug.Log("Build presed");
 
-        GameplayTest.instance.QueueCommand(new ITMCommand(ITMCommand.ITMAction.Build));
+        _gameplayTest.QueueCommand(new ITMCommand(ITMCommand.ITMAction.Build));
 
         //var p = GameplayTest.instance.currentPlayer;
         //if (p.occupiedNode.tag == "Encounter"
@@ -328,31 +320,33 @@ public class PlayerInputController : MonoBehaviour
     }
     private void OnCancel()
     {
-        // Not in a game session
-        if (GameplayTest.instance == null) return;
+        _gameplayTest.QueueCommand(new UICancelCommand());
 
-        switch (GameplayTest.instance.phase)
-        {
-            case GamePhase.StockStore:
-                m_FinishStockingStore.RaiseEvent(GameplayTest.instance.currentPlayer);
-                break;
-            case GamePhase.Inventory:
-                m_ExitInventory.RaiseEvent();
-                break;
-            case GamePhase.PreStockStore:
-                m_BackRenovateStore.RaiseEvent();
-                break;
-            case GamePhase.BuildingStore:
-                m_CancelBuildStore.RaiseEvent();
-                break;
-            case GamePhase.LevelUp:
-                m_ExitLevelUp.RaiseEvent();
-                break;
-            case GamePhase.BlessingTree:
-                m_ExitBlessingsTree.RaiseEvent();
-                m_EnterStatAllocation.RaiseEvent(assignedPlayer);
-                break;
-        }
+        // Not in a game session
+        //if (GameplayTest.instance == null) return;
+
+        //switch (GameplayTest.instance.phase)
+        //{
+        //    case GamePhase.StockStore:
+        //        m_FinishStockingStore.RaiseEvent(GameplayTest.instance.currentPlayer);
+        //        break;
+        //    case GamePhase.Inventory:
+        //        m_ExitInventory.RaiseEvent();
+        //        break;
+        //    case GamePhase.PreStockStore:
+        //        m_BackRenovateStore.RaiseEvent();
+        //        break;
+        //    case GamePhase.BuildingStore:
+        //        m_CancelBuildStore.RaiseEvent();
+        //        break;
+        //    case GamePhase.LevelUp:
+        //        m_ExitLevelUp.RaiseEvent();
+        //        break;
+        //    case GamePhase.BlessingTree:
+        //        m_ExitBlessingsTree.RaiseEvent();
+        //        m_EnterStatAllocation.RaiseEvent(assignedPlayer);
+        //        break;
+        //}
         //SwitchActionMap(previousGamePhase);
     }
 
@@ -362,7 +356,7 @@ public class PlayerInputController : MonoBehaviour
     private void OnMove(InputValue value)
     {
         var direction = value.Get<Vector2>();
-        GameplayTest.instance.QueueCommand(new MovingCommand(direction));
+        _gameplayTest.QueueCommand(new MovingCommand(direction));
 
         //var gp = GameplayTest.instance;
         //var p = GameplayTest.instance.currentPlayer;
@@ -410,19 +404,19 @@ public class PlayerInputController : MonoBehaviour
         //previousGamePhase = GamePhase.PickDirection;
         //m_EnableFreeview.RaiseEvent();
 
-        GameplayTest.instance.QueueCommand(new ITMCommand(ITMCommand.ITMAction.Inv));
-        //GameplayTest.instance.QueueCommand(new GenericCommand());
+        _gameplayTest.QueueCommand(new ITMCommand(ITMCommand.ITMAction.Inv));
+        //_gameplayTest.QueueCommand(new GenericCommand());
     }
     #endregion
 
     #region 'Freeview' Action Map
     private void OnFreeviewMove(InputValue value)
     {
-        freeviewMoveInput = value.Get<Vector2>();
+        var freeviewMoveInput = value.Get<Vector2>();
         m_FreeviewReticleMove.RaiseEvent(freeviewMoveInput);
 
         //var freeviewMoveInput = value.Get<Vector2>();
-        //GameplayTest.instance.QueueCommand(new MovingCommand(freeviewMoveInput));
+        //_gameplayTest.QueueCommand(new MovingCommand(freeviewMoveInput));
     }
 
     private void OnFreeviewExamine()
@@ -433,12 +427,12 @@ public class PlayerInputController : MonoBehaviour
         //    GameplayTest.instance.OnSelectRaycastTarget();
         //}
 
-        GameplayTest.instance.QueueCommand(new FreeviewExamineCommand());
+        _gameplayTest.QueueCommand(new FreeviewExamineCommand());
     }
 
     private void OnFreeviewExit()
     {
-        GameplayTest.instance.QueueCommand(new FreeviewExitCommand());
+        _gameplayTest.QueueCommand(new FreeviewExitCommand());
         //if (previousGamePhase == GamePhase.PreStockStore)
         //{
         //    m_BackRenovateStore.RaiseEvent();
@@ -451,7 +445,7 @@ public class PlayerInputController : MonoBehaviour
     #region 'Confirmation' Action Map
     private void OnYes()
     {
-        GameplayTest.instance.QueueCommand(new ConfirmationYesCommand());
+        _gameplayTest.QueueCommand(new ConfirmationYesCommand());
 
         //switch (GameplayTest.instance.phase)
         //{
@@ -480,7 +474,7 @@ public class PlayerInputController : MonoBehaviour
 
     private void OnNo()
     {
-        GameplayTest.instance.QueueCommand(new ConfirmationNoCommand());
+        _gameplayTest.QueueCommand(new ConfirmationNoCommand());
 
         //switch (GameplayTest.instance.phase)
         //{
@@ -508,7 +502,7 @@ public class PlayerInputController : MonoBehaviour
 
     private void OnChange()
     {
-        GameplayTest.instance.QueueCommand(new ConfirmationChangeCommand());
+        _gameplayTest.QueueCommand(new ConfirmationChangeCommand());
 
         //switch (GameplayTest.instance.phase)
         //{
@@ -747,6 +741,7 @@ public class PlayerInputController : MonoBehaviour
             GamePhase.CombatSelector => ("UI"),
             GamePhase.CombatTime => ("Combat"),
             GamePhase.GameOver => ("Confirmation"),
+            GamePhase.IncidentHappening => ("Inactive"),
             _ => String.Empty
         };
         
@@ -777,13 +772,13 @@ public class PlayerInputController : MonoBehaviour
         var p = GameplayTest.instance.currentPlayer;
 
         var e = GetComponentInChildren<EventSystemEnabler>();
-        Debug.Log($"SetCurrentPlayer | e: {e} ");
+        //Debug.Log($"SetCurrentPlayer | e: {e} ");
         if (assignedPlayer != p)
         {
             if (e != null) e.DisablePlayerCanvases();
             //playerInput.currentActionMap.Disable();
             playerInput.DeactivateInput();
-            Debug.Log($"SetCurrentPlayer | Player ID: {playerInput.playerIndex} deactivated input.");
+            //Debug.Log($"SetCurrentPlayer | Player ID: {playerInput.playerIndex} deactivated input.");
         }
         else
         {
@@ -797,16 +792,6 @@ public class PlayerInputController : MonoBehaviour
             playerInput.currentActionMap.Enable();
 
             TryRumbling(0.25f, .5f, .25f);
-        }
-    }
-
-    private void OnNextTurnRound(int round)
-    {
-        if (assignedPlayer == GameplayTest.instance.currentPlayer)
-        {
-            //playerInput.DeactivateInput();
-            //Debug.Log($"NextTurnRound | Player ID: {playerInput.playerIndex} deactivated input.");
-            Debug.Log($"NextTurnRound | Player ID: {playerInput.playerIndex} should be playing!");
         }
     }
 
@@ -851,7 +836,9 @@ public class PlayerInputController : MonoBehaviour
     {
         if (ps != assignedPlayer) return;
 
-        playerInput.DeactivateInput(); //temp could change this to a skip actionmap
+        //playerInput.DeactivateInput(); //temp could change this to a skip actionmap
+        //Debug.Log($"OnConfirmBuildStore |");
+        SwitchActionMapRewrite(GamePhase.IncidentHappening); // temp
     }
 
     private void OnCancelBuildStore()
@@ -865,8 +852,8 @@ public class PlayerInputController : MonoBehaviour
     {
         if (!playerInput.inputIsActive) return;
 
-        playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
-        playerInput.uiInputModule.actionsAsset = playerInput.actions;
+        //playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
+        //playerInput.uiInputModule.actionsAsset = playerInput.actions;
 
         if (previousGamePhase == GamePhase.PreStockStore) previousGamePhase = GamePhase.EncounterTime;
         else previousGamePhase = instance.phase;
@@ -941,8 +928,8 @@ public class PlayerInputController : MonoBehaviour
         if (!playerInput.inputIsActive) return;
 
         //playerInput.uiInputModule.GetComponent<MultiplayerEventSystem>().playerRoot = 
-        playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
-        playerInput.uiInputModule.actionsAsset = playerInput.actions;
+        //playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
+        //playerInput.uiInputModule.actionsAsset = playerInput.actions;
         SwitchActionMap(GamePhase.InStore);
     }
 
@@ -997,8 +984,8 @@ public class PlayerInputController : MonoBehaviour
     {
         if (!playerInput.inputIsActive) return;
 
-        playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
-        playerInput.uiInputModule.actionsAsset = playerInput.actions;
+        //playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
+        //playerInput.uiInputModule.actionsAsset = playerInput.actions;
         SwitchActionMap(GamePhase.CombatSelector);
     }
 
@@ -1015,8 +1002,8 @@ public class PlayerInputController : MonoBehaviour
 
         previousGamePhase = GamePhase.RollDice;
 
-        playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
-        playerInput.uiInputModule.actionsAsset = playerInput.actions;
+        //playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
+        //playerInput.uiInputModule.actionsAsset = playerInput.actions;
         SwitchActionMap(GamePhase.LevelUp);
 
         // May want to put this somewhere else
@@ -1051,8 +1038,8 @@ public class PlayerInputController : MonoBehaviour
         playerInput.ActivateInput();
         Debug.Log("PlayerINputController | fullinventory");
 
-        playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
-        playerInput.uiInputModule.actionsAsset = playerInput.actions;
+        //playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
+        //playerInput.uiInputModule.actionsAsset = playerInput.actions;
 
         previousGamePhase = GamePhase.EndTurn;
         //m_OpenInventory.RaiseEvent(currentPlayer);

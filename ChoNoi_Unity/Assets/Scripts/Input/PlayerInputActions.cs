@@ -104,7 +104,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""name"": ""Roll"",
                     ""type"": ""Button"",
                     ""id"": ""719716d2-b1d1-4a96-a333-fdc6f58c007f"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -1788,6 +1788,76 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Inactive"",
+            ""id"": ""87ec3a2b-8829-4004-ade7-4b97da9836cf"",
+            ""actions"": [
+                {
+                    ""name"": ""Quack"",
+                    ""type"": ""Button"",
+                    ""id"": ""1798d260-66db-4f3c-919c-578c0189147d"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Info"",
+                    ""type"": ""Button"",
+                    ""id"": ""3b9b7870-c7cc-4496-8ce0-3d36e4190e72"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""Press(behavior=2)"",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""60391375-7cc1-4878-b98a-bafdb990acfa"",
+                    ""path"": ""<Gamepad>/{Submit}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Quack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""eff067ec-d8f5-482b-b565-227004c67c75"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Quack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5da6021a-b276-45f3-8887-67d341cacbb8"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Info"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9e8af016-12cb-46c0-96be-963fd8cedec0"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""Info"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -1902,6 +1972,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         // Combat Roll
         m_CombatRoll = asset.FindActionMap("Combat Roll", throwIfNotFound: true);
         m_CombatRoll_CombatRoll = m_CombatRoll.FindAction("CombatRoll", throwIfNotFound: true);
+        // Inactive
+        m_Inactive = asset.FindActionMap("Inactive", throwIfNotFound: true);
+        m_Inactive_Quack = m_Inactive.FindAction("Quack", throwIfNotFound: true);
+        m_Inactive_Info = m_Inactive.FindAction("Info", throwIfNotFound: true);
     }
 
     ~@PlayerInputActions()
@@ -1913,6 +1987,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, PlayerInputActions.UI.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Combat.enabled, "This will cause a leak and performance issues, PlayerInputActions.Combat.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_CombatRoll.enabled, "This will cause a leak and performance issues, PlayerInputActions.CombatRoll.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Inactive.enabled, "This will cause a leak and performance issues, PlayerInputActions.Inactive.Disable() has not been called.");
     }
 
     /// <summary>
@@ -2964,6 +3039,113 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="CombatRollActions" /> instance referencing this action map.
     /// </summary>
     public CombatRollActions @CombatRoll => new CombatRollActions(this);
+
+    // Inactive
+    private readonly InputActionMap m_Inactive;
+    private List<IInactiveActions> m_InactiveActionsCallbackInterfaces = new List<IInactiveActions>();
+    private readonly InputAction m_Inactive_Quack;
+    private readonly InputAction m_Inactive_Info;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Inactive".
+    /// </summary>
+    public struct InactiveActions
+    {
+        private @PlayerInputActions m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public InactiveActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Inactive/Quack".
+        /// </summary>
+        public InputAction @Quack => m_Wrapper.m_Inactive_Quack;
+        /// <summary>
+        /// Provides access to the underlying input action "Inactive/Info".
+        /// </summary>
+        public InputAction @Info => m_Wrapper.m_Inactive_Info;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Inactive; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="InactiveActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(InactiveActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="InactiveActions" />
+        public void AddCallbacks(IInactiveActions instance)
+        {
+            if (instance == null || m_Wrapper.m_InactiveActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_InactiveActionsCallbackInterfaces.Add(instance);
+            @Quack.started += instance.OnQuack;
+            @Quack.performed += instance.OnQuack;
+            @Quack.canceled += instance.OnQuack;
+            @Info.started += instance.OnInfo;
+            @Info.performed += instance.OnInfo;
+            @Info.canceled += instance.OnInfo;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="InactiveActions" />
+        private void UnregisterCallbacks(IInactiveActions instance)
+        {
+            @Quack.started -= instance.OnQuack;
+            @Quack.performed -= instance.OnQuack;
+            @Quack.canceled -= instance.OnQuack;
+            @Info.started -= instance.OnInfo;
+            @Info.performed -= instance.OnInfo;
+            @Info.canceled -= instance.OnInfo;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="InactiveActions.UnregisterCallbacks(IInactiveActions)" />.
+        /// </summary>
+        /// <seealso cref="InactiveActions.UnregisterCallbacks(IInactiveActions)" />
+        public void RemoveCallbacks(IInactiveActions instance)
+        {
+            if (m_Wrapper.m_InactiveActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="InactiveActions.AddCallbacks(IInactiveActions)" />
+        /// <seealso cref="InactiveActions.RemoveCallbacks(IInactiveActions)" />
+        /// <seealso cref="InactiveActions.UnregisterCallbacks(IInactiveActions)" />
+        public void SetCallbacks(IInactiveActions instance)
+        {
+            foreach (var item in m_Wrapper.m_InactiveActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_InactiveActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="InactiveActions" /> instance referencing this action map.
+    /// </summary>
+    public InactiveActions @Inactive => new InactiveActions(this);
     private int m_KeyboardMouseSchemeIndex = -1;
     /// <summary>
     /// Provides access to the input control scheme.
@@ -3329,5 +3511,27 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnCombatRoll(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Inactive" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="InactiveActions.AddCallbacks(IInactiveActions)" />
+    /// <seealso cref="InactiveActions.RemoveCallbacks(IInactiveActions)" />
+    public interface IInactiveActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "Quack" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnQuack(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Info" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnInfo(InputAction.CallbackContext context);
     }
 }

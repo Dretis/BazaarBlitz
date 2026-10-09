@@ -25,7 +25,7 @@ public class TestingEvents : MonoBehaviour
 #if UNITY_EDITOR
     // Update is called once per frame
     void Update()
-    {
+    {/*
         if (debugPlayerInputOn &&
             (Input.GetKeyDown(KeyCode.KeypadEnter) ||
             Input.GetKeyDown(KeyCode.Backslash)))
@@ -54,6 +54,7 @@ public class TestingEvents : MonoBehaviour
             Debug.Log("DEBUG | Turning on P4 test input");
             debugPlayerInput.transform.GetChild(3).gameObject.SetActive(true);
         }
+        */
         /*
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {

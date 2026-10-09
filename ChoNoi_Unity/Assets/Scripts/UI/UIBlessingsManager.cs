@@ -9,10 +9,15 @@ using UnityEngine.UI;
 using LitMotion;
 using LitMotion.Extensions;
 using System;
+using UnityEngine.InputSystem.UI;
+using Core.Events;
 
 public class UIBlessingsManager : MonoBehaviour
 {
     private EntityPiece associatedPlayer;
+    [SerializeField] private MultiplayerEventSystem _eventSystem;
+    public GameStateEventChannelSO _gameStateEvent;
+    [Space]
     [SerializeField] private BlessingSelectionHandler centerBlessingCircle;
 
     [Header("UI Elements")]
@@ -43,6 +48,8 @@ public class UIBlessingsManager : MonoBehaviour
 
         m_BlessingSelected.OnEventRaised += OnBlessingSelected;
         m_HoverInBlessing.OnEventRaised += OnHoverInBlessing;
+
+        _gameStateEvent.OnEventRaised += UpdateUIFromGameState;
     }
 
     private void OnDisable()
@@ -52,6 +59,16 @@ public class UIBlessingsManager : MonoBehaviour
 
         m_BlessingSelected.OnEventRaised -= OnBlessingSelected;
         m_HoverInBlessing.OnEventRaised -= OnHoverInBlessing;
+
+        _gameStateEvent.OnEventRaised -= UpdateUIFromGameState;
+    }
+
+    private void UpdateUIFromGameState(FrameGameState gameState)
+    {
+        if (gameState.DidChangePhases())
+        {
+
+        }
     }
 
     // Start is called before the first frame update
@@ -71,7 +88,7 @@ public class UIBlessingsManager : MonoBehaviour
 
         ShowBlessingsTree();
 
-        EventSystem.current.SetSelectedGameObject(centerBlessingCircle.gameObject);
+        _eventSystem.SetSelectedGameObject(centerBlessingCircle.gameObject);
     }
 
     private void OnExitBlessingsTree()
@@ -118,7 +135,7 @@ public class UIBlessingsManager : MonoBehaviour
         hoveredBlessingIcon.sprite = b.itemSprite;
         var blessingHeader = $"<{b.l_itemName.GetLocalizedString()}>";
         hoveredBlessingName.text = blessingHeader;
-        var gradient = EventSystem.current.currentSelectedGameObject.GetComponent<BlessingSelectionHandler>().BlessingNameGradient;
+        var gradient = _eventSystem.currentSelectedGameObject.GetComponent<BlessingSelectionHandler>().BlessingNameGradient;
         hoveredBlessingName.colorGradientPreset = gradient;
 
         hoveredBlessingEffect.text = b.l_effect.GetLocalizedString();
