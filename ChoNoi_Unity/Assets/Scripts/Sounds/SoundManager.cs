@@ -37,8 +37,8 @@ public class SoundManager : MonoBehaviour
     public VoidEventChannelSO m_DisableFreeview;
 
     [Space]
-    public PlayerEventChannelSO m_OpenInventory;
-    public VoidEventChannelSO m_ExitInventory;
+    //public PlayerEventChannelSO m_OpenInventory;
+    //public VoidEventChannelSO m_ExitInventory;
     public ItemEventChannelSO m_ItemSelected;
 
     [Space]
@@ -128,8 +128,8 @@ public class SoundManager : MonoBehaviour
         m_EnableFreeview.OnEventRaised += PlayMoveSound;
         m_DisableFreeview.OnEventRaised += PlayUndoSound;
 
-        m_OpenInventory.OnEventRaised += OnOpenInventory;
-        m_ExitInventory.OnEventRaised += OnExitInventory;
+        //m_OpenInventory.OnEventRaised += OnOpenInventory;
+        //m_ExitInventory.OnEventRaised += OnExitInventory;
         m_ItemSelected.OnEventRaised += OnItemSelected;
 
         m_TryBuildStore.OnEventRaised += OnTryBuildStore;
@@ -189,8 +189,8 @@ public class SoundManager : MonoBehaviour
         m_EnableFreeview.OnEventRaised -= PlayMoveSound;
         m_DisableFreeview.OnEventRaised -= PlayUndoSound;
 
-        m_OpenInventory.OnEventRaised -= OnOpenInventory;
-        m_ExitInventory.OnEventRaised -= OnExitInventory;
+        //m_OpenInventory.OnEventRaised -= OnOpenInventory;
+        //m_ExitInventory.OnEventRaised -= OnExitInventory;
         m_ItemSelected.OnEventRaised -= OnItemSelected;
 
         m_TryBuildStore.OnEventRaised -= OnTryBuildStore;
@@ -507,6 +507,10 @@ public class SoundManager : MonoBehaviour
         {
             return;
         }
+        if (state.NewState.GamePhase is GameplayTest.GamePhase.StartTurn)
+        {
+            FMODUnity.RuntimeManager.StudioSystem.setParameterByName("GameState", 0);
+        }
 
         if (state.NewState.GamePhase is GameplayTest.GamePhase.RollDice)
         {
@@ -515,6 +519,27 @@ public class SoundManager : MonoBehaviour
         else if (state.PrevState.GamePhase is GameplayTest.GamePhase.RollDice)
         {
             StopDiceRollSound();
+        }
+
+        if (state.NewState.GamePhase is GameplayTest.GamePhase.Freeview)
+        {
+            PlayMoveSound();
+            FMODUnity.RuntimeManager.StudioSystem.setParameterByName("GameState", 2);
+        }
+        else if (state.PrevState.GamePhase is GameplayTest.GamePhase.Freeview)
+        {
+            //PlayUndoSound();
+            FMODUnity.RuntimeManager.StudioSystem.setParameterByName("GameState", 0);
+        }
+
+        if (state.NewState.GamePhase is GameplayTest.GamePhase.Inventory)
+        {
+            FMODUnity.RuntimeManager.StudioSystem.setParameterByName("GameState", 2);
+        }
+        else if (state.PrevState.GamePhase is GameplayTest.GamePhase.Inventory)
+        {
+            PlayUndoSound();
+            FMODUnity.RuntimeManager.StudioSystem.setParameterByName("GameState", 0);
         }
 
         if (state.NewState.GamePhase is GameplayTest.GamePhase.PickDirection)
@@ -535,6 +560,7 @@ public class SoundManager : MonoBehaviour
 
         if (state.NewState.GamePhase is GameplayTest.GamePhase.CombatTime)
         {
+            FMODUnity.RuntimeManager.StudioSystem.setParameterByName("GameState", 1);
             // Play some swooshy wavy enter fight sfx
             // Also change the music variant to Upbeat/Combat
         }

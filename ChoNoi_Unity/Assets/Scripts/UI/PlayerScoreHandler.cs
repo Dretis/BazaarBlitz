@@ -1,4 +1,5 @@
 using Coffee.UIEffects;
+using Core;
 using LitMotion;
 using LitMotion.Extensions;
 using System;
@@ -11,6 +12,8 @@ using UnityEngine.UI;
 public class PlayerScoreHandler : MonoBehaviour
 {
     private EntityPiece assignedPlayer;
+    private EntityData assignedEntity;
+
     [SerializeField] private int playerMoneyNumber;
     [SerializeField] private int playerHPNumber;
     [SerializeField] private int playerExpNumber;
@@ -93,25 +96,26 @@ public class PlayerScoreHandler : MonoBehaviour
     [Header("Broadcast On Event Channels")]
     public PlayerEventChannelSO m_CheerForPlayer;
 
-    public void AssignPlayerToScore(EntityPiece p)
+    public void AssignPlayerToScore(ref EntityData ed)
     {
-        assignedPlayer = p;
+        assignedEntity = ed;
     }
 
     public void InitialScoreSetup()
     {
         // Set name
-        //playerName.text = "" + assignedPlayer.entityName;
-        SetPlayerName(assignedPlayer.entityName);
+        //playerName.text = "" + assignedEntity.entityName;
+        SetPlayerName(assignedEntity.EntityName);
 
         // Set Color of Baggie in score
-        //playerImage.color = assignedPlayer.playerColor - new Color32(0, 0, 0, 0); // minus transparency
+        //playerImage.color = assignedEntity.playerColor - new Color32(0, 0, 0, 0); // minus transparency
 
-        var palette = assignedPlayer.GetComponent<PlayerPaletteLoader>().GetInspectorPalette();
+        //var palette = assignedPlayer.GetComponent<PlayerPaletteLoader>().GetInspectorPalette();
+        var palette = assignedEntity.EntityPalette;
         playerPaletteLoader.SetInspectorPalette(palette);
 
-        playerMoneyNumber = assignedPlayer.heldPoints;
-        playerHPNumber = assignedPlayer.health;
+        playerMoneyNumber = assignedEntity.Money;
+        playerHPNumber = assignedEntity.Health;
 
         //Debug.Log($"playerInfoDiceNumbers[{i}] = {playerInfoDiceHolder[i]}");
         /*
@@ -134,7 +138,7 @@ public class PlayerScoreHandler : MonoBehaviour
 
         UpdateScore();
 
-        SetMoney(assignedPlayer.heldPoints);
+        SetMoney(assignedEntity.Money);
         playerMoney.GetComponent<UIEffect>().enabled = false;
 
         greenStamp.color -= new Color(0, 0, 0, 0.75f);
@@ -192,7 +196,7 @@ public class PlayerScoreHandler : MonoBehaviour
 
     public void UpdateMoney()
     {
-        if (playerMoneyNumber == assignedPlayer.heldPoints)
+        if (playerMoneyNumber == assignedEntity.Money)
         {
             //Debug.Log($"!! Money is the same.");
             return;
@@ -200,75 +204,77 @@ public class PlayerScoreHandler : MonoBehaviour
 
         var moneyShine = playerMoney.GetComponent<UIEffect>();
 
-        if (moneyShine.enabled && assignedPlayer.heldPoints < GameplayTest.instance.currentRuleset.pointGoal)
+        if (moneyShine.enabled && assignedEntity.Money < GameplayTest.instance.currentRuleset.pointGoal)
             playerMoney.GetComponent<UIEffect>().enabled = false;
 
-        if (assignedPlayer.heldPoints >= GameplayTest.instance.currentRuleset.pointGoal)
+        if (assignedEntity.Money >= GameplayTest.instance.currentRuleset.pointGoal)
         {
             playerMoney.color = goalMoneyColor;
             playerMoney.GetComponent<UIEffect>().enabled = true;
         }
-        else if (assignedPlayer.heldPoints < 0)
+        else if (assignedEntity.Money < 0)
             playerMoney.color = negativeMoneyColor;
         else
             playerMoney.color = Color.white;
 
-        if (playerMoneyNumber < assignedPlayer.heldPoints)
+        if (playerMoneyNumber < assignedEntity.Money)
         {
-            m_CheerForPlayer.RaiseEvent(assignedPlayer);
+            // Move this to EntityVisual / Animator
+            //m_CheerForPlayer.RaiseEvent(assignedEntity); 
         }
 
-        var handle = LMotion.Create(playerMoneyNumber, assignedPlayer.heldPoints, 1f)
+        var handle = LMotion.Create(playerMoneyNumber, assignedEntity.Money, 1f)
                         .BindToText(playerMoney);
 
-        playerMoneyNumber = assignedPlayer.heldPoints;
+        playerMoneyNumber = assignedEntity.Money;
     }
 
     public void UpdateHealth()
     {
-        playerMaxHP.text = $"/{assignedPlayer.maxHealth * assignedPlayer.currentStatsModifier.maxHealthMultModifier + assignedPlayer.currentStatsModifier.maxHealthFlatModifier}";
+        //playerMaxHP.text = $"/{assignedEntity.MaxHealth * assignedEntity.CurrentStatsModifier.maxHealthMultModifier + assignedEntity.CurrentStatsModifier.maxHealthFlatModifier}";
+        playerMaxHP.text = $"/{assignedEntity.MaxHealth}";
 
-        if (playerHPNumber == assignedPlayer.health)
+        if (playerHPNumber == assignedEntity.Health)
         {
             //Debug.Log($"!! Health is the same.");
             return;
         }
-        if (playerHPNumber > assignedPlayer.health)
+        if (playerHPNumber > assignedEntity.Health)
         {
-            float damageTaken = playerHPNumber - assignedPlayer.health;
-            float shakeDuration = damageTaken / (float)assignedPlayer.maxHealth;
+            float damageTaken = playerHPNumber - assignedEntity.Health;
+            float shakeDuration = damageTaken / (float)assignedEntity.MaxHealth;
 
             ShakePlayerSprite(shakeDuration);
         }
 
-        var handle = LMotion.Create(playerHPNumber, assignedPlayer.health, .5f)
+        var handle = LMotion.Create(playerHPNumber, assignedEntity.Health, .5f)
                         //.WithEase(Ease.OutSine)
                         .BindToText(playerCurrentHP);
 
-        playerHPNumber = assignedPlayer.health;
+        playerHPNumber = assignedEntity.Health;
     }
 
     public void UpdateExp()
     {
-        //playerExp.text = "[" + (int)assignedPlayer.ReputationPoints + "/" + (int)assignedPlayer.levelThreshold + "]";
-        playerNextExp.text = $"/{(int)assignedPlayer.levelThreshold}";
+        //playerExp.text = "[" + (int)assignedEntity.ReputationPoints + "/" + (int)assignedEntity.levelThreshold + "]";
+        playerNextExp.text = $"/{(int)assignedEntity.ExpThreshold}";
 
-        if (playerExpNumber == assignedPlayer.ReputationPoints)
+        if (playerExpNumber == assignedEntity.Experience)
         {
             //Debug.Log($"!! Health is the same.");
             return;
         }
 
-        var handle = LMotion.Create(playerExpNumber, (int)assignedPlayer.ReputationPoints, 1f)
+        var handle = LMotion.Create(playerExpNumber, (int)assignedEntity.Experience, 1f)
                         .WithEase(Ease.OutCubic)
                         .BindToText(playerExp);
 
-        playerExpNumber = (int)assignedPlayer.ReputationPoints;
+        playerExpNumber = (int)assignedEntity.Experience;
     }
 
     public void UpdateLevel()
     {
-        var lvl = assignedPlayer.RenownLevel;
+        var lvl = assignedEntity.Level;
 
         if (lvl >= 10)
         {
@@ -279,29 +285,29 @@ public class PlayerScoreHandler : MonoBehaviour
             playerLevel.colorGradientPreset = levelColorGradients[lvl - 1];
         }
 
-        playerLevel.text = "*\n" + assignedPlayer.RenownLevel;
+        playerLevel.text = "*\n" + assignedEntity.Level;
         UpdateExp();
-        //playerExp.text = "[" + (int)assignedPlayer.ReputationPoints + "/" + (int)assignedPlayer.levelThreshold + "]";
+        //playerExp.text = "[" + (int)assignedEntity.ReputationPoints + "/" + (int)assignedEntity.levelThreshold + "]";
     }
 
 
     public void UpdateHeldStamps()
     {
         var notObtainColor = Color.white - new Color(0, 0, 0, 0.75f);
-        //Debug.Log($"assignedPlayer = {assignedPlayer}");
-        if (assignedPlayer.stamps.Contains(Stamp.StampType.Green)) greenStamp.color = Color.white;
+        //Debug.Log($"assignedEntity = {assignedEntity}");
+        if (assignedEntity.Stamps.Contains(Stamp.StampType.Green)) greenStamp.color = Color.white;
         else greenStamp.color = notObtainColor;
 
-        if (assignedPlayer.stamps.Contains(Stamp.StampType.Red)) redStamp.color = Color.white;
+        if (assignedEntity.Stamps.Contains(Stamp.StampType.Red)) redStamp.color = Color.white;
         else redStamp.color = notObtainColor;
 
-        if (assignedPlayer.stamps.Contains(Stamp.StampType.Blue)) blueStamp.color = Color.white;
+        if (assignedEntity.Stamps.Contains(Stamp.StampType.Blue)) blueStamp.color = Color.white;
         else blueStamp.color = notObtainColor;
 
-        if (assignedPlayer.stamps.Contains(Stamp.StampType.Orange)) orangeStamp.color = Color.white;
+        if (assignedEntity.Stamps.Contains(Stamp.StampType.Orange)) orangeStamp.color = Color.white;
         else orangeStamp.color = notObtainColor;
         /*
-        foreach (Stamp.StampType s in assignedPlayer.stamps)
+        foreach (Stamp.StampType s in assignedEntity.stamps)
         {
             Debug.Log(s);
             switch (s)
@@ -357,7 +363,7 @@ public class PlayerScoreHandler : MonoBehaviour
 
     public void ClearHeldStamps()
     {
-        foreach (Stamp.StampType s in assignedPlayer.stamps)
+        foreach (Stamp.StampType s in assignedEntity.Stamps)
         {
             HideObtainedStamps(s);
         }
@@ -374,20 +380,20 @@ public class PlayerScoreHandler : MonoBehaviour
 
     public void UpdateDiceStat(Action.WeaponTypes type)
     {
-        var player = assignedPlayer;
+        var player = assignedEntity;
         var ti = (int)type; // type index
         float statDieFlatMod = 0;
         float statDieMultMod = 1;
 
         if (type != Action.WeaponTypes.Speed)
         {
-            statDieFlatMod = player.currentStatsModifier.dieModifiers[ti].finalResultAtkFlatModifier;
-            statDieMultMod = player.currentStatsModifier.dieModifiers[ti].finalResultMultModifier;
+            statDieFlatMod = player.CurrentStatsModifier.dieModifiers[ti].finalResultAtkFlatModifier;
+            statDieMultMod = player.CurrentStatsModifier.dieModifiers[ti].finalResultMultModifier;
         }
         else
         {
-            statDieFlatMod = player.currentStatsModifier.movementFlatModifier;
-            statDieMultMod = player.currentStatsModifier.movementMultModifier;
+            statDieFlatMod = player.CurrentStatsModifier.movementFlatModifier;
+            statDieMultMod = player.CurrentStatsModifier.movementMultModifier;
         }
 
         var diceGradient = actionTypeGradients[ti];
@@ -396,7 +402,7 @@ public class PlayerScoreHandler : MonoBehaviour
         if (!(statDieFlatMod == 0 && statDieMultMod == 1)) diceGradient = actionTypeGradients[4];
         else if (!(statDieFlatMod == 0 && statDieMultMod == 1)) diceGradient = actionTypeGradients[5];
 
-        DieConfig die = player.entityStats.dieConfigs[(int)type];
+        DieConfig die = player.EntityStats.dieConfigs[(int)type];
 
         var start = 0;
         var end = 0;
@@ -404,22 +410,22 @@ public class PlayerScoreHandler : MonoBehaviour
         switch (type)
         {
             case Action.WeaponTypes.Melee:
-                die = player.strDie;
+                die = player.StrDie;
                 start = 0;
                 end = 6;
                 break;
             case Action.WeaponTypes.Gun:
-                die = player.dexDie;
+                die = player.DexDie;
                 start = 6;
                 end = 12;
                 break;
             case Action.WeaponTypes.Magic:
-                die = player.intDie;
+                die = player.IntDie;
                 start = 12;
                 end = 18;
                 break;
             case Action.WeaponTypes.Speed:
-                die = player.spdDie;
+                die = player.SpdDie;
                 start = 18;
                 end = 24;
                 break;
@@ -453,15 +459,15 @@ public class PlayerScoreHandler : MonoBehaviour
     }
     public void UpdateInfoInvItems()
     {
-        var player = assignedPlayer;
+        var player = assignedEntity;
         Sprite playerItemSprite;
 
-        for (int i = 0; i < player.inventoryLimit; i++)
+        for (int i = 0; i < player.InventoryLimit; i++)
         {
             //Debug.Log($"updating glance inventory {i}");
-            if (i < player.inventory.Count && player.inventory[i] != null)
+            if (i < player.Inventory.Count && player.Inventory[i] != null)
             {
-                playerItemSprite = player.inventory[i].itemSprite;
+                playerItemSprite = player.Inventory[i].itemSprite;
 
                 playerInfoInvItems[i].sprite = playerItemSprite;
                 playerInfoInvItems[i].enabled = true;
@@ -473,17 +479,17 @@ public class PlayerScoreHandler : MonoBehaviour
     
     public void UpdateMoneyInterest()
     {
-        var ratePercentage = assignedPlayer.currentStatsModifier.interestRate * 100;
-        int interest = (int)(assignedPlayer.currentStatsModifier.interestRate * assignedPlayer.storestockTotal);
+        var ratePercentage = assignedEntity.CurrentStatsModifier.interestRate * 100;
+        int interest = (int)(assignedEntity.CurrentStatsModifier.interestRate * assignedEntity.StorestockTotal);
 
         // change this to work with localized strings
-        moneyInterestText.text = $"<color=#FFF5C6>Storestock Total: </color=><b>{assignedPlayer.storestockTotal}<sprite=\"Coin Icon\" index=0></b>\r" +
+        moneyInterestText.text = $"<color=#FFF5C6>Storestock Total: </color=><b>{assignedEntity.StorestockTotal}<sprite=\"Coin Icon\" index=0></b>\r" +
                                  $"\n<color=#FFF5C6>{ratePercentage}% Interest: </color=> <b>+{interest}<sprite=\"Coin Icon\" index=0></b>";
     }
 
     public void RefreshActiveEffects()
     {
-        var activeEffects = assignedPlayer.activeEffects;
+        var activeEffects = assignedEntity.ActiveEffects;
 
         DestroyAllActiveEffects();
 
@@ -494,7 +500,7 @@ public class PlayerScoreHandler : MonoBehaviour
 
         foreach (var effect in activeEffects)
         {
-            if (effect.originalItem.showAsEffect)
+            if (effect.OriginalItem.showAsEffect)
             {
                 var indicator = Instantiate(effectIndicatorPrefab, activeEffectsGridContainer);
                 indicator.GetComponent<ActiveEffectIndicatorHandler>().UpdateEffectInfo(effect);

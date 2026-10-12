@@ -73,8 +73,11 @@ public class SpinDiceInfoHolder : MonoBehaviour
     
     private void UpdateSpinDiceInfoHolder(FrameGameState state)
     {
+        //var index = state.NewState.CurrPlayerId;
+        //var currPlayer = state.NewState.Players[index];
+
         if (state.DidChangePhases() &&
-            state.NewState.CurrentPlayer == assignedPlayer)
+            state.NewState.CurrPlayerId == assignedPlayer.id)
         {
             if (state.NewState.GamePhase is GameplayTest.GamePhase.StartTurn)
             {
@@ -90,11 +93,18 @@ public class SpinDiceInfoHolder : MonoBehaviour
             }
             if (state.NewState.GamePhase is GameplayTest.GamePhase.InitialTurnMenu)
             {
-                OnDiceRollUndo(state.NewState.CurrentPlayer);
+                //OnDiceRollUndo(state.NewState.CurrentPlayer);
+                if (isChildDie)
+                {
+                    Destroy(gameObject);
+                }
+                else
+                    DiceDisappear(scaleDuration);
             }
             if (state.NewState.GamePhase is GameplayTest.GamePhase.RollDice)
             {
-                OnDiceRollPrep(state.NewState.CurrentPlayer);
+                //OnDiceRollPrep(state.NewState.CurrentPlayer);
+                ShowRollingDice(state.NewState.CurrentPlayer().EntityData);
             }
             if (state.PrevState.GamePhase is GameplayTest.GamePhase.RollDice &&
                 state.NewState.GamePhase is GameplayTest.GamePhase.PickDirection)
@@ -105,7 +115,7 @@ public class SpinDiceInfoHolder : MonoBehaviour
     }
     
     #endregion
-
+    /*
     private void OnDiceRollPrep(EntityPiece p)
     {
         if (GameplayTest.instance.currentPlayer != assignedPlayer) return;
@@ -116,6 +126,36 @@ public class SpinDiceInfoHolder : MonoBehaviour
         if (p.currentStatsModifier.rollModifier > 0)
         {
             for (int i = 0; i < p.currentStatsModifier.rollModifier; i++)
+            {
+                var newDie = Instantiate(this.gameObject);
+                newDie.GetComponent<SpinDiceInfoHolder>().isChildDie = true;
+                newDie.GetComponent<SpinDiceInfoHolder>().DiceAppear(scaleDuration);
+
+                var x = i * 2 - 1;
+                var targetPos = transform.position + new Vector3(x, -.2f, 0);
+                newDie.transform.SetParent(transform.parent);
+                newDie.transform.position = targetPos;
+
+                //LMotion.Create(newDie.transform.position, targetPos, .15f)
+                //    .WithEase(Ease.InQuad)
+                //    .Bind(x => newDie.transform.position = x)
+                //    .AddTo(this.gameObject);
+            }
+        }
+        if (!currentSelectedDie) return;
+
+        //transform.position = p.transform.position + new Vector3(0, yOffset, zOffset);
+        DiceAppear(scaleDuration);
+    }*/
+
+    private void ShowRollingDice(EntityData p)
+    {
+        UpdateDiceNumbers(p);
+
+        // Make more dice based on roll mods
+        if (p.CurrentStatsModifier.rollModifier > 0)
+        {
+            for (int i = 0; i < p.CurrentStatsModifier.rollModifier; i++)
             {
                 var newDie = Instantiate(this.gameObject);
                 newDie.GetComponent<SpinDiceInfoHolder>().isChildDie = true;
@@ -230,11 +270,11 @@ public class SpinDiceInfoHolder : MonoBehaviour
         GetComponent<DiceSpin>().canSpin = false;
     }
 
-    private void UpdateDiceNumbers(EntityPiece p)
+    private void UpdateDiceNumbers(EntityData p)
     {
         // Change the die face numbers based on the player's movement mods
-        var flatMoveMod = p.currentStatsModifier.movementFlatModifier;
-        var multMoveMod = p.currentStatsModifier.movementMultModifier;
+        var flatMoveMod = p.CurrentStatsModifier.movementFlatModifier;
+        var multMoveMod = p.CurrentStatsModifier.movementMultModifier;
 
         TMP_ColorGradient gradient;
 
@@ -253,7 +293,7 @@ public class SpinDiceInfoHolder : MonoBehaviour
         var die = new List<int> { 1,2,3,4,5,6 };
         if (statType == Action.WeaponTypes.Speed)
         {
-            die = p.entityStats.dieConfigs[(int)Action.WeaponTypes.Speed].GetAllFaceValues().ToList();
+            die = p.EntityStats.dieConfigs[(int)Action.WeaponTypes.Speed].GetAllFaceValues().ToList();
         }
 
         for(int i = 0; i < diceStatNumbers.Count; i++)

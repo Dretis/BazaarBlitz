@@ -7,14 +7,19 @@ using LitMotion;
 using LitMotion.Extensions;
 using System.Collections;
 using Coffee.UIEffects;
-using FishNet.Demo.AdditiveScenes;
-
+using Core.Events;
+using System;
+using Core;
 
 public class ScoreManager : MonoBehaviour
 {
+    private GameplayTest _gameplayTest;
+    [SerializeField] private PlayerState[] _players;
+    [SerializeField] private GameStateEventChannelSO _gameStateEvent;
+    [Space]
     private MotionHandle currentMotion;
 
-    [SerializeField] private EntityPiece currentPlayer;
+    //[SerializeField] private EntityPiece currentPlayer;
     [SerializeField] private List<EntityPiece> players;
 
     [Header("Player Scores")]
@@ -28,7 +33,8 @@ public class ScoreManager : MonoBehaviour
     //public PlayerEventChannelSO m_CheerForPlayer;
 
     [Header("Listen On Event Channels")]
-    public VoidEventChannelSO m_GameStart; // should only be called once
+    [Space]
+    //public VoidEventChannelSO m_GameStart; // should only be called once
 
     public IntEventChannelSO m_ChangeInScore;
     public IntEventChannelSO m_PlayerScoreDecreased;
@@ -57,6 +63,7 @@ public class ScoreManager : MonoBehaviour
 
     private void OnEnable()
     {
+        _gameStateEvent.OnEventRaised += UpdateUIFromGameState;
         //m_GameStart.OnEventRaised += OnGameStart;
 
         m_ChangeInScore.OnEventRaised += UpdateScoreForPlayer;
@@ -84,11 +91,11 @@ public class ScoreManager : MonoBehaviour
         m_RefreshedActiveEffects.OnEventRaised += OnRefreshedActiveEffects;
 
         m_PlayerWon.OnEventRaised += OnPlayerWon;
-        m_GameStart.OnEventRaised += OnGameStart;
     }
 
     private void OnDisable()
     {
+        _gameStateEvent.OnEventRaised -= UpdateUIFromGameState;
         //m_GameStart.OnEventRaised -= OnGameStart;
 
         m_ChangeInScore.OnEventRaised -= UpdateScoreForPlayer;
@@ -116,16 +123,62 @@ public class ScoreManager : MonoBehaviour
         m_RefreshedActiveEffects.OnEventRaised -= OnRefreshedActiveEffects;
 
         m_PlayerWon.OnEventRaised -= OnPlayerWon;
-        m_GameStart.OnEventRaised -= OnGameStart;
+    }
+    private void UpdateUIFromGameState(FrameGameState gameState)
+    {
+        if (gameState.DidChangePhases())
+        {
+            //UpdateScoreForPlayer(gameState.NewState.CurrPlayerId);
+
+            if (gameState.PrevState.GamePhase is GameplayTest.GamePhase.Inventory
+                && gameState.NewState.GamePhase is GameplayTest.GamePhase.IncidentHappening)
+            {
+                UpdateScoreForPlayer(gameState.NewState.CurrPlayerId);
+            } 
+            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.StartTurn)
+            {
+                UpdateScoreForPlayer(gameState.NewState.CurrPlayerId);
+            }
+            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.EndTurn)
+            {
+                UpdateScoreForPlayer(gameState.NewState.CurrPlayerId);
+            }
+
+        }
     }
 
     void Awake()
     {
         Debug.Log("Awake scoremanager");
-        InitializePlayerScores();
+        //InitializePlayerScores();
         Debug.Log("Awake scoremanager2");
     }
 
+    public void Initialize(ref PlayerState[] ps, GameplayTest gt)
+    {
+        _players = ps;
+        _gameplayTest = gt;
+
+        for (int i = 0; i < _players.Length; i++)
+        {
+            //Debug.Log($"i={i} | {players[i].name}");
+            playerScoreHandlers[i].AssignPlayerToScore(ref _players[i].EntityData);
+            playerScoreHandlers[i].InitialScoreSetup();
+            playerScoreHandlers[i].ToggleCurrentPlayerEffect(false);
+        }
+
+        for (int i = 4; i > gt.currentRuleset.numberOfPlayers; i--)
+        {
+            Debug.Log($"playerScoreHandlers[^1] = {playerScoreHandlers[^1]}");
+            //playerUnits.Remove(playerUnits[^1]);
+            //playerScoreHandlers[^1].gameObject.SetActive(false);
+            //playerScoreHandlers[^1].enabled = false;
+
+            playerScoreHandlers[^1].DisablePlayerScore();
+            playerScoreHandlers.Remove(playerScoreHandlers[^1]);
+        }
+    }
+    /*
     private void InitializePlayerScores()
     {
         //playerInfoDiceNumbers.Add("1");
@@ -140,38 +193,21 @@ public class ScoreManager : MonoBehaviour
             playerScoreHandlers[i].ToggleCurrentPlayerEffect(false);
         }
     }
-
-    private void OnGameStart()
-    {
-        Debug.Log($"ScoreManager | OnGameStart");
-        //InitializePlayerScores();
-        var playerCount = GameplayTest.instance.currentRuleset.numberOfPlayers;
-        players = GameplayTest.instance.playerUnits;
-
-        for (int i = 4; i > playerCount; i--)
-        {
-            Debug.Log($"playerScoreHandlers[^1] = {playerScoreHandlers[^1]}");
-            //playerUnits.Remove(playerUnits[^1]);
-            //playerScoreHandlers[^1].gameObject.SetActive(false);
-            //playerScoreHandlers[^1].enabled = false;
-
-            playerScoreHandlers[^1].DisablePlayerScore();
-            playerScoreHandlers.Remove(playerScoreHandlers[^1]);
-        }
-    }
+    */
 
     private void OnPlayerScoreDecreased(int scoreChange)
     {
         // Prob some text vfx that shows it going down
-        currentPlayer.coinDrop.Play();
+        // Move this to EntityVisual
+        //currentPlayer.coinDrop.Play();
     }
 
     private void OnPlayerScoreIncreased(int scoreChange)
     {
         // Prob some text vfx that shows it going up lol
-        //Debug.Log("yo i got more money");
-        currentPlayer.coinSucking.Play();
-        StartCoroutine(ShowCoinGainNumber(currentPlayer, scoreChange));
+        // Move this to EntityVisual
+        //currentPlayer.coinSucking.Play();
+        //StartCoroutine(ShowCoinGainNumber(currentPlayer, scoreChange));
     }
 
     private IEnumerator ShowCoinGainNumber(EntityPiece entity, int coinGain)
@@ -209,13 +245,13 @@ public class ScoreManager : MonoBehaviour
 
     private void ChangeCurrentPlayer(EntityPiece ps)
     {
-        if (currentPlayer != null)
-            playerScoreHandlers[currentPlayer.id].ToggleCurrentPlayerEffect(false);
+        //if (currentPlayer != null)
+        //    playerScoreHandlers[currentPlayer.id].ToggleCurrentPlayerEffect(false);
 
-        currentPlayer = ps;
+        //currentPlayer = ps;// Move this to EntityVisual
 
-        playerScoreHandlers[currentPlayer.id].ToggleCurrentPlayerEffect(true);
-        playerScoreHandlers[currentPlayer.id].UpdateHeldStamps();
+        //playerScoreHandlers[currentPlayer.id].ToggleCurrentPlayerEffect(true);
+        //playerScoreHandlers[currentPlayer.id].UpdateHeldStamps();
 
         //test!!!
         //playerScoreHandlers[currentPlayer.id].ShakePlayerSprite(0.2f);
@@ -229,14 +265,14 @@ public class ScoreManager : MonoBehaviour
 
     private void OnUndoPassByStamp(Stamp.StampType type)
     {
-        var id = currentPlayer.id;
-        playerScoreHandlers[id].ClearHeldStamps();
-        playerScoreHandlers[id].UpdateHeldStamps();
+        //var id = currentPlayer.id;
+        //playerScoreHandlers[id].ClearHeldStamps();
+        //playerScoreHandlers[id].UpdateHeldStamps();
     }
 
     private void OnPassByPawnShop()
     {
-        playerScoreHandlers[currentPlayer.id].ClearHeldStamps();
+        //playerScoreHandlers[currentPlayer.id].ClearHeldStamps();
     }
 
     private void OnUndoPassByPawnShop(EntityPiece ps)
@@ -277,20 +313,22 @@ public class ScoreManager : MonoBehaviour
     private void OnFinishedUsedItem()
     {
         //UpdateInfoInvItemsForPlayer(ps.id);
-        var id = currentPlayer.id;
-        playerScoreHandlers[id].UpdateInfoInvItems();
+        //var id = currentPlayer.id;
+        //playerScoreHandlers[id].UpdateInfoInvItems();
     }
 
     private void OnExitLevelUp()
     {
         Debug.Log("updating");
-        var id = currentPlayer.id;
-        playerScoreHandlers[id].UpdateScore();
+        //var id = currentPlayer.id;
+        //playerScoreHandlers[id].UpdateScore();
     }
 
     private void OnPlayerPickedFirstBlessing(ItemStats blessing)
     {
-        var id = currentPlayer.id;
+        // Chagne this later
+        //var id = currentPlayer.id;
+        var id = 0;
         playerScoreHandlers[id].UnlockTalentGroup.alpha = 0;
         Debug.Log($"{blessing.itemName} |{blessing.category}");
         switch (blessing.category)

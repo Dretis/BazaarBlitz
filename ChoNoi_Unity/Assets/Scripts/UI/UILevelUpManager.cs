@@ -10,9 +10,13 @@ using LitMotion;
 using LitMotion.Extensions;
 using UnityEngine.InputSystem.UI;
 using Core.Events;
+using Core;
 
 public class UILevelUpManager : MonoBehaviour
 {
+    private PlayerState _playerState;
+    private GameplayTest _gameplayTest;
+
     [SerializeField] private MultiplayerEventSystem _eventSystem;
     public GameStateEventChannelSO _gameStateEvent;
     [Space]
@@ -52,6 +56,12 @@ public class UILevelUpManager : MonoBehaviour
     public WeaponTypeIntEventChannel m_TryAugmentDieFaceValue; // lvl up
     public VoidEventChannelSO m_HoldPlayerInfo;
     public VoidEventChannelSO m_ReleasePlayerInfo;
+
+    public void Initialize(PlayerState ps, GameplayTest gt)
+    {
+        _playerState = ps;
+        _gameplayTest = gt;
+    }
 
     private void OnEnable()
     {

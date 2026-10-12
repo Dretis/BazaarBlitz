@@ -11,12 +11,12 @@ public class ActiveEffectIndicatorHandler : MonoBehaviour
     [SerializeField] private Image activeEffectIcon;
     [SerializeField] private TextMeshProUGUI durationLeft;
 
-    public void UpdateEffectInfo(EntityPiece.ActiveEffect effect)
+    public void UpdateEffectInfo(Core.ActiveEffect effect)
     {
-        originalItem = effect.originalItem;
+        originalItem = effect.OriginalItem;
         activeEffectIcon.sprite = originalItem.itemSprite;
 
-        var duration = effect.turnsRemaining + 1; // +1 buffer bc of 'activateEffectStartTurn'
+        var duration = effect.TurnsRemaining;
 
         Debug.Log($"{originalItem} | Duration Left: {duration}");
         if (duration < 0)

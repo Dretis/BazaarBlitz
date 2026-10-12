@@ -588,7 +588,7 @@ public class UICombatOverlayManager : MonoBehaviour
             if (effect.originalItem.showAsEffect)
             {
                 var indicator = Instantiate(effectIndicatorPrefab, gridContainer);
-                indicator.GetComponent<ActiveEffectIndicatorHandler>().UpdateEffectInfo(effect);
+                //indicator.GetComponent<ActiveEffectIndicatorHandler>().UpdateEffectInfo(effect); fix this later
             }
         }
     }

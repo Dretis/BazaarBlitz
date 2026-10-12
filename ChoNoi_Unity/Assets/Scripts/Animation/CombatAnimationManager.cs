@@ -9,7 +9,6 @@ using UnityEngine.UIElements;
 public class CombatAnimationManager : MonoBehaviour
 {
     [SerializeField] private Animator animator;
-    private EntityPiece thisEntity;
 
     [SerializeField] private CombatUIManager.FightingPosition fightingPosition;
     private Action.PhaseTypes phaseType;

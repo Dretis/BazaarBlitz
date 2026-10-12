@@ -17,6 +17,8 @@ using Unity.VisualScripting;
 
 public class UIPromptManager : MonoBehaviour
 {
+    private PlayerState _playerState;
+    private GameplayTest _gameplayTest;
     [SerializeField] private MultiplayerEventSystem _eventSystem;
 
     private bool NextPlayerGoIsRunning = false;
@@ -117,6 +119,11 @@ public class UIPromptManager : MonoBehaviour
     public VoidEventChannelSO m_ReleasePlayerInfo;
     [Space]
     public GameStateEventChannelSO _gameStateEvent;
+    public void Initialize(PlayerState ps, GameplayTest gt)
+    {
+        _playerState = ps;
+        _gameplayTest = gt;
+    }
 
     private void Start()
     {
@@ -164,7 +171,7 @@ public class UIPromptManager : MonoBehaviour
         m_FinishedUsedItem.OnEventRaised += StrikethroughInventoryPrompt;
 
         m_EnableFreeview.OnEventRaised += DisplayFreeviewPrompt;
-        m_DisableFreeview.OnEventRaised += DisplayInitialMenu;
+        //m_DisableFreeview.OnEventRaised += DisplayInitialMenu;
 
         m_EnterLevelUp.OnEventRaised += OnEnterLevelUp;
         m_ExitLevelUp.OnEventRaised += OnExitLevelUp;
@@ -210,7 +217,7 @@ public class UIPromptManager : MonoBehaviour
         m_FinishedUsedItem.OnEventRaised -= StrikethroughInventoryPrompt;
 
         m_EnableFreeview.OnEventRaised -= HideInitialMenu;
-        m_DisableFreeview.OnEventRaised -= DisplayInitialMenu;
+        //m_DisableFreeview.OnEventRaised -= DisplayInitialMenu;
 
         m_EnterLevelUp.OnEventRaised -= OnEnterLevelUp;
         m_ExitLevelUp.OnEventRaised -= OnExitLevelUp;
@@ -349,6 +356,7 @@ public class UIPromptManager : MonoBehaviour
         //inputPrompt.text += "\n<color=white>[Scroll Wheel]</color> Zoom In/Out";
     }
     
+    // delete this 
     private void DisplayInitialMenu()
     {
         //ClearInputText();
@@ -375,9 +383,12 @@ public class UIPromptManager : MonoBehaviour
     {
         if (gameState.DidChangePhases())
         {
+            //var index = gameState.NewState.CurrPlayerId;
+            //var currPlayer = gameState.NewState.Players[index];
+
             if (gameState.NewState.GamePhase is GameplayTest.GamePhase.InitialTurnMenu)
             {
-                DisplayInitialMenu(gameState.NewState.CurrentPlayer);
+                DisplayInitialMenu(gameState.NewState.CurrentPlayer().EntityData);
 
                 if(gameState.PrevState.GamePhase is GameplayTest.GamePhase.BuildingStore)
                 {
@@ -386,7 +397,8 @@ public class UIPromptManager : MonoBehaviour
             }
             else if (gameState.NewState.GamePhase is GameplayTest.GamePhase.BuildingStore)
             {
-                OnTryBuildStore(gameState.NewState.CurrentPlayer);
+                //OnTryBuildStore(gameState.NewState.CurrentPlayer);
+                ShowTryBuildStorePrompt(gameState.NewState.CurrentPlayer().EntityData);
             }
             else
             {
@@ -421,10 +433,10 @@ public class UIPromptManager : MonoBehaviour
         }
     }
     
-    private void DisplayInitialMenu(EntityPiece ps)
+    private void DisplayInitialMenu(EntityData ed)
     {
         ClearInputText();
-        NormalizeBuildPrompt(ps);
+        NormalizeBuildPrompt(ed);
         // This thing here makes me feel like the rewrite is gonna introduce some bugs but oh well
         /*if (GameplayTest.instance.phase == GameplayTest.GamePhase.PickDirection 
             || GameplayTest.instance.phase == GameplayTest.GamePhase.CombatSelector)
@@ -575,16 +587,16 @@ public class UIPromptManager : MonoBehaviour
         inventoryPromptText.color = Color.gray;
         inventoryLimitText.color = Color.grey;
         //inventoryLimitText.text = $"{currentPlayer.inventory.Count-1}/{currentPlayer.inventoryLimit}";
-        inventoryLimitText.text = $"{currentPlayer.inventory.Count}/{currentPlayer.inventoryLimit}";
+        //inventoryLimitText.text = $"{currentPlayer.inventory.Count}/{currentPlayer.inventoryLimit}";
     }
 
-    private void NormalizeBuildPrompt(EntityPiece ps)
+    private void NormalizeBuildPrompt(EntityData ed)
     {
-        var buildCount = GameplayTest.instance.currentRuleset.storeLimit - ps.storeCount;
+        var buildCount = GameplayTest.instance.currentRuleset.storeLimit - ed.StoreCount;
         //var buildVisual = buildPromptText.text;
         var buildVisual = "Build"; //temp
 
-        if (buildCount <= 0 || !ps.occupiedNode.CompareTag("Encounter") || ps.currentStates.Contains(EntityPiece.State.Fighting))
+        if (buildCount <= 0 || !ed.OccupiedNode.CompareTag("Encounter") || ed.Statuses.Contains(Status.Fighting))
         {
             //buildPromptText.text = "<color=grey>Build</color>";
             buildPromptText.color = Color.gray;
@@ -600,7 +612,7 @@ public class UIPromptManager : MonoBehaviour
             buildPromptText.color = normalPromptColor;
             buildLimitText.text = $"{buildCount} Left";
 
-            if (ps.inventory.Count > 3 && !ps.currentStates.Contains(EntityPiece.State.Fighting))
+            if (ed.Inventory.Count > 3 && !ed.Statuses.Contains(Status.Fighting))
             {
                 buildVisual = $"<incr>Build</incr>";
             }
@@ -681,6 +693,24 @@ public class UIPromptManager : MonoBehaviour
         promptInstructionText.text = "Build a store on this space?";
 
         if(ep.inventory.Count == 0)
+        {
+            promptInstructionText.text += "\n<color=#D94A45>[!] You have no items to stock.";
+        }
+
+        _eventSystem.SetSelectedGameObject(promptConfirmButtonHolders[0]);
+    }
+    
+    private void ShowTryBuildStorePrompt(EntityData ed)
+    {
+        //ScaleButtonPressed(buildPromptButton);
+
+        HideMenuPrompt();
+
+        ShowPromptInstruction();
+
+        promptInstructionText.text = "Build a store on this space?";
+
+        if(ed.Inventory.Count == 0)
         {
             promptInstructionText.text += "\n<color=#D94A45>[!] You have no items to stock.";
         }

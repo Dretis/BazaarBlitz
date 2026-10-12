@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Coffee.UIEffects;
+using Core;
 
 public class InventorySelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler
 {
@@ -45,12 +46,11 @@ public class InventorySelectionHandler : MonoBehaviour, ISubmitHandler, IPointer
         startScale = transform.localScale;
     }
 
-    public void UpdateItemInfo(EntityPiece entity, ItemStats item)
+    public void UpdateItemInfo(EntityData ed, ItemStats item)
     {
         heldItem = item;
 
-        bool playerInCombat = GameplayTest.instance.phase == GameplayTest.GamePhase.Inventory &&
-            (entity.currentStates.Contains(EntityPiece.State.Fighting) || entity.currentStates.Contains(EntityPiece.State.FightingParty));
+        bool playerInCombat = (ed.Statuses.Contains(Status.Fighting) || ed.Statuses.Contains(Status.FightingParty));
 
         //Debug.Log($"{item} | playerInCombat = {playerInCombat}");
         //Debug.Log($"{item} | Inventory Phase = {GameplayTest.instance.phase == GameplayTest.GamePhase.Inventory}");

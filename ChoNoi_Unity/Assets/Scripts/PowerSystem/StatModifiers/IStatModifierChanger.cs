@@ -19,11 +19,18 @@ public abstract class StatModifierChangerSO : ScriptableObject, IStatModifierCha
         get;
     }
     public bool canStack = false;
-    // Minimum of 1.
-    public int activateEffectStartTurn;
+    // Minimum of 0.
+    /// <summary>
+    /// The number of turns before this Modifier is in effect.
+    /// 0 is active immediately.
+    /// </summary>
+    [Range(0, 10)] public int activateEffectStartTurn;
 
     // Maximum of Duration.
-    public int activateEffectEndTurn;
+    /// <summary>
+    /// The number of turns before this Modifier is no longer in effect.
+    /// </summary>
+    [Range(0, 10)] public int activateEffectEndTurn;
     [Space]
     public Sprite effectIcon;
 

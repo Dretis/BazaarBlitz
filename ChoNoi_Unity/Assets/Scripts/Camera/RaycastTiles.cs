@@ -26,16 +26,16 @@ public class RaycastTiles : MonoBehaviour
     public VoidEventChannelSO m_EnableFreeview;
     public VoidEventChannelSO m_DisableFreeview;
     public Vector2EventChannelSO m_TryExamineTile;
-    public VoidEventChannelSO m_EnterRaycastTargetSelection;
-    public VoidEventChannelSO m_ExitRaycastTargetSelection;
+    //public VoidEventChannelSO m_EnterRaycastTargetSelection;
+    //public VoidEventChannelSO m_ExitRaycastTargetSelection;
 
     private void OnEnable()
     {
         m_EnableFreeview.OnEventRaised += EnableRaycasting;
         m_DisableFreeview.OnEventRaised += DisableRaycasting;
         m_TryExamineTile.OnEventRaised += TryRaycast;
-        m_EnterRaycastTargetSelection.OnEventRaised += EnableMustSelectTarget;
-        m_ExitRaycastTargetSelection.OnEventRaised += DisableMustSelectTarget;
+        //m_EnterRaycastTargetSelection.OnEventRaised += EnableMustSelectTarget;
+        //m_ExitRaycastTargetSelection.OnEventRaised += DisableMustSelectTarget;
     }
 
     private void OnDisable()
@@ -43,8 +43,8 @@ public class RaycastTiles : MonoBehaviour
         m_EnableFreeview.OnEventRaised -= EnableRaycasting;
         m_DisableFreeview.OnEventRaised -= DisableRaycasting;
         m_TryExamineTile.OnEventRaised -= TryRaycast;
-        m_EnterRaycastTargetSelection.OnEventRaised -= EnableMustSelectTarget;
-        m_ExitRaycastTargetSelection.OnEventRaised -= DisableMustSelectTarget;
+        //m_EnterRaycastTargetSelection.OnEventRaised -= EnableMustSelectTarget;
+        //m_ExitRaycastTargetSelection.OnEventRaised -= DisableMustSelectTarget;
     }
 
     // Start is called before the first frame update

@@ -38,20 +38,23 @@ public class UICurrentTurnOverlayManager : MonoBehaviour
 
     private void Start()
     {
-        _oldNextPlayerGo = StartCoroutine(NotifyNextPlayerGo(GameplayTest.instance.currentPlayer));
+        //_oldNextPlayerGo = StartCoroutine(NotifyNextPlayerGo(GameplayTest.instance.currentPlayer));
     }
 
     private void UpdateUIFromGameState(FrameGameState gameState)
     {
         if (gameState.DidChangePhases())
         {
+            //var index = gameState.NewState.CurrPlayerId;
+            //var currPlayer = gameState.NewState.Players[index];
+
             if (gameState.NewState.GamePhase is GameplayTest.GamePhase.StartRound)
             {
                 turnRoundIndicator.text = $"{gameState.NewState.Round}";
             }
             if (gameState.PrevState.GamePhase is GameplayTest.GamePhase.StartTurn)
             {
-                Debug.Log($"Go, {gameState.NewState.CurrentPlayer}!");
+                Debug.Log($"Go, {gameState.NewState.CurrentPlayer().EntityData.EntityName}!");
                 if (_goTurnMotion.IsPlaying())
                 {
                     //NextPlayerGoIsRunning = false;
@@ -59,20 +62,22 @@ public class UICurrentTurnOverlayManager : MonoBehaviour
                     _goTurnMotion.TryCancel();
                 }
 
-                _oldNextPlayerGo = StartCoroutine(NotifyNextPlayerGo(gameState.NewState.CurrentPlayer));
+                _oldNextPlayerGo = StartCoroutine(NotifyNextPlayerGo(gameState.NewState.CurrentPlayer()));
             }
         }
     }
 
-    private IEnumerator NotifyNextPlayerGo(EntityPiece ps)
+    private IEnumerator NotifyNextPlayerGo(PlayerState ps)
     {
-        string goLine = "{offset}{size}Go, " + ps.entityName + "!";
+        var ed = ps.EntityData;
+
+        string goLine = "{offset}{size}Go, " + ed.EntityName + "!";
         var localizedString = turnTypewriter.GetComponent<LocalizeStringEvent>().StringReference;
 
         var variable = localizedString["PLAYER_NAME"] as StringVariable;
-        variable.Value = ps.entityName;
+        variable.Value = ed.EntityName;
 
-        turnTypewriter.GetComponent<TextMeshProUGUI>().color = ps.playerColor;
+        turnTypewriter.GetComponent<TextMeshProUGUI>().color = ed.MainColor;
         turnTypewriter.ShowText(localizedString.GetLocalizedString());
 
         var goTurnRect = turnTypewriter.GetComponent<RectTransform>();

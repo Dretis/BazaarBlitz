@@ -20,6 +20,7 @@ public class PlayerInputController : MonoBehaviour
         Switch
     }
 
+    private PlayerState _playerState;
     private GameplayTest _gameplayTest;
     public PlayerInput PlayerInput => playerInput;
 
@@ -73,7 +74,7 @@ public class PlayerInputController : MonoBehaviour
     [Space]
     // Store-based Event Channels
     public PlayerEventChannelSO m_ConfirmBuildStore;
-    public VoidEventChannelSO m_CancelBuildStore;
+    //public VoidEventChannelSO m_CancelBuildStore;
     public PlayerEventChannelSO m_AskRestockStore;
     public PlayerEventChannelSO m_TryRestockStore;
     public NodeEventChannelSO m_TryRelocateStore;
@@ -105,8 +106,14 @@ public class PlayerInputController : MonoBehaviour
 
     public PlayerEventChannelSO m_PlayerWon;
 
-    public void Initialize()
+    public void Initialize(PlayerState ps, GameplayTest gt)
     {
+        _playerState = ps;
+        _gameplayTest = gt;
+
+        //var e = GetComponentInChildren<EventSystemEnabler>();
+        //e.DisablePlayerCanvases();
+
         Debug.Log(playerInput.currentActionMap);
         currActionMap = playerInput.currentActionMap;
 
@@ -114,6 +121,8 @@ public class PlayerInputController : MonoBehaviour
         playerInput.currentActionMap.Disable();
         playerInput.SwitchCurrentActionMap("Initial Turn Menu");
         playerInput.currentActionMap.Enable();
+
+        //AssignPlayerToController();
     }
 
     private void OnEnable()
@@ -124,7 +133,7 @@ public class PlayerInputController : MonoBehaviour
         m_NextPlayerTurn.OnEventRaised += SetCurrentPlayer;
 
         m_ConfirmBuildStore.OnEventRaised += OnConfirmBuildStore;
-        m_CancelBuildStore.OnEventRaised += OnCancelBuildStore;
+        //m_CancelBuildStore.OnEventRaised += OnCancelBuildStore;
 
         m_AskRestockStore.OnEventRaised += OnAskRestockStore;
         m_TryRestockStore.OnEventRaised += OnTryRestockStore;
@@ -172,7 +181,7 @@ public class PlayerInputController : MonoBehaviour
         m_NextPlayerTurn.OnEventRaised -= SetCurrentPlayer;
 
         m_ConfirmBuildStore.OnEventRaised -= OnConfirmBuildStore;
-        m_CancelBuildStore.OnEventRaised -= OnCancelBuildStore;
+        //m_CancelBuildStore.OnEventRaised -= OnCancelBuildStore;
 
         m_AskRestockStore.OnEventRaised -= OnAskRestockStore;
         m_TryRestockStore.OnEventRaised -= OnTryRestockStore;
@@ -766,6 +775,7 @@ public class PlayerInputController : MonoBehaviour
         //Debug.Log($"currActionMap | {currActionMap}");
     }
 
+    // change this function later
     private void SetCurrentPlayer(EntityPiece player)
     {
         //currentPlayer = player;
@@ -773,16 +783,16 @@ public class PlayerInputController : MonoBehaviour
 
         var e = GetComponentInChildren<EventSystemEnabler>();
         //Debug.Log($"SetCurrentPlayer | e: {e} ");
-        if (assignedPlayer != p)
+        //if (assignedPlayer != p.id)
+        if (_playerState.Id != p.id)
         {
-            if (e != null) e.DisablePlayerCanvases();
             //playerInput.currentActionMap.Disable();
             playerInput.DeactivateInput();
             //Debug.Log($"SetCurrentPlayer | Player ID: {playerInput.playerIndex} deactivated input.");
+            if (e != null) e.DisablePlayerCanvases();
         }
         else
         {
-            if (e != null) e.EnablePlayerCanvases();
 
             Debug.Log($"SetCurrentPlayer | Player ID: {playerInput.playerIndex} activated input!");
             playerInput.ActivateInput();
@@ -792,6 +802,8 @@ public class PlayerInputController : MonoBehaviour
             playerInput.currentActionMap.Enable();
 
             TryRumbling(0.25f, .5f, .25f);
+
+            if (e != null) e.EnablePlayerCanvases();
         }
     }
 
@@ -1093,10 +1105,8 @@ public class PlayerInputController : MonoBehaviour
     }
 
     // REWRITE
-    public void AssignPlayerToController(EntityPiece entity, GameplayTest gt)
+    public void AssignPlayerToController(EntityPiece entity)
     {
-        _gameplayTest = gt;
-
         //assign entitypiece to the controller w/ the same ID
         if (entity.id == playerInput.playerIndex)
         {

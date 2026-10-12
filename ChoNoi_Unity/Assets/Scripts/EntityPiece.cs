@@ -5,7 +5,6 @@ using Core.Events;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
-using static Febucci.UI.TextAnimatorSettings;
 
 public class EntityPiece : MonoBehaviour
 {
@@ -108,9 +107,22 @@ public class EntityPiece : MonoBehaviour
 
     private void DisplayEntityFromGameState(FrameGameState gameState)
     {
-        var currentPlayerState = gameState.NewState.Players;
-        var prevPlayerStates = gameState.PrevState.Players;
-        
+        //var currentPlayerState = gameState.NewState.Players;
+        //var prevPlayerStates = gameState.PrevState.Players;
+        if(gameState.NewState.CurrPlayerId != id) return;
+
+        var colorPal = gameState.NewState.Players[id].EntityData.EntityPalette;
+        var boatPal = gameState.NewState.Players[id].EntityData.BoatPalette;
+
+        //assignedPlayer.entityName = playerCosmeticManager.playerName;
+
+        playerColor = colorPal[0];
+
+        gameObject.GetComponent<PlayerPaletteLoader>().SetInspectorPalette(colorPal);
+        dustCloud.GetComponent<PlayerPaletteLoader>().SetInspectorPalette(colorPal);
+
+        // Boat Colors
+        pBoatLoader.SetInspectorPalette(boatPal);
         //if (prevPlayerStates[id].playerColor != currentPlayerState[id].playerColor)
         //    playerSprite.color = currentPlayerState[id].playerColor;
     }
@@ -132,6 +144,13 @@ public class EntityPiece : MonoBehaviour
             floatingDamageNumber.ShowText("");
             coinGainNumber.ShowText("");
         }
+
+        //_gameStateEvent.OnEventRaised += DisplayEntityFromGameState;
+    }
+
+    private void OnDisable()
+    {
+        //_gameStateEvent.OnEventRaised -= DisplayEntityFromGameState;
     }
 
     public EntityStatsModifiers currentStatsModifier;

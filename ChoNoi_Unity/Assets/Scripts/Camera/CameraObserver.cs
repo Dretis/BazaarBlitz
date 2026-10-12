@@ -31,8 +31,8 @@ public class CameraObserver : MonoBehaviour
 
     [Header("Listen on Event Channels")]
     public PlayerEventChannelSO m_NextPlayerTurn;
-    public VoidEventChannelSO m_EnableFreeview;
-    public VoidEventChannelSO m_DisableFreeview;
+    //public VoidEventChannelSO m_EnableFreeview;
+    //public VoidEventChannelSO m_DisableFreeview;
 
     public NodeEventChannelSO m_EnterRaycastedTile;
     public VoidEventChannelSO m_ExitRaycastedTile;
@@ -71,8 +71,8 @@ public class CameraObserver : MonoBehaviour
     {
         freeviewReticle.SetActive(false);
         m_NextPlayerTurn.OnEventRaised += SwitchTargetFocus;
-        m_EnableFreeview.OnEventRaised += SwitchFocusToReticle;
-        m_DisableFreeview.OnEventRaised += ReturnTargetFocusToCurrentPlayer;
+        //m_EnableFreeview.OnEventRaised += SwitchFocusToReticle;
+        //m_DisableFreeview.OnEventRaised += ReturnTargetFocusToCurrentPlayer;
         m_FreeviewReticleMove.OnEventRaised += OnFreeviewReticleMove;
 
         m_RollForMovement.OnEventRaised += OnRollForMovement;
@@ -112,8 +112,8 @@ public class CameraObserver : MonoBehaviour
     private void OnDisable()
     {
         m_NextPlayerTurn.OnEventRaised -= SwitchTargetFocus;
-        m_EnableFreeview.OnEventRaised -= SwitchFocusToReticle;
-        m_DisableFreeview.OnEventRaised -= ReturnTargetFocusToCurrentPlayer;
+        //m_EnableFreeview.OnEventRaised -= SwitchFocusToReticle;
+        //m_DisableFreeview.OnEventRaised -= ReturnTargetFocusToCurrentPlayer;
         m_FreeviewReticleMove.OnEventRaised -= OnFreeviewReticleMove;
 
         m_RollForMovement.OnEventRaised -= OnRollForMovement;
@@ -177,11 +177,12 @@ public class CameraObserver : MonoBehaviour
 
     }
 
-    void SwitchFocusToReticle()
+    void SwitchFocusToReticle(GameState newState)
     {
         Debug.Log("focus on reticle");
         freeviewReticle.SetActive(true);
-        freeviewReticle.transform.position = GameplayTest.instance.currentPlayer.transform.position + new Vector3(0, 0.25f, 0);
+        freeviewReticle.transform.position = newState.CurrentPlayerObj.transform.position + new Vector3(0, 0.25f, 0);
+        //freeviewReticle.transform.position = GameplayTest.instance.currentPlayer.transform.position + new Vector3(0, 0.25f, 0);
 
         freeviewCam.enabled = true;
         freeviewCam.Follow = freeviewReticle.transform;
@@ -201,12 +202,12 @@ public class CameraObserver : MonoBehaviour
         //vcam.Follow = freeviewReticle.transform;
     }
 
-    void ReturnTargetFocusToCurrentPlayer()
+    void ReturnTargetFocusToCurrentPlayer(GameState newState)
     {
         Debug.Log("Back to player focus");
         freeviewCam.enabled = false;
         freeviewReticle.SetActive(false);
-        vcam.Follow = GameplayTest.instance.currentPlayer.transform;
+        vcam.Follow = newState.CurrentPlayerObj.transform;
     }
 
     void OnFreeviewReticleMove(Vector2 moveInput)
@@ -385,12 +386,12 @@ public class CameraObserver : MonoBehaviour
             if (gameState.NewState.GamePhase is GameplayTest.GamePhase.InitialTurnMenu)
             {
                 zoomedInCam.enabled = false;
-                ReturnTargetFocusToCurrentPlayer();
+                ReturnTargetFocusToCurrentPlayer(gameState.NewState);
             }
 
             if (gameState.NewState.GamePhase is GameplayTest.GamePhase.RollDice)
             {
-                zoomedInCam.Follow = gameState.NewState.CurrentPlayer.transform;
+                zoomedInCam.Follow = gameState.NewState.CurrentPlayerObj.transform;
                 zoomedInCam.enabled = true;
             }
 
@@ -399,12 +400,12 @@ public class CameraObserver : MonoBehaviour
                 if(gameState.PrevState.GamePhase is GameplayTest.GamePhase.RollDice)
                     zoomedInCam.enabled = false;
                 else
-                    ReturnTargetFocusToCurrentPlayer();
+                    ReturnTargetFocusToCurrentPlayer(gameState.NewState);
             }
 
             if (gameState.NewState.GamePhase is GameplayTest.GamePhase.Freeview)
             {
-                SwitchFocusToReticle();
+                SwitchFocusToReticle(gameState.NewState);
             }
         }
     }

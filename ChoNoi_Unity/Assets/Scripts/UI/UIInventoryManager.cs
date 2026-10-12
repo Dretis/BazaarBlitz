@@ -13,6 +13,8 @@ using Core;
 
 public class UIInventoryManager : MonoBehaviour
 {
+    private PlayerState _playerState;
+    private GameplayTest _gameplayTest;
     public enum InventoryState
     {
         UseItem,
@@ -80,9 +82,9 @@ public class UIInventoryManager : MonoBehaviour
     public IntItemEventChannelSO m_RaycastItemUsed;
 
     [Header("Listen on Event Channels")]
-    public PlayerEventChannelSO m_OpenInventory;
+    //public PlayerEventChannelSO m_OpenInventory;
     //public VoidEventChannelSO m_ExitInventory;
-    public PlayerEventChannelSO m_RefreshInventory;
+    //public PlayerEventChannelSO m_RefreshInventory;
     public NodeEventChannelSO m_RestockStore;
 
     public IntItemEventChannelSO m_ItemStocked;
@@ -91,16 +93,21 @@ public class UIInventoryManager : MonoBehaviour
 
     public IntItemEventChannelSO m_TryUseItemAt;
 
-    public PlayerEventChannelSO m_FullInventory;
+    //public PlayerEventChannelSO m_FullInventory;
 
 
     public GameStateEventChannelSO _gameStateEvent;
+    public void Initialize(PlayerState ps, GameplayTest gt)
+    {
+        _playerState = ps;
+        _gameplayTest = gt;
+    }
 
     private void UpdateUIFromGameState(FrameGameState gameState)
     {
         if (gameState.DidChangePhases())
         {
-            if(gameState.PrevState.GamePhase is GameplayTest.GamePhase.Inventory)
+            if (gameState.PrevState.GamePhase is GameplayTest.GamePhase.Inventory)
             {
                 Debug.Log("Hiding Inventory");
                 HideInventory();
@@ -110,7 +117,7 @@ public class UIInventoryManager : MonoBehaviour
 
             if (gameState.NewState.GamePhase is GameplayTest.GamePhase.Inventory)
             {
-                DisplayInventory(gameState.NewState.CurrentPlayer);
+                DisplayInventory(gameState.NewState.CurrentPlayer().EntityData);
             }
             else
             {
@@ -123,8 +130,8 @@ public class UIInventoryManager : MonoBehaviour
             {
                 if(gameState.PrevState.GamePhase is GameplayTest.GamePhase.BuildingStore)
                 {
-                    DisplayInventory(gameState.NewState.CurrentPlayer);
-                    OnRestockStore(gameState.NewState.CurrentPlayer.occupiedNode);
+                    DisplayInventory(gameState.NewState.CurrentPlayer().EntityData);
+                    OnRestockStore(gameState.NewState.CurrentPlayer().EntityData.OccupiedNode);
                 }
             }
             
@@ -143,11 +150,11 @@ public class UIInventoryManager : MonoBehaviour
 
         instructionGroup.alpha = 0;
 
-        m_OpenInventory.OnEventRaised += DisplayInventory;
+        //m_OpenInventory.OnEventRaised += DisplayInventory;
         //m_ExitInventory.OnEventRaised += HideInventory;
         //m_ExitInventory.OnEventRaised += HideStoreStock;
         //m_ExitInventory.OnEventRaised += HideConfirmGroup;
-        m_RefreshInventory.OnEventRaised += RefreshInventory;
+        //m_RefreshInventory.OnEventRaised += RefreshInventory;
         m_RestockStore.OnEventRaised += OnRestockStore;
 
         m_ItemStocked.OnEventRaised += AddItemToStoreStock;
@@ -156,18 +163,18 @@ public class UIInventoryManager : MonoBehaviour
 
         m_TryUseItemAt.OnEventRaised += OnTryUseItemAt;
 
-        m_FullInventory.OnEventRaised += OnFullInventory;
+        //m_FullInventory.OnEventRaised += OnFullInventory;
 
         _gameStateEvent.OnEventRaised += UpdateUIFromGameState;
     }
 
     private void OnDisable()
     {
-        m_OpenInventory.OnEventRaised -= DisplayInventory;
+        //m_OpenInventory.OnEventRaised -= DisplayInventory;
         //m_ExitInventory.OnEventRaised -= HideInventory;
         //m_ExitInventory.OnEventRaised -= HideStoreStock;
         //m_ExitInventory.OnEventRaised -= HideConfirmGroup;
-        m_RefreshInventory.OnEventRaised -= RefreshInventory;
+        //m_RefreshInventory.OnEventRaised -= RefreshInventory;
         m_RestockStore.OnEventRaised -= OnRestockStore;
         
         m_ItemStocked.OnEventRaised -= AddItemToStoreStock;
@@ -176,14 +183,14 @@ public class UIInventoryManager : MonoBehaviour
 
         m_TryUseItemAt.OnEventRaised -= OnTryUseItemAt;
 
-        m_FullInventory.OnEventRaised -= OnFullInventory;
+        //m_FullInventory.OnEventRaised -= OnFullInventory;
 
         _gameStateEvent.OnEventRaised -= UpdateUIFromGameState;
     }
 
-    private void SpawnItemsInInventory(EntityPiece entity)
+    private void SpawnItemsInInventory(EntityData ed)
     {
-        List<ItemStats> playerInventory = entity.inventory;
+        List<ItemStats> playerInventory = ed.Inventory;
         Debug.Log("spawning");
         heldItemHolders.Clear();
         var inventoryParentTransform = inventoryGridContainer.transform;
@@ -212,7 +219,7 @@ public class UIInventoryManager : MonoBehaviour
 
             var item = Instantiate(heldItemPrefab, inventoryParentTransform);
             item.name = $"Held Item #{i+1}";
-            item.GetComponent<InventorySelectionHandler>().UpdateItemInfo(entity, itemToSpawn);
+            item.GetComponent<InventorySelectionHandler>().UpdateItemInfo(ed, itemToSpawn);
             item.GetComponent<InventorySelectionHandler>().itemIndex = i;
 
             heldItemHolders.Add(item);
@@ -225,7 +232,7 @@ public class UIInventoryManager : MonoBehaviour
         }
     }
 
-    private void DisplayInventory(EntityPiece entity)
+    private void DisplayInventory(EntityData ed)
     {
         //Debug.Log("wtf how");
 
@@ -237,8 +244,8 @@ public class UIInventoryManager : MonoBehaviour
         //inventoryCanvas.enabled = true;
         HideSelectedItemDetails();
 
-        SpawnItemsInInventory(entity);
-        currentPlayerIndex = entity.id;
+        SpawnItemsInInventory(ed);
+        //currentPlayerIndex = ps.Id;
     }
 
     private void HideInventory()
@@ -251,7 +258,7 @@ public class UIInventoryManager : MonoBehaviour
         DestroyAllHeldItems();
     }
 
-    private void RefreshInventory(EntityPiece entity)
+    private void RefreshInventory(EntityData ed)
     {
         //DestroyAllHeldItems();
         //SpawnItemsInInventory(entity.inventory);
@@ -261,7 +268,7 @@ public class UIInventoryManager : MonoBehaviour
             instructionText.text = $"<color=#FFEC75>Store resupply!\r\nStock up to {GameplayTest.instance.emptyStockCount} more items.";
         }
 
-        var playerInventory = entity.inventory;
+        var playerInventory = ed.Inventory;
         ItemStats itemToSpawn;
 
         var itemsToSpawn = playerInventory.Count;
@@ -287,7 +294,7 @@ public class UIInventoryManager : MonoBehaviour
                 itemToSpawn = null;
             }
 
-            heldItemHolders[i].GetComponent<InventorySelectionHandler>().UpdateItemInfo(entity, itemToSpawn);
+            heldItemHolders[i].GetComponent<InventorySelectionHandler>().UpdateItemInfo(ed, itemToSpawn);
         }
         //_eventSystem.SetSelectedGameObject(heldItemHolders[0]);
         _eventSystem.SetSelectedGameObject(heldItemHolders[0]);
@@ -375,7 +382,7 @@ public class UIInventoryManager : MonoBehaviour
     {
         var store = node.GetComponent<StoreManager>();
 
-        DisplayInventory(store.playerOwner);
+        DisplayInventory(store.owner);
         ShowStoreStock(node);
 
         inventoryInputPromptText.text = "<sprite=0> Stock Item\r\n<sprite=1> Finish Stocking";
@@ -475,21 +482,9 @@ public class UIInventoryManager : MonoBehaviour
         HideInventory();
 
         // **Figure out the type of item being used (this decides the behavior based on type)
-
-        // if TargetSelection item, open Raycast / Freeview Mode first
-        if (item.type == ItemStats.ItemType.TargetSelect ||
-            item.type == ItemStats.ItemType.Deployable)
-        {
-            Debug.Log($"UIInventoryManager | {item.itemName} is a target selection item!");
-            m_RaycastItemUsed.RaiseEvent(index, item);
-        }
-        else
-        {
-            // Generic: Tell everything that this item is being used
-            Debug.Log($"UIInventoryManager | {item.itemName} is a regular item.");
-            m_ItemUsed.RaiseEvent(index, item); // replace this
-            GameplayTest.instance.QueueCommand(new InventoryUseItemCommand(index, item));
-        }
+        Debug.Log($"UIInventoryManager | {item.itemName} used. | Item Type: {item.type}");
+        m_ItemUsed.RaiseEvent(index, item); // replace this
+        _gameplayTest.QueueCommand(new InventoryUseItemCommand(index, item));
 
         //m_ItemUsed.RaiseEvent(index, item);
         /*
@@ -541,16 +536,16 @@ public class UIInventoryManager : MonoBehaviour
         }
     }
 
-    public void OnFullInventory(EntityPiece player)
+    public void OnFullInventory(EntityData ed)
     {
-        discardedItemCount = player.inventory.Count - player.inventoryLimit;
+        discardedItemCount = ed.Inventory.Count - ed.InventoryLimit;
 
-        DisplayInventory(player);
+        DisplayInventory(ed);
 
         inventoryInputPromptText.text = "<sprite=0> <color=#FF8A8A>Discard Item</color>";
         instructionGroup.alpha = 1;
-        m_RefreshInventory.RaiseEvent(player);
-
+        //m_RefreshInventory.RaiseEvent(ed);
+        RefreshInventory(ed);
 
         if (discardedItemCount > 0) 
         {

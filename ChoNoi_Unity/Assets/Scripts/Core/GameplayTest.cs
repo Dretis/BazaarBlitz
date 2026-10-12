@@ -6,12 +6,16 @@ using Core;
 using Core.Events;
 using DG.Tweening;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class GameplayTest : MonoBehaviour
 {
+    [SerializeField] private MapNode _respawnNode;
+    [Space]
+    //
     [SerializeField] private int seed = -1;
 
     [Space]
@@ -25,6 +29,7 @@ public class GameplayTest : MonoBehaviour
     [SerializeField] private List<PlayerColorPalettePreset> debugPresetPalettes;
     [SerializeField] private TextMeshProUGUI debugPhaseText;
     [SerializeField] private bool turnOffMonsterEncounters = false;
+    [SerializeField] private ItemStats debugItem;
 
     public static GameplayTest instance;
     // Tile Data and Shit IGNORE THIS SECTION FOR NOW
@@ -37,7 +42,7 @@ public class GameplayTest : MonoBehaviour
     [Header("Current Turn Info")]
     public EntityPiece currentPlayer;
     public MapNode currentPlayerInitialNode;
-    [SerializeField] private List<EntityPiece> playersOnCurrentNode = new List<EntityPiece>();
+    //[SerializeField] private List<EntityPiece> playersOnCurrentNode = new List<EntityPiece>();
     private MapNode currentRestockNode;
     [Space]
     private int selectedItemIndex = -1; // -1 = currently not remembering an item in use | CHANGE THIS PART LATER
@@ -58,6 +63,7 @@ public class GameplayTest : MonoBehaviour
 
     public enum GamePhase
     {
+        GameStart,
         StartTurn,
 
         InitialTurnMenu,
@@ -128,13 +134,8 @@ public class GameplayTest : MonoBehaviour
     public MapNode wantedNode;
     private SceneGameManager sceneManager;
 
-    private bool freeviewEnabled = false;
     public bool encounterStarted = false;
     public bool isStockingStore = false;
-
-    [SerializeField] private List<Stamp.StampType> oldStamps = new List<Stamp.StampType>();
-    private int oldPoints = 0;
-    private float oldRep = 0;
 
     // ui stuff for levelup;
     private int currentPlayerInitialHealth = 0; // for pawn shop healing
@@ -232,7 +233,7 @@ public class GameplayTest : MonoBehaviour
     public IntItemEventChannelSO m_TryUseItemAt;
 
     public IntItemEventChannelSO m_ItemUsed; // after confirm use
-    public IntItemEventChannelSO m_RaycastItemUsed; // after confirm use
+    //public IntItemEventChannelSO m_RaycastItemUsed; // after confirm use
     public VoidEventChannelSO m_FinishedUsedItem; // after UseItem timeline is done
 
     public IntItemEventChannelSO m_ItemStocked;
@@ -240,7 +241,7 @@ public class GameplayTest : MonoBehaviour
     public ItemEventChannelSO m_ItemBought; //Listening to this one
 
     [Header("LS - ITM Events")]
-    public PlayerEventChannelSO m_BuildStore; //Listening to this one
+    //public PlayerEventChannelSO m_BuildStore; //Listening to this one
     public NodeEventChannelSO m_RestockStore;
     public NodeEventChannelSO m_UpgradeStore;
     public NodeEventChannelSO m_TryRelocateStore;
@@ -260,7 +261,7 @@ public class GameplayTest : MonoBehaviour
 
     public PlayerEventChannelSO m_FighterSelected;
 
-    private void SetSeed(int seed)
+    private void SetSeed()
     {
         if(seed == -1)
         {
@@ -299,14 +300,14 @@ public class GameplayTest : MonoBehaviour
         m_TryUseItemAt.OnEventRaised += OnUseItemAt;
 
         m_ItemUsed.OnEventRaised += OnItemUsed;
-        m_RaycastItemUsed.OnEventRaised += OnRaycastItemUsed;
+        //m_RaycastItemUsed.OnEventRaised += OnRaycastItemUsed;
 
         m_FinishedUsedItem.OnEventRaised += OnFinishedUsedItem;
 
         m_UpdatePlayerScore.OnEventRaised += RemoveDeathsRow;
         //m_ExitRaycastedTile.OnEventRaised += OnDisableFreeview;
 
-        m_BuildStore.OnEventRaised += BuildStore;
+        //m_BuildStore.OnEventRaised += BuildStore;
 
         m_RestockStore.OnEventRaised += OnRestockStore;
         m_UpgradeStore.OnEventRaised += OnUpgradeStore;
@@ -344,14 +345,14 @@ public class GameplayTest : MonoBehaviour
         m_TryUseItemAt.OnEventRaised -= OnUseItemAt;
 
         m_ItemUsed.OnEventRaised -= OnItemUsed;
-        m_RaycastItemUsed.OnEventRaised -= OnRaycastItemUsed;
+        //m_RaycastItemUsed.OnEventRaised -= OnRaycastItemUsed;
 
         m_FinishedUsedItem.OnEventRaised -= OnFinishedUsedItem;
 
         m_UpdatePlayerScore.OnEventRaised -= RemoveDeathsRow;
         //m_ExitRaycastedTile.OnEventRaised -= OnDisableFreeview;
 
-        m_BuildStore.OnEventRaised -= BuildStore;
+        //m_BuildStore.OnEventRaised -= BuildStore;
         m_RestockStore.OnEventRaised -= OnRestockStore;
         m_UpgradeStore.OnEventRaised -= OnUpgradeStore;
         m_TryRelocateStore.OnEventRaised -= OnTryRelocateStore;
@@ -383,7 +384,7 @@ public class GameplayTest : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        SetSeed(seed);
+        SetSeed();
 
         debugPhaseText.text = "";
 
@@ -409,8 +410,55 @@ public class GameplayTest : MonoBehaviour
         Debug.Log($"Number of Players in this Game: {currentRuleset.numberOfPlayers}");
         topLeftText.text = $"Collect <color=yellow><sprite=\"Coin Icon\" index=0>{currentRuleset.pointGoal}</color> and return\r\nto the EXCHANGE space to win!";
 
+        _inputControllers = new PlayerInputController[currentRuleset.numberOfPlayers];
+
+        //_currentGameState.Players = new List<PlayerState>(currentRuleset.numberOfPlayers);
+        _currentGameState.Players = new PlayerState[currentRuleset.numberOfPlayers];
+        _currentGameState.NextPlayers = new List<PlayerState>();
+
+        for (int i = 0; i < currentRuleset.numberOfPlayers; i++)
+        {
+            if (_isPlayerConfigurationManagerMissing)
+            {
+                _currentGameState.Players[i] = new PlayerState(i, debugPresetPalettes[i]);
+                _currentGameState.Players[i].EntityData.OccupiedNode = _respawnNode;
+                _currentGameState.Players[i].EntityData.TraveledNodes.Add(_currentGameState.Players[i].EntityData.OccupiedNode);
+            }
+            else
+            {
+                // Grab the Player Cosmetic Manager's shit for this
+                //_currentGameState.Players[i] = new PlayerState(i);
+                var pcm = PlayerConfigurationManager.instance.GetPlayerCosmeticManager(i);
+
+                _currentGameState.Players[i] = new PlayerState(i, pcm);
+                _currentGameState.Players[i].EntityData.OccupiedNode = _respawnNode;
+                _currentGameState.Players[i].EntityData.TraveledNodes.Add(_currentGameState.Players[i].EntityData.OccupiedNode);
+            }
+
+            _currentGameState.NextPlayers.Add(_currentGameState.Players[i]);
+
+            Debug.Log($"ps.EntityData.OccupiedNode = {_currentGameState.Players[i].EntityData.OccupiedNode}");
+            var initialNode = _currentGameState.Players[i].EntityData.OccupiedNode;
+            initialNode.occupiedEntities.Add(_currentGameState.Players[i].EntityData);
+
+            var playerObject = Instantiate(_playerDevicePrefab);
+
+            playerObject.name = $"Player Device [{i}]";
+            //if (inputController.TryGetComponent<PlayerInputController>(out PlayerInputController pic))
+            if (playerObject.TryGetComponent<PlayerDevice>(out PlayerDevice pd))
+            {
+                pd.Initialize(_currentGameState.Players[i], this);
+                //pic.AssignPlayerToController(player, this);
+                _inputControllers[i] = pd.playerInputController;
+
+                //TEMP
+                DontDestroyOnLoad(playerObject);
+            }
+        }
+
         for (int i = 4; i > currentRuleset.numberOfPlayers; i--)
         {
+            // Change this Later
             Debug.Log($"playerUnits[^1] = {playerUnits[^1]}");
             // turn off the unused player slots
             playerUnits[^1].gameObject.SetActive(false);
@@ -418,9 +466,7 @@ public class GameplayTest : MonoBehaviour
 
             playerUnits.Remove(playerUnits[^1]);
         }
-
-        _inputControllers = new PlayerInputController[playerUnits.Count];
-
+        /*
         foreach (var player in playerUnits)
         {
             nextPlayers.Add(player);
@@ -432,10 +478,11 @@ public class GameplayTest : MonoBehaviour
 
             //m_AssignPlayerToController.RaiseEvent(player);
 
-            var inputController = Instantiate(_inputControllerPrefab);
+            var playerObject = Instantiate(_playerDevicePrefab);
 
-            inputController.name = $"Player Input Controller [{player.id}]";
-            if (inputController.TryGetComponent<PlayerInputController>(out PlayerInputController pic))
+            playerObject.name = $"Player Input Controller [{player.id}]";
+            //if (inputController.TryGetComponent<PlayerInputController>(out PlayerInputController pic))
+            if (playerObject.TryGetComponent<Player>(out Player pl))
             {
                 #if UNITY_EDITOR
                 if (_isPlayerConfigurationManagerMissing)
@@ -443,28 +490,33 @@ public class GameplayTest : MonoBehaviour
                     var playerCosmeticManager = pic.GetComponent<PlayerCosmeticManager>();
                     playerCosmeticManager.PalettePreset = debugPresetPalettes[player.id];
                     playerCosmeticManager.ManualValidate();
+
+
                 }
                 #endif
 
-                pic.Initialize();
-                pic.AssignPlayerToController(player, this);
-                _inputControllers[player.id] = pic;
+                pl.Initialize();
+                //pic.AssignPlayerToController(player, this);
+                _inputControllers[player.id] = pl.playerInputController;
 
                 //TEMP
                 DontDestroyOnLoad(_inputControllers[player.id]);
             }
         }
+        */
 
-        // Get the player at the start of the list.
-        currentPlayer = nextPlayers[0];
-        //currentPlayer = nextPlayers[playerUnits.Count - 1];
-        currentPlayerInitialNode = currentPlayer.occupiedNode;
-        //turnText.text = currentPlayer.entityName + "'s Turn!";
-        //turnText.color = currentPlayer.playerColor;
+        currentPlayer = playerUnits[0]; // temp, remove
+        //currentPlayerInitialNode = currentPlayer.occupiedNode; // remove
+        _currentGameState.CurrentPlayerObj = playerUnits[0];
 
-        //m_GameStart.RaiseEvent();
-        //Debug.Log("m_GameStart raised!!");
+        _currentGameState.CurrPlayerId = _currentGameState.Players[0].Id;
+        _currentGameState.CurrentPlayer().EntityData.InitialNode = _currentGameState.CurrentPlayer().EntityData.OccupiedNode;
+
         _currentGameState.Round = 1;
+
+        _uiScoreManager.Initialize(ref _currentGameState.Players, this);
+
+        _currentGameState.GamePhase = GamePhase.StartTurn; // finished game prep, lets go
     }
 
     private void Start()
@@ -473,7 +525,6 @@ public class GameplayTest : MonoBehaviour
 
         m_NextPlayerTurn.RaiseEvent(currentPlayer);
         currentPlayerInitialNode = currentPlayer.occupiedNode;
-        oldStamps = new List<Stamp.StampType>(currentPlayer.stamps);
 
         foreach(EntityPiece player in playerUnits)
         {
@@ -499,6 +550,11 @@ public class GameplayTest : MonoBehaviour
         debugPhaseText.text = $"{phase}";
         debugPhaseText.text += $"\n{_currentGameState.GamePhase}";
 
+        if (Input.GetKeyDown(KeyCode.Minus))
+        {
+            Debug.Log($"DEBUG | Gave {_currentGameState.CurrentPlayer().EntityData.EntityName} a {debugItem.itemName}!");
+            _currentGameState.CurrentPlayer().EntityData.Inventory.Add(debugItem);
+        }
         if (Input.GetKeyDown(KeyCode.BackQuote))
         {
             if (turnOffMonsterEncounters) turnOffMonsterEncounters = false;
@@ -559,7 +615,9 @@ public class GameplayTest : MonoBehaviour
     private GameStateEventChannelSO _gameStateUpdatedEventChannel;
 
     [SerializeField]
-    private GameObject _inputControllerPrefab;
+    private ScoreManager _uiScoreManager;
+    [SerializeField]
+    private GameObject _playerDevicePrefab;
 
     [SerializeField]
     private PlayerInputController[] _inputControllers;
@@ -604,8 +662,8 @@ public class GameplayTest : MonoBehaviour
         }
 
         // SYNC IN (connect rewrite system to the actual system so the rewrite demo works)
-        _currentGameState.GamePhase = phase;
-        _currentGameState.CurrentPlayer = currentPlayer;
+        //_currentGameState.GamePhase = phase;
+        //_currentGameState.CurrentPlayer = currentPlayer;
         
         // Have the new state just copy the previous state, but it gets modified by the 
         GameState newState = _currentGameState;
@@ -642,7 +700,7 @@ public class GameplayTest : MonoBehaviour
         _currentGameState = newState;
 
         // SYNC OUT (connect rewritten system to the existing system so the rewrite demo works)
-        phase = _currentGameState.GamePhase;
+        //phase = _currentGameState.GamePhase;
 
         // Cutscene Time
         if (_currentCutscene == null && _cutsceneQueue.Count != 0)
@@ -660,13 +718,14 @@ public class GameplayTest : MonoBehaviour
             case GamePhase.StartTurn:
                 // Just indicates the start of a player's turn
                 Debug.Log("CoreGameLogic | StartTurn");
+                newState.CurrentPlayer().EntityData.TickDownActiveEffects();
                 newState.GamePhase = GamePhase.ItemSelection;
                 break;
 
             // Checks item effects on player
             case GamePhase.ItemSelection:
                 //newState.LastGamePhase = GamePhase.InitialTurnMenu;
-                newState.GamePhase = SelectItem(currentPlayer);
+                newState.GamePhase = HandleItemSelection(prevState, ref newState);
                 break;
 
             // Pick choices
@@ -923,7 +982,7 @@ public class GameplayTest : MonoBehaviour
                 break;
             case GamePhase.StartRound:
                 // Just indicates the start of a player's turn
-                newState.GamePhase = HandleNextTurnRound(newState.Round);
+                newState.GamePhase = HandleNextTurnRound(prevState, ref newState);
                 break;
             // Game over! Someone has won!
             case GamePhase.EndGame:
@@ -947,14 +1006,19 @@ public class GameplayTest : MonoBehaviour
 
     private void HandleTryDiceRoll(GameState prevState, ref GameState newState)
     {
-        var p = newState.CurrentPlayer;
-        if (p.CanLevelUp() && !ThisPlayerMustFight(p)) {
+        //var p = newState.CurrentPlayer();
+        var p = newState.CurrentPlayer();
 
-            expectedPhase = GamePhase.LevelUp;
+        if (p.EntityData.CanLevelUp() && !ThisPlayerMustFight(p.EntityData)) {
+
+            //expectedPhase = GamePhase.LevelUp;
             // not part of rewrite so go back to using the events
-            m_EnterLevelUp.RaiseEvent(p);
+            //m_EnterLevelUp.RaiseEvent(p);
+            // should play the Level Up cutscene
+            newState.LastGamePhase = GamePhase.LevelUp;
+            newState.GamePhase = GamePhase.IncidentHappening;
         }
-        else if (!ThisPlayerMustFight(p))
+        else if (!ThisPlayerMustFight(p.EntityData))
         {
             // no events just update the state
             // We can roll dice yay
@@ -970,7 +1034,7 @@ public class GameplayTest : MonoBehaviour
     {
         if (!newState.CurrentPlayerHasUsedItem)
         {
-            var p = newState.CurrentPlayer;
+            var p = newState.CurrentPlayer();
 
             //playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
             //playerInput.uiInputModule.actionsAsset = playerInput.actions;
@@ -988,11 +1052,11 @@ public class GameplayTest : MonoBehaviour
 
     private void HandleTryBuildStore(GameState prevState, ref GameState newState)
     {
-        var p = currentPlayer;
+        var p = newState.CurrentPlayer().EntityData;
 
-        if (p.occupiedNode.tag == "Encounter"
-            && p.storeCount < currentRuleset.storeLimit
-            && !p.currentStates.Contains(EntityPiece.State.Fighting))
+        if (p.OccupiedNode.tag == "Encounter"
+            && p.StoreCount < currentRuleset.storeLimit
+            && !p.Statuses.Contains(Status.Fighting))
         {
             newState.LastGamePhase = prevState.GamePhase;
             newState.GamePhase = GamePhase.BuildingStore;
@@ -1019,7 +1083,8 @@ public class GameplayTest : MonoBehaviour
     
     private void HandlePickDirection(GameState prevState, ref GameState newState, Vector2 direction)
     {
-        var p = currentPlayer;
+        //var p = currentPlayer;
+        var p = newState.Players[newState.CurrPlayerId].EntityData;
 
         var x = direction.x;
         var y = direction.y;
@@ -1032,27 +1097,27 @@ public class GameplayTest : MonoBehaviour
         if (angle <= 135 && angle >= 45)
         {
             //Debug.Log("MOVE UP/NORTH");
-            wantedNode = p.occupiedNode.north;
+            wantedNode = p.OccupiedNode.north;
         }
         else if (angle < 45 && angle > -45 && x != 0)
         {
             //Debug.Log("MOVE RIGHT/EAST");
-            wantedNode = p.occupiedNode.east;
-            p.playerSprite.flipX = true; // put this in the new EntityPieceVisual
+            wantedNode = p.OccupiedNode.east;
+            newState.CurrentPlayerObj.playerSprite.flipX = true; // put this in the new EntityVisual
         }
         else if (angle <= -45 && angle >= -135)
         {
             //Debug.Log("MOVE DOWN/SOUTH");
-            wantedNode = p.occupiedNode.south;
+            wantedNode = p.OccupiedNode.south;
         }
         else if (angle < -135 || angle > 135)
         {
             //Debug.Log("MOVE LEFT/WEST");
-            wantedNode = p.occupiedNode.west;
-            p.playerSprite.flipX = false; // put this in the new EntityPieceVisual
+            wantedNode = p.OccupiedNode.west;
+            newState.CurrentPlayerObj.playerSprite.flipX = false; // put this in the new EntityVisual
         }
 
-        if (wantedNode != null && !(wantedNode == p.previousNode && p.traveledNodes.Count <= 1))
+        if (wantedNode != null && !(wantedNode == p.PreviousNode && p.TraveledNodes.Count <= 1))
         {
             //phase = GamePhase.MoveAround;
             newState.GamePhase = GamePhase.MoveAround;
@@ -1061,15 +1126,15 @@ public class GameplayTest : MonoBehaviour
 
     private void HandleRollMoveDie(GameState prevState, ref GameState newState)
     {
-        var p = newState.CurrentPlayer;
+        var p = newState.CurrentPlayer();
 
-        newState.MoveDieRoll = newState.MovementLeft = CalculateMoveDieRoll();
+        newState.MoveDieRoll = newState.MovementLeft = CalculateMoveDieRoll(prevState, ref newState);
         newState.GamePhase = GamePhase.PickDirection;
     }
 
     private void HandleCancelMoveDie(GameState prevState, ref GameState newState)
     {
-        var p = newState.CurrentPlayer;
+        var p = newState.CurrentPlayer();
 
         if (newState.LastGamePhase is GamePhase.InitialTurnMenu)
         {
@@ -1079,20 +1144,20 @@ public class GameplayTest : MonoBehaviour
 
     private void HandleChangeMoveDie(GameState prevState, ref GameState newState)
     {
-        var p = newState.CurrentPlayer;
-        if (p.currentStatsModifier.canUseSpeedDie && p.health > 25)
+        var p = newState.CurrentPlayer();
+        if (p.EntityData.CurrentStatsModifier.canUseSpeedDie && p.EntityData.Health > 25)
         {
             // swap to the other die not being shown
             // temp
-            if (usingSpeedDieToMove)
+            if (newState.UsingSpeedDieToMove)
             {
-                usingSpeedDieToMove = false;
+                newState.UsingSpeedDieToMove = false;
                 m_ChangeToMoveDie.RaiseEvent(0); // have the SpinDie itself listen to _gameStateUpdatedEventChannel
                 // Change to a struct variable?
             }
             else
             {
-                usingSpeedDieToMove = true;
+                newState.UsingSpeedDieToMove = true;
                 m_ChangeToMoveDie.RaiseEvent(1); // have the SpinDie itself listen to _gameStateUpdatedEventChannel
             }
         }
@@ -1106,12 +1171,46 @@ public class GameplayTest : MonoBehaviour
     private void HandleInventoryUseItem(GameState prevState, ref GameState newState, int index, ItemStats item)
     {
         Debug.Log($"HandleInventoryUseItem | Use {item} at index {index}");
-
+        var p = newState.CurrentPlayer().EntityData;
         //newState.CurrentPlayer.inventory.RemoveAt(index);
         //newState.CurrentPlayer.AddItemToActiveEffects();
+        if ( item.type == ItemStats.ItemType.TargetSelect || 
+             item.type == ItemStats.ItemType.Deployable )
+        {
+            Debug.Log("Used target select item");
+            p.AddItemToActiveEffects(p.Inventory[index].Duration, p.Inventory[index]);
+            p.RefreshStatModifiers();
+            /*
+            p.UpdateStatModifier(new ActiveEffect
+            {
+                OriginalItem = p.Inventory[index],
+                TurnsRemaining = p.Inventory[index].Duration - 1
+            });
+            */
+            ApplyItemEffectsOnTurnStart(p);
 
-        newState.LastGamePhase = GamePhase.InitialTurnMenu;
-        newState.GamePhase = GamePhase.IncidentHappening; // play the cutscene
+            //m_ExitInventory.RaiseEvent();
+            // Raise free view event I guess?
+            //m_EnableFreeview.RaiseEvent();
+            // FOR NAM: USE THIS EVENT TO SHOW SELECT TILE/PLAYER UI.
+            m_EnterRaycastTargetSelection.RaiseEvent();
+
+            phase = GamePhase.RaycastTargetSelection;
+            //newState.GamePhase = GamePhase.RaycastTargetSelection;
+
+            newState.LastGamePhase = GamePhase.InitialTurnMenu;
+            newState.GamePhase = GamePhase.RaycastTargetSelection;
+        }
+        else
+        {
+            p.AddItemToActiveEffects(p.Inventory[index].Duration, p.Inventory[index]);
+            p.RefreshStatModifiers();
+            ApplyItemEffectsOnTurnStart(p);
+
+            newState.LastGamePhase = GamePhase.InitialTurnMenu;
+            newState.GamePhase = GamePhase.IncidentHappening; // play the cutscene
+        }
+       // newState.GamePhase = GamePhase.IncidentHappening; // play the cutscene
     }
     
     private void HandleSomething(GameState prevState, ref GameState newState)
@@ -1122,39 +1221,27 @@ public class GameplayTest : MonoBehaviour
 
     #endregion
 
-    private GamePhase SelectItem(EntityPiece p)
+    private GamePhase HandleItemSelection(GameState prevState, ref GameState newState)
     {
-        /*
-        // all items active for debug
-        foreach(var item in p.inventory)
-        {
-            p.AddItemToActiveEffects(item.duration, item);
-            p.inventory.Remove(item);
-        }
-        */
-        foreach (Stamp.StampType s in oldStamps)
-        {
-            Debug.Log(s);
-        }
-
-        p.UpdateStatModifiers();
-
+        var p = newState.CurrentPlayer().EntityData;
+        //p.UpdateStatModifiers();
+        p.RefreshStatModifiers();
         ApplyItemEffectsOnTurnStart(p);
 
         return GamePhase.InitialTurnMenu;
     }
 
-    int CalculateMoveDieRoll()
+    int CalculateMoveDieRoll(GameState prevState, ref GameState newState)
     {
         diceRoll = Random.Range(0, 6); // Roll from 0 to 5
         Debug.Log($"Movement | Rolled [{diceRoll}]");
-        var p = currentPlayer;
-        if (usingSpeedDieToMove)
+        var ed = newState.CurrentPlayer().EntityData;
+        if (newState.UsingSpeedDieToMove)
         {
             // use speed die face values
-            p.health -= 25;
+            ed.Health -= 25;
 
-            DieConfig die = p.entityStats.dieConfigs[(int)(Action.WeaponTypes.Speed)];
+            DieConfig die = ed.EntityStats.dieConfigs[(int)(Action.WeaponTypes.Speed)];
 
             int speedRollValue = die[diceRoll];
             int additionalRollValue;
@@ -1173,11 +1260,11 @@ public class GameplayTest : MonoBehaviour
 
             diceRoll = speedRollValue;
 
-            currentPlayer.movementTotal = currentPlayer.movementLeft = speedRollValue;
+            //currentPlayer.movementTotal = currentPlayer.movementLeft = speedRollValue;
 
-            if (p.currentStatsModifier.redirectOnSpeedDie)
+            if (ed.CurrentStatsModifier.redirectOnSpeedDie)
             {
-                p.previousNode = null;
+                ed.PreviousNode = null;
             }
 
             m_UpdatePlayerScore.RaiseEvent(currentPlayer.id); // make ScoreManager listen to this
@@ -1188,7 +1275,7 @@ public class GameplayTest : MonoBehaviour
         {
             diceRoll += 1; // Roll from 1 to 6
 
-            var rollsRemaining = currentPlayer.currentStatsModifier.rollModifier;
+            var rollsRemaining = ed.CurrentStatsModifier.rollModifier;
             while (rollsRemaining > 0)
             {
                 Debug.Log($"Rolls Left{rollsRemaining}");
@@ -1197,10 +1284,10 @@ public class GameplayTest : MonoBehaviour
             }
 
             // Apply movement item effects.
-            diceRoll *= currentPlayer.currentStatsModifier.movementMultModifier;
-            diceRoll += currentPlayer.currentStatsModifier.movementFlatModifier;
+            diceRoll *= ed.CurrentStatsModifier.movementMultModifier;
+            diceRoll += ed.CurrentStatsModifier.movementFlatModifier;
 
-            currentPlayer.movementTotal = currentPlayer.movementLeft = diceRoll;
+            //currentPlayer.movementTotal = currentPlayer.movementLeft = diceRoll;
             //m_RollForMovement.RaiseEvent(diceRoll);
             //m_PlayerMovedOnBoard.RaiseEvent(); // idk why this has to be a seperate event
         }
@@ -1211,17 +1298,18 @@ public class GameplayTest : MonoBehaviour
     #region Node-based Functions
     GamePhase HandleMoveAround(GameState prevState, ref GameState newState)
     {
-        var p = currentPlayer;
+        //var p = currentPlayer;
+        var p = newState.Players[newState.CurrPlayerId].EntityData;
 
-        var lastEle = p.traveledNodes.Count;
-        var lastNode = p.traveledNodes[^1];
+        var lastEle = p.TraveledNodes.Count;
+        var lastNode = p.TraveledNodes[^1];
 
         if (wantedNode == lastNode) // The direction you picked was the node you just came from (Redo)
         {
             //Stamp stampCollected = p.occupiedNode.gameObject.GetComponent<Stamp>();
 
             // Undo moves (not sure if this actually undoes multiple stamp collections)
-            if (p.occupiedNode.CompareTag("Castle"))
+            if (p.OccupiedNode.CompareTag("Castle"))
             {
                 /*
                 p.stamps = new List<Stamp.StampType>(oldStamps);
@@ -1235,11 +1323,13 @@ public class GameplayTest : MonoBehaviour
                 m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
                 m_UndoPassByPawnShop.RaiseEvent(p);
                 */
-                p.occupiedNode.UndoPassByThisNode(p);
+                Debug.Log("Land on Castle");
+                //p.OccupiedNode.UndoPassByThisNode(p);
             }
-            else if (p.occupiedNode.CompareTag("Stamp"))
+            else if (p.OccupiedNode.CompareTag("Stamp"))
             {
-                p.occupiedNode.UndoPassByThisNode(p);
+                Debug.Log("Land on Stamp");
+                //p.OccupiedNode.UndoPassByThisNode(p);
                 // Stamp was not collected before
                 /*
                 if (p.stamps.Contains(stampCollected.stampType) && !oldStamps.Contains(stampCollected.stampType))
@@ -1253,8 +1343,8 @@ public class GameplayTest : MonoBehaviour
                 */
             }
 
-            p.traveledNodes.RemoveAt(lastEle - 1);
-            p.occupiedNode = lastNode;
+            p.TraveledNodes.RemoveAt(lastEle - 1);
+            p.OccupiedNode = lastNode;
 
             //p.movementLeft++; // remove this
             newState.MovementLeft++;
@@ -1264,7 +1354,7 @@ public class GameplayTest : MonoBehaviour
             //rollTypewriter.ShowText(roll);
 
             // Move to EntityPieceVisual
-            p.transform.DOMove(lastNode.transform.position, .25f)
+            newState.CurrentPlayerObj.transform.DOMove(lastNode.transform.position, .25f)
                 .SetEase(Ease.OutQuint);
 
             wantedNode = null;
@@ -1285,7 +1375,7 @@ public class GameplayTest : MonoBehaviour
 
                 //rollTypewriter.ShowText("");
 
-                p.previousNode = p.traveledNodes[p.traveledNodes.Count - 1];
+                p.PreviousNode = p.TraveledNodes[p.TraveledNodes.Count - 1];
 
                 wantedNode.flowerTrapVisual.color = Color.white;
                 wantedNode.flowerTrapVisual.enabled = false;
@@ -1294,12 +1384,12 @@ public class GameplayTest : MonoBehaviour
                 //audioSource.PlayOneShot(moveSFX, 1.2f);
 
 
-                p.traveledNodes.Clear();
-                p.traveledNodes.Add(p.occupiedNode);
+                p.TraveledNodes.Clear();
+                p.TraveledNodes.Add(p.OccupiedNode);
                 return GamePhase.EncounterTime;
             }
-            p.traveledNodes.Add(p.occupiedNode);
-            p.occupiedNode = wantedNode;
+            p.TraveledNodes.Add(p.OccupiedNode);
+            p.OccupiedNode = wantedNode;
 
             //p.movementLeft--; // remove
             newState.MovementLeft--;
@@ -1310,7 +1400,8 @@ public class GameplayTest : MonoBehaviour
             //else
             //    rollTypewriter.ShowText(roll);
 
-            p.transform.DOMove(wantedNode.transform.position, .25f)
+            // Move to EntityVisual
+            newState.CurrentPlayerObj.transform.DOMove(wantedNode.transform.position, .25f)
                 .SetEase(Ease.OutQuint);
 
 
@@ -1323,73 +1414,38 @@ public class GameplayTest : MonoBehaviour
         return GamePhase.PickDirection;
     }
 
-    private List<EntityPiece> GetOtherPlayersOnNode(EntityPiece p)
+    private List<EntityData> GetOtherPlayersOnNode(EntityData entity, MapNode m)
     {
-        var otherPlayers = playersOnCurrentNode;
+        var otherPlayers = m.occupiedEntities;
 
-        if (otherPlayers.Contains(p))
+        if (otherPlayers.Contains(entity))
         {
-            otherPlayers.Remove(p); // get rid of the currentplayer from the list
+            otherPlayers.Remove(entity); // get rid of the currentplayer from the list
         }
 
-        otherPlayers = otherPlayers.Where(player => !(player.currentStates.Contains(EntityPiece.State.InsideVendor) 
-                                                || player.currentStates.Contains(EntityPiece.State.Invulernable))).ToList();
+        otherPlayers = otherPlayers.Where(player => !(player.Statuses.Contains(Status.InsideVendor) 
+                                                || player.Statuses.Contains(Status.Invulernable))).ToList();
 
         return otherPlayers;
     }
 
     GamePhase HandlePassBy(GameState prevState, ref GameState newState)
     {
-        var p = currentPlayer;
-        var m = currentPlayer.occupiedNode;
+        var p = newState.Players[newState.CurrPlayerId].EntityData;
+        var m = newState.Players[newState.CurrPlayerId].EntityData.OccupiedNode;
         
-        playersOnCurrentNode = m.playersOccupied;
-        var otherPlayers = GetOtherPlayersOnNode(p);
+        //playersOnCurrentNode = m.playersOccupied;
+        var otherPlayers = GetOtherPlayersOnNode(p, m);
 
         // Cash in Stamps
         if (m.CompareTag("Castle"))
         {
-            /*
-            oldRep = p.ReputationPoints;
-            oldPoints = p.heldPoints;
-            oldStamps = new List<Stamp.StampType>(p.stamps);
-
-            var repGained = 75 * Mathf.Pow(1.5f, p.stamps.Count - 1);
-            var pointsGained = (int)(150 * Mathf.Pow(2, p.stamps.Count - 1));
-
-            if (p.stamps.Count != 0)
-            {
-                p.ReputationPoints += repGained;
-                p.heldPoints += pointsGained;
-                //m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
-                m_PlayerScoreIncreased.RaiseEvent(pointsGained);
-                m_PassByPawnShop.RaiseEvent(); // change this later
-
-                p.stamps.Clear();
-            }
-
-            // Heal player by 33%
-            currentPlayerInitialHealth = p.health; // track health before, in case they undo
-            p.health += p.maxHealth / 3;
-            if (p.health > p.maxHealth)
-            {
-                p.health = p.maxHealth;
-            }
-            m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
-
-            if (p.heldPoints >= currentRuleset.pointGoal)
-            {
-                Debug.Log("BRO HE WON");
-                winner = p;
-                phase = GamePhase.EndGame; // Finish game if player w/ enough points passes by Pawn Shop
-                return;
-            }
-            */
-            m.PassByThisNode(p);
+            
+            // m.PassByThisNode(p);
         }
         else if (m.CompareTag("Stamp"))
         {
-            m.PassByThisNode(p);
+            // m.PassByThisNode(p);
         }
 
         //if (m.playerOccupied != null && m.playerOccupied != p)
@@ -1400,12 +1456,12 @@ public class GameplayTest : MonoBehaviour
             Debug.Log("hello");
             // Check if can steal item from player.
             //if (p.currentStatsModifier.canStealOnPassBy && otherPlayer.inventory.Count > 0)
-            if (p.currentStatsModifier.canStealOnPassBy)
+            if (p.CurrentStatsModifier.canStealOnPassBy)
             {
-                foreach (EntityPiece otherPlayer in otherPlayers)
+                foreach (EntityData otherPlayer in otherPlayers)
                 {
-                    Debug.Log("yoink Steal");
-                    m_StealOnPassBy.RaiseEvent(otherPlayer);
+                    Debug.Log("Should be a yoink Steal");
+                    //m_StealOnPassBy.RaiseEvent(otherPlayer);
                 }
 
                 // Deactivate all active effects of items that end on stealing.
@@ -1414,10 +1470,11 @@ public class GameplayTest : MonoBehaviour
 
             // Check if can initiate combat via pass, like Cobra Whiskey.
             // and there is a player (not enemy) on that tile
-            if (p.currentStatsModifier.canInitiateCombatOnPassBy &&
-                otherPlayers.Exists(op => !op.isEnemy))
+            if (p.CurrentStatsModifier.canInitiateCombatOnPassBy &&
+                otherPlayers.Exists(op => !op.IsEnemy))
+                //otherPlayers.Exists(op => op.EntityType is not EntityType.Enemy))
             {
-                Debug.Log("Combat");
+                Debug.Log("Combat via Passing");
                 p.RemoveItemEffectOnUse(ItemLists.CombatOnPassByItemNames);
 
                 return InitiateCombat(p, m);
@@ -1426,9 +1483,9 @@ public class GameplayTest : MonoBehaviour
 
         }
         
-        if (m.CompareTag("Store") && p.currentStatsModifier.canStopOnStoreOnPassBy)
+        if (m.CompareTag("Store") && p.CurrentStatsModifier.canStopOnStoreOnPassBy)
         {
-            p.previousNode = p.traveledNodes[p.traveledNodes.Count - 1];
+            p.PreviousNode = p.TraveledNodes[p.TraveledNodes.Count - 1];
             //m_StopOnStoreOnPassBy.RaiseEvent();
             newState.MovementLeft = 0;
             // Deactivate all active effects of items that end on store.
@@ -1436,10 +1493,10 @@ public class GameplayTest : MonoBehaviour
         }
         else if (m.CompareTag("Store") && (m.modifier == MapNode.Modifier.Marigold && m.modifierOwner != p)) 
         {
-            m.flowerTrapVisual.color = Color.white;
+            m.flowerTrapVisual.color = Color.white; // put this in 
             m.flowerTrapVisual.enabled = false;
 
-            p.previousNode = p.traveledNodes[p.traveledNodes.Count - 1];
+            p.PreviousNode = p.TraveledNodes[p.TraveledNodes.Count - 1];
             //m_StopOnStoreOnPassBy.RaiseEvent(); // useless
 
             newState.MovementLeft = 0;
@@ -1452,9 +1509,9 @@ public class GameplayTest : MonoBehaviour
         //if (p.movementLeft <= 0)
         if (newState.MovementLeft <= 0)
         {
-            p.previousNode = p.traveledNodes[p.traveledNodes.Count - 1];
-            p.traveledNodes.Clear();
-            p.traveledNodes.Add(p.occupiedNode);
+            p.PreviousNode = p.TraveledNodes[p.TraveledNodes.Count - 1];
+            p.TraveledNodes.Clear();
+            p.TraveledNodes.Add(p.OccupiedNode);
 
             if (turnOffMonsterEncounters)
                 return GamePhase.EndTurn;
@@ -1467,8 +1524,9 @@ public class GameplayTest : MonoBehaviour
 
     GamePhase HandleEncounterTime(GameState prevState, ref GameState newState)
     {
-        var p = currentPlayer;
-        var m = currentPlayer.occupiedNode;
+        var p = newState.Players[newState.CurrPlayerId].EntityData;
+        var m = newState.Players[newState.CurrPlayerId].EntityData.OccupiedNode;
+        //var m = currentPlayer.occupiedNode;
 
         // Player has started combat
         if (ThisPlayerMustFight(p))
@@ -1481,8 +1539,8 @@ public class GameplayTest : MonoBehaviour
             TryCalculateTempoBuff(prevState, ref newState);
             //var otherPlayer = p.occupiedNode.playerOccupied;
 
-            playersOnCurrentNode = m.playersOccupied;
-            var otherPlayers = GetOtherPlayersOnNode(p);
+            //playersOnCurrentNode = m.playersOccupied;
+            var otherPlayers = GetOtherPlayersOnNode(p, m);
 
             // Player Storefront
             if (m.TryGetComponent<StoreManager>(out StoreManager component))
@@ -1518,24 +1576,24 @@ public class GameplayTest : MonoBehaviour
                 {
                     // Restock any store
 
-                    Debug.Log($"Ask if {p.entityName} wants to restock");
-                    m_AskRestockStore.RaiseEvent(p);
+                    Debug.Log($"Ask if {p.EntityName} wants to restock");
+                    //m_AskRestockStore.RaiseEvent(p);
                     return GamePhase.PreStockStore;
                 }
             }
             else if (m.CompareTag("Castle"))
             {
-                m.LandOnThisNode(p);
+                // m.LandOnThisNode(p);
             }
             else if (m.CompareTag("Vendor"))
             {
                 Debug.Log("On vendor");
 
-                List<EntityPiece> exposedPlayersOnVendor = new List<EntityPiece>();
+                List<EntityData> exposedPlayersOnVendor = new List<EntityData>();
 
-                foreach(EntityPiece playerOnVendor in otherPlayers)
+                foreach(EntityData playerOnVendor in otherPlayers)
                 {
-                    if (!playerOnVendor.currentStates.Contains(EntityPiece.State.InsideVendor))
+                    if (!playerOnVendor.Statuses.Contains(Status.InsideVendor))
                     {
                         exposedPlayersOnVendor.Add(playerOnVendor);
                     }
@@ -1558,26 +1616,23 @@ public class GameplayTest : MonoBehaviour
             else if (m.CompareTag("Stamp"))
             {
                 // Clear your direction so you can choose next turn (TEMPORARY)
-                m.LandOnThisNode(p);
+                // m.LandOnThisNode(p);
             }
             else if (m.CompareTag("MoveAgain"))
             {
-                oldStamps = new List<Stamp.StampType>(currentPlayer.stamps);
-                oldPoints = 0;
-                oldRep = 0;
 
                 //p.occupiedNode.playersOccupied.Add(p); // update to have that player in that node now
-                p.occupiedNodeCopy = p.occupiedNode;
-                p.traveledNodes.Clear();
-                p.traveledNodes.Add(p.occupiedNode);
+                //p.occupiedNodeCopy = p.occupiedNode;
+                p.TraveledNodes.Clear();
+                p.TraveledNodes.Add(p.OccupiedNode);
 
-                if (p.currentStatsModifier.canUseSpeedDie && p.health <= 25)
+                if (p.CurrentStatsModifier.canUseSpeedDie && p.Health <= 25)
                 {
                     // swap to the other die not being shown
                     // temp
-                    if (usingSpeedDieToMove)
+                    if (newState.UsingSpeedDieToMove)
                     {
-                        usingSpeedDieToMove = false;
+                        newState.UsingSpeedDieToMove = false;
                         m_ChangeToMoveDie.RaiseEvent(0);
                     }
                 }
@@ -1618,7 +1673,7 @@ public class GameplayTest : MonoBehaviour
             else // Generic MapNode Landing Function
             {
                 Debug.Log("Generic landed on this node.");
-                m.LandOnThisNode(p);
+                // m.LandOnThisNode(p);
             }
         }
 
@@ -1627,41 +1682,43 @@ public class GameplayTest : MonoBehaviour
     #endregion
 
     #region Combat-Based Functions
-    private bool CanFightPlayers(List<EntityPiece> otherPlayers)
+    private bool CanFightPlayers(List<EntityData> otherPlayers)
     {
         // otherPlayer != null && otherPlayer != currentPlayer
         return otherPlayers.Count != 0;
     }
 
-    private bool ThisPlayerMustFight(EntityPiece entity)
+    private bool ThisPlayerMustFight(EntityData entity)
     {
-        return entity.currentStates.Contains(EntityPiece.State.Fighting) || entity.currentStates.Contains(EntityPiece.State.FightingParty);
+        //return entity.currentStates.Contains(EntityPiece.State.Fighting) || entity.currentStates.Contains(EntityPiece.State.FightingParty);
+        return entity.Statuses.Contains(Status.Fighting) || entity.Statuses.Contains(Status.FightingParty);
     }
 
-    private GamePhase InitiateCombat(EntityPiece p, MapNode m)
+    private GamePhase InitiateCombat(EntityData entity, MapNode m)
     {
         //rollTypewriter.ShowText("");
-        playersOnCurrentNode = m.playersOccupied;
-        var otherPlayers = GetOtherPlayersOnNode(p);
+        //playersOnCurrentNode = m.playersOccupied;
+        var otherPlayers = GetOtherPlayersOnNode(entity, m);
 
         // Temporary behavior
         // Randomly pick a player on the passed tile to fight
         //EntityPiece selectedPlayer = otherPlayers[Random.Range(0, otherPlayers.Count)];
 
-        if(otherPlayers.Count > 1)
+        if (otherPlayers.Count > 1)
         {
             //phase = GamePhase.CombatSelector;
-            foreach(EntityPiece entity in m.playersOccupied)
+            foreach(EntityData e in m.occupiedEntities)
             {
                 // Indicate this is a third-party situation
-                if(!entity.currentStates.Contains(EntityPiece.State.FightingParty))
-                    entity.currentStates.Add(EntityPiece.State.FightingParty);
+                if(!e.Statuses.Contains(Status.FightingParty))
+                    e.Statuses.Add(Status.FightingParty);
             }
 
-            if (!p.currentStates.Contains(EntityPiece.State.FightingParty))
-                p.currentStates.Add(EntityPiece.State.FightingParty);
+            if (!entity.Statuses.Contains(Status.FightingParty))
+                entity.Statuses.Add(Status.FightingParty);
 
-            m_LandOnMultipleEntities.RaiseEvent(otherPlayers);
+            //m_LandOnMultipleEntities.RaiseEvent(otherPlayers);
+            // UI Combat Selector should just grab the OccupiedNode of the current player 
             return GamePhase.CombatSelector;
         }
         else
@@ -1671,10 +1728,15 @@ public class GameplayTest : MonoBehaviour
         }
     }
 
-    private void BeginCombat(EntityPiece selectedEntity)
+    private void BeginCombat(EntityData selectedEntity)
     {
-        if(!currentPlayer.currentStates.Contains(EntityPiece.State.Fighting)) currentPlayer.currentStates.Add(EntityPiece.State.Fighting);
-        if(!selectedEntity.currentStates.Contains(EntityPiece.State.Fighting)) selectedEntity.currentStates.Add(EntityPiece.State.Fighting);
+        //_currentGameState.CurrentPlayer
+        var p = _currentGameState.CurrentPlayer();
+        if (!p.EntityData.Statuses.Contains(Status.Fighting))
+            p.EntityData.Statuses.Add(Status.Fighting);
+
+        if(!selectedEntity.Statuses.Contains(Status.Fighting)) 
+            selectedEntity.Statuses.Add(Status.Fighting);
 
         //phase = GamePhase.CombatTime;
         
@@ -1692,7 +1754,8 @@ public class GameplayTest : MonoBehaviour
 
     private void OnFighterSelected(EntityPiece entity)
     {
-        BeginCombat(entity);
+        Debug.Log("GameplayTest | OnFighterSelected");
+        //BeginCombat(entity);
     }
     #endregion
 
@@ -1900,13 +1963,13 @@ public class GameplayTest : MonoBehaviour
     #region End-of-Turn Functions
     GamePhase EndOfTurn(GameState prevState, ref GameState newState)
     {
-        var p = newState.CurrentPlayer;
-        if(p.inventory.Count > p.inventoryLimit)
+        var p = newState.CurrentPlayer();
+        if(p.EntityData.Inventory.Count > p.EntityData.InventoryLimit)
         {
             // Player has too many items
-            Debug.Log($"{p.entityName} HAS TOO MANY ITEMS");
+            Debug.Log($"{p.EntityData.EntityName} HAS TOO MANY ITEMS");
             //phase = GamePhase.DiscardItem;
-            StartCoroutine(DelayFullInventory(p, .25f));
+            //StartCoroutine(DelayFullInventory(p, .25f)); // Rework this function
             newState.LastGamePhase = prevState.GamePhase;
             return GamePhase.DiscardItem;
             //m_FullInventory.RaiseEvent(p);
@@ -1924,25 +1987,25 @@ public class GameplayTest : MonoBehaviour
                 currentPlayerInitialNode.playersOccupied.Remove(currentPlayer);
             }
 
-            // Reset temp values.
-            oldStamps.Clear();
-            oldPoints = 0;
-            oldRep = 0;
-
-            // Was in a third-party situation and is the last one standing!!
-            if (p.occupiedNode.playersOccupied.Count == 1 &&
-                p.currentStates.Contains(EntityPiece.State.FightingParty))
+            if (p.EntityData.InitialNode.occupiedEntities.Contains(p.EntityData))
             {
-                Debug.Log($"Wait {p.entityName} is the goat wtf?");
-                p.currentStates.Remove(EntityPiece.State.FightingParty);
-                p.dustCloud.SetActive(false);
+                p.EntityData.InitialNode.occupiedEntities.Remove(p.EntityData);
             }
 
-            isStockingStore = false; // let next player access inventory
-            usingSpeedDieToMove = false;
-            playerUsedItem = false; // let next player access inventory
+            // Was in a third-party situation and is the last one standing!!
+            if (p.EntityData.OccupiedNode.playersOccupied.Count == 1 &&
+                p.EntityData.Statuses.Contains(Status.FightingParty))
+            {
+                Debug.Log($"Wait {p.EntityData.EntityName} is the goat wtf?");
+                p.EntityData.Statuses.Remove(Status.FightingParty);
+                //p.dustCloud.SetActive(false); // change this in EntityPieceVisual
+            }
+
+            //isStockingStore = false; // let next player access inventory
+            newState.UsingSpeedDieToMove = false;
+            //playerUsedItem = false; // let next player access inventory
             newState.CurrentPlayerHasUsedItem = false;
-            selectedItemIndex = -1;
+            //selectedItemIndex = -1;
 
             m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
             //rollTypewriter.ShowText("");
@@ -1962,13 +2025,13 @@ public class GameplayTest : MonoBehaviour
             else
             {
                 //StartCoroutine(DelaySetupNextPlayer(.25f));
-                SetupNextPlayer();
+                SetupNextPlayer(prevState, ref newState);
                 return GamePhase.StartTurn;
             }
         }
     }
 
-    public GamePhase HandleNextTurnRound(int round)
+    public GamePhase HandleNextTurnRound(GameState prevState, ref GameState newState)
     {
         bool active = false;
         foreach (SpecialIncidents incidents in matchIncidents)
@@ -1976,7 +2039,7 @@ public class GameplayTest : MonoBehaviour
             switch (incidents)
             {
                 case SpecialIncidents.Train:
-                    if (round != 1 &&round % 6 == 0)
+                    if (newState.Round != 1 && newState.Round % 6 == 0)
                     {
                         //m_ActivateIncidentTrain.RaiseEvent();
                         incidentsToActivate.Add(SpecialIncidents.Train);
@@ -2000,49 +2063,56 @@ public class GameplayTest : MonoBehaviour
         else
         {
             //DelaySetupNextPlayer(0.25f);
-            SetupNextPlayer();
+            SetupNextPlayer(prevState, ref newState);
             return GamePhase.StartTurn;
         }
     }
 
-    public void SetupNextPlayer()
+    public void SetupNextPlayer(GameState prevState, ref GameState newState)
     {
-        // previous player is put on the spot they landed at
-        currentPlayer.occupiedNode.playersOccupied.Add(currentPlayer); // update to have that player in that node now
-        currentPlayer.occupiedNodeCopy = currentPlayer.occupiedNode;
+        var p = newState.CurrentPlayer().EntityData;
 
-        _inputControllers[currentPlayer.id].SwitchActionMapRewrite(_currentGameState.GamePhase);
+        // previous player is put on the spot they landed at
+        //currentPlayer.occupiedNode.playersOccupied.Add(currentPlayer); // update to have that player in that node now
+        //currentPlayer.occupiedNodeCopy = currentPlayer.occupiedNode;
+
+        p.OccupiedNode.occupiedEntities.Add(p);
+        p.InitialNode = p.OccupiedNode;
+
+        //_inputControllers[currentPlayer.id].SwitchActionMapRewrite(_currentGameState.GamePhase);
+        _inputControllers[newState.CurrPlayerId].SwitchActionMapRewrite(_currentGameState.GamePhase);
 
         // Put current player back to normal pos
-        currentPlayer.transform.position += new Vector3(0, 0, .05f);
+        //currentPlayer.transform.position += new Vector3(0, 0, .05f);
+        newState.CurrentPlayerObj.transform.position += new Vector3(0, 0, .05f);
+
         // Change to the next player in the list.
         nextPlayers.Remove(currentPlayer);
         nextPlayers.Add(currentPlayer);
         currentPlayer = nextPlayers[0];
 
         // Done eating and chillin, get out of the estalbishment!
-        if (currentPlayer.currentStates.Contains(EntityPiece.State.InsideVendor))
+        if (p.Statuses.Contains(Status.InsideVendor))
         {
-            currentPlayer.currentStates.Remove(EntityPiece.State.InsideVendor);
-            currentPlayer.playerSprite.enabled = true;
+            p.Statuses.Remove(Status.InsideVendor);
+            newState.CurrentPlayerObj.playerSprite.enabled = true; // move this in EntityVisual
         }
 
-        if (currentPlayer.occupiedNode.playersOccupied.Count == 1 &&
-                currentPlayer.currentStates.Contains(EntityPiece.State.FightingParty))
+        if (p.OccupiedNode.occupiedEntities.Count == 1 &&
+            p.Statuses.Contains(Status.FightingParty))
         {
-            Debug.Log($"Wait {currentPlayer.entityName} is actually goated wtf?");
-            currentPlayer.currentStates.Remove(EntityPiece.State.FightingParty);
+            Debug.Log($"Wait {p.EntityName} is actually goated wtf?");
+            p.Statuses.Remove(Status.FightingParty);
 
-            currentPlayer.dustCloud.gameObject.SetActive(false);
+            newState.CurrentPlayerObj.dustCloud.gameObject.SetActive(false); // move this in EntityVisual
         }
 
         // put next player's sprite in front of the others
-        currentPlayer.transform.position -= new Vector3(0,0,.05f);
+        newState.CurrentPlayerObj.transform.position -= new Vector3(0,0,.05f);
 
         m_NextPlayerTurn.RaiseEvent(currentPlayer);
 
-        currentPlayerInitialNode = currentPlayer.occupiedNode;
-        oldStamps = new List<Stamp.StampType>(currentPlayer.stamps); // keeping track of stamps for next player
+        //currentPlayerInitialNode = currentPlayer.occupiedNode;
         //phase = GamePhase.ItemSelection;
     }
 
@@ -2064,7 +2134,7 @@ public class GameplayTest : MonoBehaviour
             yield return new WaitUntil(() => incidentIsPlaying == false);
         }
         incidentsToActivate.Clear();
-        SetupNextPlayer();
+        //SetupNextPlayer(prevState, ref newState);
     }
 
     public void EndGame()
@@ -2108,20 +2178,6 @@ public class GameplayTest : MonoBehaviour
             }
 
             m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
-
-            if (currentPlayer.inventory.Count > currentPlayer.inventoryLimit)
-            {
-                List<ItemStats> incomingItems = new List<ItemStats> { item };
-
-                // FOR NAM
-                // Raise drop item event, display drop item UI.
-                // Set encounterOver = true when player has dropped enough items and close drop item UI (maybe in same function?).
-
-            }
-            else
-            {
-                //encounterOver = true;
-            }
         }
     }
 
@@ -2129,31 +2185,6 @@ public class GameplayTest : MonoBehaviour
     {
         // Recieved from InvSelHand to try using an item
         selectedItemIndex = index;
-    }
-
-    private void OnRaycastItemUsed(int index, ItemStats item)
-    {
-        Debug.Log("Used target select item");
-        currentPlayer.AddItemToActiveEffects(currentPlayer.inventory[index].Duration, currentPlayer.inventory[index]);
-
-        currentPlayer.UpdateStatModifier(new EntityPiece.ActiveEffect
-        {
-            originalItem = currentPlayer.inventory[index],
-            turnsRemaining = currentPlayer.inventory[index].Duration - 1
-        });
-
-        ApplyItemEffectsOnTurnStart(currentPlayer);
-
-        m_ExitInventory.RaiseEvent();
-        // Raise free view event I guess?
-        m_EnableFreeview.RaiseEvent();
-        // FOR NAM: USE THIS EVENT TO SHOW SELECT TILE/PLAYER UI.
-        m_EnterRaycastTargetSelection.RaiseEvent();
-        freeviewEnabled = true;
-
-        phase = GamePhase.RaycastTargetSelection;
-
-        //RemoveItemInPlayerInventory(index);
     }
 
     private void OnItemUsed(int index, ItemStats item)
@@ -2213,43 +2244,32 @@ public class GameplayTest : MonoBehaviour
         }
         else
         {
+            ref var p = ref _currentGameState.CurrentPlayer().EntityData;
             // Item Used is a Deployable / Trap / Placeable
-            if (currentPlayer.currentStatsModifier.warpMode != EntityStatsModifiers.WarpMode.None)
+            if (p.CurrentStatsModifier.warpMode != EntityStatsModifiers.WarpMode.None)
             {
-                /*
-                Debug.Log("Used target select item");
-                m_ExitInventory.RaiseEvent();
-                // Raise free view event I guess?
-                m_EnableFreeview.RaiseEvent();
-                // FOR NAM: USE THIS EVENT TO SHOW SELECT TILE/PLAYER UI.
-                m_EnterRaycastTargetSelection.RaiseEvent();
-                freeviewEnabled = true;
 
-                phase = GamePhase.RaycastTargetSelection;
-                */
                 Debug.Log("Used raycast item, removing");
 
-                //currentPlayer.inventory.RemoveAt(index);
-                //playerUsedItem = true;
-                //selectedItemIndex = -1;
             }
             else
             {
                 // only get rid of item if its not a target selection one
-                currentPlayer.AddItemToActiveEffects(currentPlayer.inventory[index].Duration, currentPlayer.inventory[index]);
+                p.AddItemToActiveEffects(p.Inventory[index].Duration, p.Inventory[index]);
 
-                currentPlayer.UpdateStatModifier(new EntityPiece.ActiveEffect
+                /*
+                p.UpdateStatModifier(new ActiveEffect
                 {
-                    originalItem = currentPlayer.inventory[index],
-                    turnsRemaining = currentPlayer.inventory[index].Duration - 1
+                    OriginalItem = currentPlayer.inventory[index],
+                    TurnsRemaining = currentPlayer.inventory[index].Duration - 1
                 });
-
+                */
                 //currentPlayer.inventory.RemoveAt(index);
                 //playerUsedItem = true;
+                p.RefreshStatModifiers();
+                ApplyItemEffectsOnTurnStart(p);
 
-                ApplyItemEffectsOnTurnStart(currentPlayer);
-
-                currentPlayer.inventory.RemoveAt(index);
+                p.Inventory.RemoveAt(index);
                 playerUsedItem = true;
                 _currentGameState.CurrentPlayerHasUsedItem = true;
                 selectedItemIndex = -1;
@@ -2261,38 +2281,37 @@ public class GameplayTest : MonoBehaviour
         }
     }
 
-    private void ApplyItemEffectsOnTurnStart(EntityPiece p)
+    private void ApplyItemEffectsOnTurnStart(EntityData p)
     {
         // Regenerate health from active effects.
-        p.health = Mathf.Min(p.maxHealth * p.currentStatsModifier.maxHealthMultModifier
-            + p.currentStatsModifier.maxHealthFlatModifier,
-            p.health + p.currentStatsModifier.healthRegen);
+        p.MaxHealth = p.BaseMaxHealth * p.CurrentStatsModifier.maxHealthMultModifier + p.CurrentStatsModifier.maxHealthFlatModifier;
+        p.Health = Mathf.Min(p.MaxHealth, p.Health + p.CurrentStatsModifier.healthRegen);
 
-        if(p.health < 1)
+        if(p.Health < 1)
         {
-            p.health = 1;
+            p.Health = 1;
         }
 
-        m_UpdatePlayerScore.RaiseEvent(p.id);
+        //m_UpdatePlayerScore.RaiseEvent(p.id);
 
         // Warp player to specified destination.
-        if (p.currentStatsModifier.warpDestination != null)
+        if (p.CurrentStatsModifier.warpDestination != null)
         {
             //WarpToMapNode(p, p.currentStatsModifier.warpDestination);
             expectedPhase = GamePhase.InitialTurnMenu;
-            m_WarpByItem.RaiseEvent(p.currentStatsModifier.warpDestination);
+            m_WarpByItem.RaiseEvent(p.CurrentStatsModifier.warpDestination);
         }
     }
 
-    private void ApplyItemEffectsOnTargetSelection(EntityPiece p)
+    private void ApplyItemEffectsOnTargetSelection(EntityData entity)
     {
         // Warp player to specified destination.
-        if (p.currentStatsModifier.warpDestination != null)
+        if (entity.CurrentStatsModifier.warpDestination != null)
         {
             //WarpToMapNode(p, p.currentStatsModifier.warpDestination);
 
-            expectedPhase = GamePhase.InitialTurnMenu;
-            m_WarpByItem.RaiseEvent(p.currentStatsModifier.warpDestination);
+            expectedPhase = GamePhase.InitialTurnMenu; // change this to newstate
+            m_WarpByItem.RaiseEvent(entity.CurrentStatsModifier.warpDestination);
         }
     }
 
@@ -2357,7 +2376,6 @@ public class GameplayTest : MonoBehaviour
 
     public void OnDisableFreeview()
     {
-        freeviewEnabled = false;
         if(currentPlayer.currentStatsModifier.warpMode != EntityStatsModifiers.WarpMode.None)
         {
             currentPlayer.currentStatsModifier.warpMode = EntityStatsModifiers.WarpMode.None;
@@ -2365,23 +2383,25 @@ public class GameplayTest : MonoBehaviour
         }
     }
     #region Store Related Functions
-    public void BuildStore(EntityPiece p)
+    // Change this to EntityData
+    public void HandleBuildStore(EntityData p)
     {
-        p.storeCount++;
+        p.StoreCount++;
         //p.heldPoints -= 200;
 
-        ShowStore(p, p.occupiedNode); 
+        ShowStore(p, p.OccupiedNode); 
 
-        GameObject tileObject = p.occupiedNode.gameObject;
+        GameObject tileObject = p.OccupiedNode.gameObject;
         StoreManager store = tileObject.AddComponent<StoreManager>();
-        store.playerOwner = p;
-        p.ownedStores.Add(store);
+        //store.playerOwner = p;
+        store.owner = p;
+        p.OwnedStores.Add(store);
 
         StartCoroutine(DelayRestockStore(p, 1f));
         //m_RestockStore.RaiseEvent(p.occupiedNode);
     }
 
-    private void ShowStore(EntityPiece p, MapNode m)
+    private void ShowStore(EntityData p, MapNode m)
     {
         Debug.Log("I am a store");
         GameObject tileObject = m.gameObject;
@@ -2389,13 +2409,13 @@ public class GameplayTest : MonoBehaviour
 
         //tileObject.GetComponent<SpriteRenderer>().color = p.playerColor;
         var node = tileObject.GetComponent<MapNode>();
-        node.GetComponent<SpriteRenderer>().color = p.playerColor;
+        node.GetComponent<SpriteRenderer>().color = p.MainColor;
         //Show store boat now
         node.storefrontVisual.enabled = true;
-        node.storefrontVisual.GetComponent<SpriteRenderer>().color = p.playerColor;
+        node.storefrontVisual.GetComponent<SpriteRenderer>().color = p.MainColor;
 
         node.stockGroup.alpha = 1;
-        node.stockGroup.GetComponent<Image>().color = p.playerColor;
+        node.stockGroup.GetComponent<Image>().color = p.MainColor;
         node.stockGroup.GetComponent<Image>().color -= new Color(0, 0, 0, .25f);
     }
 
@@ -2420,11 +2440,11 @@ public class GameplayTest : MonoBehaviour
         Destroy(store);
     }
 
-    private IEnumerator DelayRestockStore(EntityPiece p, float delay)
+    private IEnumerator DelayRestockStore(EntityData p, float delay)
     {
         yield return new WaitForSeconds(delay);
 
-        m_RestockStore.RaiseEvent(p.occupiedNode);
+        m_RestockStore.RaiseEvent(p.OccupiedNode);
     }
 
     public void OnRestockStore(MapNode node)
@@ -2466,7 +2486,7 @@ public class GameplayTest : MonoBehaviour
         currentPlayer.currentStatsModifier.warpMode = EntityStatsModifiers.WarpMode.OpenSpaces;
 
         m_EnableFreeview.RaiseEvent();
-        m_EnterRaycastTargetSelection.RaiseEvent();
+        m_EnterRaycastTargetSelection.RaiseEvent(); // change this
 
         //phase = GamePhase.EndTurn;
         phase = GamePhase.RaycastTargetSelection;
@@ -2482,6 +2502,7 @@ public class GameplayTest : MonoBehaviour
 
         currentPlayer.inventory.RemoveAt(index);
         m_RefreshInventory.RaiseEvent(currentPlayer);
+        Debug.Log("m_RefreshInventory raised, rewrite this");
 
         if (emptyStockCount <= 0)
             m_FinishStockingStore.RaiseEvent(currentPlayer);
@@ -2507,6 +2528,7 @@ public class GameplayTest : MonoBehaviour
         player.CalculateStorestockTotal();
     }
 
+    // This should be in StoreManager
     public void UpdateStorefrontVisual(MapNode node)
     {
         var storeInventory = node.GetComponent<StoreManager>().storeInventory;
@@ -2541,6 +2563,7 @@ public class GameplayTest : MonoBehaviour
     {
         currentPlayer.inventory.RemoveAt(index);
         m_RefreshInventory.RaiseEvent(currentPlayer);
+        Debug.Log("m_RefreshInventory raised, rewrite this");
     }
     #endregion Store Related Functions
     public void StealFromPlayer(EntityPiece otherPlayer)
@@ -2556,13 +2579,14 @@ public class GameplayTest : MonoBehaviour
         // Raise event to show UI of item stolen. Not sure what to do if other player has no items to steal.
     }
 
-    public IEnumerator InitiateCombatOnEnemy(float delay, EntityPiece p)
+    public IEnumerator InitiateCombatOnEnemy(float delay, EntityData entity)
     {
-        EntityPiece enemy = null;
+        EntityData enemy = null;
+        /*
         // Set IDs of players entering combat.
-        sceneManager.player1ID = p.id;
+        sceneManager.player1ID = entity.id;
 
-        // Rework for Scaling Enemy System
+        // Rework this completetly for Scaling Enemy System
         bool lookingForTarget = true;
         while (lookingForTarget)
         {
@@ -2593,7 +2617,7 @@ public class GameplayTest : MonoBehaviour
 
         //enemy.occupiedNode = p.occupiedNode;
         //p.occupiedNode.playersOccupied.Add(enemy);
-
+        */
         yield return new WaitForSeconds(delay);
 
         BeginCombat(enemy);
@@ -2612,13 +2636,6 @@ public class GameplayTest : MonoBehaviour
         sceneManager.LoadCombatScene();
     }
 
-    public void StopOnStore()
-    {
-        // remove this
-        Debug.Log("StopOnStore");
-        currentPlayer.movementLeft = 0;
-    }
-
     // originally OnSelectRaycastTarget()
     public void HandleTryFreeviewExamine(GameState prevState, ref GameState newState)
     {
@@ -2628,65 +2645,66 @@ public class GameplayTest : MonoBehaviour
             Debug.Log($"There is a store at {RaycastTiles.tileSelected}. Owned by { s.playerOwner}");
             store = s;
         }
+        var p = newState.Players[newState.CurrPlayerId].EntityData;
 
-        switch (currentPlayer.currentStatsModifier.warpMode)
+        switch (p.CurrentStatsModifier.warpMode)
         {
             case EntityStatsModifiers.WarpMode.Tiles:
                 if (RaycastTiles.tileSelected != null)
-                    WarpConfirmed(currentPlayer);
+                    WarpConfirmed(p);
                 break;
             case EntityStatsModifiers.WarpMode.Players:
                 if (RaycastTiles.tileSelected.playersOccupied.Count != 0)
-                    WarpConfirmed(currentPlayer);
+                    WarpConfirmed(p);
                 break;
             case EntityStatsModifiers.WarpMode.Marigold:
                 if (RaycastTiles.tileSelected.GetComponent<StoreManager>() && 
                     RaycastTiles.tileSelected.modifier == MapNode.Modifier.None)
                 {
-                    PlantConfirmed(currentPlayer, MapNode.Modifier.Marigold);
+                    PlantConfirmed(p, MapNode.Modifier.Marigold);
                 }
                 break;
             case EntityStatsModifiers.WarpMode.Rafflesia:
                 if (RaycastTiles.tileSelected.modifier == MapNode.Modifier.None)
                 {
-                    PlantConfirmed(currentPlayer, MapNode.Modifier.Rafflesia);
+                    PlantConfirmed(p, MapNode.Modifier.Rafflesia);
                 }
                 break;
             case EntityStatsModifiers.WarpMode.OpenSpaces:
                 if (RaycastTiles.tileSelected.tag == "Encounter")
                 {
-                    RelocateStoreConfirmed(currentPlayer, RaycastTiles.tileSelected);
+                    RelocateStoreConfirmed(p, RaycastTiles.tileSelected);
                 }
                 break;
 
         }
     }
 
-    private void WarpConfirmed(EntityPiece p)
+    private void WarpConfirmed(EntityData entity)
     {
         // FOR NAM: USE THIS EVENT TO HIDE SELECT TILE/PLAYER UI
         m_ExitRaycastTargetSelection.RaiseEvent();
-        p.currentStatsModifier.warpDestination = RaycastTiles.tileSelected;
-        ApplyItemEffectsOnTargetSelection(p);
+        entity.CurrentStatsModifier.warpDestination = RaycastTiles.tileSelected;
+        ApplyItemEffectsOnTargetSelection(entity);
 
         m_DisableFreeview.RaiseEvent();
         phase = GamePhase.InitialTurnMenu;
     }
 
-    private void PlantConfirmed(EntityPiece p, MapNode.Modifier modifier)
+    private void PlantConfirmed(EntityData entity, MapNode.Modifier modifier)
     {
         // FOR NAM: USE THIS EVENT TO HIDE SELECT TILE/PLAYER UI
         m_ExitRaycastTargetSelection.RaiseEvent();
-        p.currentStatsModifier.warpDestination = RaycastTiles.tileSelected;
-        PlantItemOnSpaceSelection(p, modifier);
+        entity.CurrentStatsModifier.warpDestination = RaycastTiles.tileSelected;
+        PlantItemOnSpaceSelection(entity, modifier);
 
         m_DisableFreeview.RaiseEvent();
-        phase = GamePhase.InitialTurnMenu;
+        phase = GamePhase.InitialTurnMenu; // change this to newstate 
     }
 
-    private void RelocateStoreConfirmed(EntityPiece p, MapNode node2)
+    private void RelocateStoreConfirmed(EntityData p, MapNode node2)
     {
-        p.heldPoints -= 100;
+        p.Money -= 100;
         //currentRestockNode
         // Copy the store manager over to the new selected node
         var originalStore = currentRestockNode.GetComponent<StoreManager>();
@@ -2695,8 +2713,8 @@ public class GameplayTest : MonoBehaviour
         var newStore = node2.gameObject.AddComponent<StoreManager>();
         newStore.SetStore(originalStore);
 
-        p.ownedStores.Remove(originalStore);
-        p.ownedStores.Add(newStore);
+        p.OwnedStores.Remove(originalStore);
+        p.OwnedStores.Add(newStore);
 
         //currentRestockNode.gameObject.tag = "Encounter";
         RemoveStore(currentRestockNode);
@@ -2710,13 +2728,13 @@ public class GameplayTest : MonoBehaviour
         phase = expectedPhase;
     }
 
-    private void PlantItemOnSpaceSelection(EntityPiece p, MapNode.Modifier modifier)
+    private void PlantItemOnSpaceSelection(EntityData entity, MapNode.Modifier modifier)
     {
         // Warp player to specified destination.
-        if (p.currentStatsModifier.warpDestination != null)
+        if (entity.CurrentStatsModifier.warpDestination != null)
         {
-            p.currentStatsModifier.warpDestination.modifier = modifier;
-            p.currentStatsModifier.warpDestination.modifierOwner = p;
+            entity.CurrentStatsModifier.warpDestination.modifier = modifier;
+            entity.CurrentStatsModifier.warpDestination.modifierOwner = entity;
 
             if(selectedItemIndex != -1)
             {
@@ -2747,7 +2765,7 @@ public class GameplayTest : MonoBehaviour
         }
     }
 
-    IEnumerator StartTransitionIntoCombat(float delay, EntityPiece entity)
+    IEnumerator StartTransitionIntoCombat(float delay, EntityData entity)
     {
         // This is like kinda only for player v player
         //m_TransitionIntoCombat.RaiseEvent(entity);
@@ -2755,7 +2773,7 @@ public class GameplayTest : MonoBehaviour
         yield return new WaitForSeconds(delay);
 
         //m_EnteredCombatScene.RaiseEvent();
-        m_InitiateCombatOnPassBy.RaiseEvent(entity);
+        //m_InitiateCombatOnPassBy.RaiseEvent(entity);
 
         yield return null;
     }
@@ -2770,71 +2788,69 @@ public class GameplayTest : MonoBehaviour
 
     private void OnDamageAffectedNodes(List<MapNode> affectedNodes, float damageRatio)
     {
-        foreach(EntityPiece player in playerUnits)
+        foreach(PlayerState player in _currentGameState.Players)
         {
             // this dude is chilling, he aint getting hit
-            if (player.currentStates.Contains(EntityPiece.State.InsideVendor)) 
+            if (player.EntityData.Statuses.Contains(Status.InsideVendor)) 
             {
-                Debug.Log($"{player.entityName} is in a vendor, no damage taken.");
+                Debug.Log($"{player.EntityData.EntityName} is in a vendor, no damage taken.");
             }
-            else if (affectedNodes.Contains(player.occupiedNode))
+            else if (affectedNodes.Contains(player.EntityData.OccupiedNode))
             {
-                Debug.Log($"{player.entityName} in the streets. GOOBYE!!");
-                int damageTaken = (int)(player.maxHealth * damageRatio);
-                player.health -= damageTaken;
-                if(player.health < 0)
+                Debug.Log($"{player.EntityData.EntityName} in the streets. GOOBYE!!");
+                int damageTaken = (int)(player.EntityData.MaxHealth * damageRatio);
+
+                player.EntityData.Health -= damageTaken;
+
+                if(player.EntityData.Health < 0)
                 {
-                    player.health = 1;
+                    player.EntityData.Health = 1;
                 }
 
-                m_DamageTakenOnPlayer.RaiseEvent(player, damageTaken);
-                m_UpdatePlayerScore.RaiseEvent(player.id);
+                //m_DamageTakenOnPlayer.RaiseEvent(player, damageTaken);
+                //m_UpdatePlayerScore.RaiseEvent(player.id);
             }
         }
     }
 
     private void TryCalculateTempoBuff(GameState prevState, ref GameState newState)
     {
-        var p = currentPlayer;
+        var p = newState.Players[newState.CurrPlayerId].EntityData;
 
-        if (p.currentStatsModifier.movementTempoScale == 0) return;
+        if (p.CurrentStatsModifier.movementTempoScale == 0) return;
 
         //var tempoFormula = p.currentStatsModifier.movementTempoScale * (int)((p.movementTotal - p.movementLeft) / 2);
-        var tempoFormula = p.currentStatsModifier.movementTempoScale * (int)((p.movementTotal - p.movementLeft) / 2);
+        var tempoFormula = p.CurrentStatsModifier.movementTempoScale * (int)((newState.MoveDieRoll - newState.MovementLeft) / 2);
 
         if (tempoFormula == 0) return;
 
-        Debug.Log($"TryCalculateTempoBuff | ATK Buff = {(int)((p.movementTotal - p.movementLeft) / p.currentStatsModifier.movementTempoScale)}");
+        Debug.Log($"TryCalculateTempoBuff | ATK Buff = {(int)((newState.MoveDieRoll - newState.MovementLeft) / p.CurrentStatsModifier.movementTempoScale)}");
         var tempoTempItem = ScriptableObject.CreateInstance<ItemStats>();
 
         tempoTempItem.name = "TempoItem";
         tempoTempItem.showAsEffect = false;
         tempoTempItem.modifiers = new List<StatModifierChangerSO>();
-        //tempoTempItem.canStack = false;
 
         var tempoAtkBuff = ScriptableObject.CreateInstance<AllDiesFinalValueMod>();
-        //tempoAtkBuff.flatAtkModifier = (int)((p.movementTotal - p.movementLeft) / p.currentStatsModifier.movementTempoScale);
+
         tempoAtkBuff.flatAtkModifier = tempoFormula;
         tempoAtkBuff.multModifier = 1;
         tempoAtkBuff.activateEffectStartTurn = 1;
         tempoAtkBuff.activateEffectEndTurn = 1;
         tempoTempItem.name = $"TempoAtkBuff +{tempoAtkBuff.flatAtkModifier}";
 
-        //Debug.Log($"tempoAtkBuff | {tempoAtkBuff} ");
-        //Debug.Log($"flatAtkModifier | {tempoAtkBuff.flatAtkModifier} ");
-        //Debug.Log($"activateEffectStartTurn | {tempoAtkBuff.activateEffectStartTurn} ");
-        //Debug.Log($"activateEffectEndTurn | {tempoAtkBuff.activateEffectEndTurn} ");
-
         tempoTempItem.modifiers.Add(tempoAtkBuff);
 
-        currentPlayer.AddItemToActiveEffects(tempoTempItem.Duration, tempoTempItem);
+        p.AddItemToActiveEffects(tempoTempItem.Duration, tempoTempItem);
 
-        currentPlayer.UpdateStatModifier(new EntityPiece.ActiveEffect
+        p.UpdateStatModifier(new ActiveEffect
         {
-            originalItem = tempoTempItem,
-            turnsRemaining = 1,
-            isPermanent = false,
-            clearAfterCombat = false
+            OriginalItem = tempoTempItem,
+            TurnsRemaining = 1,
+            IsPermanent = false,
+            ClearAfterCombat = false
         });
+
+
     }
 }

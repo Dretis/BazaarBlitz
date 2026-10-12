@@ -1,3 +1,4 @@
+using Core;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,7 +7,9 @@ public class StoreManager : MonoBehaviour
     private MapNode node;
     public List<ItemStats> storeInventory;
 
-    public EntityPiece playerOwner;
+    public EntityPiece playerOwner; // OLD change this to EntityData
+    public EntityData owner;  // NEW
+
     private int storeCapacity = 3;
 
     [Header("Store Stats")]

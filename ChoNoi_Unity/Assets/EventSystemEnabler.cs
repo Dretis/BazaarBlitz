@@ -1,3 +1,6 @@
+using Core;
+using Core.Events;
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -5,7 +8,12 @@ using UnityEngine.InputSystem.UI;
 
 public class EventSystemEnabler : MonoBehaviour
 {
+    private PlayerState _playerState;
+    private GameplayTest _gameplayTest;
+
     [SerializeField] private InputActionAsset actionAssetToUse;
+    [SerializeField] private GameStateEventChannelSO _gameStateEvent;
+
     private InputSystemUIInputModule _inputSystemUIInputModule;
     private MultiplayerEventSystem _eventSystem;
 
@@ -18,7 +26,13 @@ public class EventSystemEnabler : MonoBehaviour
     public NodeEventChannelSO m_LandOnStorefront;
     public VoidEventChannelSO m_ExitStorefront;
 
+    public void Initialize(PlayerState ps, GameplayTest gt)
+    {
+        _playerState = ps;
+        _gameplayTest = gt;
 
+        DisablePlayerCanvases();
+    }
 
     private void OnEnable()
     {
@@ -27,6 +41,8 @@ public class EventSystemEnabler : MonoBehaviour
         m_ExitStorefront.OnEventRaised += OnExitStorefront;
 
         _inputSystemUIInputModule.actionsAsset = actionAssetToUse;
+
+        _gameStateEvent.OnEventRaised += UpdateCanvasFromGameState;
     }
 
     private void OnDisable()
@@ -34,6 +50,8 @@ public class EventSystemEnabler : MonoBehaviour
         //m_NextPlayerTurn.OnEventRaised -= OnNextPlayerTurn;
         m_LandOnStorefront.OnEventRaised -= OnLandOnStorefront;
         m_ExitStorefront.OnEventRaised -= OnExitStorefront;
+
+        _gameStateEvent.OnEventRaised -= UpdateCanvasFromGameState;
     }
 
     void Awake()
@@ -47,6 +65,20 @@ public class EventSystemEnabler : MonoBehaviour
     private void ChangePlayerRoot(GameObject o)
     {
         _eventSystem.playerRoot = o;
+    }
+    private void UpdateCanvasFromGameState(FrameGameState gameState)
+    {
+        if (gameState.DidChangePhases())
+        {
+            if (gameState.PrevState.GamePhase is GameplayTest.GamePhase.StartTurn)
+            {
+                //Debug.Log("Guh huh");
+                if (_playerState.Id == gameState.NewState.CurrPlayerId)
+                    EnablePlayerCanvases();
+                else
+                    DisablePlayerCanvases();
+            }
+        }
     }
 
     public void EnablePlayerCanvases()

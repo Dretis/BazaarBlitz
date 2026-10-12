@@ -11,12 +11,18 @@ using LitMotion.Extensions;
 using System;
 using UnityEngine.InputSystem.UI;
 using Core.Events;
+using Core;
 
 public class UIBlessingsManager : MonoBehaviour
 {
-    private EntityPiece associatedPlayer;
+    private PlayerState _playerState;
+    private GameplayTest _gameplayTest;
+
     [SerializeField] private MultiplayerEventSystem _eventSystem;
     public GameStateEventChannelSO _gameStateEvent;
+
+
+    private EntityPiece associatedPlayer;
     [Space]
     [SerializeField] private BlessingSelectionHandler centerBlessingCircle;
 
@@ -40,6 +46,12 @@ public class UIBlessingsManager : MonoBehaviour
     public VoidEventChannelSO m_ExitBlessingsTree;
     public ItemEventChannelSO m_BlessingSelected;
     public ItemEventChannelSO m_HoverInBlessing;
+
+    public void Initialize(PlayerState ps, GameplayTest gt)
+    {
+        _playerState = ps;
+        _gameplayTest = gt;
+    }
 
     private void OnEnable()
     {

@@ -94,10 +94,14 @@ public class ItemStats : ScriptableObject, IStatModifierChanger
         foreach (var modifier in modifiers)
         {
             // Error checking.
-            int effectStartTurn = Mathf.Max(1, modifier.activateEffectStartTurn); // Must be at least 1.
-            int effectEndTurn = Mathf.Max(1, modifier.activateEffectEndTurn); // Must be at least 1.
+            int effectStartTurn = Mathf.Max(0, modifier.activateEffectStartTurn); // Must be at least 1.
+            int effectEndTurn = Mathf.Max(0, modifier.activateEffectEndTurn); // Must be at least 1.
             effectEndTurn = Mathf.Min(effectEndTurn, Duration); // Must be less than or equal to duration.
             effectStartTurn = Mathf.Min(effectStartTurn, effectEndTurn); // Must be less than or equal to effectEndTurn.
+
+            //Debug.Log($"currentTurn = {currentTurn}");
+            //Debug.Log($"effectStartTurn = {effectStartTurn}");
+            //Debug.Log($"effectEndTurn = {effectStartTurn}");
 
             // Apply mod effect if in range of start and end turns.
             if ((currentTurn >= effectStartTurn && currentTurn <= effectEndTurn) || isPermanent)
@@ -105,6 +109,10 @@ public class ItemStats : ScriptableObject, IStatModifierChanger
                 Debug.Log("Current Turn: " + currentTurn);
                 Debug.Log("My effect is activating.");
                 currentStats = modifier.ApplyStatModChanges(currentStats, currentTurn);
+            }
+            else
+            {
+                Debug.Log("My effect is not activating.");
             }
                 
         }

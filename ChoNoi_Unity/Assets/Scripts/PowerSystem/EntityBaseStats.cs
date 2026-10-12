@@ -36,6 +36,14 @@ public class DieConfig
         set => SetFace(faceIndex, value);
     }
 
+    public DieConfig()
+    {
+        for (int i = 0; i < dieFaces.Length; i++)
+        {
+            SetFace(i, i + 1);
+        }
+    }
+
     public IEnumerable<int> GetAllFaceValues()
     {
         return dieFaces;

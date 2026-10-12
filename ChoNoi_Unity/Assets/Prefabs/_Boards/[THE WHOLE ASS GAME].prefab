@@ -1098,6 +1098,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36007d1b949752042992df388102aaba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _respawnNode: {fileID: 0}
   seed: -1
   board: 0
   phase: 0
@@ -1111,6 +1112,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4bfdffc9671c6f049bf7c6bfd1dfd86d, type: 2}
   debugPhaseText: {fileID: 6700546163252136677}
   turnOffMonsterEncounters: 0
+  debugItem: {fileID: 0}
   playerUnits:
   - {fileID: 6700546163865522836}
   - {fileID: 6143496329768989689}
@@ -1119,7 +1121,6 @@ MonoBehaviour:
   nextPlayers: []
   currentPlayer: {fileID: 0}
   currentPlayerInitialNode: {fileID: 0}
-  playersOnCurrentNode: []
   playerUsedItem: 0
   usingSpeedDieToMove: 0
   currentRuleset:
@@ -1137,7 +1138,6 @@ MonoBehaviour:
   wantedNode: {fileID: 0}
   encounterStarted: 0
   isStockingStore: 0
-  oldStamps: 
   costArray: ffffffff01000000010000000200000002000000020000000300000003000000030000000400000005000000e7030000
   howToPlayScreen: {fileID: 0}
   m_IncidentStarted: {fileID: 11400000, guid: fbbbe6e31fced7641b6b92ac4a0ea4c9, type: 2}
@@ -1186,12 +1186,10 @@ MonoBehaviour:
   m_ChangeToMoveDie: {fileID: 11400000, guid: 5aa1fd405bcfa124797166414d53b2fa, type: 2}
   m_TryUseItemAt: {fileID: 11400000, guid: cf367ade587c18d4f816fbe70e57e7d5, type: 2}
   m_ItemUsed: {fileID: 11400000, guid: 4c3e0ee6a8a2a4f4ea69a5202dd82790, type: 2}
-  m_RaycastItemUsed: {fileID: 11400000, guid: 988cc46420d364848a8808fb0e91d733, type: 2}
   m_FinishedUsedItem: {fileID: 11400000, guid: 6a71930c05468f844a5f664c671e2077, type: 2}
   m_ItemStocked: {fileID: 11400000, guid: 677672fced788ca4ba7cecd9f14887dc, type: 2}
   m_ItemDiscarded: {fileID: 11400000, guid: b1cc7f46ffa055a4588d794ae7f0cd13, type: 2}
   m_ItemBought: {fileID: 11400000, guid: ace0aa03bf09d91469d5914ce815154e, type: 2}
-  m_BuildStore: {fileID: 11400000, guid: 9d5f0aa79aca10040958b1cad28bafa1, type: 2}
   m_RestockStore: {fileID: 11400000, guid: 45d6b055127905e4cb2609426a521e19, type: 2}
   m_UpgradeStore: {fileID: 11400000, guid: bc7cfa7d6c5e5044aa14d55b62e1986e, type: 2}
   m_TryRelocateStore: {fileID: 11400000, guid: 0112cb4a79de96343986739234aedbee, type: 2}
@@ -1204,16 +1202,20 @@ MonoBehaviour:
   m_RecieveVendorItem: {fileID: 11400000, guid: 951f9f6bcf8b1554ebb26e55e07e88b8, type: 2}
   m_FighterSelected: {fileID: 11400000, guid: b696f39d908595b43aa55322bfb1971d, type: 2}
   _gameStateUpdatedEventChannel: {fileID: 11400000, guid: 113369b80091b3346b620c7e0c0d9b8c, type: 2}
-  _inputControllerPrefab: {fileID: 8184592382734835342, guid: 55735af4b26789a4094dea8489060239, type: 3}
+  _playerDevicePrefab: {fileID: 7070504504208684888, guid: df73cf350d74f774a9900898ddc3366a, type: 3}
   _inputControllers: []
   _currentGameState:
+    Round: 0
     LastGamePhase: 0
     GamePhase: 0
-    CurrentPlayer: {fileID: 0}
-    CurrentPlayerHasUsedItem: 0
     MoveDieRoll: 0
     MovementLeft: 0
-    Round: 0
+    Players: []
+    NextPlayers: []
+    CurrentPlayerObj: {fileID: 0}
+    CurrPlayerId: 0
+    CurrentPlayerHasUsedItem: 0
+    UsingSpeedDieToMove: 0
 --- !u!1 &6700546163201373892
 GameObject:
   m_ObjectHideFlags: 0
@@ -1913,6 +1915,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   actionAssetToUse: {fileID: -944628639613478452, guid: 26bb27642ad641c4691ff8463cbc2a11, type: 3}
+  _gameStateEvent: {fileID: 0}
   overlayCanvas: {fileID: 6700546164631942688}
   cameraCanvas: {fileID: 0}
   m_LandOnStorefront: {fileID: 11400000, guid: f648c693d8451764f96f063b6b3da44b, type: 2}
@@ -2888,8 +2891,6 @@ MonoBehaviour:
   focusZoomCam: {fileID: 1797736905185210716}
   discardZoomCam: {fileID: 4103810498623603960}
   m_NextPlayerTurn: {fileID: 11400000, guid: 45e13c3cd9283b74989c51218c39f6c2, type: 2}
-  m_EnableFreeview: {fileID: 11400000, guid: d7e81995233eb6340bf998043ae2294f, type: 2}
-  m_DisableFreeview: {fileID: 11400000, guid: 9dfdcd33a17daa44088bf0e8fe4c1898, type: 2}
   m_EnterRaycastedTile: {fileID: 11400000, guid: afbe9acd002146a46991e60f337ba054, type: 2}
   m_ExitRaycastedTile: {fileID: 11400000, guid: bb03629fcd15efc49a85071214823911, type: 2}
   m_FreeviewReticleMove: {fileID: 11400000, guid: 89d76b2f79abb9f4d803c2082ef720a1, type: 2}
@@ -2930,8 +2931,6 @@ MonoBehaviour:
   m_EnableFreeview: {fileID: 11400000, guid: d7e81995233eb6340bf998043ae2294f, type: 2}
   m_DisableFreeview: {fileID: 11400000, guid: 9dfdcd33a17daa44088bf0e8fe4c1898, type: 2}
   m_TryExamineTile: {fileID: 11400000, guid: d3b3273277242ba4bb44593c190d5142, type: 2}
-  m_EnterRaycastTargetSelection: {fileID: 11400000, guid: 1543442f686f62745abebe40d74bf2cf, type: 2}
-  m_ExitRaycastTargetSelection: {fileID: 11400000, guid: 772ef068b81dce340bf549ac7425179c, type: 2}
 --- !u!114 &6700546163881176790
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3164,6 +3163,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b60337f18d555a4984d9c9d55777f23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _gameStateEvent: {fileID: 11400000, guid: 113369b80091b3346b620c7e0c0d9b8c, type: 2}
   currentPlayer: {fileID: 0}
   players: []
   playerScoreHandlers:

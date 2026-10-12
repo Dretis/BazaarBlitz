@@ -4,11 +4,13 @@ using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.Playables;
 using UnityEngine.UI;
+using Core;
 
 public class MapNode : MonoBehaviour
 {
 
-    public List<EntityPiece> playersOccupied;
+    public List<EntityPiece> playersOccupied; // remove this later for below
+    public List<EntityData> occupiedEntities = new List<EntityData>(); // change this to EntityData
 
     [Header("Hover Information")]
     public Color tileHoverColor;
@@ -40,7 +42,7 @@ public class MapNode : MonoBehaviour
     [Header("Modifiers / Trap")]
     public Modifier modifier = Modifier.None;
     public StoreModifier storeModifier = StoreModifier.Empty;
-    public EntityPiece modifierOwner;
+    public EntityData modifierOwner;
 
     public enum Modifier
     {

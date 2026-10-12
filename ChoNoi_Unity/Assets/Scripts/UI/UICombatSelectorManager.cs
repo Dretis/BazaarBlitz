@@ -1,3 +1,4 @@
+using Core;
 using Core.Events;
 using System;
 using System.Collections;
@@ -8,6 +9,8 @@ using UnityEngine.InputSystem.UI;
 
 public class UICombatSelectorManager : MonoBehaviour
 {
+    private PlayerState _playerState;
+    private GameplayTest _gameplayTest;
     [SerializeField] private MultiplayerEventSystem _eventSystem;
     public GameStateEventChannelSO _gameStateEvent;
 
@@ -19,6 +22,11 @@ public class UICombatSelectorManager : MonoBehaviour
     [Header("Listen on Event Channel")]
     public PlayerListEventChannelSO m_LandOnMultipleEntities;
     public PlayerEventChannelSO m_FighterSelecteed;
+    public void Initialize(PlayerState ps, GameplayTest gt)
+    {
+        _playerState = ps;
+        _gameplayTest = gt;
+    }
 
     private void OnEnable()
     {

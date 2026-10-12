@@ -88,7 +88,7 @@ public class AvailableNodeIndicator : MonoBehaviour
         if (state.NewState.GamePhase is GameplayTest.GamePhase.PickDirection)
         {
             //OnPlayerMovedOnBoard();
-            SetTargetNode(currentPlayer.occupiedNode);
+            SetTargetNode(state.NewState.CurrentPlayer().EntityData.OccupiedNode);
             if (state.NewState.MovementLeft <= 0)
                 HideNodeIndicators();
             else
@@ -199,8 +199,8 @@ public class AvailableNodeIndicator : MonoBehaviour
 
     private void OnPlayerUndidSomething()
     {
-        SetTargetNode(currentPlayer.occupiedNode);
-        ShowNodeIndicators();
+        //SetTargetNode(currentPlayer.occupiedNode);
+        //ShowNodeIndicators();
     }
 
     private void OnIncidentStarted()

@@ -118,9 +118,12 @@ public class UIStoreManager : MonoBehaviour
     {
         if (gameState.DidChangePhases())
         {
+            //var index = gameState.NewState.CurrPlayerId;
+            //var currPlayer = gameState.NewState.Players[index];
+
             if (gameState.NewState.GamePhase is GameplayTest.GamePhase.InStore)
             {
-                var storeNode = gameState.NewState.CurrentPlayer.occupiedNode;
+                var storeNode = gameState.NewState.CurrentPlayer().EntityData.OccupiedNode;
                 EnterStorefront(storeNode);
             }
         }

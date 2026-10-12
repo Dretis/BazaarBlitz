@@ -594,6 +594,139 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!1 &8403932599464735331
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5022665759775670462}
+  - component: {fileID: 4178961812223137203}
+  - component: {fileID: 8026428052462102333}
+  m_Layer: 0
+  m_Name: Player Input Controller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5022665759775670462
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8403932599464735331}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8913914769779731874}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4178961812223137203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8403932599464735331}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: -944628639613478452, guid: 26bb27642ad641c4691ff8463cbc2a11, type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 7889228243866739286}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: Initial Turn Menu
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
+--- !u!114 &8026428052462102333
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8403932599464735331}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8978cbcb9a4430a478e1d0d86c497c5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  device: 0
+  assignedPlayer: {fileID: 0}
+  playerInput: {fileID: 4178961812223137203}
+  previousGamePhase: 0
+  currActionMap:
+    m_Name: Curr
+    m_Id: 93bf2fe2-e6a8-456d-8d2a-1ddd24da4e08
+    m_Asset: {fileID: 0}
+    m_Actions: []
+    m_Bindings: []
+  m_EnableFreeview: {fileID: 11400000, guid: d7e81995233eb6340bf998043ae2294f, type: 2}
+  m_DisableFreeview: {fileID: 11400000, guid: 9dfdcd33a17daa44088bf0e8fe4c1898, type: 2}
+  m_TryExamineTile: {fileID: 11400000, guid: d3b3273277242ba4bb44593c190d5142, type: 2}
+  m_FreeviewReticleMove: {fileID: 11400000, guid: 89d76b2f79abb9f4d803c2082ef720a1, type: 2}
+  m_DiceRollUndo: {fileID: 11400000, guid: c893b6f1be9cffb4b87d121e14d423c7, type: 2}
+  m_DiceRollPrep: {fileID: 11400000, guid: 9e449a1e468efff46b833c09542c6b5f, type: 2}
+  m_TryDiceRollPrep: {fileID: 11400000, guid: e3231ba4a2d2df44585537e460f74d17, type: 2}
+  m_ChangeToMoveDie: {fileID: 11400000, guid: 5aa1fd405bcfa124797166414d53b2fa, type: 2}
+  m_DiceRolled: {fileID: 11400000, guid: fb9fa3f55f7f0924db5a635622936326, type: 2}
+  m_RollForMovement: {fileID: 11400000, guid: d015287f1c859dc49a75cff91e2028a9, type: 2}
+  m_OpenInventory: {fileID: 11400000, guid: 91caeb767faff934e81ba8e6ff774d38, type: 2}
+  m_TryBuildStore: {fileID: 11400000, guid: 94cd759fd9c7842498fdd73d020eac27, type: 2}
+  m_BuildStore: {fileID: 11400000, guid: 9d5f0aa79aca10040958b1cad28bafa1, type: 2}
+  m_FinishStockingStore: {fileID: 11400000, guid: f02cee4c939241841aa967904d4db75e, type: 2}
+  m_BackRenovateStore: {fileID: 11400000, guid: d6da9144b2814884593694b14171ec60, type: 2}
+  m_RestockStore: {fileID: 11400000, guid: 45d6b055127905e4cb2609426a521e19, type: 2}
+  m_ExitLevelUp: {fileID: 11400000, guid: 0ced05665b46bb549b612dc3b7cba01f, type: 2}
+  m_ExitBlessingsTree: {fileID: 11400000, guid: fb3403f240fb17941bdecd0124fc9f06, type: 2}
+  m_HoldPlayerInfo: {fileID: 11400000, guid: 43b7d47204c4b5b40aa3fd2a37085485, type: 2}
+  m_ReleasePlayerInfo: {fileID: 11400000, guid: 4224677cda2bca442a340f5e1b1244de, type: 2}
+  m_BuyFromVendor: {fileID: 11400000, guid: 2c43e930fd2d37542bcd3086e71af4eb, type: 2}
+  m_ExitVendor: {fileID: 11400000, guid: 939cfdef1274efd4faab3b158b8b75c9, type: 2}
+  m_PlayerActionSelected: {fileID: 11400000, guid: d7651c1dc2c5cc74d90001e0a479c397, type: 2}
+  m_CombatDiceRolled: {fileID: 11400000, guid: a1da45c0bec1bef45a082dbe65fd1548, type: 2}
+  m_ReturnToMainMenu: {fileID: 11400000, guid: c85b669722d3efb4491922442792d90f, type: 2}
+  m_AssignPlayerToController: {fileID: 11400000, guid: ad03087746d19e74292e7dbccb547d32, type: 2}
+  m_NextPlayerTurn: {fileID: 11400000, guid: 45e13c3cd9283b74989c51218c39f6c2, type: 2}
+  m_ConfirmBuildStore: {fileID: 11400000, guid: f4bf13c62fafdfa4da428cfbf244c5e3, type: 2}
+  m_AskRestockStore: {fileID: 11400000, guid: ee264eb89bdfc1145b0e87dc55c121be, type: 2}
+  m_TryRestockStore: {fileID: 11400000, guid: 6c0d6966ca978624a986fb70fb73019a, type: 2}
+  m_TryRelocateStore: {fileID: 11400000, guid: 0112cb4a79de96343986739234aedbee, type: 2}
+  m_LandOnStorefront: {fileID: 11400000, guid: f648c693d8451764f96f063b6b3da44b, type: 2}
+  m_ExitStorefront: {fileID: 11400000, guid: 410e906b10aa4ae49ab7395fffa23d79, type: 2}
+  m_ItemBought: {fileID: 11400000, guid: ace0aa03bf09d91469d5914ce815154e, type: 2}
+  m_FullInventory: {fileID: 11400000, guid: 887e975774de4964595a6eb83fd1b16b, type: 2}
+  m_WarpStarted: {fileID: 11400000, guid: 37a35e5a54e251e4b95dff9b8efc27de, type: 2}
+  m_WarpOver: {fileID: 11400000, guid: 1d363a8402bfcb0409672e9577ea5068, type: 2}
+  m_LandOnVendor: {fileID: 11400000, guid: eb2649013aa7cbc41af4a7f3a5c359c8, type: 2}
+  m_LandOnCoconutTree: {fileID: 11400000, guid: 77f38ae72de89ef49828b473651273e9, type: 2}
+  m_LandOnMultipleEntities: {fileID: 11400000, guid: 29c82be8cac6c7342aff3ab44e4757eb, type: 2}
+  m_EnteredCombatScene: {fileID: 11400000, guid: b06b734815e5e434087c29d416ff002e, type: 2}
+  m_InitiateCombatOnPassBy: {fileID: 11400000, guid: 738add0769a4e0047bfef96c86d9f906, type: 2}
+  m_EnterLevelUp: {fileID: 11400000, guid: 2e765a5770dc0604e9dbf9fa24b60fba, type: 2}
+  m_EnterStatAllocation: {fileID: 11400000, guid: d51b7adfc9b8ea14b9653d5f165253ea, type: 2}
+  m_EnterBlessingsTree: {fileID: 11400000, guid: 034644062e3eb30488d27269bf7e0c35, type: 2}
+  m_BothActionsSelected: {fileID: 11400000, guid: 5e6e7809c5de840469b11fa61d18be8f, type: 2}
+  m_SwapPhase: {fileID: 11400000, guid: 5fe2f16d1a7ee994d93f14d183b3029b, type: 2}
+  m_PlayerWon: {fileID: 11400000, guid: 30be4a0c1ed8bdc43b43a3dc867dd37d, type: 2}
 --- !u!1 &9185522088792270977
 GameObject:
   m_ObjectHideFlags: 0
@@ -725,9 +858,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player Input Device+UI
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8184592382734835337, guid: 55735af4b26789a4094dea8489060239, type: 3}
+    - {fileID: 8184592382734835336, guid: 55735af4b26789a4094dea8489060239, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 8184592382734835339, guid: 55735af4b26789a4094dea8489060239, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5022665759775670462}
     - targetCorrespondingSourceObject: {fileID: 8184592382734835339, guid: 55735af4b26789a4094dea8489060239, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7499477387607429321}
