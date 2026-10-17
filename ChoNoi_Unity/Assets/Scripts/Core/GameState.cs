@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using static EntityPiece;
 
 namespace Core
 {
@@ -14,8 +13,10 @@ namespace Core
     {
         public int Round;
 
-        public GameplayTest.GamePhase LastGamePhase;
         public GameplayTest.GamePhase GamePhase;
+        [Space]
+        public GameplayTest.GamePhase LastGamePhase;
+        //public GameplayTest.GamePhase ExpectedPhase;
         [Space]
         public int MoveDieRoll; // originally diceRoll | aka MovementTotal
         public int MovementLeft; // originally in EntityPiece
@@ -27,13 +28,37 @@ namespace Core
 
         public EntityPiece CurrentPlayerObj;
         //public PlayerState CurrentPlayer;
+        [Header("Current Turn Logic Variables")]
         public int CurrPlayerId;
+        public ItemStats UsedItem;
         public bool CurrentPlayerHasUsedItem;
         public bool UsingSpeedDieToMove;
 
         public ref PlayerState CurrentPlayer()
         {
             return ref (Players[CurrPlayerId]);
+        }
+        public EntityData CurrentPlayerData()
+        {
+            return (Players[CurrPlayerId].EntityData);
+        }
+        public ref EntityData GetPlayerData(int id)
+        {
+            return ref (Players[id].EntityData);
+        }
+
+        public GameState Copy()
+        {
+            GameState copy = this;
+
+            copy.Players = new PlayerState[Players.Length];
+
+            for(int i = 0; i < Players.Length; i++)
+            {
+                copy.Players[i] = new PlayerState(this.Players[i]);
+            }
+
+            return copy;
         }
     }
 
@@ -50,25 +75,22 @@ namespace Core
     {
         public int Id;
         public EntityData EntityData;
+        public PlayerState(PlayerState ps)
+        {
+            Id = ps.Id;
+            EntityData = new EntityData(ps.EntityData);
+        }
 
         public PlayerState(int id, PlayerColorPalettePreset palettePreset)
         {
             Id = id;
             EntityData = new EntityData(id, palettePreset);
-
-            //MainColor = palettePreset.mainColor;
-            //EntityPalette = palettePreset.baggieColorPalette;
-            //BoatPalette = palettePreset.boatColorPalette;
         }
 
         public PlayerState(int id, PlayerCosmeticManager pcm)
         {
             Id = id;
             EntityData = new EntityData(id, pcm);
-
-            //MainColor = pcm.playerColor;
-            //EntityPalette = pcm.baggieColorPalette;
-            //BoatPalette = pcm.boatColorPalette;
         }
 
         public void SetEntityData(EntityData entityData)
@@ -95,7 +117,7 @@ namespace Core
 
     // Change into a class instead of struct?
     [System.Serializable]
-    public class EntityData
+    public struct EntityData
     {
         public string EntityName; // may be unneeded
         //public int Id;
@@ -133,8 +155,8 @@ namespace Core
 
         [Header("Augment/Die Info")]
         [Range(1, 99)] public int Level; // Default = 1
-        public float Experience; // Default = 0
-        public float ExpThreshold;// Default = 100, originally 'levelThreshold'
+        public int Experience; // Default = 0
+        public int ExpThreshold;// Default = 100, originally 'levelThreshold'
         public int UnspentSP; // originally 'unspentLevelUpPoints'
 
         public EntityBaseStats EntityStats;
@@ -152,6 +174,48 @@ namespace Core
 
         //[TextArea(3, 10)]
         //public string flavorText;
+        public EntityData(EntityData ed)
+        {
+            EntityName = ed.EntityName;
+
+            MainColor = ed.MainColor;
+            EntityPalette = ed.EntityPalette;
+            BoatPalette = ed.BoatPalette;
+
+            //
+
+            Statuses = ed.Statuses;
+            ActiveEffects = ed.ActiveEffects;
+            EntityType = ed.EntityType;
+            IsEnemy = ed.IsEnemy;
+
+            Money = ed.Money;
+            Health = ed.Health;
+            MaxHealth = ed.MaxHealth;
+            BaseMaxHealth = MaxHealth;
+
+            Stamps = ed.Stamps;
+            Inventory = ed.Inventory;
+
+            OccupiedNode = ed.OccupiedNode;
+            InitialNode = ed.InitialNode;
+            PreviousNode = ed.PreviousNode;
+            TraveledNodes = ed.TraveledNodes;
+
+            InventoryLimit = ed.InventoryLimit;
+            StoreCount = ed.StoreCount;
+            StorestockTotal = ed.StorestockTotal;
+            OwnedStores = ed.OwnedStores;
+
+            Level = ed.Level;
+            Experience = ed.Experience;
+            ExpThreshold = ed.ExpThreshold;
+            UnspentSP = ed.UnspentSP;
+
+            EntityStats = ed.EntityStats;
+            CurrentStatsModifier = ed.CurrentStatsModifier;
+        }
+
         public EntityData(int id, PlayerColorPalettePreset palettePreset)
         {
             //Id = id;
@@ -160,8 +224,40 @@ namespace Core
             MainColor = palettePreset.mainColor;
             EntityPalette = palettePreset.baggieColorPalette;
             BoatPalette = palettePreset.boatColorPalette;
+            
+            //
 
-            SetDefaultData();
+            Statuses = new();
+            ActiveEffects = new();
+            EntityType = EntityType.Player;
+            IsEnemy = false;
+
+            Money = 1000;
+            Health = 75;
+            MaxHealth = 75;
+            BaseMaxHealth = MaxHealth;
+
+            Stamps = new();
+            Inventory = new();
+
+            OccupiedNode = null;
+            InitialNode = null;
+            PreviousNode = null;
+            TraveledNodes = new();
+
+            InventoryLimit = 8;
+            StoreCount = 4;
+            StorestockTotal = 0;
+            OwnedStores = new();
+
+            Level = 1;
+            Experience = 0;
+            ExpThreshold = 100;
+            UnspentSP = 0;
+
+            EntityStats = new();
+            CurrentStatsModifier = new();
+            //SetDefaultData();
         }
         public EntityData(int id, PlayerCosmeticManager pcm)
         {
@@ -172,7 +268,39 @@ namespace Core
             EntityPalette = pcm.baggieColorPalette;
             BoatPalette = pcm.boatColorPalette;
 
-            SetDefaultData();
+            //
+
+            Statuses = new();
+            ActiveEffects = new();
+            EntityType = EntityType.Player;
+            IsEnemy = false;
+
+            Money = 1000;
+            Health = 75;
+            MaxHealth = 75;
+            BaseMaxHealth = MaxHealth;
+
+            Stamps = new();
+            Inventory = new();
+
+            OccupiedNode = null;
+            InitialNode = null;
+            PreviousNode = null;
+            TraveledNodes = new();
+
+            InventoryLimit = 8;
+            StoreCount = 4;
+            StorestockTotal = 0;
+            OwnedStores = new();
+
+            Level = 1;
+            Experience = 0;
+            ExpThreshold = 100;
+            UnspentSP = 0;
+
+            EntityStats = new();
+            CurrentStatsModifier = new();
+            //SetDefaultData();
         }
 
         private void SetDefaultData()
@@ -208,7 +336,7 @@ namespace Core
 
         public bool CanLevelUp()
         {
-            ExpThreshold = (Level * 100) * (Mathf.Pow(1.15f, Level - 1));
+            ExpThreshold = LevelUpFormula();
             // 100, 230, 396, 608, 874... Every level costs around 30% more (should be tuned in testing).
             if (Experience >= ExpThreshold)
             {
@@ -222,6 +350,10 @@ namespace Core
             }
         }
 
+        public int LevelUpFormula()
+        {
+            return (int)((Level * 100) * (Mathf.Pow(1.15f, Level - 1)));
+        }
         #region 'Stat Mod' Function
         /// <summary>
         /// Tick down active effects by one turn and recalculate this player's stat modifiers
@@ -277,6 +409,27 @@ namespace Core
             else
             {
                 Debug.Log("Effect not found!");
+            }
+        }
+        public void ApplyItemEffectsOnTurnStart()
+        {
+            // Regenerate health from active effects.
+            MaxHealth = BaseMaxHealth * CurrentStatsModifier.maxHealthMultModifier + CurrentStatsModifier.maxHealthFlatModifier;
+            Health = Mathf.Min(MaxHealth, Health + CurrentStatsModifier.healthRegen);
+
+            if (Health < 1)
+            {
+                Health = 1;
+            }
+
+            //m_UpdatePlayerScore.RaiseEvent(p.id);
+
+            // Warp player to specified destination.
+            if (CurrentStatsModifier.warpDestination != null)
+            {
+                //WarpToMapNode(p, p.currentStatsModifier.warpDestination);
+                //expectedPhase = GamePhase.InitialTurnMenu;
+                //m_WarpByItem.RaiseEvent(p.CurrentStatsModifier.warpDestination);
             }
         }
 

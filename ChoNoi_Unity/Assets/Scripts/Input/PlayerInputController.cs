@@ -430,7 +430,7 @@ public class PlayerInputController : MonoBehaviour
 
     private void OnFreeviewExamine()
     {
-        m_TryExamineTile.RaiseEvent(GameObject.Find("Freeview Reticle").transform.position); //change this code later
+        //m_TryExamineTile.RaiseEvent(GameObject.Find("Freeview Reticle").transform.position); //change this code later
         //if (GameplayTest.instance.phase == GamePhase.RaycastTargetSelection)
         //{
         //    GameplayTest.instance.OnSelectRaycastTarget();
@@ -883,35 +883,6 @@ public class PlayerInputController : MonoBehaviour
     {
         previousGamePhase = GamePhase.PreStockStore;
         //m_EnableFreeview.RaiseEvent();
-    }
-
-    private void OnCancelRestockStore()
-    {
-        if (!playerInput.inputIsActive) return;
-
-        if (previousGamePhase == GamePhase.PreStockStore)
-        {
-            // undo to ask after already tring to restock
-            var p = GameplayTest.instance.currentPlayer;
-            m_AskRestockStore.RaiseEvent(p);
-        }
-        else
-            GameplayTest.instance.phase = GamePhase.EndTurn;
-    }
-
-    private void OnRestockStore(MapNode node)
-    {
-        //if (!playerInput.inputIsActive) return;
-        if (GameplayTest.instance.currentPlayer != assignedPlayer) return;
-
-        playerInput.ActivateInput();
-
-        playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
-        playerInput.uiInputModule.actionsAsset = playerInput.actions;
-
-        previousGamePhase = instance.phase;
-        Debug.Log("prev phase = "+previousGamePhase);
-        SwitchActionMap(GamePhase.StockStore);
     }
 
     private void OnFinishStockingStore(EntityPiece ps)

@@ -89,7 +89,7 @@ public class PawnShop : MapNode
             Debug.Log("BRO HE WON");
             gp.winner = p;
             gp.phase = GameplayTest.GamePhase.EndGame; // Finish game if player w/ enough points passes by Pawn Shop
-            gp.EndGame();
+            //gp.EndGame();
             return;
         }
     }

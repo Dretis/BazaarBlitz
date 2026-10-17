@@ -329,14 +329,14 @@ public class CameraObserver : MonoBehaviour
 
     private void OnConfirmBuildStore(EntityPiece entity)
     {
-        focusZoomCam.Follow = entity.transform;
-        focusZoomCam.enabled = true;
+        //focusZoomCam.Follow = entity.transform;
+        //focusZoomCam.enabled = true;
     }
 
     private void OnRestockStore(MapNode node)
     {
         //focusZoomCam.Follow = entity.transform;
-        focusZoomCam.enabled = false;
+        //focusZoomCam.enabled = false;
     }
 
     private void OnPlayerWon(EntityPiece winner)
@@ -347,29 +347,6 @@ public class CameraObserver : MonoBehaviour
         zoomedInCam.Follow = winner.transform;
         zoomedInCam.enabled = true;
     }
-
-    /*
-    private void LateUpdate()
-    {
-        if (Input.GetAxis("Mouse ScrollWheel") > 0)
-        {
-            vcam.m_Lens.OrthographicSize += 0.1f;
-            if (vcam.m_Lens.OrthographicSize >= maxOrthDistance)
-            {
-                vcam.m_Lens.OrthographicSize = maxOrthDistance;
-            }
-        }
-
-        if (Input.GetAxis("Mouse ScrollWheel") < 0)
-        {
-            vcam.m_Lens.OrthographicSize -= 0.1f;
-            if (vcam.m_Lens.OrthographicSize <= minOrthDistance)
-            {
-                vcam.m_Lens.OrthographicSize = minOrthDistance;
-            }
-        }
-    }
-    */
     
     #region REWRITE
     
@@ -403,9 +380,38 @@ public class CameraObserver : MonoBehaviour
                     ReturnTargetFocusToCurrentPlayer(gameState.NewState);
             }
 
-            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.Freeview)
+            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.Freeview ||
+                gameState.NewState.GamePhase is GameplayTest.GamePhase.RaycastTargetSelection)
             {
                 SwitchFocusToReticle(gameState.NewState);
+            }
+
+            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.StockStore)
+            {
+                focusZoomCam.enabled = false;
+            }
+
+            // Player Cutscenes
+            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.IncidentHappening)
+            {
+                zoomedInCam.enabled = false;
+                combatZoomCam.enabled = false;
+                focusZoomCam.enabled = false;
+                discardZoomCam.enabled = false;
+
+                //UseItem Cutscene
+                if (gameState.UseItemCutsceneStarted())
+                {
+                    zoomedInCam.Follow = gameState.NewState.CurrentPlayerObj.transform;
+                    zoomedInCam.enabled = true;
+                }
+
+                //BuildStore Cutscene
+                if (gameState.PrevState.GamePhase is GameplayTest.GamePhase.BuildingStore)
+                {
+                    focusZoomCam.Follow = gameState.NewState.CurrentPlayerObj.transform;
+                    focusZoomCam.enabled = true;
+                }
             }
         }
     }

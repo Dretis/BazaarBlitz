@@ -11,9 +11,12 @@ using UnityEngine.UI;
 
 public class PlayerScoreHandler : MonoBehaviour
 {
-    private EntityPiece assignedPlayer;
-    private EntityData assignedEntity;
-
+    //private EntityPiece assignedPlayer;
+    //private EntityData assignedEntity;
+    private PlayerState assignedPlayerState;
+    private int assignedPlayerId;
+    [SerializeField] private CanvasGroup scoreGroup;
+    [Space]
     [SerializeField] private int playerMoneyNumber;
     [SerializeField] private int playerHPNumber;
     [SerializeField] private int playerExpNumber;
@@ -55,6 +58,7 @@ public class PlayerScoreHandler : MonoBehaviour
     [SerializeField] private TextMeshProUGUI playerNextExp;
     [Space]
     //[SerializeField] private List<Image> playerImages;
+    [SerializeField] private SpriteRenderer playerSprite;
     [SerializeField] private PlayerPaletteLoader playerPaletteLoader;
 
     [Header("Stamp Elements")]
@@ -95,27 +99,28 @@ public class PlayerScoreHandler : MonoBehaviour
 
     [Header("Broadcast On Event Channels")]
     public PlayerEventChannelSO m_CheerForPlayer;
-
-    public void AssignPlayerToScore(ref EntityData ed)
+    
+    public void AssignPlayerToScore(PlayerState ps)
     {
-        assignedEntity = ed;
+        assignedPlayerId = ps.Id;
+        assignedPlayerState = ps;
     }
 
     public void InitialScoreSetup()
     {
         // Set name
-        //playerName.text = "" + assignedEntity.entityName;
-        SetPlayerName(assignedEntity.EntityName);
+        //playerName.text = "" + assignedPlayerState.entityName;
+        SetPlayerName(assignedPlayerState.EntityData.EntityName);
 
         // Set Color of Baggie in score
-        //playerImage.color = assignedEntity.playerColor - new Color32(0, 0, 0, 0); // minus transparency
+        //playerImage.color = assignedPlayerState.playerColor - new Color32(0, 0, 0, 0); // minus transparency
 
         //var palette = assignedPlayer.GetComponent<PlayerPaletteLoader>().GetInspectorPalette();
-        var palette = assignedEntity.EntityPalette;
+        var palette = assignedPlayerState.EntityData.EntityPalette;
         playerPaletteLoader.SetInspectorPalette(palette);
 
-        playerMoneyNumber = assignedEntity.Money;
-        playerHPNumber = assignedEntity.Health;
+        playerMoneyNumber = assignedPlayerState.EntityData.Money;
+        playerHPNumber = assignedPlayerState.EntityData.Health;
 
         //Debug.Log($"playerInfoDiceNumbers[{i}] = {playerInfoDiceHolder[i]}");
         /*
@@ -138,7 +143,7 @@ public class PlayerScoreHandler : MonoBehaviour
 
         UpdateScore();
 
-        SetMoney(assignedEntity.Money);
+        SetMoney(assignedPlayerState.EntityData.Money);
         playerMoney.GetComponent<UIEffect>().enabled = false;
 
         greenStamp.color -= new Color(0, 0, 0, 0.75f);
@@ -179,6 +184,35 @@ public class PlayerScoreHandler : MonoBehaviour
         UpdateMoneyInterest(); // maybe only if you have interest
     }
 
+    public void ShowScoreVisual()
+    {
+        
+        LMotion.Create(scoreGroup.alpha, 1, 0.25f)
+            .WithEase(Ease.OutQuad)
+            .Bind(x => scoreGroup.alpha = x);
+
+        var opaque = playerSprite.color;
+        opaque.a = 1f;
+
+        LMotion.Create(playerSprite.color, opaque, 0.25f)
+            .WithEase(Ease.OutQuad)
+            .Bind(x => playerSprite.color = x);
+    }
+
+    public void HideScoreVisual()
+    {
+        LMotion.Create(scoreGroup.alpha, 0, 0.25f)
+            .WithEase(Ease.InQuad)
+            .Bind(x => scoreGroup.alpha = x);
+
+        var transparent = playerSprite.color;
+        transparent.a = 0;
+
+        LMotion.Create(playerSprite.color, transparent, 0.25f)
+            .WithEase(Ease.InQuad)
+            .Bind(x => playerSprite.color = x);
+    }
+
     public void SetPlayerName(string newName)
     {
         playerName.text = newName;
@@ -196,85 +230,86 @@ public class PlayerScoreHandler : MonoBehaviour
 
     public void UpdateMoney()
     {
-        if (playerMoneyNumber == assignedEntity.Money)
+        if (playerMoneyNumber == assignedPlayerState.EntityData.Money)
         {
-            //Debug.Log($"!! Money is the same.");
+            //Debug.Log($"!! Money is the same. {assignedPlayerState.EntityData.EntityName} has {assignedPlayerState.EntityData.Money}");
             return;
         }
 
         var moneyShine = playerMoney.GetComponent<UIEffect>();
 
-        if (moneyShine.enabled && assignedEntity.Money < GameplayTest.instance.currentRuleset.pointGoal)
+        if (moneyShine.enabled && assignedPlayerState.EntityData.Money < GameplayTest.instance.currentRuleset.pointGoal)
             playerMoney.GetComponent<UIEffect>().enabled = false;
 
-        if (assignedEntity.Money >= GameplayTest.instance.currentRuleset.pointGoal)
+        if (assignedPlayerState.EntityData.Money >= GameplayTest.instance.currentRuleset.pointGoal)
         {
             playerMoney.color = goalMoneyColor;
             playerMoney.GetComponent<UIEffect>().enabled = true;
         }
-        else if (assignedEntity.Money < 0)
+        else if (assignedPlayerState.EntityData.Money < 0)
             playerMoney.color = negativeMoneyColor;
         else
             playerMoney.color = Color.white;
 
-        if (playerMoneyNumber < assignedEntity.Money)
+        if (playerMoneyNumber < assignedPlayerState.EntityData.Money)
         {
             // Move this to EntityVisual / Animator
-            //m_CheerForPlayer.RaiseEvent(assignedEntity); 
+            //m_CheerForPlayer.RaiseEvent(assignedPlayerState); 
         }
 
-        var handle = LMotion.Create(playerMoneyNumber, assignedEntity.Money, 1f)
+        var handle = LMotion.Create(playerMoneyNumber, assignedPlayerState.EntityData.Money, 1f)
                         .BindToText(playerMoney);
 
-        playerMoneyNumber = assignedEntity.Money;
+        playerMoneyNumber = assignedPlayerState.EntityData.Money;
     }
 
     public void UpdateHealth()
     {
-        //playerMaxHP.text = $"/{assignedEntity.MaxHealth * assignedEntity.CurrentStatsModifier.maxHealthMultModifier + assignedEntity.CurrentStatsModifier.maxHealthFlatModifier}";
-        playerMaxHP.text = $"/{assignedEntity.MaxHealth}";
+        //playerMaxHP.text = $"/{assignedPlayerState.MaxHealth * assignedPlayerState.CurrentStatsModifier.maxHealthMultModifier + assignedPlayerState.CurrentStatsModifier.maxHealthFlatModifier}";
+        playerMaxHP.text = $"/{assignedPlayerState.EntityData.MaxHealth}";
 
-        if (playerHPNumber == assignedEntity.Health)
+        if (playerHPNumber == assignedPlayerState.EntityData.Health)
         {
             //Debug.Log($"!! Health is the same.");
             return;
         }
-        if (playerHPNumber > assignedEntity.Health)
+        if (playerHPNumber > assignedPlayerState.EntityData.Health)
         {
-            float damageTaken = playerHPNumber - assignedEntity.Health;
-            float shakeDuration = damageTaken / (float)assignedEntity.MaxHealth;
+            float damageTaken = playerHPNumber - assignedPlayerState.EntityData.Health;
+            float shakeDuration = damageTaken / (float)assignedPlayerState.EntityData.MaxHealth;
 
             ShakePlayerSprite(shakeDuration);
         }
 
-        var handle = LMotion.Create(playerHPNumber, assignedEntity.Health, .5f)
+        var handle = LMotion.Create(playerHPNumber, assignedPlayerState.EntityData.Health, .5f)
                         //.WithEase(Ease.OutSine)
                         .BindToText(playerCurrentHP);
 
-        playerHPNumber = assignedEntity.Health;
+        playerHPNumber = assignedPlayerState.EntityData.Health;
     }
 
     public void UpdateExp()
     {
-        //playerExp.text = "[" + (int)assignedEntity.ReputationPoints + "/" + (int)assignedEntity.levelThreshold + "]";
-        playerNextExp.text = $"/{(int)assignedEntity.ExpThreshold}";
+        //playerExp.text = "[" + (int)assignedPlayerState.ReputationPoints + "/" + (int)assignedPlayerState.levelThreshold + "]";
+        playerNextExp.text = $"/{(int)assignedPlayerState.EntityData.ExpThreshold}";
 
-        if (playerExpNumber == assignedEntity.Experience)
+        if (playerExpNumber == assignedPlayerState.EntityData.Experience)
         {
             //Debug.Log($"!! Health is the same.");
             return;
         }
 
-        var handle = LMotion.Create(playerExpNumber, (int)assignedEntity.Experience, 1f)
+        var handle = LMotion.Create(playerExpNumber, (int)assignedPlayerState.EntityData.Experience, 1f)
                         .WithEase(Ease.OutCubic)
                         .BindToText(playerExp);
 
-        playerExpNumber = (int)assignedEntity.Experience;
+        playerExpNumber = (int)assignedPlayerState.EntityData.Experience;
     }
 
     public void UpdateLevel()
     {
-        var lvl = assignedEntity.Level;
+        //var lvl = assignedPlayerState.Level;
+        var lvl = assignedPlayerState.EntityData.Level;
 
         if (lvl >= 10)
         {
@@ -285,29 +320,29 @@ public class PlayerScoreHandler : MonoBehaviour
             playerLevel.colorGradientPreset = levelColorGradients[lvl - 1];
         }
 
-        playerLevel.text = "*\n" + assignedEntity.Level;
+        playerLevel.text = "*\n" + assignedPlayerState.EntityData.Level;
         UpdateExp();
-        //playerExp.text = "[" + (int)assignedEntity.ReputationPoints + "/" + (int)assignedEntity.levelThreshold + "]";
+        //playerExp.text = "[" + (int)assignedPlayerState.ReputationPoints + "/" + (int)assignedPlayerState.levelThreshold + "]";
     }
 
 
     public void UpdateHeldStamps()
     {
         var notObtainColor = Color.white - new Color(0, 0, 0, 0.75f);
-        //Debug.Log($"assignedEntity = {assignedEntity}");
-        if (assignedEntity.Stamps.Contains(Stamp.StampType.Green)) greenStamp.color = Color.white;
+        //Debug.Log($"assignedPlayerState = {assignedPlayerState}");
+        if (assignedPlayerState.EntityData.Stamps.Contains(Stamp.StampType.Green)) greenStamp.color = Color.white;
         else greenStamp.color = notObtainColor;
 
-        if (assignedEntity.Stamps.Contains(Stamp.StampType.Red)) redStamp.color = Color.white;
+        if (assignedPlayerState.EntityData.Stamps.Contains(Stamp.StampType.Red)) redStamp.color = Color.white;
         else redStamp.color = notObtainColor;
 
-        if (assignedEntity.Stamps.Contains(Stamp.StampType.Blue)) blueStamp.color = Color.white;
+        if (assignedPlayerState.EntityData.Stamps.Contains(Stamp.StampType.Blue)) blueStamp.color = Color.white;
         else blueStamp.color = notObtainColor;
 
-        if (assignedEntity.Stamps.Contains(Stamp.StampType.Orange)) orangeStamp.color = Color.white;
+        if (assignedPlayerState.EntityData.Stamps.Contains(Stamp.StampType.Orange)) orangeStamp.color = Color.white;
         else orangeStamp.color = notObtainColor;
         /*
-        foreach (Stamp.StampType s in assignedEntity.stamps)
+        foreach (Stamp.StampType s in assignedPlayerState.stamps)
         {
             Debug.Log(s);
             switch (s)
@@ -363,7 +398,7 @@ public class PlayerScoreHandler : MonoBehaviour
 
     public void ClearHeldStamps()
     {
-        foreach (Stamp.StampType s in assignedEntity.Stamps)
+        foreach (Stamp.StampType s in assignedPlayerState.EntityData.Stamps)
         {
             HideObtainedStamps(s);
         }
@@ -380,7 +415,7 @@ public class PlayerScoreHandler : MonoBehaviour
 
     public void UpdateDiceStat(Action.WeaponTypes type)
     {
-        var player = assignedEntity;
+        var player = assignedPlayerState.EntityData;
         var ti = (int)type; // type index
         float statDieFlatMod = 0;
         float statDieMultMod = 1;
@@ -459,7 +494,7 @@ public class PlayerScoreHandler : MonoBehaviour
     }
     public void UpdateInfoInvItems()
     {
-        var player = assignedEntity;
+        var player = assignedPlayerState.EntityData;
         Sprite playerItemSprite;
 
         for (int i = 0; i < player.InventoryLimit; i++)
@@ -479,17 +514,17 @@ public class PlayerScoreHandler : MonoBehaviour
     
     public void UpdateMoneyInterest()
     {
-        var ratePercentage = assignedEntity.CurrentStatsModifier.interestRate * 100;
-        int interest = (int)(assignedEntity.CurrentStatsModifier.interestRate * assignedEntity.StorestockTotal);
+        var ratePercentage = assignedPlayerState.EntityData.CurrentStatsModifier.interestRate * 100;
+        int interest = (int)(assignedPlayerState.EntityData.CurrentStatsModifier.interestRate * assignedPlayerState.EntityData.StorestockTotal);
 
         // change this to work with localized strings
-        moneyInterestText.text = $"<color=#FFF5C6>Storestock Total: </color=><b>{assignedEntity.StorestockTotal}<sprite=\"Coin Icon\" index=0></b>\r" +
+        moneyInterestText.text = $"<color=#FFF5C6>Storestock Total: </color=><b>{assignedPlayerState.EntityData.StorestockTotal}<sprite=\"Coin Icon\" index=0></b>\r" +
                                  $"\n<color=#FFF5C6>{ratePercentage}% Interest: </color=> <b>+{interest}<sprite=\"Coin Icon\" index=0></b>";
     }
 
     public void RefreshActiveEffects()
     {
-        var activeEffects = assignedEntity.ActiveEffects;
+        var activeEffects = assignedPlayerState.EntityData.ActiveEffects;
 
         DestroyAllActiveEffects();
 

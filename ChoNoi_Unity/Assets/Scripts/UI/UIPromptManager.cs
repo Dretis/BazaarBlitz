@@ -3,7 +3,6 @@ using UnityEngine;
 using TMPro;
 using Febucci.UI.Core;
 using LitMotion;
-using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using Core;
 using Core.Events;
@@ -13,7 +12,6 @@ using UnityEngine.Localization.SmartFormat.PersistentVariables;
 using UnityEngine.Localization.Components;
 using UnityEngine.UI;
 using UnityEngine.InputSystem.UI;
-using Unity.VisualScripting;
 
 public class UIPromptManager : MonoBehaviour
 {
@@ -82,7 +80,7 @@ public class UIPromptManager : MonoBehaviour
     public PlayerEventChannelSO m_DiceRollPrep;
     public PlayerEventChannelSO m_DiceRollUndo;
 
-    public PlayerEventChannelSO m_NextPlayerTurn;
+    //public PlayerEventChannelSO m_NextPlayerTurn;
 
     //public PlayerEventChannelSO m_EncounterDecisions;
     public NodeEventChannelSO m_LandOnStorefront;
@@ -102,7 +100,7 @@ public class UIPromptManager : MonoBehaviour
 
     public PlayerEventChannelSO m_OverturnOpportunity;
     //public IntItemEventChannelSO m_ItemUsed;
-    public VoidEventChannelSO m_FinishedUsedItem;
+    //public VoidEventChannelSO m_FinishedUsedItem;
 
     public VoidEventChannelSO m_EnableFreeview;
     public VoidEventChannelSO m_DisableFreeview;
@@ -147,7 +145,7 @@ public class UIPromptManager : MonoBehaviour
         m_TryDiceRollPrep.OnEventRaised += OnTryDiceRollPrep;
         m_DiceRollPrep.OnEventRaised += DisplayRollPrompt;
 
-        m_NextPlayerTurn.OnEventRaised += OnNextPlayerTurn;
+        //m_NextPlayerTurn.OnEventRaised += OnNextPlayerTurn;
         //m_NextPlayerTurn.OnEventRaised += NormalizeInventoryPrompt; //temp
         //m_EncounterDecisions.OnEventRaised += DisplayEncounterChoices;
         m_LandOnStorefront.OnEventRaised += DisplayStorefrontPrompt;
@@ -168,7 +166,7 @@ public class UIPromptManager : MonoBehaviour
 
         m_OverturnOpportunity.OnEventRaised += DisplayOverturnChoices;
 
-        m_FinishedUsedItem.OnEventRaised += StrikethroughInventoryPrompt;
+        //m_FinishedUsedItem.OnEventRaised += StrikethroughInventoryPrompt;
 
         m_EnableFreeview.OnEventRaised += DisplayFreeviewPrompt;
         //m_DisableFreeview.OnEventRaised += DisplayInitialMenu;
@@ -193,7 +191,7 @@ public class UIPromptManager : MonoBehaviour
         m_TryDiceRollPrep.OnEventRaised -= OnTryDiceRollPrep;
         m_DiceRollPrep.OnEventRaised -= DisplayRollPrompt;
 
-        m_NextPlayerTurn.OnEventRaised -= OnNextPlayerTurn;
+        //m_NextPlayerTurn.OnEventRaised -= OnNextPlayerTurn;
         //m_NextPlayerTurn.OnEventRaised -= NormalizeInventoryPrompt; //temp
         //m_EncounterDecisions.OnEventRaised -= DisplayEncounterChoices;
         m_LandOnStorefront.OnEventRaised -= DisplayStorefrontPrompt;
@@ -214,7 +212,7 @@ public class UIPromptManager : MonoBehaviour
 
         m_OverturnOpportunity.OnEventRaised -= DisplayOverturnChoices;
 
-        m_FinishedUsedItem.OnEventRaised -= StrikethroughInventoryPrompt;
+        //m_FinishedUsedItem.OnEventRaised -= StrikethroughInventoryPrompt;
 
         m_EnableFreeview.OnEventRaised -= HideInitialMenu;
         //m_DisableFreeview.OnEventRaised -= DisplayInitialMenu;
@@ -230,25 +228,6 @@ public class UIPromptManager : MonoBehaviour
         m_ReleasePlayerInfo.OnEventRaised -= OnReleasePlayerInfo;
 
         _gameStateEvent.OnEventRaised -= UpdateUIFromGameState;
-    }
-
-    private void OnNextPlayerTurn(EntityPiece ps)
-    {
-        currentPlayer = ps;
-
-        NormalizeInventoryPrompt(ps);
-        ContextualizeMovePrompt(ps);
-
-        
-        //if (NextPlayerGoIsRunning)
-        if(goTurnMotion.IsPlaying())
-        {
-            //NextPlayerGoIsRunning = false;
-            StopCoroutine(oldNextPlayerGo);
-            goTurnMotion.TryCancel();
-        }
-        
-        //oldNextPlayerGo = StartCoroutine(NotifyNextPlayerGo(ps));
     }
 
     private IEnumerator NotifyNextPlayerGo(EntityPiece ps)
@@ -384,11 +363,17 @@ public class UIPromptManager : MonoBehaviour
         if (gameState.DidChangePhases())
         {
             //var index = gameState.NewState.CurrPlayerId;
-            //var currPlayer = gameState.NewState.Players[index];
+            var assignedPlayer = gameState.NewState.Players[_playerState.Id];
+
+            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.StartTurn)
+            {
+                NormalizeInventoryPrompt(assignedPlayer.EntityData);
+                ContextualizeMovePrompt(assignedPlayer.EntityData);
+            }
 
             if (gameState.NewState.GamePhase is GameplayTest.GamePhase.InitialTurnMenu)
             {
-                DisplayInitialMenu(gameState.NewState.CurrentPlayer().EntityData);
+                DisplayInitialMenu(assignedPlayer.EntityData);
 
                 if(gameState.PrevState.GamePhase is GameplayTest.GamePhase.BuildingStore)
                 {
@@ -398,7 +383,7 @@ public class UIPromptManager : MonoBehaviour
             else if (gameState.NewState.GamePhase is GameplayTest.GamePhase.BuildingStore)
             {
                 //OnTryBuildStore(gameState.NewState.CurrentPlayer);
-                ShowTryBuildStorePrompt(gameState.NewState.CurrentPlayer().EntityData);
+                ShowTryBuildStorePrompt(assignedPlayer.EntityData);
             }
             else
             {
@@ -428,6 +413,15 @@ public class UIPromptManager : MonoBehaviour
                 if (gameState.PrevState.GamePhase is GameplayTest.GamePhase.BuildingStore)
                 {
                     ClearInputText();
+                }
+            }
+
+            if(gameState.NewState.GamePhase is GameplayTest.GamePhase.IncidentHappening)
+            {
+                // UseItem
+                if (gameState.UseItemCutsceneStarted())
+                {
+                    StrikethroughInventoryPrompt();
                 }
             }
         }
@@ -559,12 +553,10 @@ public class UIPromptManager : MonoBehaviour
         inputPrompt.text += "\n<sprite name=right><color=white></color> Leave Vendor";
     }
 
-    private void ContextualizeMovePrompt(EntityPiece ps)
+    private void ContextualizeMovePrompt(EntityData ed)
     {
-        if(ps == null) return;
-
-        if (ps.currentStates.Contains(EntityPiece.State.Fighting) 
-            || ps.currentStates.Contains(EntityPiece.State.FightingParty)) 
+        if (ed.Statuses.Contains(Status.Fighting) 
+            || ed.Statuses.Contains(Status.FightingParty)) 
         {
             movePromptText.text = "Fight";
         }
@@ -572,13 +564,13 @@ public class UIPromptManager : MonoBehaviour
 
     }
 
-    private void NormalizeInventoryPrompt(EntityPiece ps)
+    private void NormalizeInventoryPrompt(EntityData ed)
     {
         //inventoryPromptText.text = "Item";
         inventoryPromptText.color = normalPromptColor;
 
         inventoryLimitText.color = Color.white;
-        inventoryLimitText.text = $"{ps.inventory.Count}/{ps.inventoryLimit}";
+        inventoryLimitText.text = $"{ed.Inventory.Count}/{ed.InventoryLimit}";
     }
 
     private void StrikethroughInventoryPrompt()

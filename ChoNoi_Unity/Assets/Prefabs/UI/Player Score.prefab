@@ -1529,6 +1529,7 @@ GameObject:
   - component: {fileID: 1886399579848694523}
   - component: {fileID: 1886399579848694522}
   - component: {fileID: 1886399579848694520}
+  - component: {fileID: 8912380973141643264}
   - component: {fileID: 8111763932946128122}
   m_Layer: 8
   m_Name: Player Score
@@ -1618,6 +1619,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Padding: {x: 0, y: 0, z: 0, w: -123.15}
   m_Softness: {x: 0, y: 99}
+--- !u!225 &8912380973141643264
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1886399579848694524}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!114 &8111763932946128122
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1630,6 +1643,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74bf3ed0c49e91f4ba75ec273e4511e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  scoreGroup: {fileID: 8912380973141643264}
   playerMoneyNumber: 0
   playerHPNumber: 0
   playerExpNumber: 0
@@ -1667,6 +1681,7 @@ MonoBehaviour:
   playerLevel: {fileID: 5738573600449210854}
   playerExp: {fileID: 4989280683380957270}
   playerNextExp: {fileID: 3450724892843590366}
+  playerSprite: {fileID: 7054279935125556173}
   playerPaletteLoader: {fileID: 3546217180942887786}
   greenStamp: {fileID: 2979305539729446592}
   redStamp: {fileID: 8831980527747960838}

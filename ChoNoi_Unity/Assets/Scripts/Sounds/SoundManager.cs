@@ -47,8 +47,8 @@ public class SoundManager : MonoBehaviour
 
     [Space]
     public Vector2EventChannelSO m_TryExamineTile;
-    public IntEventChannelSO m_PlayerScoreIncreased;
-    public IntEventChannelSO m_PlayerScoreDecreased;
+    //public IntEventChannelSO m_PlayerScoreIncreased;
+    //public IntEventChannelSO m_PlayerScoreDecreased;
     public IntEventChannelSO m_ItemUsed;
     public IntEventChannelSO m_ItemBought;
 
@@ -120,8 +120,8 @@ public class SoundManager : MonoBehaviour
         m_PlayerUndidSomething.OnEventRaised += PlayUndoSound;
         m_RollForMovement.OnEventRaised += PlayDiceHitSound;
         m_ItemUsed.OnEventRaised += PlayUseItemSound;
-        m_PlayerScoreDecreased.OnEventRaised += PlayCurrencyDecreasedSound;
-        m_PlayerScoreIncreased.OnEventRaised += PlayCurrencyIncreasedSound;
+        //m_PlayerScoreDecreased.OnEventRaised += PlayCurrencyDecreasedSound;
+        //m_PlayerScoreIncreased.OnEventRaised += PlayCurrencyIncreasedSound;
         m_ItemBought.OnEventRaised += PlayItemBoughtSound;
         m_NextPlayerTurn.OnEventRaised += PlayNextPlayerTurnSound;
         //m_ShowCombatBanner.OnEventRaised += PlayEnterBattleSound;
@@ -182,8 +182,8 @@ public class SoundManager : MonoBehaviour
         m_PlayerUndidSomething.OnEventRaised -= PlayUndoSound;
         m_RollForMovement.OnEventRaised -= PlayDiceHitSound;
         m_ItemUsed.OnEventRaised -= PlayUseItemSound;
-        m_PlayerScoreDecreased.OnEventRaised -= PlayCurrencyDecreasedSound;
-        m_PlayerScoreIncreased.OnEventRaised -= PlayCurrencyIncreasedSound;
+        //m_PlayerScoreDecreased.OnEventRaised -= PlayCurrencyDecreasedSound;
+        //m_PlayerScoreIncreased.OnEventRaised -= PlayCurrencyIncreasedSound;
         m_NextPlayerTurn.OnEventRaised -= PlayNextPlayerTurnSound;
         //m_ShowCombatBanner.OnEventRaised -= PlayEnterBattleSound;
         m_EnableFreeview.OnEventRaised -= PlayMoveSound;
@@ -286,12 +286,12 @@ public class SoundManager : MonoBehaviour
         AudioHelper.PlayOneShotWithParameters("event:/HitDice", this.transform.position, ("SoundVolume", SFXVolume), ("RolledNumber", Mathf.Min(diceValue,15)));
     }
 
-    private void PlayCurrencyDecreasedSound(int scoreDifference)
+    private void PlayMoneyLossSound()
     {
         AudioHelper.PlayOneShotWithParameters("event:/LoseMoney", this.transform.position, ("SoundVolume", SFXVolume));
     }
 
-    private void PlayCurrencyIncreasedSound(int scoreDifference)
+    private void PlayMoneyGainSound()
     {
         AudioHelper.PlayOneShotWithParameters("event:/GainMoney", this.transform.position, ("SoundVolume", SFXVolume));
     }
@@ -503,6 +503,20 @@ public class SoundManager : MonoBehaviour
 
     private void HandleGameState(FrameGameState state)
     {
+        for (int i = 0; i < state.NewState.Players.Length; i++)
+        {
+            if (state.PrevState.Players[i].EntityData.Money > state.NewState.Players[i].EntityData.Money)
+            {
+                // Lost moneys
+                PlayMoneyLossSound();
+            }
+            else if(state.PrevState.Players[i].EntityData.Money < state.NewState.Players[i].EntityData.Money)
+            {
+                // Gained moneys
+                PlayMoneyGainSound();
+            }
+        }
+
         if (!state.DidChangePhases())
         {
             return;

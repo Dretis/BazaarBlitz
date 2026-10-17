@@ -5,8 +5,8 @@ using System.Linq;
 using Core;
 using Core.Events;
 using DG.Tweening;
+using FishNet.Demo.AdditiveScenes;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -29,7 +29,8 @@ public class GameplayTest : MonoBehaviour
     [SerializeField] private List<PlayerColorPalettePreset> debugPresetPalettes;
     [SerializeField] private TextMeshProUGUI debugPhaseText;
     [SerializeField] private bool turnOffMonsterEncounters = false;
-    [SerializeField] private ItemStats debugItem;
+    [SerializeField] private ItemStats debugItem1;
+    [SerializeField] private ItemStats debugItem2;
 
     public static GameplayTest instance;
     // Tile Data and Shit IGNORE THIS SECTION FOR NOW
@@ -41,13 +42,13 @@ public class GameplayTest : MonoBehaviour
 
     [Header("Current Turn Info")]
     public EntityPiece currentPlayer;
-    public MapNode currentPlayerInitialNode;
+    //public MapNode currentPlayerInitialNode;
     //[SerializeField] private List<EntityPiece> playersOnCurrentNode = new List<EntityPiece>();
     private MapNode currentRestockNode;
     [Space]
     private int selectedItemIndex = -1; // -1 = currently not remembering an item in use | CHANGE THIS PART LATER
     public bool playerUsedItem = false; // please change these down the line
-    public bool usingSpeedDieToMove = false;
+    //public bool usingSpeedDieToMove = false;
     
     //public Dictionary<Vector2Int, GameObject> map = new Dictionary<Vector2Int, GameObject>();
     //public Dictionary<Vector2Int, GameObject> unitPos = new Dictionary<Vector2Int, GameObject>();
@@ -83,7 +84,6 @@ public class GameplayTest : MonoBehaviour
         InStore, // new for input system
         PreStockStore,
         StockStore,
-        OverturnStore,
 
         InVendor,
         RockPaperScissors,
@@ -122,14 +122,14 @@ public class GameplayTest : MonoBehaviour
     private List<SpecialIncidents> incidentsToActivate = new List<SpecialIncidents>(); // list of periodic incidents for this specific board
     public bool incidentIsPlaying = false;
 
-    public int diceRoll;
+    //public int diceRoll;
     [Header("UI Additional Variables")]
     public List<ItemStats> recentStockedItems;
     public int emptyStockCount = 3;
 
     //[SerializeField] private TypewriterCore rollTypewriter;
     public TextMeshProUGUI topLeftText;
-    public TextMeshProUGUI turnText;
+    //public TextMeshProUGUI turnText;
 
     public MapNode wantedNode;
     private SceneGameManager sceneManager;
@@ -226,7 +226,7 @@ public class GameplayTest : MonoBehaviour
 
     [Header("Listen on Event Channels")]
     public PlayerEventChannelSO m_TryDiceRollPrep;
-    public VoidEventChannelSO m_DiceRolled;
+    //public VoidEventChannelSO m_DiceRolled;
     public IntEventChannelSO m_ChangeToMoveDie;
 
     [Header("LS - Item Usage Events")]
@@ -414,7 +414,7 @@ public class GameplayTest : MonoBehaviour
 
         //_currentGameState.Players = new List<PlayerState>(currentRuleset.numberOfPlayers);
         _currentGameState.Players = new PlayerState[currentRuleset.numberOfPlayers];
-        _currentGameState.NextPlayers = new List<PlayerState>();
+        //_currentGameState.NextPlayers = new List<PlayerState>();
 
         for (int i = 0; i < currentRuleset.numberOfPlayers; i++)
         {
@@ -422,6 +422,7 @@ public class GameplayTest : MonoBehaviour
             {
                 _currentGameState.Players[i] = new PlayerState(i, debugPresetPalettes[i]);
                 _currentGameState.Players[i].EntityData.OccupiedNode = _respawnNode;
+                _currentGameState.Players[i].EntityData.InitialNode = _currentGameState.Players[i].EntityData.OccupiedNode;
                 _currentGameState.Players[i].EntityData.TraveledNodes.Add(_currentGameState.Players[i].EntityData.OccupiedNode);
             }
             else
@@ -432,10 +433,12 @@ public class GameplayTest : MonoBehaviour
 
                 _currentGameState.Players[i] = new PlayerState(i, pcm);
                 _currentGameState.Players[i].EntityData.OccupiedNode = _respawnNode;
+                _currentGameState.Players[i].EntityData.InitialNode = _currentGameState.Players[i].EntityData.OccupiedNode;
                 _currentGameState.Players[i].EntityData.TraveledNodes.Add(_currentGameState.Players[i].EntityData.OccupiedNode);
             }
 
-            _currentGameState.NextPlayers.Add(_currentGameState.Players[i]);
+            playerUnits[i].Initialize(_currentGameState.Players[i], this); // EntityPiece
+            //_currentGameState.NextPlayers.Add(_currentGameState.Players[i]);
 
             Debug.Log($"ps.EntityData.OccupiedNode = {_currentGameState.Players[i].EntityData.OccupiedNode}");
             var initialNode = _currentGameState.Players[i].EntityData.OccupiedNode;
@@ -508,6 +511,7 @@ public class GameplayTest : MonoBehaviour
         currentPlayer = playerUnits[0]; // temp, remove
         //currentPlayerInitialNode = currentPlayer.occupiedNode; // remove
         _currentGameState.CurrentPlayerObj = playerUnits[0];
+        _currentGameState.CurrentPlayerObj.transform.position -= new Vector3(0, 0, .05f);
 
         _currentGameState.CurrPlayerId = _currentGameState.Players[0].Id;
         _currentGameState.CurrentPlayer().EntityData.InitialNode = _currentGameState.CurrentPlayer().EntityData.OccupiedNode;
@@ -516,7 +520,7 @@ public class GameplayTest : MonoBehaviour
 
         _uiScoreManager.Initialize(ref _currentGameState.Players, this);
 
-        _currentGameState.GamePhase = GamePhase.StartTurn; // finished game prep, lets go
+        _currentGameState.GamePhase = GamePhase.GameStart; // finished game prep, lets go
     }
 
     private void Start()
@@ -524,36 +528,42 @@ public class GameplayTest : MonoBehaviour
         m_GameStart.RaiseEvent();
 
         m_NextPlayerTurn.RaiseEvent(currentPlayer);
-        currentPlayerInitialNode = currentPlayer.occupiedNode;
+        //currentPlayerInitialNode = currentPlayer.occupiedNode;
 
-        foreach(EntityPiece player in playerUnits)
-        {
-            if (player.occupiedNode != null)
-            {
-                player.transform.position = player.occupiedNode.transform.position;
-                player.occupiedNodeCopy = player.occupiedNode;
-                player.traveledNodes.Add(player.occupiedNode);
-            }
-
-            if (currentPlayer)
-            {
-                currentPlayer.transform.position -= new Vector3(0, 0, .05f);
-            }
-        }
         //m_NextTurnRound.RaiseEvent(turnRound);
     }
 
     // Update is called once per frame
     void Update()
     {
-#if UNITY_EDITOR
+        TickGame();
+    }
+    private void TestFunctions(GameState prevState, ref GameState newState)
+    {
+    #if UNITY_EDITOR
         debugPhaseText.text = $"{phase}";
         debugPhaseText.text += $"\n{_currentGameState.GamePhase}";
 
+        if (Input.GetKeyDown(KeyCode.LeftBracket))
+        {
+            Debug.Log($"DEBUG | Gave {_currentGameState.CurrentPlayer().EntityData.EntityName} a {debugItem1.itemName}!");
+            newState.CurrentPlayer().EntityData.Inventory.Add(debugItem1);
+        }
+        if (Input.GetKeyDown(KeyCode.RightBracket))
+        {
+            Debug.Log($"DEBUG | Gave {_currentGameState.CurrentPlayer().EntityData.EntityName} a {debugItem2.itemName}!");
+            newState.CurrentPlayer().EntityData.Inventory.Add(debugItem2);
+        }
         if (Input.GetKeyDown(KeyCode.Minus))
         {
-            Debug.Log($"DEBUG | Gave {_currentGameState.CurrentPlayer().EntityData.EntityName} a {debugItem.itemName}!");
-            _currentGameState.CurrentPlayer().EntityData.Inventory.Add(debugItem);
+            Debug.Log($"DEBUG | {newState.CurrentPlayer().EntityData.EntityName} has lost -99 Ding!");
+            newState.CurrentPlayer().EntityData.Money -= 99;
+        }
+        if (Input.GetKeyDown(KeyCode.Equals))
+        {
+            Debug.Log($"DEBUG | {newState.CurrentPlayer().EntityData.EntityName} was given +100 Ding!");
+            newState.CurrentPlayer().EntityData.Money += 100;
+            //newState.Players[newState.CurrPlayerId].EntityData.Money += 100;
         }
         if (Input.GetKeyDown(KeyCode.BackQuote))
         {
@@ -566,46 +576,45 @@ public class GameplayTest : MonoBehaviour
         {
             //currentPlayer.movementLeft = 1;
             //rollTypewriter.ShowText(""+currentPlayer.movementLeft);
-            _currentGameState.MovementLeft = 1;
+            newState.MovementLeft = 1;
             //rollTypewriter.ShowText($"{_currentGameState.MovementLeft}");
         }
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            _currentGameState.MovementLeft = 2;
+            newState.MovementLeft = 2;
             //rollTypewriter.ShowText($"{_currentGameState.MovementLeft}");
         }
         if (Input.GetKeyDown(KeyCode.Alpha3))
         {
-            _currentGameState.MovementLeft = 3;
+            newState.MovementLeft = 3;
             //rollTypewriter.ShowText($"{_currentGameState.MovementLeft}");
         }
         if (Input.GetKeyDown(KeyCode.Alpha4))
         {
-            _currentGameState.MovementLeft = 4;
+            newState.MovementLeft = 4;
             //rollTypewriter.ShowText($"{_currentGameState.MovementLeft}");
         }
         if (Input.GetKeyDown(KeyCode.Alpha5))
         {
-            _currentGameState.MovementLeft = 5;
+            newState.MovementLeft = 5;
             //rollTypewriter.ShowText($"{_currentGameState.MovementLeft}");
         }
         if (Input.GetKeyDown(KeyCode.Alpha6))
         {
-            _currentGameState.MovementLeft = 6;
+            newState.MovementLeft = 6;
             //rollTypewriter.ShowText($"{_currentGameState.MovementLeft}");
         }
         if (Input.GetKeyDown(KeyCode.Alpha9))
         {
-            _currentGameState.MovementLeft = 9;
+            newState.MovementLeft = 9;
             //rollTypewriter.ShowText($"{_currentGameState.MovementLeft}");
         }
         if (Input.GetKeyDown(KeyCode.Alpha0))
         {
-            _currentGameState.MovementLeft = 100;
+            newState.MovementLeft = 100;
             //rollTypewriter.ShowText($"{_currentGameState.MovementLeft}");
         }
-#endif
-        TickGame();
+    #endif
     }
 
     #region Sample Partial Rewrite
@@ -649,7 +658,8 @@ public class GameplayTest : MonoBehaviour
 
     private void TickGame()
     {
-        if (_currentCutscene != null && !_currentCutscene.IsFinished())
+        if (_currentCutscene != null && 
+            _currentCutscene.IsPlaying())
         {
             // skip doing core logic, state doesn't change
             // maybe have a cutscene phase, but then you'll need to keep the desired phase like you do already I think so you know what to return to
@@ -658,6 +668,7 @@ public class GameplayTest : MonoBehaviour
         }
         else
         {
+            //Debug.Log("TickGame | Cutscene is over.");
             _currentCutscene = null;
         }
 
@@ -667,11 +678,13 @@ public class GameplayTest : MonoBehaviour
         
         // Have the new state just copy the previous state, but it gets modified by the 
         GameState newState = _currentGameState;
-        GameState prevState = _currentGameState;
+        GameState prevState = newState.Copy();
         
         // Process one command per frame to keep things simple
         bool isCmdToProcess = _commandQueue.TryDequeue(out ICommand cmd);
-
+#if UNITY_EDITOR
+        TestFunctions(prevState, ref newState);
+#endif
         // CORE GAME LOGIC
         CoreGameLogic(prevState, ref newState, isCmdToProcess, cmd);
 
@@ -696,7 +709,8 @@ public class GameplayTest : MonoBehaviour
         // BECAUSE THE ORDER IS NON DETERMINISTIC IF YOU SUBSCRIBE IN AWAKE
         // SO RACE CONDITIONS ARE BADDDDDDDDDDDDDDDDDDDDDDD
         _gameStateUpdatedEventChannel?.RaiseEvent(frameGameState);
-        
+
+        //Debug.Log($"FrameState | Prev Phase: {frameGameState.PrevState.GamePhase} | New Phase: {frameGameState.NewState.GamePhase}");
         _currentGameState = newState;
 
         // SYNC OUT (connect rewritten system to the existing system so the rewrite demo works)
@@ -715,6 +729,11 @@ public class GameplayTest : MonoBehaviour
     {
         switch (newState.GamePhase)
         {
+            case GamePhase.GameStart:
+                // Should only be called once
+                Debug.Log("CoreGameLogic | Game Start!!");
+                newState.GamePhase = GamePhase.StartTurn;
+                break;
             case GamePhase.StartTurn:
                 // Just indicates the start of a player's turn
                 Debug.Log("CoreGameLogic | StartTurn");
@@ -932,12 +951,6 @@ public class GameplayTest : MonoBehaviour
                 StockStore(currentPlayer, currentPlayer.occupiedNode);
                 break;
 
-            case GamePhase.OverturnStore:
-                // Useless, delete
-                // probably also doesn't work
-                OverturnStore(currentPlayer, currentPlayer.occupiedNode);
-                break;
-
             case GamePhase.RockPaperScissors:
                 RockPaperScissors(currentPlayer); // useless
                 break;
@@ -952,7 +965,8 @@ public class GameplayTest : MonoBehaviour
                 {
                     //HandleLevelUpExit
                 }
-                LevelUp(currentPlayer);
+
+                HandleLevelUp(prevState, ref newState);
                 break;
 
             // Confirmation Phase
@@ -984,10 +998,14 @@ public class GameplayTest : MonoBehaviour
                 // Just indicates the start of a player's turn
                 newState.GamePhase = HandleNextTurnRound(prevState, ref newState);
                 break;
+            case GamePhase.IncidentHappening:
+                // Just indicates the start of a player's turn
+                HandlePostCutscene(prevState, ref newState);
+                break;
             // Game over! Someone has won!
             case GamePhase.EndGame:
                 // probably also doesn't work
-                EndGame();
+                EndGame(prevState, ref newState);
                 break;
         }
     }
@@ -1022,11 +1040,13 @@ public class GameplayTest : MonoBehaviour
         {
             // no events just update the state
             // We can roll dice yay
+            newState.LastGamePhase = GamePhase.InitialTurnMenu;
             newState.GamePhase = GamePhase.RollDice;
         }
         else
         {
             // In Combat
+            newState.LastGamePhase = prevState.GamePhase;
             newState.GamePhase = GamePhase.EncounterTime;
         }
     }
@@ -1126,8 +1146,6 @@ public class GameplayTest : MonoBehaviour
 
     private void HandleRollMoveDie(GameState prevState, ref GameState newState)
     {
-        var p = newState.CurrentPlayer();
-
         newState.MoveDieRoll = newState.MovementLeft = CalculateMoveDieRoll(prevState, ref newState);
         newState.GamePhase = GamePhase.PickDirection;
     }
@@ -1136,10 +1154,7 @@ public class GameplayTest : MonoBehaviour
     {
         var p = newState.CurrentPlayer();
 
-        if (newState.LastGamePhase is GamePhase.InitialTurnMenu)
-        {
-            newState.GamePhase = GamePhase.InitialTurnMenu;
-        }
+        newState.GamePhase = newState.LastGamePhase;
     }
 
     private void HandleChangeMoveDie(GameState prevState, ref GameState newState)
@@ -1171,7 +1186,7 @@ public class GameplayTest : MonoBehaviour
     private void HandleInventoryUseItem(GameState prevState, ref GameState newState, int index, ItemStats item)
     {
         Debug.Log($"HandleInventoryUseItem | Use {item} at index {index}");
-        var p = newState.CurrentPlayer().EntityData;
+        ref var p = ref newState.CurrentPlayer().EntityData;
         //newState.CurrentPlayer.inventory.RemoveAt(index);
         //newState.CurrentPlayer.AddItemToActiveEffects();
         if ( item.type == ItemStats.ItemType.TargetSelect || 
@@ -1187,7 +1202,7 @@ public class GameplayTest : MonoBehaviour
                 TurnsRemaining = p.Inventory[index].Duration - 1
             });
             */
-            ApplyItemEffectsOnTurnStart(p);
+            ApplyItemEffectsOnTurnStart(ref p);
 
             //m_ExitInventory.RaiseEvent();
             // Raise free view event I guess?
@@ -1195,20 +1210,31 @@ public class GameplayTest : MonoBehaviour
             // FOR NAM: USE THIS EVENT TO SHOW SELECT TILE/PLAYER UI.
             m_EnterRaycastTargetSelection.RaiseEvent();
 
-            phase = GamePhase.RaycastTargetSelection;
+            //phase = GamePhase.RaycastTargetSelection;
             //newState.GamePhase = GamePhase.RaycastTargetSelection;
 
-            newState.LastGamePhase = GamePhase.InitialTurnMenu;
+            newState.UsedItem = item;
+            newState.LastGamePhase = GamePhase.Inventory;
             newState.GamePhase = GamePhase.RaycastTargetSelection;
         }
         else
         {
+            //newState.CurrentPlayer().EntityData.AddItemToActiveEffects(p.Inventory[index].Duration, p.Inventory[index]);
+            //newState.CurrentPlayer().EntityData.RefreshStatModifiers();
+            //ApplyItemEffectsOnTurnStart(ref newState.CurrentPlayer().EntityData);
+
             p.AddItemToActiveEffects(p.Inventory[index].Duration, p.Inventory[index]);
             p.RefreshStatModifiers();
-            ApplyItemEffectsOnTurnStart(p);
+            //p.ApplyItemEffectsOnTurnStart();
+            ApplyItemEffectsOnTurnStart(ref p);
+            //ApplyItemEffectsOnTurnStart(ref p);
+            p.Inventory.RemoveAt(index);
 
+            // Signals TimelineSignalResponder to play the Use Item cutscene i hope
+            newState.UsedItem = item;
             newState.LastGamePhase = GamePhase.InitialTurnMenu;
             newState.GamePhase = GamePhase.IncidentHappening; // play the cutscene
+            //QueueCutscene(new UseItemCutscene());
         }
        // newState.GamePhase = GamePhase.IncidentHappening; // play the cutscene
     }
@@ -1223,18 +1249,18 @@ public class GameplayTest : MonoBehaviour
 
     private GamePhase HandleItemSelection(GameState prevState, ref GameState newState)
     {
-        var p = newState.CurrentPlayer().EntityData;
+        ref var p = ref newState.CurrentPlayer().EntityData;
         //p.UpdateStatModifiers();
         p.RefreshStatModifiers();
-        ApplyItemEffectsOnTurnStart(p);
+        ApplyItemEffectsOnTurnStart(ref p);
 
         return GamePhase.InitialTurnMenu;
     }
 
     int CalculateMoveDieRoll(GameState prevState, ref GameState newState)
     {
-        diceRoll = Random.Range(0, 6); // Roll from 0 to 5
-        Debug.Log($"Movement | Rolled [{diceRoll}]");
+        var faceRoll = Random.Range(0, 6); // Roll from 0 to 5
+        Debug.Log($"Movement | Rolled [{faceRoll}]");
         var ed = newState.CurrentPlayer().EntityData;
         if (newState.UsingSpeedDieToMove)
         {
@@ -1243,7 +1269,7 @@ public class GameplayTest : MonoBehaviour
 
             DieConfig die = ed.EntityStats.dieConfigs[(int)(Action.WeaponTypes.Speed)];
 
-            int speedRollValue = die[diceRoll];
+            int speedRollValue = die[faceRoll];
             int additionalRollValue;
 
             var rollsRemaining = currentPlayer.currentStatsModifier.rollModifier;
@@ -1258,7 +1284,7 @@ public class GameplayTest : MonoBehaviour
             speedRollValue *= currentPlayer.currentStatsModifier.movementMultModifier;
             speedRollValue += currentPlayer.currentStatsModifier.movementFlatModifier;
 
-            diceRoll = speedRollValue;
+            faceRoll = speedRollValue;
 
             //currentPlayer.movementTotal = currentPlayer.movementLeft = speedRollValue;
 
@@ -1273,33 +1299,34 @@ public class GameplayTest : MonoBehaviour
         }
         else
         {
-            diceRoll += 1; // Roll from 1 to 6
+            faceRoll += 1; // Roll from 1 to 6
 
             var rollsRemaining = ed.CurrentStatsModifier.rollModifier;
             while (rollsRemaining > 0)
             {
                 Debug.Log($"Rolls Left{rollsRemaining}");
-                diceRoll += 1 + Random.Range(0, 6); // roll again until there's no more
+                faceRoll += 1 + Random.Range(0, 6); // roll again until there's no more
                 rollsRemaining--;
             }
 
             // Apply movement item effects.
-            diceRoll *= ed.CurrentStatsModifier.movementMultModifier;
-            diceRoll += ed.CurrentStatsModifier.movementFlatModifier;
+            faceRoll *= ed.CurrentStatsModifier.movementMultModifier;
+            faceRoll += ed.CurrentStatsModifier.movementFlatModifier;
 
-            //currentPlayer.movementTotal = currentPlayer.movementLeft = diceRoll;
-            //m_RollForMovement.RaiseEvent(diceRoll);
+            //currentPlayer.movementTotal = currentPlayer.movementLeft = faceRoll;
+            //m_RollForMovement.RaiseEvent(faceRoll);
             //m_PlayerMovedOnBoard.RaiseEvent(); // idk why this has to be a seperate event
         }
 
-        return diceRoll;
+        return faceRoll;
     }
 
     #region Node-based Functions
     GamePhase HandleMoveAround(GameState prevState, ref GameState newState)
     {
         //var p = currentPlayer;
-        var p = newState.Players[newState.CurrPlayerId].EntityData;
+        ref var p = ref newState.Players[newState.CurrPlayerId].EntityData;
+        //ref var p = ref newState.CurrentPlayerData();
 
         var lastEle = p.TraveledNodes.Count;
         var lastNode = p.TraveledNodes[^1];
@@ -1354,8 +1381,8 @@ public class GameplayTest : MonoBehaviour
             //rollTypewriter.ShowText(roll);
 
             // Move to EntityPieceVisual
-            newState.CurrentPlayerObj.transform.DOMove(lastNode.transform.position, .25f)
-                .SetEase(Ease.OutQuint);
+            //newState.CurrentPlayerObj.transform.DOMove(lastNode.transform.position, .25f)
+            //    .SetEase(Ease.OutQuint);
 
             wantedNode = null;
             //m_PlayerUndidSomething.RaiseEvent(); // change this in soundmanager
@@ -1401,8 +1428,8 @@ public class GameplayTest : MonoBehaviour
             //    rollTypewriter.ShowText(roll);
 
             // Move to EntityVisual
-            newState.CurrentPlayerObj.transform.DOMove(wantedNode.transform.position, .25f)
-                .SetEase(Ease.OutQuint);
+            //newState.CurrentPlayerObj.transform.DOMove(wantedNode.transform.position, .25f)
+            //    .SetEase(Ease.OutQuint);
 
 
             wantedNode = null;
@@ -1431,7 +1458,7 @@ public class GameplayTest : MonoBehaviour
 
     GamePhase HandlePassBy(GameState prevState, ref GameState newState)
     {
-        var p = newState.Players[newState.CurrPlayerId].EntityData;
+        ref var p = ref newState.CurrentPlayer().EntityData;
         var m = newState.Players[newState.CurrPlayerId].EntityData.OccupiedNode;
         
         //playersOnCurrentNode = m.playersOccupied;
@@ -1491,7 +1518,8 @@ public class GameplayTest : MonoBehaviour
             // Deactivate all active effects of items that end on store.
             p.RemoveItemEffectOnUse(ItemLists.StopOnStoreOnPassBy);
         }
-        else if (m.CompareTag("Store") && (m.modifier == MapNode.Modifier.Marigold && m.modifierOwner != p)) 
+        //else if (m.CompareTag("Store") && (m.modifier == MapNode.Modifier.Marigold && m.modifierOwner is p)) 
+        else if (m.CompareTag("Store") && (m.modifier == MapNode.Modifier.Marigold && m.modifierOwnerId == newState.CurrPlayerId)) 
         {
             m.flowerTrapVisual.color = Color.white; // put this in 
             m.flowerTrapVisual.enabled = false;
@@ -1561,7 +1589,7 @@ public class GameplayTest : MonoBehaviour
                     // If there are no items left, give the player the option to overturn.
                     if (store.storeInventory.Find(x => x != null) == null)
                     {
-                        //m_OverturnOpportunity.RaiseEvent(store.playerOwner);
+
                         //phase = GamePhase.OverturnStore;
                         return GamePhase.EndTurn;
                     }
@@ -1760,51 +1788,6 @@ public class GameplayTest : MonoBehaviour
     #endregion
 
     #region Deprecated?
-    void OverturnStore(EntityPiece p, MapNode m)
-    {
-        phase = GamePhase.EndTurn; //TEMPORARY UNTIL I FIX THIS
-
-        /*
-        // No money to overturn or at store cap.
-        if (p.heldPoints < 600 || p.storeCount >= 4)
-        {
-            phase = GamePhase.EndTurn;
-        }
-        else
-        {
-            // Overturn.
-            if (Input.GetKeyDown(KeyCode.RightShift) || Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.Mouse1))
-            {
-                GameObject tile = m.gameObject;
-                tile.GetComponent<SpriteRenderer>().color = currentPlayer.playerColor;
-                StoreManager store = tile.GetComponent<StoreManager>();
-               
-                // Ownership changes.
-                store.playerOwner.storeCount--;
-                store.playerOwner.heldPoints += 600;
-                store.playerOwner = currentPlayer;
-                p.storeCount++;
-
-                p.heldPoints -= 600;
-
-                m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
-                //TEMPORARY, later replace with overturn store event and sound
-                m_PlayerScoreDecreased.RaiseEvent(-600);
-
-
-                isStockingStore = true;
-
-                m_RestockStore.RaiseEvent(m);
-                storestockTooltip.enabled = true; // PROBABLY PUT THIS IN UI AS WELL
-                phase = GamePhase.StockStore;
-            }
-            else if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Mouse0)) // Don't overturn.
-            {
-                phase = GamePhase.EndTurn;
-            }
-        }
-        */
-    }
 
     void RockPaperScissors(EntityPiece p)
     {
@@ -1835,97 +1818,34 @@ public class GameplayTest : MonoBehaviour
     }
     */
 
-    private void LevelUp(EntityPiece p)
+    private void HandleLevelUp(GameState prevState, ref GameState newState)
     {
         // current attribute selected is marked by the int attSelected. 1 is attack, 2 is gun, 3 is magic.
         // diceSelected represents the current dice face. All of these have -1 applied in arrays.
-        /*
-        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
-        {
-            if (attSelected > 1) {
-                attSelected -= 1;
-            }
-            printIndex(attSelected, diceSelected, p);
-        }
-        if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
-        {
-            if (attSelected < 3) {
-                attSelected += 1;
-            }
-            printIndex(attSelected, diceSelected, p);
-        }
-        if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
-        {
+        var p = newState.CurrentPlayer().EntityData;
 
-            if (diceSelected < 6) {
-                diceSelected += 1;
-            }
-            printIndex(attSelected, diceSelected, p);
-        }
-        if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
-        {
+        p.UnspentSP += 6;
+        p.MaxHealth += 5;
+        p.BaseMaxHealth += 5;
+        p.Health += 5;
+        p.Level += 1;
+        p.ExpThreshold = p.LevelUpFormula();
 
-            if (diceSelected > 1) {
-                diceSelected -= 1;
-            }
-            printIndex(attSelected, diceSelected, p);
-        }
-
-
-        if (pointsLeft <= 0 || Input.GetKeyDown(KeyCode.Escape)) // Esc to leave
+        // poopy
+        switch (p.Level)
         {
-            Debug.Log("Out of points, level up done");
-            levelUpScreen.enabled = false;
-            p.unspentLevelUpPoints = pointsLeft;
-            phase = GamePhase.RollDice;
+            case 3:
+                newState.LastGamePhase = GamePhase.BlessingTree;
+                break;
+            case 6:
+                newState.LastGamePhase = GamePhase.BlessingTree;
+                break;
+            default:
+                //newState.LastGamePhase = GamePhase.StatAllocation;
+                break;
         }
-        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space)) // E to leave till I find a good exit method that doesn't get you stuck.
-        {
-            int[] costArray = { -1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 5, 999 }; // 0-1 (0 indexing issues), 1-2, 2-3, etc. 10-11 isnt possible.
-            if (attSelected == 1) {
-                int diceUpgradeCost = costArray[ (int)(p.strDie.dieFaces[diceSelected-1]) ];
-                if (pointsLeft >= diceUpgradeCost) {
-                    p.strDie.dieFaces[diceSelected-1] += 1;
-                    pointsLeft -= diceUpgradeCost;
-                    Debug.Log ("Strength Die upgraded on face " + diceSelected + " making it " + p.strDie.dieFaces[diceSelected-1]);
-                    Debug.Log (pointsLeft + " points left after paying " + diceUpgradeCost);
-                    remainingSP.text = $"{pointsLeft} SP left.";
-                    UpdatePlayerDiceStats(p, diceStats);
-                } else {
-                    upgradeTooltip.text = "Not enough points. Costs " + diceUpgradeCost + " SP but you have only " + pointsLeft;
-                    Debug.Log("Not enough points. Costs " + diceUpgradeCost + ", but you have only " + pointsLeft);
-                }
-            } else if (attSelected == 2) {
-                int diceUpgradeCost = costArray[ (int)(p.dexDie.dieFaces[diceSelected-1]) ];
-                if (pointsLeft >= diceUpgradeCost) {
-                    p.dexDie.dieFaces[diceSelected-1] += 1;
-                    pointsLeft -= diceUpgradeCost;
-                    Debug.Log ("Dex Die upgraded on face " + diceSelected + " making it " + p.dexDie.dieFaces[diceSelected-1]);
-                    Debug.Log (pointsLeft + " points left after paying " + diceUpgradeCost);
-                    remainingSP.text = $"{pointsLeft} SP left.";
-                    UpdatePlayerDiceStats(p, diceStats);
-                } else {
-                    upgradeTooltip.text = "Not enough points. Costs " + diceUpgradeCost + " SP but you have only " + pointsLeft;
-                    Debug.Log("Not enough points. Costs " + diceUpgradeCost + ", but you have only " + pointsLeft);
-                }
-            } else if (attSelected == 3) {
-                int diceUpgradeCost = costArray[ (int)(p.intDie.dieFaces[diceSelected-1]) ];
-                if (pointsLeft >= diceUpgradeCost) {
-                    p.intDie.dieFaces[diceSelected-1] += 1;
-                    pointsLeft -= diceUpgradeCost;
-                    Debug.Log ("Magic Die upgraded on face " + diceSelected + " making it " + p.intDie.dieFaces[diceSelected-1]);
-                    Debug.Log (pointsLeft + " points left after paying " + diceUpgradeCost);
-                    remainingSP.text = $"{pointsLeft} SP left.";
-                    UpdatePlayerDiceStats(p, diceStats);
-                } else {
-                    upgradeTooltip.text = "Not enough points. Costs " + diceUpgradeCost + " SP but you have only " + pointsLeft;
-                    Debug.Log("Not enough points. Costs " + diceUpgradeCost + ", but you have only " + pointsLeft);
-                }
-            } else {
-                Debug.Log("Uh oh, you just tried to upgrade a dice you dont have.");
-            }
-        }
-        */
+        // Invoke / call for the Level Up cutscene
+        newState.GamePhase = GamePhase.IncidentHappening;
     }
 
     void ConfirmContinue(EntityPiece p)
@@ -1946,7 +1866,7 @@ public class GameplayTest : MonoBehaviour
 
     public void ConfirmContinue()
     {
-        phase = GamePhase.EndTurn;
+        //phase = GamePhase.EndTurn;
         //encounterOver = false;
         //storeScreen.SetActive(false);
         //m_UpdatePlayerScore.RaiseEvent(currentPlayer.id);
@@ -1978,14 +1898,14 @@ public class GameplayTest : MonoBehaviour
         else
         {
             // Interest logic here TEMPORARY
-            currentPlayer.heldPoints += (int)(currentPlayer.currentStatsModifier.interestRate * currentPlayer.storestockTotal);
+            p.EntityData.Money += (int)(p.EntityData.CurrentStatsModifier.interestRate * p.EntityData.StorestockTotal);
 
             // Regular turn end logic
             //if (currentPlayerInitialNode.playerOccupied == currentPlayer)
-            if (currentPlayerInitialNode.playersOccupied.Contains(currentPlayer))
-            {
-                currentPlayerInitialNode.playersOccupied.Remove(currentPlayer);
-            }
+            //if (currentPlayerInitialNode.playersOccupied.Contains(currentPlayer))
+            //{
+            //    currentPlayerInitialNode.playersOccupied.Remove(currentPlayer);
+            //}
 
             if (p.EntityData.InitialNode.occupiedEntities.Contains(p.EntityData))
             {
@@ -2091,6 +2011,12 @@ public class GameplayTest : MonoBehaviour
         nextPlayers.Add(currentPlayer);
         currentPlayer = nextPlayers[0];
 
+        newState.CurrPlayerId++;
+        if (newState.CurrPlayerId >= currentRuleset.numberOfPlayers) newState.CurrPlayerId = 0;
+
+        newState.CurrentPlayerObj = playerUnits[newState.CurrPlayerId];
+        newState.CurrentPlayerObj.transform.position -= new Vector3(0, 0, .05f); // move this in EntityVisual
+
         // Done eating and chillin, get out of the estalbishment!
         if (p.Statuses.Contains(Status.InsideVendor))
         {
@@ -2137,7 +2063,13 @@ public class GameplayTest : MonoBehaviour
         //SetupNextPlayer(prevState, ref newState);
     }
 
-    public void EndGame()
+    public void HandlePostCutscene(GameState prevState, ref GameState newState)
+    {
+        Debug.Log($"Cutscene over, going to {newState.LastGamePhase} phase");
+        newState.GamePhase = newState.LastGamePhase; // maybe expectedphase instead?
+    }
+
+    public void EndGame(GameState prevState, ref GameState newState)
     {
         // The player with the most points wins!
         if (winner == null)
@@ -2149,15 +2081,15 @@ public class GameplayTest : MonoBehaviour
 
         var playersByPlacement = playerUnits.OrderBy(playerUnit => playerUnit.heldPoints).ToList();
         m_ResultFinalScores.RaiseEvent(playersByPlacement);
-        
+
         /*
         // UPDATE WITH ACTUAL END GAME UI, AND MAKE IN DIFFERENT SCRIPT WITH EVENT RAISED HERE.
         Debug.Log(winner.entityName + " is the KING OF THE MARKET!");
         encounterScreen.SetActive(true);
         resultInfo.text = $"{winner.entityName} is the \nWINNER!!!";
         */
-
-        phase = GamePhase.GameOver;
+        newState.GamePhase = GamePhase.GameOver;
+        //phase = GamePhase.GameOver;
     }
     #endregion
 
@@ -2255,7 +2187,7 @@ public class GameplayTest : MonoBehaviour
             else
             {
                 // only get rid of item if its not a target selection one
-                p.AddItemToActiveEffects(p.Inventory[index].Duration, p.Inventory[index]);
+                //p.AddItemToActiveEffects(p.Inventory[index].Duration, p.Inventory[index]);
 
                 /*
                 p.UpdateStatModifier(new ActiveEffect
@@ -2266,10 +2198,10 @@ public class GameplayTest : MonoBehaviour
                 */
                 //currentPlayer.inventory.RemoveAt(index);
                 //playerUsedItem = true;
-                p.RefreshStatModifiers();
-                ApplyItemEffectsOnTurnStart(p);
+                //p.RefreshStatModifiers();
+                //ApplyItemEffectsOnTurnStart(ref p);
 
-                p.Inventory.RemoveAt(index);
+                //p.Inventory.RemoveAt(index);
                 playerUsedItem = true;
                 _currentGameState.CurrentPlayerHasUsedItem = true;
                 selectedItemIndex = -1;
@@ -2281,13 +2213,15 @@ public class GameplayTest : MonoBehaviour
         }
     }
 
-    private void ApplyItemEffectsOnTurnStart(EntityData p)
+    private void ApplyItemEffectsOnTurnStart(ref EntityData p)
     {
+        Debug.Log($"{p.Health} + {p.CurrentStatsModifier.healthRegen} = adda");
         // Regenerate health from active effects.
         p.MaxHealth = p.BaseMaxHealth * p.CurrentStatsModifier.maxHealthMultModifier + p.CurrentStatsModifier.maxHealthFlatModifier;
         p.Health = Mathf.Min(p.MaxHealth, p.Health + p.CurrentStatsModifier.healthRegen);
+        Debug.Log($"{p.Health} + {p.CurrentStatsModifier.healthRegen} = adda");
 
-        if(p.Health < 1)
+        if (p.Health < 1)
         {
             p.Health = 1;
         }
@@ -2581,7 +2515,7 @@ public class GameplayTest : MonoBehaviour
 
     public IEnumerator InitiateCombatOnEnemy(float delay, EntityData entity)
     {
-        EntityData enemy = null;
+        EntityData enemy = entity; // chagne this stupid ass
         /*
         // Set IDs of players entering combat.
         sceneManager.player1ID = entity.id;
@@ -2788,23 +2722,50 @@ public class GameplayTest : MonoBehaviour
 
     private void OnDamageAffectedNodes(List<MapNode> affectedNodes, float damageRatio)
     {
-        foreach(PlayerState player in _currentGameState.Players)
+        //foreach (PlayerState player in newState.Players)
+        //{
+        //    // this dude is chilling, he aint getting hit
+        //    if (player.EntityData.Statuses.Contains(Status.InsideVendor))
+        //    {
+        //        Debug.Log($"{player.EntityData.EntityName} is in a vendor, no damage taken.");
+        //    }
+        //    else if (affectedNodes.Contains(player.EntityData.OccupiedNode))
+        //    {
+        //        Debug.Log($"{player.EntityData.EntityName} in the streets. GOOBYE!!");
+        //        int damageTaken = (int)(player.EntityData.MaxHealth * damageRatio);
+
+        //        player.EntityData.Health -= damageTaken;
+
+        //        if (player.EntityData.Health < 0)
+        //        {
+        //            player.EntityData.Health = 1;
+        //        }
+
+        //        //m_DamageTakenOnPlayer.RaiseEvent(player, damageTaken);
+        //        //m_UpdatePlayerScore.RaiseEvent(player.id);
+        //    }
+        //}
+    }
+    
+    private void HandleDamageAffectedNodes(GameState prevState, ref GameState newState, List<MapNode> affectedNodes, float damageRatio)
+    {
+        for(int i = 0; i < newState.Players.Length; i++)
         {
             // this dude is chilling, he aint getting hit
-            if (player.EntityData.Statuses.Contains(Status.InsideVendor)) 
+            if (newState.Players[i].EntityData.Statuses.Contains(Status.InsideVendor))
             {
-                Debug.Log($"{player.EntityData.EntityName} is in a vendor, no damage taken.");
+                Debug.Log($"{newState.Players[i].EntityData.EntityName} is in a vendor, no damage taken.");
             }
-            else if (affectedNodes.Contains(player.EntityData.OccupiedNode))
+            else if (affectedNodes.Contains(newState.Players[i].EntityData.OccupiedNode))
             {
-                Debug.Log($"{player.EntityData.EntityName} in the streets. GOOBYE!!");
-                int damageTaken = (int)(player.EntityData.MaxHealth * damageRatio);
+                Debug.Log($"{newState.Players[i].EntityData.EntityName} in the streets. GOOBYE!!");
+                int damageTaken = (int)(newState.Players[i].EntityData.MaxHealth * damageRatio);
 
-                player.EntityData.Health -= damageTaken;
+                newState.Players[i].EntityData.Health -= damageTaken;
 
-                if(player.EntityData.Health < 0)
+                if (newState.Players[i].EntityData.Health < 0)
                 {
-                    player.EntityData.Health = 1;
+                    newState.Players[i].EntityData.Health = 1;
                 }
 
                 //m_DamageTakenOnPlayer.RaiseEvent(player, damageTaken);
@@ -2815,7 +2776,7 @@ public class GameplayTest : MonoBehaviour
 
     private void TryCalculateTempoBuff(GameState prevState, ref GameState newState)
     {
-        var p = newState.Players[newState.CurrPlayerId].EntityData;
+        ref var p = ref newState.Players[newState.CurrPlayerId].EntityData;
 
         if (p.CurrentStatsModifier.movementTempoScale == 0) return;
 

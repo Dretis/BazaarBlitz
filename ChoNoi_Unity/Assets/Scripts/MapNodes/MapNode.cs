@@ -43,6 +43,7 @@ public class MapNode : MonoBehaviour
     public Modifier modifier = Modifier.None;
     public StoreModifier storeModifier = StoreModifier.Empty;
     public EntityData modifierOwner;
+    public int modifierOwnerId;
 
     public enum Modifier
     {

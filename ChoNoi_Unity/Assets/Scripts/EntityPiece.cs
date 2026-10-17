@@ -5,9 +5,21 @@ using Core.Events;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using Core;
+using DG.Tweening;
 
+/// <summary>
+/// Handles the visual aspects of a Player Baggie present on the board.
+/// </summary>
 public class EntityPiece : MonoBehaviour
 {
+    // TO-DO
+    // - Remove all logic variables and functions
+    // - Move animation functions/script into this?
+    // - Rename to 'EntityVisual' or 'EntityOverworldVisual'
+    private GameplayTest _gameplayTest;
+    [SerializeField] private TimelineSignalResponder _timelineSignalResponder;
+
     public enum State
     {
         Alive,
@@ -37,7 +49,7 @@ public class EntityPiece : MonoBehaviour
     [Space]
     [Range(1,99)]public int RenownLevel = 1; // Used to calculate the next level threshold.
     public float ReputationPoints = 0; // For enemies: how much rep they give on kill. For players: they're total exp
-    public float levelThreshold = 100;
+    //public float levelThreshold = 100;
 
     public List<Stamp.StampType> stamps = new List<Stamp.StampType>();
 
@@ -100,21 +112,14 @@ public class EntityPiece : MonoBehaviour
 
     public GameStateEventChannelSO _gameStateEvent;
 
-    private void Awake()
+    public void Initialize(PlayerState ps, GameplayTest gt)
     {
-        //_gameStateEvent.OnEventRaised += DisplayEntityFromGameState;
-    }
+        _gameplayTest = gt;
+        _timelineSignalResponder.Initialize(ps, gt);
 
-    private void DisplayEntityFromGameState(FrameGameState gameState)
-    {
-        //var currentPlayerState = gameState.NewState.Players;
-        //var prevPlayerStates = gameState.PrevState.Players;
-        if(gameState.NewState.CurrPlayerId != id) return;
-
-        var colorPal = gameState.NewState.Players[id].EntityData.EntityPalette;
-        var boatPal = gameState.NewState.Players[id].EntityData.BoatPalette;
-
-        //assignedPlayer.entityName = playerCosmeticManager.playerName;
+        // Setup all the visual shit for this player in-game
+        var colorPal = ps.EntityData.EntityPalette;
+        var boatPal = ps.EntityData.BoatPalette;
 
         playerColor = colorPal[0];
 
@@ -123,19 +128,45 @@ public class EntityPiece : MonoBehaviour
 
         // Boat Colors
         pBoatLoader.SetInspectorPalette(boatPal);
-        //if (prevPlayerStates[id].playerColor != currentPlayerState[id].playerColor)
-        //    playerSprite.color = currentPlayerState[id].playerColor;
+
+        transform.position = ps.EntityData.InitialNode.transform.position;
     }
 
-    private void OnEnable()
+    private void DisplayEntityFromGameState(FrameGameState gameState)
     {
-        //if (!isEnemy && combatSceneIndex > -1)
-        if (!isEnemy)
+        //if(gameState.NewState.CurrPlayerId != id) return;
+        if (isEnemy) return;
+        if (!gameState.DidChangePhases()) return;
+
+        if (gameState.NewState.GamePhase is GameplayTest.GamePhase.StartTurn)
         {
-            if (currentStates.Contains(State.Fighting) || currentStates.Contains(State.FightingParty))
+            //Debug.Log($"SetEntityVisualPostCombat | ID: {id} | Object = {this.gameObject.name} ");
+            SetEntityVisualPostCombat(gameState.NewState.Players[id].EntityData);
+        }
+
+        if (gameState.NewState.CurrPlayerId == id)
+        {
+            if (gameState.PrevState.GamePhase is GameplayTest.GamePhase.PickDirection)
+            {
+                var prevOccupiedNode = gameState.PrevState.Players[id].EntityData.OccupiedNode;
+
+
+            }
+            if (gameState.PrevState.GamePhase is GameplayTest.GamePhase.MoveAround)
+            {
+                MoveEntityToNode(gameState.NewState.Players[id].EntityData);
+            }
+        }
+    }
+
+    private void SetEntityVisualPostCombat(EntityData ed)
+    {
+        if (!ed.IsEnemy) // temp
+        {
+            if (ed.Statuses.Contains(Status.Fighting) || ed.Statuses.Contains(Status.FightingParty))
             {
                 // In combat, dust cloud around players
-                Debug.Log($"{entityName} is still in combat");
+                Debug.Log($"{ed.EntityName} is still in combat");
                 dustCloud.gameObject.SetActive(true);
                 //dustCloud.Play();
             }
@@ -144,13 +175,25 @@ public class EntityPiece : MonoBehaviour
             floatingDamageNumber.ShowText("");
             coinGainNumber.ShowText("");
         }
+    }
 
-        //_gameStateEvent.OnEventRaised += DisplayEntityFromGameState;
+    private void MoveEntityToNode(EntityData ed)
+    {
+        var assignedPlayerNode = ed.OccupiedNode;
+        transform.DOMove(assignedPlayerNode.transform.position, .25f)
+            .SetEase(Ease.OutQuint);
+
+        Debug.Log($"EntityVisual | Current player moved to {assignedPlayerNode}");
+    }
+
+    private void OnEnable()
+    {
+        _gameStateEvent.OnEventRaised += DisplayEntityFromGameState;
     }
 
     private void OnDisable()
     {
-        //_gameStateEvent.OnEventRaised -= DisplayEntityFromGameState;
+        _gameStateEvent.OnEventRaised -= DisplayEntityFromGameState;
     }
 
     public EntityStatsModifiers currentStatsModifier;
@@ -329,18 +372,6 @@ public class EntityPiece : MonoBehaviour
         }
 
         Debug.Log($"Calulcated Storestock Total = {storestockTotal}");
-    }
-
-    public bool CanLevelUp() {
-        levelThreshold = ( RenownLevel * 100 ) * ( Mathf.Pow(1.15f, RenownLevel-1) );
-        // 100, 230, 396, 608, 874... Every level costs around 30% more (should be tuned in testing).
-        if (ReputationPoints >= levelThreshold) {
-            Debug.Log("Passed threshold of " + levelThreshold);
-            //levelThreshold = (RenownLevel * 100) * (Mathf.Pow(1.15f, RenownLevel - 1)); // update the new threshold again
-            return true; // Allows the level up screen when ready on the player's turn.
-        } else {
-            return false;
-        }
     }
 
     // for use on enemies

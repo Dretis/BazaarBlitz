@@ -22580,6 +22580,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1808e3f336b706a4ab70ba156bb2c2cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _timelineSignalResponder: {fileID: 2995677876416650586}
   currentStates: 
   entityName: Baggie
   id: 0
@@ -22592,7 +22593,6 @@ MonoBehaviour:
   maxHealth: 75
   RenownLevel: 1
   ReputationPoints: 0
-  levelThreshold: 100
   stamps: 
   inventoryLimit: 8
   storeCount: 0
@@ -22750,6 +22750,7 @@ MonoBehaviour:
   m_LandOnWarpNode: {fileID: 11400000, guid: eb198cf8dce206545aea4a7b8addda51, type: 2}
   m_WarpByItem: {fileID: 11400000, guid: 3f85955281bf5f2438e1825f7c0568d4, type: 2}
   m_EnterLevelUp: {fileID: 11400000, guid: 2e765a5770dc0604e9dbf9fa24b60fba, type: 2}
+  _gameStateEvent: {fileID: 11400000, guid: 113369b80091b3346b620c7e0c0d9b8c, type: 2}
 --- !u!1 &4772293821203119634
 GameObject:
   m_ObjectHideFlags: 0
@@ -34045,8 +34046,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 6}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 32}
-  m_SizeDelta: {x: 720, y: 242.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 720, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7298738122816051791
 CanvasRenderer:
@@ -34103,12 +34104,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 112
+  m_fontSize: 84
   m_fontSizeBase: 86
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 112
+  m_fontSizeMax: 84
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512

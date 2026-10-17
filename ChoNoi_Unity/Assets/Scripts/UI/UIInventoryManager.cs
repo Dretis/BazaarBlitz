@@ -485,6 +485,7 @@ public class UIInventoryManager : MonoBehaviour
         Debug.Log($"UIInventoryManager | {item.itemName} used. | Item Type: {item.type}");
         m_ItemUsed.RaiseEvent(index, item); // replace this
         _gameplayTest.QueueCommand(new InventoryUseItemCommand(index, item));
+        //_gameplayTest.QueueCutscene(new UseItemCutscene(item));
 
         //m_ItemUsed.RaiseEvent(index, item);
         /*

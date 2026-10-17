@@ -1,3 +1,4 @@
+using Core;
 using Core.Events;
 using System;
 using System.Collections;
@@ -8,7 +9,7 @@ using UnityEngine;
 public class AvailableNodeIndicator : MonoBehaviour
 {
     private Transform target;
-    [SerializeField] private EntityPiece currentPlayer;
+    //[SerializeField] private EntityPiece currentPlayer;
     [SerializeField] private MapNode targetNode;
     [SerializeField] private MapNode prevTargetNode;
     //private List<MapNode> nearbyNodes = new List<MapNode>();
@@ -24,42 +25,42 @@ public class AvailableNodeIndicator : MonoBehaviour
     //[SerializeField] private Transform westTarget;
 
     [Header("Listen on Event Channels")]
-    public PlayerEventChannelSO m_NextPlayerTurn;
+    //public PlayerEventChannelSO m_NextPlayerTurn;
 
-    public VoidEventChannelSO m_DiceRolled;
+    //public VoidEventChannelSO m_DiceRolled;
     //public VoidEventChannelSO m_PlayerMovedOnBoard;
-    public VoidEventChannelSO m_PlayerUndidSomething; // is this going back while moving??
+    //public VoidEventChannelSO m_PlayerUndidSomething; // is this going back while moving??
 
-    public VoidEventChannelSO m_IncidentStarted;
+    //public VoidEventChannelSO m_IncidentStarted;
 
-    public PlayerEventChannelSO m_PlayerWon;
+    //public PlayerEventChannelSO m_PlayerWon;
     [Space]
     public GameStateEventChannelSO _gameStateEventChannel;
 
     private void OnEnable()
     {
-        m_NextPlayerTurn.OnEventRaised += OnNextPlayerTurn;
-        m_DiceRolled.OnEventRaised += OnDiceRolled;
+        //m_NextPlayerTurn.OnEventRaised += OnNextPlayerTurn;
+        //m_DiceRolled.OnEventRaised += OnDiceRolled;
         //m_PlayerMovedOnBoard.OnEventRaised += OnPlayerMovedOnBoard;
-        m_PlayerUndidSomething.OnEventRaised += OnPlayerUndidSomething;
+        //m_PlayerUndidSomething.OnEventRaised += OnPlayerUndidSomething;
 
-        m_IncidentStarted.OnEventRaised += OnIncidentStarted;
+        //m_IncidentStarted.OnEventRaised += OnIncidentStarted;
 
-        m_PlayerWon.OnEventRaised += OnPlayerWon;
+        //m_PlayerWon.OnEventRaised += OnPlayerWon;
 
         _gameStateEventChannel.OnEventRaised += HandleGameState;
     }
 
     private void OnDisable()
     {
-        m_NextPlayerTurn.OnEventRaised -= OnNextPlayerTurn;
-        m_DiceRolled.OnEventRaised -= OnDiceRolled;
+        //m_NextPlayerTurn.OnEventRaised -= OnNextPlayerTurn;
+        //m_DiceRolled.OnEventRaised -= OnDiceRolled;
         //m_PlayerMovedOnBoard.OnEventRaised -= OnPlayerMovedOnBoard;
-        m_PlayerUndidSomething.OnEventRaised -= OnPlayerUndidSomething;
+        //m_PlayerUndidSomething.OnEventRaised -= OnPlayerUndidSomething;
 
-        m_IncidentStarted.OnEventRaised -= OnIncidentStarted;
+        //m_IncidentStarted.OnEventRaised -= OnIncidentStarted;
 
-        m_PlayerWon.OnEventRaised -= OnPlayerWon;
+        //m_PlayerWon.OnEventRaised -= OnPlayerWon;
 
         _gameStateEventChannel.OnEventRaised -= HandleGameState;
     }
@@ -88,14 +89,23 @@ public class AvailableNodeIndicator : MonoBehaviour
         if (state.NewState.GamePhase is GameplayTest.GamePhase.PickDirection)
         {
             //OnPlayerMovedOnBoard();
-            SetTargetNode(state.NewState.CurrentPlayer().EntityData.OccupiedNode);
+            SetTargetNode(state.NewState.CurrentPlayer().EntityData);
             if (state.NewState.MovementLeft <= 0)
                 HideNodeIndicators();
             else
-                ShowNodeIndicators();
+                ShowNodeIndicators(state.NewState.CurrentPlayer().EntityData);
+        }
+        if (state.NewState.GamePhase is GameplayTest.GamePhase.IncidentHappening)
+        {
+            HideNodeIndicators();
         }
 
         if (state.NewState.GamePhase is GameplayTest.GamePhase.EncounterTime)
+        {
+            HideNodeIndicators();
+        }
+        
+        if (state.NewState.GamePhase is GameplayTest.GamePhase.GameOver)
         {
             HideNodeIndicators();
         }
@@ -116,7 +126,7 @@ public class AvailableNodeIndicator : MonoBehaviour
         }
     }
 
-    private void ShowNodeIndicators()
+    private void ShowNodeIndicators(EntityData ed)
     {
         transform.position = target.position + nearbyNodesOffset;
 
@@ -130,7 +140,7 @@ public class AvailableNodeIndicator : MonoBehaviour
                 // non-existent direction or already node is already indicated
                 nodeVisualIndicators[i].enabled = false;
             }
-            else if(nearbyNodes[i] == prevTargetNode || nearbyNodes[i] == currentPlayer.previousNode)
+            else if(nearbyNodes[i] == prevTargetNode || nearbyNodes[i] == ed.PreviousNode)
             {
                 // don't show either if its the node you came from
                 nodeVisualIndicators[i].enabled = false;
@@ -144,12 +154,14 @@ public class AvailableNodeIndicator : MonoBehaviour
         }
     }
 
-    private void SetTargetNode(MapNode node)
+    private void SetTargetNode(EntityData ed)
     {
-        if(target != null)
+        var node = ed.OccupiedNode;
+
+        if (target != null)
         {
             // Track the previous node in the list
-            prevTargetNode = currentPlayer.traveledNodes[^1];
+            prevTargetNode = ed.TraveledNodes[^1];
         }
 
         targetNode = node;
@@ -171,45 +183,5 @@ public class AvailableNodeIndicator : MonoBehaviour
             nearbyNodes.Add(null);
         else
             nearbyNodes.Add(node);
-    }
-
-
-    private void OnNextPlayerTurn(EntityPiece player)
-    {
-        currentPlayer = player;
-
-        HideNodeIndicators();
-        SetTargetNode(player.occupiedNode);
-    }
-
-    private void OnDiceRolled()
-    {
-        //throw new NotImplementedException();
-        //ShowNodeIndicators();
-    }
-
-    private void OnPlayerMovedOnBoard()
-    {
-        SetTargetNode(currentPlayer.occupiedNode);
-        if (currentPlayer.movementLeft <= 0)
-            HideNodeIndicators();
-        else
-            ShowNodeIndicators();
-    }
-
-    private void OnPlayerUndidSomething()
-    {
-        //SetTargetNode(currentPlayer.occupiedNode);
-        //ShowNodeIndicators();
-    }
-
-    private void OnIncidentStarted()
-    {
-        HideNodeIndicators();
-    }
-
-    private void OnPlayerWon(EntityPiece winner)
-    {
-        HideNodeIndicators();
     }
 }

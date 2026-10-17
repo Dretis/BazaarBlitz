@@ -36,9 +36,9 @@ public class ScoreManager : MonoBehaviour
     [Space]
     //public VoidEventChannelSO m_GameStart; // should only be called once
 
-    public IntEventChannelSO m_ChangeInScore;
-    public IntEventChannelSO m_PlayerScoreDecreased;
-    public IntEventChannelSO m_PlayerScoreIncreased;
+    //public IntEventChannelSO m_ChangeInScore;
+    //public IntEventChannelSO m_PlayerScoreDecreased;
+    //public IntEventChannelSO m_PlayerScoreIncreased;
 
     public PlayerEventChannelSO m_NextPlayerTurn;
 
@@ -66,9 +66,9 @@ public class ScoreManager : MonoBehaviour
         _gameStateEvent.OnEventRaised += UpdateUIFromGameState;
         //m_GameStart.OnEventRaised += OnGameStart;
 
-        m_ChangeInScore.OnEventRaised += UpdateScoreForPlayer;
-        m_PlayerScoreDecreased.OnEventRaised += OnPlayerScoreDecreased;
-        m_PlayerScoreIncreased.OnEventRaised += OnPlayerScoreIncreased;
+        //m_ChangeInScore.OnEventRaised += UpdateScoreForPlayer;
+        //m_PlayerScoreDecreased.OnEventRaised += OnPlayerScoreDecreased;
+        //m_PlayerScoreIncreased.OnEventRaised += OnPlayerScoreIncreased;
 
         m_NextPlayerTurn.OnEventRaised += ChangeCurrentPlayer;
         //m_NextPlayerTurn.OnEventRaised += UpdateHeldStamps;
@@ -98,9 +98,9 @@ public class ScoreManager : MonoBehaviour
         _gameStateEvent.OnEventRaised -= UpdateUIFromGameState;
         //m_GameStart.OnEventRaised -= OnGameStart;
 
-        m_ChangeInScore.OnEventRaised -= UpdateScoreForPlayer;
-        m_PlayerScoreDecreased.OnEventRaised -= OnPlayerScoreDecreased;
-        m_PlayerScoreIncreased.OnEventRaised -= OnPlayerScoreIncreased;
+        //m_ChangeInScore.OnEventRaised -= UpdateScoreForPlayer;
+        //m_PlayerScoreDecreased.OnEventRaised -= OnPlayerScoreDecreased;
+        //m_PlayerScoreIncreased.OnEventRaised -= OnPlayerScoreIncreased;
 
         m_NextPlayerTurn.OnEventRaised -= ChangeCurrentPlayer;
         //m_NextPlayerTurn.OnEventRaised -= UpdateHeldStamps;
@@ -129,21 +129,63 @@ public class ScoreManager : MonoBehaviour
         if (gameState.DidChangePhases())
         {
             //UpdateScoreForPlayer(gameState.NewState.CurrPlayerId);
-
-            if (gameState.PrevState.GamePhase is GameplayTest.GamePhase.Inventory
-                && gameState.NewState.GamePhase is GameplayTest.GamePhase.IncidentHappening)
+            //var currPl = gameState.NewState.Players[gameState.NewState.CurrPlayerId];
+            if (gameState.PrevState.GamePhase is GameplayTest.GamePhase.IncidentHappening)
             {
-                UpdateScoreForPlayer(gameState.NewState.CurrPlayerId);
+                Debug.Log($"UIScoreManager | Show scoreboard");
+                ShowScoreboard();
+            }
+            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.IncidentHappening)
+            {
+                HideScoreboard();
+            }
+
+            if (gameState.UseItemCutsceneStarted())
+            {
+                // Maybe have this update AFTER the cutscene ends?
+                //Debug.Log($"UIScoreManager | {gameState.NewState.CurrentPlayer().EntityData.EntityName} used item, update score!");
+                //UpdateScoreForPlayer(gameState.NewState.Players[gameState.NewState.CurrPlayerId]);
             } 
+
             if (gameState.NewState.GamePhase is GameplayTest.GamePhase.StartTurn)
             {
-                UpdateScoreForPlayer(gameState.NewState.CurrPlayerId);
+                UpdateScoreForPlayer(gameState.NewState.CurrentPlayer());
             }
             if (gameState.NewState.GamePhase is GameplayTest.GamePhase.EndTurn)
             {
-                UpdateScoreForPlayer(gameState.NewState.CurrPlayerId);
+                UpdateScoreForPlayer(gameState.NewState.CurrentPlayer());
             }
 
+        }
+
+        // prevent changes to score right as the cutscene plays
+        if (gameState.NewState.GamePhase is GameplayTest.GamePhase.IncidentHappening) return;
+
+        for (int i = 0; i < gameState.NewState.Players.Length; i++)
+        {
+            //Debug.Log($"Prev Money: {gameState.PrevState.Players[i].EntityData.Money} | NewMoney: {gameState.NewState.Players[i].EntityData.Money}");
+
+            if (gameState.PrevState.GamePhase is GameplayTest.GamePhase.IncidentHappening)
+            {
+                // Update score for AFTER any cutscene ends
+                UpdateScoreForPlayer(gameState.NewState.Players[i]);
+            }
+            
+            if (gameState.PrevState.Players[i].EntityData.Money !=
+                gameState.NewState.Players[i].EntityData.Money)
+            {
+                Debug.Log($"UIScoreManager | {gameState.NewState.Players[i].EntityData.EntityName}'s money changed!");
+                playerScoreHandlers[i].AssignPlayerToScore(gameState.NewState.Players[i]);
+                playerScoreHandlers[i].UpdateMoney();
+            }
+
+            if (gameState.PrevState.Players[i].EntityData.Health !=
+                gameState.NewState.Players[i].EntityData.Health)
+            {
+                Debug.Log($"UIScoreManager | {gameState.NewState.Players[i].EntityData.EntityName}'s HP changed!");
+                playerScoreHandlers[i].AssignPlayerToScore(gameState.NewState.Players[i]);
+                playerScoreHandlers[i].UpdateHealth();
+            }
         }
     }
 
@@ -162,7 +204,7 @@ public class ScoreManager : MonoBehaviour
         for (int i = 0; i < _players.Length; i++)
         {
             //Debug.Log($"i={i} | {players[i].name}");
-            playerScoreHandlers[i].AssignPlayerToScore(ref _players[i].EntityData);
+            playerScoreHandlers[i].AssignPlayerToScore(_players[i]);
             playerScoreHandlers[i].InitialScoreSetup();
             playerScoreHandlers[i].ToggleCurrentPlayerEffect(false);
         }
@@ -177,37 +219,6 @@ public class ScoreManager : MonoBehaviour
             playerScoreHandlers[^1].DisablePlayerScore();
             playerScoreHandlers.Remove(playerScoreHandlers[^1]);
         }
-    }
-    /*
-    private void InitializePlayerScores()
-    {
-        //playerInfoDiceNumbers.Add("1");
-        players = GameplayTest.instance.playerUnits;
-        Debug.Log("InitializePlayerScores scoremanager");
-        // Initial Setup
-        for (int i = 0; i < players.Count; i++)
-        {
-            //Debug.Log($"i={i} | {players[i].name}");
-            playerScoreHandlers[i].AssignPlayerToScore(players[i]);
-            playerScoreHandlers[i].InitialScoreSetup();
-            playerScoreHandlers[i].ToggleCurrentPlayerEffect(false);
-        }
-    }
-    */
-
-    private void OnPlayerScoreDecreased(int scoreChange)
-    {
-        // Prob some text vfx that shows it going down
-        // Move this to EntityVisual
-        //currentPlayer.coinDrop.Play();
-    }
-
-    private void OnPlayerScoreIncreased(int scoreChange)
-    {
-        // Prob some text vfx that shows it going up lol
-        // Move this to EntityVisual
-        //currentPlayer.coinSucking.Play();
-        //StartCoroutine(ShowCoinGainNumber(currentPlayer, scoreChange));
     }
 
     private IEnumerator ShowCoinGainNumber(EntityPiece entity, int coinGain)
@@ -235,12 +246,28 @@ public class ScoreManager : MonoBehaviour
         yield return null;
     }
 
-    private void UpdateScoreForPlayer(int id)
+    private void UpdateScoreForPlayer(PlayerState ps)
     {
         // Update specific player score on the scoreboard based on their ID.
-        playerScoreHandlers[id].UpdateScore();
+        playerScoreHandlers[ps.Id].AssignPlayerToScore(ps);
+        playerScoreHandlers[ps.Id].UpdateScore();
 
-        playerScoreHandlers[id].RefreshActiveEffects();
+        playerScoreHandlers[ps.Id].RefreshActiveEffects();
+    }
+    private void ShowScoreboard()
+    {
+        foreach (var playerScoreHandler in playerScoreHandlers)
+        {
+            playerScoreHandler.ShowScoreVisual();
+        }
+    }
+
+    private void HideScoreboard()
+    {
+        foreach(var playerScoreHandler in playerScoreHandlers)
+        {
+            playerScoreHandler.HideScoreVisual();
+        }
     }
 
     private void ChangeCurrentPlayer(EntityPiece ps)

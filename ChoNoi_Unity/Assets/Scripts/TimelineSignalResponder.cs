@@ -1,9 +1,13 @@
+using Core;
+using Core.Events;
 using Febucci.UI.Core;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Playables;
+using static UnityEditor.Progress;
 
 // THIS NEEDS TO BE ABLE TO QUEUE COMMANDS TO GAMEPLAYTEST
 // REMOVE ALL UPDATES TO CHANGING THE GAME PHASE IN THIS SCRIPT
@@ -11,7 +15,9 @@ public class TimelineSignalResponder : MonoBehaviour
 {
     // Can call specific events from Timeline, also holds the playabledirectors
     // Should ONLY broadcast events
-    private EntityPiece assignedPlayer;
+    private EntityPiece assignedPlayer; // remove this 
+    private GameplayTest _gameplayTest;
+    private int _id;
 
     [Header("pd_UseItem Variables")]
     [SerializeField] private SpriteRenderer usedItemSprite; // for p_UseItem
@@ -51,15 +57,25 @@ public class TimelineSignalResponder : MonoBehaviour
     public NodeEventChannelSO m_LandOnWarpNode;
     public NodeEventChannelSO m_WarpByItem;
     public PlayerEventChannelSO m_EnterLevelUp;
+    [Space]
+    [SerializeField] private GameStateEventChannelSO _gameStateEvent;
 
     private void Start()
     {
         assignedPlayer = gameObject.GetComponent<EntityPiece>();
     }
 
+    public void Initialize(PlayerState ps, GameplayTest gt)
+    {
+        _id = ps.Id;
+        _gameplayTest = gt;
+    }
+
     private void OnEnable()
     {
-        m_ItemUsed.OnEventRaised += OnItemUsed;
+        _gameStateEvent.OnEventRaised += DetermineCutsceneFromGameState;
+
+        //m_ItemUsed.OnEventRaised += OnItemUsed;
         m_LandOnWarpNode.OnEventRaised += OnLandOnWarpNode;
         m_WarpByItem.OnEventRaised += OnWarpByItem;
         m_EnterLevelUp.OnEventRaised += OnEnterLevelUp;
@@ -67,11 +83,43 @@ public class TimelineSignalResponder : MonoBehaviour
 
     private void OnDisable()
     {
-        m_ItemUsed.OnEventRaised -= OnItemUsed;
+        _gameStateEvent.OnEventRaised -= DetermineCutsceneFromGameState;
+
+        //m_ItemUsed.OnEventRaised -= OnItemUsed;
         m_LandOnWarpNode.OnEventRaised -= OnLandOnWarpNode;
         m_WarpByItem.OnEventRaised -= OnWarpByItem;
         m_EnterLevelUp.OnEventRaised -= OnEnterLevelUp;
     }
+
+    private void DetermineCutsceneFromGameState(FrameGameState gameState)
+    {
+        if (!gameState.DidChangePhases()) return;
+
+        // Current Player Cutscenes Only
+        if(gameState.NewState.CurrPlayerId == _id &&
+           gameState.NewState.GamePhase is GameplayTest.GamePhase.IncidentHappening)
+        {
+            Debug.Log($"TimelineSignalResponder | IncidentHappening");
+
+            if (gameState.PrevState.GamePhase is GameplayTest.GamePhase.Inventory && 
+                gameState.NewState.UsedItem is not null)
+            {
+                PlayUseItemCutscene(gameState.NewState.UsedItem);
+            }
+        }
+    }
+
+    private void PlayUseItemCutscene(ItemStats usedItem)
+    {
+        Debug.Log($"PlayUseItemCutscene | Using a {usedItem.itemName}");
+        //throw new NotImplementedException();
+        usedItemSprite.sprite = usedItem.itemSprite;
+        var itemName = $"{usedItem.l_itemName.GetLocalizedString()}!";
+        usedItemName.text = itemName;
+
+        _gameplayTest.QueueCutscene(new UseItemCutscene(usedItem, pd_UseItem));
+    }
+    /*
     private void OnItemUsed(int index, ItemStats item)
     {
         if (assignedPlayer != GameplayTest.instance.currentPlayer) return;
@@ -84,7 +132,7 @@ public class TimelineSignalResponder : MonoBehaviour
         pd_UseItem.Play();
         //usedItemSprite = pd_UseItem.GetComponentInChildren<SpriteRenderer>();
     }
-
+    */
     private void OnLandOnWarpNode(MapNode m)
     {
         if (assignedPlayer != GameplayTest.instance.currentPlayer) return;
@@ -114,11 +162,11 @@ public class TimelineSignalResponder : MonoBehaviour
     {
         if (assignedPlayer != p) return;
 
-        p.unspentLevelUpPoints += 6;
-        p.maxHealth += 5;
-        p.health += 5;
-        p.RenownLevel += 1;
-        p.levelThreshold = (p.RenownLevel * 100) * (Mathf.Pow(1.15f, p.RenownLevel - 1));
+        //p.unspentLevelUpPoints += 6;
+        //p.maxHealth += 5;
+        //p.health += 5;
+        //p.RenownLevel += 1;
+        //p.levelThreshold = (p.RenownLevel * 100) * (Mathf.Pow(1.15f, p.RenownLevel - 1));
 
         var lvl = p.RenownLevel;
         if (lvl >= 10)
