@@ -28,7 +28,7 @@ public class RestockBoatSelectionHandler : MonoBehaviour, ISubmitHandler, IPoint
     private MotionHandle currentMotion;
 
     [Header("Broadcast on Event Channel")]
-    public NodeEventChannelSO m_RestockStore;
+    //public NodeEventChannelSO m_RestockStore;
     public NodeEventChannelSO m_FocusOnNode;
 
     public NodeEventChannelSO m_PromptRenovateOptions;

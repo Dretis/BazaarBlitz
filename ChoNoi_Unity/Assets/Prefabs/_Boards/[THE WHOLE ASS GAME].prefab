@@ -1099,6 +1099,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _respawnNode: {fileID: 0}
+  _respawnNodeId: 1
+  BoardNodeManager: {fileID: 0}
+  _availableNodeIndicator: {fileID: 0}
   seed: -1
   board: 0
   phase: 0
@@ -1112,7 +1115,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4bfdffc9671c6f049bf7c6bfd1dfd86d, type: 2}
   debugPhaseText: {fileID: 6700546163252136677}
   turnOffMonsterEncounters: 0
-  debugItem: {fileID: 0}
+  debugMoneyGain: 0
+  debugMoneyLoss: 0
+  debugItem1: {fileID: 0}
+  debugItem2: {fileID: 0}
   playerUnits:
   - {fileID: 6700546163865522836}
   - {fileID: 6143496329768989689}
@@ -1120,9 +1126,7 @@ MonoBehaviour:
   - {fileID: 6143496330825871140}
   nextPlayers: []
   currentPlayer: {fileID: 0}
-  currentPlayerInitialNode: {fileID: 0}
   playerUsedItem: 0
-  usingSpeedDieToMove: 0
   currentRuleset:
     board: 0
     pointGoal: 4000
@@ -1130,12 +1134,9 @@ MonoBehaviour:
     numberOfPlayers: 4
   matchIncidents: 
   incidentIsPlaying: 0
-  diceRoll: 0
   recentStockedItems: []
   emptyStockCount: 0
   topLeftText: {fileID: 6700546164877790410}
-  turnText: {fileID: 6700546163724718098}
-  wantedNode: {fileID: 0}
   encounterStarted: 0
   isStockingStore: 0
   costArray: ffffffff01000000010000000200000002000000020000000300000003000000030000000400000005000000e7030000
@@ -1182,11 +1183,9 @@ MonoBehaviour:
   m_EncounterDecision: {fileID: 11400000, guid: 8718b783fa7492048bcffd162050642b, type: 2}
   m_EnteredCombatScene: {fileID: 11400000, guid: b06b734815e5e434087c29d416ff002e, type: 2}
   m_TryDiceRollPrep: {fileID: 11400000, guid: e3231ba4a2d2df44585537e460f74d17, type: 2}
-  m_DiceRolled: {fileID: 11400000, guid: fb9fa3f55f7f0924db5a635622936326, type: 2}
   m_ChangeToMoveDie: {fileID: 11400000, guid: 5aa1fd405bcfa124797166414d53b2fa, type: 2}
   m_TryUseItemAt: {fileID: 11400000, guid: cf367ade587c18d4f816fbe70e57e7d5, type: 2}
   m_ItemUsed: {fileID: 11400000, guid: 4c3e0ee6a8a2a4f4ea69a5202dd82790, type: 2}
-  m_FinishedUsedItem: {fileID: 11400000, guid: 6a71930c05468f844a5f664c671e2077, type: 2}
   m_ItemStocked: {fileID: 11400000, guid: 677672fced788ca4ba7cecd9f14887dc, type: 2}
   m_ItemDiscarded: {fileID: 11400000, guid: b1cc7f46ffa055a4588d794ae7f0cd13, type: 2}
   m_ItemBought: {fileID: 11400000, guid: ace0aa03bf09d91469d5914ce815154e, type: 2}
@@ -1202,20 +1201,26 @@ MonoBehaviour:
   m_RecieveVendorItem: {fileID: 11400000, guid: 951f9f6bcf8b1554ebb26e55e07e88b8, type: 2}
   m_FighterSelected: {fileID: 11400000, guid: b696f39d908595b43aa55322bfb1971d, type: 2}
   _gameStateUpdatedEventChannel: {fileID: 11400000, guid: 113369b80091b3346b620c7e0c0d9b8c, type: 2}
+  _uiScoreManager: {fileID: 0}
   _playerDevicePrefab: {fileID: 7070504504208684888, guid: df73cf350d74f774a9900898ddc3366a, type: 3}
   _inputControllers: []
   _currentGameState:
     Round: 0
-    LastGamePhase: 0
     GamePhase: 0
+    LastGamePhase: 0
     MoveDieRoll: 0
     MovementLeft: 0
     Players: []
-    NextPlayers: []
+    BoardNodes: []
     CurrentPlayerObj: {fileID: 0}
     CurrPlayerId: 0
+    TraveledNodeIds: 
     CurrentPlayerHasUsedItem: 0
     UsingSpeedDieToMove: 0
+    CurrentPlayerDataStates: []
+    WantedNodeId: 0
+    UsedItem: {fileID: 0}
+    SelectedBoardNodeId: 0
 --- !u!1 &6700546163201373892
 GameObject:
   m_ObjectHideFlags: 0
@@ -2910,7 +2915,6 @@ MonoBehaviour:
   m_LandedOnMultipleEntities: {fileID: 11400000, guid: 29c82be8cac6c7342aff3ab44e4757eb, type: 2}
   m_IncidentStarted: {fileID: 11400000, guid: fbbbe6e31fced7641b6b92ac4a0ea4c9, type: 2}
   m_ConfirmBuildStore: {fileID: 11400000, guid: f4bf13c62fafdfa4da428cfbf244c5e3, type: 2}
-  m_RestockStore: {fileID: 11400000, guid: 45d6b055127905e4cb2609426a521e19, type: 2}
   m_PlayerWon: {fileID: 11400000, guid: 30be4a0c1ed8bdc43b43a3dc867dd37d, type: 2}
   _gameStateEventChannel: {fileID: 0}
 --- !u!114 &6700546163881176788
@@ -3163,9 +3167,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b60337f18d555a4984d9c9d55777f23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _players: []
   _gameStateEvent: {fileID: 11400000, guid: 113369b80091b3346b620c7e0c0d9b8c, type: 2}
-  currentPlayer: {fileID: 0}
-  players: []
   playerScoreHandlers:
   - {fileID: 3202016925215124409}
   - {fileID: 3202016926004136615}
@@ -3173,15 +3176,9 @@ MonoBehaviour:
   - {fileID: 3909703927274034596}
   scoreCanvas: {fileID: 6700546164129319073}
   scoreContainerTransform: {fileID: 6700546163726290319}
-  m_GameStart: {fileID: 11400000, guid: 7d1b394f7e0dfe34fae539bcec8f325b, type: 2}
-  m_ChangeInScore: {fileID: 11400000, guid: 898b14cc070b11c40ae0fa991dc512ac, type: 2}
-  m_PlayerScoreDecreased: {fileID: 11400000, guid: a6020ca8600c6e9449a136c742c95f3d, type: 2}
-  m_PlayerScoreIncreased: {fileID: 11400000, guid: fb23cdded5bf3de459866be92c7a0196, type: 2}
-  m_NextPlayerTurn: {fileID: 11400000, guid: 45e13c3cd9283b74989c51218c39f6c2, type: 2}
   m_HoldPlayerInfo: {fileID: 11400000, guid: 43b7d47204c4b5b40aa3fd2a37085485, type: 2}
   m_ReleasePlayerInfo: {fileID: 11400000, guid: 4224677cda2bca442a340f5e1b1244de, type: 2}
   m_FinishStockingStore: {fileID: 11400000, guid: f02cee4c939241841aa967904d4db75e, type: 2}
-  m_FinishedUsedItem: {fileID: 11400000, guid: 6a71930c05468f844a5f664c671e2077, type: 2}
   m_PassedByStamp: {fileID: 11400000, guid: 3191c86eefbe7b94caff7661018a4a38, type: 2}
   m_UndoPassByStamp: {fileID: 11400000, guid: e467542006d63bf4e8c6974a713227a0, type: 2}
   m_PassByPawnShop: {fileID: 11400000, guid: 84525d3ae156f3845931e6ac178b7438, type: 2}
@@ -3261,9 +3258,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 9
+  m_SortingLayerID: -785958923
+  m_SortingLayer: 1
+  m_SortingOrder: 100
   m_Sprite: {fileID: 21300000, guid: 9c954512a8c38f947b341e9282570c67, type: 3}
   m_Color: {r: 1, g: 0.76756895, b: 0.05345905, a: 1}
   m_FlipX: 0
@@ -3613,9 +3610,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f60fb1b8ea96a974f9965195f67bc8c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentPlayer: {fileID: 0}
-  targetNode: {fileID: 0}
-  prevTargetNode: {fileID: 0}
   nodeIndicators:
   - {fileID: 6700546164849088336}
   - {fileID: 3640422741753911851}
@@ -3628,11 +3622,6 @@ MonoBehaviour:
   - {fileID: 3640422743063962723}
   nearbyNodes: []
   nearbyNodesOffset: {x: 0, y: 0.2, z: 0}
-  m_NextPlayerTurn: {fileID: 11400000, guid: 45e13c3cd9283b74989c51218c39f6c2, type: 2}
-  m_DiceRolled: {fileID: 11400000, guid: fb9fa3f55f7f0924db5a635622936326, type: 2}
-  m_PlayerUndidSomething: {fileID: 11400000, guid: 42d98c829d9faf44680a0974c08d3121, type: 2}
-  m_IncidentStarted: {fileID: 11400000, guid: fbbbe6e31fced7641b6b92ac4a0ea4c9, type: 2}
-  m_PlayerWon: {fileID: 11400000, guid: 30be4a0c1ed8bdc43b43a3dc867dd37d, type: 2}
   _gameStateEventChannel: {fileID: 11400000, guid: 113369b80091b3346b620c7e0c0d9b8c, type: 2}
 --- !u!1 &6700546164571659826
 GameObject:
@@ -11077,42 +11066,6 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 3
       objectReference: {fileID: 0}
-    - target: {fileID: 913397101893211370, guid: 0522d017e6fbe8c468456b3eecf29f5b, type: 3}
-      propertyPath: m_SceneBindings.Array.data[4].key
-      value: 
-      objectReference: {fileID: -6766631558701599673, guid: 94db07dce5d957f499039a6f103efbd3, type: 2}
-    - target: {fileID: 913397101893211370, guid: 0522d017e6fbe8c468456b3eecf29f5b, type: 3}
-      propertyPath: m_SceneBindings.Array.data[5].key
-      value: 
-      objectReference: {fileID: 8633321258620410038, guid: 94db07dce5d957f499039a6f103efbd3, type: 2}
-    - target: {fileID: 913397101893211370, guid: 0522d017e6fbe8c468456b3eecf29f5b, type: 3}
-      propertyPath: m_SceneBindings.Array.data[4].value
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 913397101893211370, guid: 0522d017e6fbe8c468456b3eecf29f5b, type: 3}
-      propertyPath: m_ExposedReferences.m_References.Array.size
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 913397101893211370, guid: 0522d017e6fbe8c468456b3eecf29f5b, type: 3}
-      propertyPath: m_ExposedReferences.m_References.Array.data[1].first
-      value: ae6fc86f6c3cc024fa3f6cbcec73230b
-      objectReference: {fileID: 0}
-    - target: {fileID: 913397101893211370, guid: 0522d017e6fbe8c468456b3eecf29f5b, type: 3}
-      propertyPath: m_ExposedReferences.m_References.Array.data[2].first
-      value: 95f755bc35fa25042818754fd25cdb50
-      objectReference: {fileID: 0}
-    - target: {fileID: 913397101893211370, guid: 0522d017e6fbe8c468456b3eecf29f5b, type: 3}
-      propertyPath: m_ExposedReferences.m_References.Array.data[1].second
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 913397101893211370, guid: 0522d017e6fbe8c468456b3eecf29f5b, type: 3}
-      propertyPath: m_ExposedReferences.m_References.Array.data[2].second
-      value: 
-      objectReference: {fileID: 6760367928530586929}
-    - target: {fileID: 1081277200097079940, guid: 0522d017e6fbe8c468456b3eecf29f5b, type: 3}
-      propertyPath: m_RootOrder
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1167847853993232806, guid: 0522d017e6fbe8c468456b3eecf29f5b, type: 3}
       propertyPath: target
       value: 
@@ -11172,10 +11125,6 @@ PrefabInstance:
     - target: {fileID: 1531996286647920510, guid: 0522d017e6fbe8c468456b3eecf29f5b, type: 3}
       propertyPath: autoRandomSeed
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2064888333307073197, guid: 0522d017e6fbe8c468456b3eecf29f5b, type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2704089521885413069, guid: 0522d017e6fbe8c468456b3eecf29f5b, type: 3}
       propertyPath: m_Camera
@@ -11258,14 +11207,6 @@ PrefabInstance:
       value: 2927
       objectReference: {fileID: 0}
     - target: {fileID: 4295174462384129242, guid: 0522d017e6fbe8c468456b3eecf29f5b, type: 3}
-      propertyPath: autoRandomSeed
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4295174462810676763, guid: 0522d017e6fbe8c468456b3eecf29f5b, type: 3}
-      propertyPath: randomSeed
-      value: 2925
-      objectReference: {fileID: 0}
-    - target: {fileID: 4295174462810676763, guid: 0522d017e6fbe8c468456b3eecf29f5b, type: 3}
       propertyPath: autoRandomSeed
       value: 0
       objectReference: {fileID: 0}
@@ -11681,10 +11622,6 @@ PrefabInstance:
       propertyPath: target
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 7266267814919011282, guid: 0522d017e6fbe8c468456b3eecf29f5b, type: 3}
-      propertyPath: m_RootOrder
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7611809500404748005, guid: 0522d017e6fbe8c468456b3eecf29f5b, type: 3}
       propertyPath: m_RootOrder
       value: 8
@@ -11718,11 +11655,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1808e3f336b706a4ab70ba156bb2c2cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &6760367928530586929 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 618034990304013876, guid: 0522d017e6fbe8c468456b3eecf29f5b, type: 3}
-  m_PrefabInstance: {fileID: 6143496329601966853}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7163165413464047543 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3903136129891966130, guid: 0522d017e6fbe8c468456b3eecf29f5b, type: 3}

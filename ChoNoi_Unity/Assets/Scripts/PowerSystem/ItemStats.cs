@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Localization;
 
-[CreateAssetMenu]
+[CreateAssetMenu(fileName = "New Item", menuName = "Scriptable Objects/ItemStats")]
 public class ItemStats : ScriptableObject, IStatModifierChanger
 {
     /*
@@ -99,20 +99,18 @@ public class ItemStats : ScriptableObject, IStatModifierChanger
             effectEndTurn = Mathf.Min(effectEndTurn, Duration); // Must be less than or equal to duration.
             effectStartTurn = Mathf.Min(effectStartTurn, effectEndTurn); // Must be less than or equal to effectEndTurn.
 
-            //Debug.Log($"currentTurn = {currentTurn}");
-            //Debug.Log($"effectStartTurn = {effectStartTurn}");
-            //Debug.Log($"effectEndTurn = {effectStartTurn}");
+            Debug.Log($"{modifier.name} | currentTurn = {currentTurn} | effectStartTurn = {modifier.activateEffectStartTurn} |  effectEndTurn = {modifier.activateEffectEndTurn}");
 
             // Apply mod effect if in range of start and end turns.
-            if ((currentTurn >= effectStartTurn && currentTurn <= effectEndTurn) || isPermanent)
+            if ((currentTurn >= modifier.activateEffectStartTurn && currentTurn < modifier.activateEffectEndTurn) || isPermanent)
             {
-                Debug.Log("Current Turn: " + currentTurn);
-                Debug.Log("My effect is activating.");
+                //Debug.Log("Current Turn: " + currentTurn);
+                Debug.Log($"{modifier.name} effect is activating.");
                 currentStats = modifier.ApplyStatModChanges(currentStats, currentTurn);
             }
             else
             {
-                Debug.Log("My effect is not activating.");
+                Debug.Log($"{modifier.name} effect is not activating.");
             }
                 
         }

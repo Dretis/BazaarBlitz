@@ -1,67 +1,33 @@
 using Core;
 using Core.Events;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class AvailableNodeIndicator : MonoBehaviour
 {
+    private GameplayTest _gameplayTest;
     private Transform target;
-    //[SerializeField] private EntityPiece currentPlayer;
-    [SerializeField] private MapNode targetNode;
-    [SerializeField] private MapNode prevTargetNode;
-    //private List<MapNode> nearbyNodes = new List<MapNode>();
 
     [SerializeField] private List<Transform> nodeIndicators = new List<Transform>();
     [SerializeField] private List<SpriteRenderer> nodeVisualIndicators = new List<SpriteRenderer>();
-    [SerializeField] private List<MapNode> nearbyNodes = new List<MapNode>();
+    [SerializeField] private List<NearbyNodeData> nearbyNodes = new List<NearbyNodeData>();
     [SerializeField] private Vector3 nearbyNodesOffset;
 
-    //[SerializeField] private Transform northTarget;
-    //[SerializeField] private Transform eastTarget;
-    //[SerializeField] private Transform southTarget;
-    //[SerializeField] private Transform westTarget;
-
     [Header("Listen on Event Channels")]
-    //public PlayerEventChannelSO m_NextPlayerTurn;
-
-    //public VoidEventChannelSO m_DiceRolled;
-    //public VoidEventChannelSO m_PlayerMovedOnBoard;
-    //public VoidEventChannelSO m_PlayerUndidSomething; // is this going back while moving??
-
-    //public VoidEventChannelSO m_IncidentStarted;
-
-    //public PlayerEventChannelSO m_PlayerWon;
-    [Space]
     public GameStateEventChannelSO _gameStateEventChannel;
+
+    public void Initialize(GameplayTest gt) 
+    {
+        _gameplayTest = gt;
+    }
 
     private void OnEnable()
     {
-        //m_NextPlayerTurn.OnEventRaised += OnNextPlayerTurn;
-        //m_DiceRolled.OnEventRaised += OnDiceRolled;
-        //m_PlayerMovedOnBoard.OnEventRaised += OnPlayerMovedOnBoard;
-        //m_PlayerUndidSomething.OnEventRaised += OnPlayerUndidSomething;
-
-        //m_IncidentStarted.OnEventRaised += OnIncidentStarted;
-
-        //m_PlayerWon.OnEventRaised += OnPlayerWon;
-
         _gameStateEventChannel.OnEventRaised += HandleGameState;
     }
 
     private void OnDisable()
     {
-        //m_NextPlayerTurn.OnEventRaised -= OnNextPlayerTurn;
-        //m_DiceRolled.OnEventRaised -= OnDiceRolled;
-        //m_PlayerMovedOnBoard.OnEventRaised -= OnPlayerMovedOnBoard;
-        //m_PlayerUndidSomething.OnEventRaised -= OnPlayerUndidSomething;
-
-        //m_IncidentStarted.OnEventRaised -= OnIncidentStarted;
-
-        //m_PlayerWon.OnEventRaised -= OnPlayerWon;
-
         _gameStateEventChannel.OnEventRaised -= HandleGameState;
     }
 
@@ -89,11 +55,11 @@ public class AvailableNodeIndicator : MonoBehaviour
         if (state.NewState.GamePhase is GameplayTest.GamePhase.PickDirection)
         {
             //OnPlayerMovedOnBoard();
-            SetTargetNode(state.NewState.CurrentPlayer().EntityData);
+            //SetTargetNode(state.NewState);
             if (state.NewState.MovementLeft <= 0)
                 HideNodeIndicators();
             else
-                ShowNodeIndicators(state.NewState.CurrentPlayer().EntityData);
+                ShowNodeIndicators(state.NewState);
         }
         if (state.NewState.GamePhase is GameplayTest.GamePhase.IncidentHappening)
         {
@@ -126,62 +92,50 @@ public class AvailableNodeIndicator : MonoBehaviour
         }
     }
 
-    private void ShowNodeIndicators(EntityData ed)
+    private void ShowNodeIndicators(GameState state)
     {
+        var ed = state.CurrentPlayer().EntityData;
+        var nodeId = ed.OccupiedNodeId;
+
+        var occupiedNode = _gameplayTest.BoardNodeManager.NodeDictionary[ed.OccupiedNodeId];
+
+        target = occupiedNode.transform;
         transform.position = target.position + nearbyNodesOffset;
 
-        var existingNodes = new List<MapNode>();
+        nearbyNodes.Clear();
+        nearbyNodes.Add(occupiedNode.BoardNodeData.NorthNode);
+        nearbyNodes.Add(occupiedNode.BoardNodeData.EastNode);
+        nearbyNodes.Add(occupiedNode.BoardNodeData.SouthNode);
+        nearbyNodes.Add(occupiedNode.BoardNodeData.WestNode);
+
+        var existingNearbyNodeIds = new List<int>();
 
         for (int i = 0; i < nodeIndicators.Count; i++)
         {
-            //Debug.Log($"nearbyNodes[{i}] = { nearbyNodes[i]}");
-            if (nearbyNodes[i] == null || existingNodes.Contains(nearbyNodes[i])) 
+            var lastEle = state.TraveledNodeIds.Count;
+            var lastNodeId = state.TraveledNodeIds[^1];
+
+            if (lastEle > 1)
+                lastNodeId = state.TraveledNodeIds[^2];
+
+            //if (nearbyNodes[i] == null || existingNodes.Contains(nearbyNodes[i])) 
+            if (existingNearbyNodeIds.Contains(nearbyNodes[i].Id) ||
+                nearbyNodes[i].Id == -1 || nearbyNodes[i].IsOneWay || 
+                nearbyNodes[i].Id == ed.PreviousNodeId ||
+                nearbyNodes[i].Id == lastNodeId) 
             {
                 // non-existent direction or already node is already indicated
                 nodeVisualIndicators[i].enabled = false;
             }
-            else if(nearbyNodes[i] == prevTargetNode || nearbyNodes[i] == ed.PreviousNode)
-            {
-                // don't show either if its the node you came from
-                nodeVisualIndicators[i].enabled = false;
-            }
             else
             {
+                var id = nearbyNodes[i].Id;
+
                 nodeVisualIndicators[i].enabled = true;
-                nodeIndicators[i].right = nearbyNodes[i].transform.position - nodeIndicators[i].position + nearbyNodesOffset;
-                existingNodes.Add(nearbyNodes[i]);
+                nodeIndicators[i].right = _gameplayTest.BoardNodeManager.NodeDictionary[id].transform.position
+                                            - nodeIndicators[i].position + nearbyNodesOffset;
+                existingNearbyNodeIds.Add(nearbyNodes[i].Id);
             }
         }
-    }
-
-    private void SetTargetNode(EntityData ed)
-    {
-        var node = ed.OccupiedNode;
-
-        if (target != null)
-        {
-            // Track the previous node in the list
-            prevTargetNode = ed.TraveledNodes[^1];
-        }
-
-        targetNode = node;
-        target = node.transform;
-
-        nearbyNodes.Clear();
-
-        TryAddNearbyNode(node.north);
-        TryAddNearbyNode(node.east);
-        TryAddNearbyNode(node.south);
-        TryAddNearbyNode(node.west);
-
-        //targetNode.north;
-    }
-
-    private void TryAddNearbyNode(MapNode node) 
-    {
-        if (node == null)
-            nearbyNodes.Add(null);
-        else
-            nearbyNodes.Add(node);
     }
 }

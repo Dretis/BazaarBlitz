@@ -18,8 +18,8 @@ public class TimelineManager : MonoBehaviour
     [Header("Listen On Event Channels")]
     public PlayerEventChannelSO m_NextPlayerTurn;
     //public IntEventChannelSO m_UseItemAt; // aka m_ItemUsed or "I want to Use Inventory Item At"
-    public IntItemEventChannelSO m_ItemUsed; // aka m_ItemUsed or "I want to Use Inventory Item At"
-    public PlayerEventChannelSO m_ConfirmBuildStore;
+    //public IntItemEventChannelSO m_ItemUsed; // aka m_ItemUsed or "I want to Use Inventory Item At"
+    //public PlayerEventChannelSO m_ConfirmBuildStore;
     //public NodeEventChannelSO m_LandOnWarpNode;
     //public PlayerEventChannelSO m_ResetToIdle;
     public PlayerEventChannelSO m_PlayerWon;
@@ -30,8 +30,8 @@ public class TimelineManager : MonoBehaviour
     {
         m_NextPlayerTurn.OnEventRaised += OnNextPlayerTurn;
         //m_UseItemAt.OnEventRaised += OnUseItemAt;
-        m_ItemUsed.OnEventRaised += OnItemUsed;
-        m_ConfirmBuildStore.OnEventRaised += OnConfirmBuildStore;
+        //m_ItemUsed.OnEventRaised += OnItemUsed;
+        //m_ConfirmBuildStore.OnEventRaised += OnConfirmBuildStore;
         //m_LandOnWarpNode.OnEventRaised += OnLandOnWarpNode;
         m_PlayerWon.OnEventRaised += OnPlayerWon;
         //m_ResetToIdle.OnEventRaised += ResetToIdleAnim;
@@ -43,8 +43,8 @@ public class TimelineManager : MonoBehaviour
     {
         m_NextPlayerTurn.OnEventRaised -= OnNextPlayerTurn;
         //m_UseItemAt.OnEventRaised -= OnUseItemAt;
-        m_ItemUsed.OnEventRaised -= OnItemUsed;
-        m_ConfirmBuildStore.OnEventRaised -= OnConfirmBuildStore;
+        //m_ItemUsed.OnEventRaised -= OnItemUsed;
+        //m_ConfirmBuildStore.OnEventRaised -= OnConfirmBuildStore;
         //m_LandOnWarpNode.OnEventRaised -= OnLandOnWarpNode;
         m_PlayerWon.OnEventRaised -= OnPlayerWon;
         //m_ResetToIdle.OnEventRaised -= ResetToIdleAnim;
@@ -79,14 +79,16 @@ public class TimelineManager : MonoBehaviour
 
     private void OnConfirmBuildStore(EntityPiece currentPlayer)
     {
+        /*
         if (currentPlayer.TryGetComponent<TimelineSignalResponder>(out TimelineSignalResponder responder))
         {
             Debug.Log($"{currentPlayer} is building a store");
 
-            if (currentPlayer.playerSprite.flipX) currentPlayer.playerSprite.flipX = false;
+            if (currentPlayer.playerSprite.flipX) currentPlayer.playerSprite.flipX = false; // put this as apart of the cutscene lol
 
             responder.pd_BuildStore.Play();
         }
+        */
     }
 
     private void OnLandOnWarpNode(MapNode m)

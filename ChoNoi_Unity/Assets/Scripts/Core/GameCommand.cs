@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Core
@@ -93,6 +94,16 @@ namespace Core
         public BuildStoreCommand(int itemCount)
         {
             ItemCount = itemCount;
+        }
+    }
+    
+    public struct RestockStoreCommand : ICommand
+    {
+        public Dictionary<int, ItemStats> ItemsToStock; // not useless
+
+        public RestockStoreCommand(Dictionary<int, ItemStats> itemsToStock)
+        {
+            ItemsToStock = itemsToStock;
         }
     }
 

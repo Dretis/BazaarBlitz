@@ -6,7 +6,9 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using Core;
-using DG.Tweening;
+using LitMotion;
+using System.Collections;
+using LitMotion.Extensions;
 
 /// <summary>
 /// Handles the visual aspects of a Player Baggie present on the board.
@@ -18,7 +20,9 @@ public class EntityPiece : MonoBehaviour
     // - Move animation functions/script into this?
     // - Rename to 'EntityVisual' or 'EntityOverworldVisual'
     private GameplayTest _gameplayTest;
+
     [SerializeField] private TimelineSignalResponder _timelineSignalResponder;
+    private MotionHandle _moveMotion;
 
     public enum State
     {
@@ -129,13 +133,14 @@ public class EntityPiece : MonoBehaviour
         // Boat Colors
         pBoatLoader.SetInspectorPalette(boatPal);
 
-        transform.position = ps.EntityData.InitialNode.transform.position;
+        //transform.position = ps.EntityData.InitialNode.transform.position;
+        transform.position = gt.BoardNodeManager.NodeDictionary[ps.EntityData.InitialNodeId].transform.position;
     }
 
     private void DisplayEntityFromGameState(FrameGameState gameState)
     {
         //if(gameState.NewState.CurrPlayerId != id) return;
-        if (isEnemy) return;
+        if (isEnemy) return; // temp
         if (!gameState.DidChangePhases()) return;
 
         if (gameState.NewState.GamePhase is GameplayTest.GamePhase.StartTurn)
@@ -146,22 +151,49 @@ public class EntityPiece : MonoBehaviour
 
         if (gameState.NewState.CurrPlayerId == id)
         {
+            if (gameState.PrevState.Players[id].EntityData.Money <
+                gameState.NewState.Players[id].EntityData.Money)
+            {
+                var coinGain = gameState.NewState.Players[id].EntityData.Money - gameState.PrevState.Players[id].EntityData.Money;
+                StartCoroutine(ShowCoinGainNumber(gameState.NewState.Players[id].EntityData, coinGain));
+
+                var emission = coinSucking.emission;
+                emission.rateOverTime = coinGain * 0.10f;
+                if(coinSucking.isPlaying) coinSucking.Stop();
+                coinSucking.Play();
+            }
+
+            if (gameState.PrevState.Players[id].EntityData.Money >
+                gameState.NewState.Players[id].EntityData.Money)
+            {
+                var coinLoss = gameState.PrevState.Players[id].EntityData.Money - gameState.NewState.Players[id].EntityData.Money;
+
+                var coinLossNum = new ParticleSystem.Burst(0f, coinLoss * 0.05f);
+                coinDrop.emission.SetBurst(0, coinLossNum);
+                if (coinDrop.isPlaying) coinDrop.Stop();
+                coinDrop.Play();
+            }
+
             if (gameState.PrevState.GamePhase is GameplayTest.GamePhase.PickDirection)
             {
-                var prevOccupiedNode = gameState.PrevState.Players[id].EntityData.OccupiedNode;
-
 
             }
             if (gameState.PrevState.GamePhase is GameplayTest.GamePhase.MoveAround)
             {
                 MoveEntityToNode(gameState.NewState.Players[id].EntityData);
             }
+
+            // Cutscenes
+            if (gameState.BuildStoreCutsceneStarted())
+            {
+                playerSprite.flipX = false;
+            }
         }
     }
 
     private void SetEntityVisualPostCombat(EntityData ed)
     {
-        if (!ed.IsEnemy) // temp
+        if (ed.EntityType is EntityType.Player)// !ed.IsEnemy) // temp
         {
             if (ed.Statuses.Contains(Status.Fighting) || ed.Statuses.Contains(Status.FightingParty))
             {
@@ -179,11 +211,41 @@ public class EntityPiece : MonoBehaviour
 
     private void MoveEntityToNode(EntityData ed)
     {
-        var assignedPlayerNode = ed.OccupiedNode;
-        transform.DOMove(assignedPlayerNode.transform.position, .25f)
-            .SetEase(Ease.OutQuint);
+        if (_gameplayTest.BoardNodeManager.NodeDictionary.TryGetValue(ed.OccupiedNodeId, out BoardNode nodeObject))
+        {
+            if (_moveMotion.IsPlaying()) _moveMotion.Complete();
 
-        Debug.Log($"EntityVisual | Current player moved to {assignedPlayerNode}");
+            _moveMotion = LMotion.Create(transform.position, nodeObject.transform.position, 0.25f)
+                .WithEase(Ease.OutQuint)
+                //.WithEase(Ease.OutBack)
+                .BindToPosition(transform);
+
+            //Debug.Log($"EntityVisual | Current player moved to {nodeObject}");
+        }
+    }
+    private IEnumerator ShowCoinGainNumber(EntityData ed, int coinGain)
+    {
+        var coinGainLocalScale = coinGainNumber.GetComponent<RectTransform>().localScale;
+        coinGainLocalScale = Vector3.zero;
+
+        LMotion.Create(coinGainLocalScale, Vector3.one, 0.2f)
+            .WithEase(Ease.OutBack)
+            .Bind(x => coinGainLocalScale = x);
+
+        if (!(ed.Money >= GameplayTest.instance.currentRuleset.pointGoal))
+        {
+            coinGainNumber.ShowText($"+{coinGain}<sprite=\"Coin Icon\" index=0> ");
+        }
+        //entity.coinGainNumber.ShowText($"+{coinGain}<sprite=\"Coin Icon\" index=0> ");
+
+        yield return new WaitForSeconds(1f);
+
+        LMotion.Create(coinGainLocalScale, Vector3.zero, 0.5f)
+            .WithEase(Ease.OutQuad)
+            .Bind(x => coinGainLocalScale = x);
+
+        coinGainNumber.StartDisappearingText();
+        yield return null;
     }
 
     private void OnEnable()

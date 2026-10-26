@@ -64,7 +64,7 @@ public class CameraObserver : MonoBehaviour
     public VoidEventChannelSO m_IncidentStarted;
 
     public PlayerEventChannelSO m_ConfirmBuildStore;
-    public NodeEventChannelSO m_RestockStore;
+    //public NodeEventChannelSO m_RestockStore;
     public PlayerEventChannelSO m_PlayerWon;
 
     private void OnEnable()
@@ -102,7 +102,7 @@ public class CameraObserver : MonoBehaviour
         m_IncidentStarted.OnEventRaised += OnIncidentStarted;
 
         m_ConfirmBuildStore.OnEventRaised += OnConfirmBuildStore;
-        m_RestockStore.OnEventRaised += OnRestockStore;
+        //m_RestockStore.OnEventRaised += OnRestockStore;
 
         m_PlayerWon.OnEventRaised += OnPlayerWon;
         
@@ -143,7 +143,7 @@ public class CameraObserver : MonoBehaviour
         m_IncidentStarted.OnEventRaised -= OnIncidentStarted;
 
         m_ConfirmBuildStore.OnEventRaised -= OnConfirmBuildStore;
-        m_RestockStore.OnEventRaised -= OnRestockStore;
+        //m_RestockStore.OnEventRaised -= OnRestockStore;
 
         m_PlayerWon.OnEventRaised -= OnPlayerWon;
         
@@ -204,7 +204,7 @@ public class CameraObserver : MonoBehaviour
 
     void ReturnTargetFocusToCurrentPlayer(GameState newState)
     {
-        Debug.Log("Back to player focus");
+        //Debug.Log("Back to player focus");
         freeviewCam.enabled = false;
         freeviewReticle.SetActive(false);
         vcam.Follow = newState.CurrentPlayerObj.transform;
@@ -333,12 +333,6 @@ public class CameraObserver : MonoBehaviour
         //focusZoomCam.enabled = true;
     }
 
-    private void OnRestockStore(MapNode node)
-    {
-        //focusZoomCam.Follow = entity.transform;
-        //focusZoomCam.enabled = false;
-    }
-
     private void OnPlayerWon(EntityPiece winner)
     {
         combatZoomCam.enabled = false;
@@ -386,12 +380,13 @@ public class CameraObserver : MonoBehaviour
                 SwitchFocusToReticle(gameState.NewState);
             }
 
-            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.StockStore)
+            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.StockingStore)
             {
                 focusZoomCam.enabled = false;
             }
 
             // Player Cutscenes
+            /*
             if (gameState.NewState.GamePhase is GameplayTest.GamePhase.IncidentHappening)
             {
                 zoomedInCam.enabled = false;
@@ -413,6 +408,7 @@ public class CameraObserver : MonoBehaviour
                     focusZoomCam.enabled = true;
                 }
             }
+            */
         }
     }
     

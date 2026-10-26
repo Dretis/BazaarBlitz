@@ -62,7 +62,7 @@ public class FreeviewReticleManager : MonoBehaviour
                     reticle.color = targetedColor;
                 }
                 else if (wm == EntityStatsModifiers.WarpMode.Players // Banh Mi Sandwich
-                    && node.playersOccupied.Count != 0)
+                    && node.occupiedEntities.Count != 0)
                 {
                         reticle.color = targetedColor;
                 }

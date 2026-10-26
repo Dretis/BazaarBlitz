@@ -48,7 +48,7 @@ public class PlayerInputController : MonoBehaviour
     public PlayerEventChannelSO m_OpenInventory;
 
     public PlayerEventChannelSO m_TryBuildStore;
-    public PlayerEventChannelSO m_BuildStore; 
+    //public PlayerEventChannelSO m_BuildStore; 
     public PlayerEventChannelSO m_FinishStockingStore;
     public VoidEventChannelSO m_BackRenovateStore;
     public NodeEventChannelSO m_RestockStore; // also listening
@@ -70,7 +70,7 @@ public class PlayerInputController : MonoBehaviour
 
     [Header("Listen on Event Channels")]
     public PlayerEventChannelSO m_AssignPlayerToController;
-    public PlayerEventChannelSO m_NextPlayerTurn;
+    //public PlayerEventChannelSO m_NextPlayerTurn;
     [Space]
     // Store-based Event Channels
     public PlayerEventChannelSO m_ConfirmBuildStore;
@@ -130,7 +130,7 @@ public class PlayerInputController : MonoBehaviour
         m_EnableFreeview.OnEventRaised += FreeviewEnabled;
         m_DisableFreeview.OnEventRaised += FreeviewDisabled;
 
-        m_NextPlayerTurn.OnEventRaised += SetCurrentPlayer;
+        //m_NextPlayerTurn.OnEventRaised += SetCurrentPlayer;
 
         m_ConfirmBuildStore.OnEventRaised += OnConfirmBuildStore;
         //m_CancelBuildStore.OnEventRaised += OnCancelBuildStore;
@@ -178,7 +178,7 @@ public class PlayerInputController : MonoBehaviour
         m_EnableFreeview.OnEventRaised -= FreeviewEnabled;
         m_DisableFreeview.OnEventRaised -= FreeviewDisabled;
 
-        m_NextPlayerTurn.OnEventRaised -= SetCurrentPlayer;
+        //m_NextPlayerTurn.OnEventRaised -= SetCurrentPlayer;
 
         m_ConfirmBuildStore.OnEventRaised -= OnConfirmBuildStore;
         //m_CancelBuildStore.OnEventRaised -= OnCancelBuildStore;
@@ -320,12 +320,12 @@ public class PlayerInputController : MonoBehaviour
     # region 'UI' Action Map
     private void OnNavigate(InputValue value)
     {
-        Debug.Log($"Player ID: {playerInput.playerIndex} - UI Action Map | Navigating... | {value.Get()}");
+        Debug.Log($"Player ID: {playerInput.playerIndex} - PS ID: {_playerState.Id} | UI Action Map | Navigating... | {value.Get()}");
     }
     
     private void OnSubmit()
     {
-        Debug.Log($"Player ID: {playerInput.playerIndex} - UI Action Map | Submiting...");
+        Debug.Log($"Player ID: {playerInput.playerIndex} - PS ID: {_playerState.Id} | UI Action Map | Submiting...");
     }
     private void OnCancel()
     {
@@ -675,7 +675,7 @@ public class PlayerInputController : MonoBehaviour
                 playerInput.SwitchCurrentActionMap("UI");
                 break;
 
-            case GamePhase.StockStore:
+            case GamePhase.StockingStore:
                 playerInput.SwitchCurrentActionMap("UI");
                 break;
 
@@ -719,7 +719,7 @@ public class PlayerInputController : MonoBehaviour
         Debug.Log($"currActionMap | {currActionMap}");
     }
     
-    public void SwitchActionMapRewrite(GameplayTest.GamePhase phase)
+    public void SwitchActionMapRewrite(GamePhase phase)
     {
         var desiredActionMapName = phase switch
         {
@@ -736,7 +736,7 @@ public class PlayerInputController : MonoBehaviour
             GamePhase.BuildingStore => ("UI"),
             GamePhase.InStore => ("UI"),
             GamePhase.PreStockStore => ("UI"),
-            GamePhase.StockStore => ("UI"),
+            GamePhase.StockingStore => ("UI"),
             GamePhase.InVendor => ("Confirmation"),
             GamePhase.EndTurn => ("Combat"),
             GamePhase.LevelUp =>
@@ -776,17 +776,14 @@ public class PlayerInputController : MonoBehaviour
     }
 
     // change this function later
-    private void SetCurrentPlayer(EntityPiece player)
+    public void SetCurrentPlayer(int id)
     {
-        //currentPlayer = player;
-        var p = GameplayTest.instance.currentPlayer;
-
         var e = GetComponentInChildren<EventSystemEnabler>();
         //Debug.Log($"SetCurrentPlayer | e: {e} ");
         //if (assignedPlayer != p.id)
-        if (_playerState.Id != p.id)
+        if (_playerState.Id != id)
         {
-            //playerInput.currentActionMap.Disable();
+            // Change this to like a Standby/Inactive action map or something
             playerInput.DeactivateInput();
             //Debug.Log($"SetCurrentPlayer | Player ID: {playerInput.playerIndex} deactivated input.");
             if (e != null) e.DisablePlayerCanvases();

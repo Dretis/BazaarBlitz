@@ -589,7 +589,7 @@ public class SoundManager : MonoBehaviour
     
     private void StopDiceRollSound()
     {
-        Debug.Log("stopped dice roll sound");
+        //Debug.Log("stopped dice roll sound");
         diceRollInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
         diceRollInstance.release();
     }

@@ -3,30 +3,34 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using DG.Tweening;
-using UnityEngine.EventSystems;
-using System.Linq;
 using Core.Events;
 using System;
 using UnityEngine.InputSystem.UI;
 using Core;
+using LitMotion;
+using LitMotion.Extensions;
 
 public class UIInventoryManager : MonoBehaviour
 {
     private PlayerState _playerState;
+    private StorefrontData _selectedStoreData;
     private GameplayTest _gameplayTest;
+    private List<ItemStats> _storestockHolder = new List<ItemStats>();
+    private Dictionary<int, ItemStats> _expectedItemsToStock = new Dictionary<int, ItemStats>(); // int = index in Player Inventory
+    [SerializeField] public InventoryState CurrentState { get; private set; }
     public enum InventoryState
     {
+        None, // Inactive
         UseItem,
-        RestockStore,
+        Restock,
         Discard,
         DropItem
     }
     //[SerializeField] private List<ItemStats> playerInventory; //effectively copy of player's inv
     //[SerializeField] private EntityPiece currentPlayer; //reference of player
 
-    private int currentPlayerIndex;
-    private StoreManager selectedStore;
+    //private int currentPlayerIndex;
+    //private StoreManager selectedStore;
     [SerializeField] private MultiplayerEventSystem _eventSystem;
 
     [Header("Main Inventory")]
@@ -38,6 +42,7 @@ public class UIInventoryManager : MonoBehaviour
     [SerializeField] private List<TextMeshProUGUI> itemPrices;
 
     [Header("Selected Item Details")]
+    [SerializeField] private RectTransform selectedItemRect;
     [SerializeField] private Image selectedItemIcon;
     [SerializeField] private List<TextMeshProUGUI> selectedItemInfo;
 
@@ -48,50 +53,55 @@ public class UIInventoryManager : MonoBehaviour
 
     [Header("Storestock Inventory")]
     [SerializeField] private CanvasGroup storestockGroup;
+    [SerializeField] private TextMeshProUGUI storestockLevelIndicator;
     [SerializeField] private List<Image> storestockIcons;
     [SerializeField] private List<TextMeshProUGUI> storestockNames;
     [SerializeField] private List<TextMeshProUGUI> storestockPrices;
-    [SerializeField] private List<ItemStats> storeInv;
-    [SerializeField] private TextMeshProUGUI storestockTooltip;
+    //[SerializeField] private List<ItemStats> storeInv;
+    //[SerializeField] private TextMeshProUGUI storestockTooltip;
 
-    [Header("Extra Space")]
-    [SerializeField] private CanvasGroup extraGroup;
-    [SerializeField] private List<Image> extraIcons;
-    [SerializeField] private List<TextMeshProUGUI> extraNames;
-    [SerializeField] private List<TextMeshProUGUI> extraPrices;
-    [SerializeField] private List<ItemStats> extraInv;
+    //[Header("Extra Space")]
+    //[SerializeField] private CanvasGroup extraGroup;
+    //[SerializeField] private List<Image> extraIcons;
+    //[SerializeField] private List<TextMeshProUGUI> extraNames;
+    //[SerializeField] private List<TextMeshProUGUI> extraPrices;
+    //[SerializeField] private List<ItemStats> extraInv;
 
     [Header("Confirmation Space")]
-    [SerializeField] private CanvasGroup confirmGroup;
-    [SerializeField] private List<GameObject> confirmButtonHolders;
-    [SerializeField] private TextMeshProUGUI confirmText;
+    [SerializeField] private CanvasGroup _useItemConfirmGroup;
+    [SerializeField] private List<GameObject> _useItemConfirmButtonHolders;
+    [SerializeField] private TextMeshProUGUI _useItemconfirmText;
+    [Space]
+    [SerializeField] private CanvasGroup _restockConfirmGroup;
+    [SerializeField] private List<GameObject> _restockConfirmButtonHolders;
+    //[SerializeField] private TextMeshProUGUI _restockconfirmText;
 
     [Header("Inventory Stats")]
-    [SerializeField] private InventoryState currentState;
     //[SerializeField] private int currentItemCount;
     [SerializeField] private int discardedItemCount;
+    [SerializeField] private int _emptyStorestockCount = 0;
     [SerializeField] private const int INVENTORY_LIMIT = 8;
     [SerializeField] private GameObject heldItemPrefab;
-    [SerializeField] private List<GameObject> heldItemHolders;
+    [SerializeField] private List<InventorySelectionHandler> heldItemHolders;
 
-    private int selectedItemIndex;
-    private ItemStats selectedItem;
+    private int _selectedItemIndex;
+    private ItemStats _selectedItem;
 
     [Header("Broadcast on Event Channels")]
-    public IntItemEventChannelSO m_ItemUsed;
+    //public IntItemEventChannelSO m_ItemUsed;
     public IntItemEventChannelSO m_RaycastItemUsed;
 
     [Header("Listen on Event Channels")]
     //public PlayerEventChannelSO m_OpenInventory;
     //public VoidEventChannelSO m_ExitInventory;
     //public PlayerEventChannelSO m_RefreshInventory;
-    public NodeEventChannelSO m_RestockStore;
+    //public NodeEventChannelSO m_RestockStore;
 
-    public IntItemEventChannelSO m_ItemStocked;
+    //public IntItemEventChannelSO m_ItemStocked;
     public IntItemEventChannelSO m_ItemDiscarded;
-    public ItemEventChannelSO m_ItemSelected;
+    //public ItemEventChannelSO m_ItemSelected;
 
-    public IntItemEventChannelSO m_TryUseItemAt;
+    //public IntItemEventChannelSO m_TryUseItemAt;
 
     //public PlayerEventChannelSO m_FullInventory;
 
@@ -101,23 +111,28 @@ public class UIInventoryManager : MonoBehaviour
     {
         _playerState = ps;
         _gameplayTest = gt;
+        //storestockHolder.
     }
 
     private void UpdateUIFromGameState(FrameGameState gameState)
     {
         if (gameState.DidChangePhases())
         {
+            var ped = gameState.NewState.CurrentPlayer().EntityData;
+
             if (gameState.PrevState.GamePhase is GameplayTest.GamePhase.Inventory)
             {
+                CurrentState = InventoryState.None;
                 Debug.Log("Hiding Inventory");
                 HideInventory();
                 HideStoreStock();
-                HideConfirmGroup();
+                HideUseItemConfirmGroup();
             }
 
             if (gameState.NewState.GamePhase is GameplayTest.GamePhase.Inventory)
             {
-                DisplayInventory(gameState.NewState.CurrentPlayer().EntityData);
+                CurrentState = InventoryState.UseItem;
+                DisplayInventory(ped);
             }
             else
             {
@@ -125,16 +140,52 @@ public class UIInventoryManager : MonoBehaviour
                 //HideStoreStock();
                 //HideConfirmGroup();
             }
-            
-            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.StockStore)
+
+            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.StockingStore)
             {
-                if(gameState.PrevState.GamePhase is GameplayTest.GamePhase.BuildingStore)
+                if(gameState.PrevState.GamePhase is GameplayTest.GamePhase.IncidentHappening)
                 {
-                    DisplayInventory(gameState.NewState.CurrentPlayer().EntityData);
-                    OnRestockStore(gameState.NewState.CurrentPlayer().EntityData.OccupiedNode);
+                    // After Build Store cutscene
+                    CurrentState = InventoryState.Restock;
+                    _selectedStoreData = gameState.NewState.BoardNodes[ped.OccupiedNodeId].StorefrontData;
+                    DisplayInventory(ped);
+                    SetupRestockStore(_selectedStoreData);
+                }
+                if (gameState.PrevState.GamePhase is GameplayTest.GamePhase.PreStockStore)
+                {
+                    // After picking Restock during Renovate
+                    CurrentState = InventoryState.Restock;
+                    _selectedStoreData = gameState.NewState.BoardNodes[gameState.NewState.SelectedBoardNodeId].StorefrontData;
+                    DisplayInventory(ped);
+                    SetupRestockStore(_selectedStoreData);
                 }
             }
-            
+            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.PrepStockStore)
+            {
+                PromptRestockItems();
+
+            }
+            else if (gameState.PrevState.GamePhase is GameplayTest.GamePhase.PrepStockStore && 
+                     gameState.NewState.GamePhase is GameplayTest.GamePhase.InitialTurnMenu)
+            {
+                CurrentState = InventoryState.None;
+                HideInventory();
+                HideStoreStock();
+                HideUseItemConfirmGroup();
+            }
+
+            if (gameState.PrevState.GamePhase is GameplayTest.GamePhase.DiscardItem)
+            {
+                CurrentState = InventoryState.None;
+                HideInventory();
+                HideStoreStock();
+                HideUseItemConfirmGroup();
+            }
+            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.DiscardItem)
+            {
+                CurrentState = InventoryState.Discard;
+                DisplayInventory(ped);
+            }
         }
     }
 
@@ -145,8 +196,11 @@ public class UIInventoryManager : MonoBehaviour
 
         storestockGroup.alpha = 0;
 
-        confirmGroup.interactable = false;
-        confirmGroup.alpha = 0f;
+        _useItemConfirmGroup.interactable = false;
+        _useItemConfirmGroup.alpha = 0f;
+
+        _restockConfirmGroup.interactable = false;
+        _restockConfirmGroup.alpha = 0f;
 
         instructionGroup.alpha = 0;
 
@@ -155,13 +209,13 @@ public class UIInventoryManager : MonoBehaviour
         //m_ExitInventory.OnEventRaised += HideStoreStock;
         //m_ExitInventory.OnEventRaised += HideConfirmGroup;
         //m_RefreshInventory.OnEventRaised += RefreshInventory;
-        m_RestockStore.OnEventRaised += OnRestockStore;
+        //m_RestockStore.OnEventRaised += OnRestockStore;
 
-        m_ItemStocked.OnEventRaised += AddItemToStoreStock;
+        //m_ItemStocked.OnEventRaised += AddItemToStoreStock;
         m_ItemDiscarded.OnEventRaised += OnItemDiscarded;
-        m_ItemSelected.OnEventRaised += ShowSelectedItemDetails;
+        //m_ItemSelected.OnEventRaised += ShowSelectedItemDetails;
 
-        m_TryUseItemAt.OnEventRaised += OnTryUseItemAt;
+        //m_TryUseItemAt.OnEventRaised += OnTryUseItemAt;
 
         //m_FullInventory.OnEventRaised += OnFullInventory;
 
@@ -175,13 +229,13 @@ public class UIInventoryManager : MonoBehaviour
         //m_ExitInventory.OnEventRaised -= HideStoreStock;
         //m_ExitInventory.OnEventRaised -= HideConfirmGroup;
         //m_RefreshInventory.OnEventRaised -= RefreshInventory;
-        m_RestockStore.OnEventRaised -= OnRestockStore;
+        //m_RestockStore.OnEventRaised -= OnRestockStore;
         
-        m_ItemStocked.OnEventRaised -= AddItemToStoreStock;
+        //m_ItemStocked.OnEventRaised -= AddItemToStoreStock;
         m_ItemDiscarded.OnEventRaised -= OnItemDiscarded;
-        m_ItemSelected.OnEventRaised -= ShowSelectedItemDetails;
+        //m_ItemSelected.OnEventRaised -= ShowSelectedItemDetails;
 
-        m_TryUseItemAt.OnEventRaised -= OnTryUseItemAt;
+        //m_TryUseItemAt.OnEventRaised -= OnTryUseItemAt;
 
         //m_FullInventory.OnEventRaised -= OnFullInventory;
 
@@ -218,11 +272,23 @@ public class UIInventoryManager : MonoBehaviour
             }
 
             var item = Instantiate(heldItemPrefab, inventoryParentTransform);
-            item.name = $"Held Item #{i+1}";
-            item.GetComponent<InventorySelectionHandler>().UpdateItemInfo(ed, itemToSpawn);
-            item.GetComponent<InventorySelectionHandler>().itemIndex = i;
+            //item.GetComponent<InventorySelectionHandler>().UpdateItemInfo(ed, itemToSpawn);
+            //item.GetComponent<InventorySelectionHandler>().itemIndex = i;
 
-            heldItemHolders.Add(item);
+            if (item.TryGetComponent<InventorySelectionHandler>(out InventorySelectionHandler ish))
+            {
+                ish.Initialize(ed, this);
+                ish.UpdateItemInfo(itemToSpawn);
+                ish.itemIndex = i;
+                heldItemHolders.Add(ish);
+            }
+
+            if (itemToSpawn != null)
+                item.name = $"Held Item #{i + 1}_{itemToSpawn.itemName}";
+            else
+                item.name = $"Held Item #{i + 1}_EMPTY";
+
+            //heldItemHolders.Add(ish);
 
             if (i == 0)
             {
@@ -248,6 +314,14 @@ public class UIInventoryManager : MonoBehaviour
         //currentPlayerIndex = ps.Id;
     }
 
+    private void RefreshInventorySelection()
+    {
+        foreach(var selection in heldItemHolders)
+        {
+            selection.UpdateItemInfo(selection.HeldItem);
+        }
+    }
+
     private void HideInventory()
     {
         FadeTo(inventoryGroup, 0, 0.25f);
@@ -263,9 +337,10 @@ public class UIInventoryManager : MonoBehaviour
         //DestroyAllHeldItems();
         //SpawnItemsInInventory(entity.inventory);
 
-        if(GameplayTest.instance.phase == GameplayTest.GamePhase.StockStore)
+        if(CurrentState is InventoryState.Restock)
         {
-            instructionText.text = $"<color=#FFEC75>Store resupply!\r\nStock up to {GameplayTest.instance.emptyStockCount} more items.";
+            _emptyStorestockCount = 0;
+            UpdateRestockInstruction();
         }
 
         var playerInventory = ed.Inventory;
@@ -294,10 +369,10 @@ public class UIInventoryManager : MonoBehaviour
                 itemToSpawn = null;
             }
 
-            heldItemHolders[i].GetComponent<InventorySelectionHandler>().UpdateItemInfo(ed, itemToSpawn);
+            heldItemHolders[i].GetComponent<InventorySelectionHandler>().UpdateItemInfo(itemToSpawn);
         }
         //_eventSystem.SetSelectedGameObject(heldItemHolders[0]);
-        _eventSystem.SetSelectedGameObject(heldItemHolders[0]);
+        _eventSystem.SetSelectedGameObject(heldItemHolders[0].gameObject);
     }
 
     private void DestroyAllHeldItems()
@@ -322,30 +397,39 @@ public class UIInventoryManager : MonoBehaviour
          }
     }
 
-    public void AddItemToStoreStock(int index, ItemStats item)
+    public void AddToExpectedItemsToStock(int index, ItemStats item)
     {
         //var item = currentPlayer.inventory[index];
         // Restocking Items in an owned store.
         int storeTotalIndex = 0;
 
         // Find the first empty spot/item in the store's inventory
-        for (int i = 0; i < storeInv.Count; i++)
+        for (int i = 0; i < _storestockHolder.Count; i++)
         {
-            if (storeInv[i] == null)
+            if (_storestockHolder[i] == null)
             {
-                storeInv[i] = item;
+                _storestockHolder[i] = item;
                 storeTotalIndex = i;
                 Debug.Log($"Found a null slot at {storeTotalIndex}");
                 break;
             }
         }
 
+        _expectedItemsToStock.Add(index, item);
         // Visually update that spot in the Restock UI
         storestockIcons[storeTotalIndex].sprite = item.itemSprite;
         storestockIcons[storeTotalIndex].enabled = true;
         storestockNames[storeTotalIndex].text = $"{item.l_itemName.GetLocalizedString()}";
-        //storestockPrices[storeTotalIndex].text = $"<sprite=\"Coin Icon\" index=0>{item.basePrice}";
-        storestockPrices[storeTotalIndex].text = $"<sprite=\"Coin Icon\" index=0>{(int)(item.basePrice * selectedStore.storePriceMultiplier)}";
+        storestockPrices[storeTotalIndex].text = $"<sprite=\"Coin Icon\" index=0>{(int)(item.basePrice * _selectedStoreData.StorePriceMultiplier)}";
+
+        _emptyStorestockCount--;
+        UpdateRestockInstruction();
+
+        if(_emptyStorestockCount == 0)
+        {
+            _gameplayTest.QueueCommand(new UICancelCommand());
+            //PromptRestockItems();
+        }
     }
 
     public void ShowSelectedItemDetails(ItemStats item)
@@ -361,10 +445,10 @@ public class UIInventoryManager : MonoBehaviour
         selectedItemInfo[2].text = $"{item.l_effect.GetLocalizedString()}";
         selectedItemInfo[3].text = $"{item.l_flavor.GetLocalizedString()}";
 
-        //selectedItemInfo[0].text = $"{item.itemName}";
-        //selectedItemInfo[1].text = $"<sprite=\"Coin Icon\" index=0>{item.basePrice}";
-        //selectedItemInfo[2].text = $"{item.effectDescription}";
-        //selectedItemInfo[3].text = $"{item.flavorText}";
+        //selectedItemRect
+        var cardMotion = LMotion.Create(Vector3.one * 0.95f, Vector3.one, .2f)
+            .WithEase(Ease.OutBack)
+            .BindToLocalScale(selectedItemRect);
     }
 
     public void HideSelectedItemDetails()
@@ -378,31 +462,47 @@ public class UIInventoryManager : MonoBehaviour
         selectedItemInfo[3].text = "";
     }
 
-    public void OnRestockStore(MapNode node)
+    private void UpdateRestockInstruction()
     {
-        var store = node.GetComponent<StoreManager>();
+        instructionText.text = $"<color=#FFEC75>Store resupply!\r\nStock up to {_emptyStorestockCount} more items.";
+    }
 
-        DisplayInventory(store.owner);
-        ShowStoreStock(node);
+    public void SetupRestockStore(StorefrontData sd)
+    {
+        _expectedItemsToStock.Clear();
+        _emptyStorestockCount = 0;
+        //var store = node.GetComponent<StoreManager>();
+
+        //DisplayInventory(sd.OwnerId);
+        ShowStoreStock(sd);
 
         inventoryInputPromptText.text = "<sprite=0> Stock Item\r\n<sprite=1> Finish Stocking";
         instructionGroup.alpha = 1;
 
-        instructionText.text = $"<color=#FFEC75>Store resupply!\r\nStock up to {GameplayTest.instance.emptyStockCount} more items.";
+        UpdateRestockInstruction();
     }
 
-    public void ShowStoreStock(MapNode node)
+    public void ShowStoreStock(StorefrontData sd)
     {
         Debug.Log("Show store stock");
         FadeTo(storestockGroup, 1, 0.25f);
 
-        selectedStore = node.GetComponent<StoreManager>();
-        var storeInventory = node.GetComponent<StoreManager>().storeInventory;
-
-        storeInv.Clear();
-        foreach (ItemStats item in storeInventory)
+        storestockLevelIndicator.text = "";
+        for (int i = 0; i < sd.StoreLevel; i++)
         {
-            storeInv.Add(item);
+            storestockLevelIndicator.text += "*";
+        }
+        //selectedStore = node.GetComponent<StoreManager>();
+        //var storeInventory = node.GetComponent<StoreManager>().storeInventory;
+        var index = 0;
+        _storestockHolder.Clear();
+        //storeInv.Clear();
+        //_emptyStorestockCount = 0;
+        foreach (ItemStats item in sd.Storestock)
+        {
+            _storestockHolder.Add(item);
+            //storeInv.Add(item);
+            index++;
         }
 
         //DisplayInventory(node.GetComponent<StoreManager>().playerOwner);
@@ -411,13 +511,15 @@ public class UIInventoryManager : MonoBehaviour
 
         for (int i = 0; i < storestockNames.Count; i++)
         {
-            if (i < storeInv.Count)
+            if (i < _storestockHolder.Count)
             {
-                storeItem = storeInv[i];
+                storeItem = _storestockHolder[i];
             }
 
-            if (storeItem == null || i >= storeInv.Count)
+            if (storeItem == null || i >= _storestockHolder.Count)
             {
+                _emptyStorestockCount++;
+
                 storestockIcons[i].sprite = null;
                 storestockIcons[i].enabled = false;
                 storestockNames[i].text = "";
@@ -431,7 +533,7 @@ public class UIInventoryManager : MonoBehaviour
                 storestockIcons[i].enabled = true;
                 storestockNames[i].text = $"{storeItem.itemName}";
                 //storestockPrices[i].text = $"<sprite=\"Coin Icon\" index=0>{storeItem.basePrice}";
-                storestockPrices[i].text = $"<sprite=\"Coin Icon\" index=0>{(int)(storeItem.basePrice * selectedStore.storePriceMultiplier)}";
+                storestockPrices[i].text = $"<sprite=\"Coin Icon\" index=0>{(int)(storeItem.basePrice * sd.StorePriceMultiplier)}";
 
                 storestockNames[i].GetComponentInParent<Button>().interactable = false;
             }
@@ -445,80 +547,97 @@ public class UIInventoryManager : MonoBehaviour
 
     public void FadeTo(CanvasGroup group, float alphaValue, float duration)
     {
-        DOTween.Kill(group.gameObject);
-        DOTween.To(() => group.alpha, x => group.alpha = x, alphaValue, duration);
+        //DOTween.Kill(group.gameObject);
+        //DOTween.To(() => group.alpha, x => group.alpha = x, alphaValue, duration);
+
+        var motion = LMotion.Create(group.alpha, alphaValue, duration)
+                    .WithEase(Ease.OutQuad)
+                    .Bind(x => group.alpha = x);
     }
 
     public void OnTryUseItemAt(int index, ItemStats item)
     {
-        ShowConfirmGroup();
+        ShowUseItemConfirmGroup();
 
-        confirmText.text = $"Use {item.itemName}?";
+        _useItemconfirmText.text = $"Use {item.l_itemName.GetLocalizedString()}?";
 
-        selectedItemIndex = index;
-        selectedItem = item;
+        _selectedItemIndex = index;
+        _selectedItem = item;
 
-        _eventSystem.SetSelectedGameObject(confirmButtonHolders[0]);
+        _eventSystem.SetSelectedGameObject(_useItemConfirmButtonHolders[0]);
     }
 
+    private void PromptRestockItems()
+    {
+        ShowRestockConfirmGroup();
+        _eventSystem.SetSelectedGameObject(_restockConfirmButtonHolders[0]);
+    }
+
+    #region Button Functions - Inventory
     public void ConfirmUseItem()
     {
-        HideConfirmGroup();
-        OnUseItemAt(selectedItemIndex, selectedItem);
+        HideUseItemConfirmGroup();
+        OnUseItemAt(_selectedItemIndex, _selectedItem);
     }
 
     public void CancelUseItem()
     {
-        HideConfirmGroup();
+        HideUseItemConfirmGroup();
 
-        _eventSystem.SetSelectedGameObject(heldItemHolders[selectedItemIndex]);
+        _eventSystem.SetSelectedGameObject(heldItemHolders[_selectedItemIndex].gameObject);
     }
 
+    public void ConfirmRestockItems()
+    {
+        HideRestockConfirmGroup();
+        // Add ExpcectedItems to the storestock for real
+        _gameplayTest.QueueCommand(new RestockStoreCommand(_expectedItemsToStock));
+    }
+
+    public void CancelRestockItems()
+    {
+        HideRestockConfirmGroup();
+        // Reset 
+        RefreshInventorySelection();
+        SetupRestockStore(_selectedStoreData);
+        _gameplayTest.QueueCommand(new UICancelCommand());
+        _eventSystem.SetSelectedGameObject(heldItemHolders[_selectedItemIndex].gameObject);
+    }
+    #endregion Button Functions - Inventory
     public void OnUseItemAt(int index, ItemStats item)
     {
-        HideConfirmGroup();
+        HideUseItemConfirmGroup();
 
         //UseItem(selectedItemIndex);
         HideInventory();
 
         // **Figure out the type of item being used (this decides the behavior based on type)
-        Debug.Log($"UIInventoryManager | {item.itemName} used. | Item Type: {item.type}");
-        m_ItemUsed.RaiseEvent(index, item); // replace this
+        //Debug.Log($"UIInventoryManager | {item.itemName} used. | Item Type: {item.type}");
+        //m_ItemUsed.RaiseEvent(index, item); // replace this
         _gameplayTest.QueueCommand(new InventoryUseItemCommand(index, item));
-        //_gameplayTest.QueueCutscene(new UseItemCutscene(item));
-
-        //m_ItemUsed.RaiseEvent(index, item);
-        /*
-        var cs = GameplayTest.instance.currentPlayer.currentStatsModifier;
-
-        Debug.Log($"UIInventoryManager | Testing Adding this Item to {GameplayTest.instance.currentPlayer}'s stat mods");
-        var tempItemMod = item.ApplyStatModChanges(cs, item.Duration);
-        Debug.Log($"UIInventoryManager | {GameplayTest.instance.currentPlayer}'s warpMode = {cs.warpMode}");
-        if(tempItemMod.warpMode != EntityStatsModifiers.WarpMode.None )
-        {
-            Debug.Log($"UIInventoryManager | {item.itemName} is a target selection item!");
-        }
-        else
-        {
-            Debug.Log($"UIInventoryManager | {item.itemName} is a regular item.");
-        }
-        */
-
-
-        // Generic: Tell everything that this item is being used
-        //m_ItemUsed.RaiseEvent(index, item);
 
     }
 
-    public void ShowConfirmGroup()
+    public void ShowUseItemConfirmGroup()
     {
-        confirmGroup.interactable = true;
-        FadeTo(confirmGroup, 1, 0.25f);
+        _useItemConfirmGroup.interactable = true;
+        FadeTo(_useItemConfirmGroup, 1, 0.25f);
     }
-    public void HideConfirmGroup()
+    public void HideUseItemConfirmGroup()
     {
-        confirmGroup.interactable = false;
-        FadeTo(confirmGroup, 0, 0.25f);
+        _useItemConfirmGroup.interactable = false;
+        FadeTo(_useItemConfirmGroup, 0, 0.25f);
+    }
+    
+    public void ShowRestockConfirmGroup()
+    {
+        _restockConfirmGroup.interactable = true;
+        FadeTo(_restockConfirmGroup, 1, 0.25f);
+    }
+    public void HideRestockConfirmGroup()
+    {
+        _restockConfirmGroup.interactable = false;
+        FadeTo(_restockConfirmGroup, 0, 0.25f);
     }
     public void OnItemDiscarded(int index, ItemStats item)
     {

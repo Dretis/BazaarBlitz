@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Playables;
-using static UnityEditor.Progress;
 
 // THIS NEEDS TO BE ABLE TO QUEUE COMMANDS TO GAMEPLAYTEST
 // REMOVE ALL UPDATES TO CHANGING THE GAME PHASE IN THIS SCRIPT
@@ -22,6 +21,8 @@ public class TimelineSignalResponder : MonoBehaviour
     [Header("pd_UseItem Variables")]
     [SerializeField] private SpriteRenderer usedItemSprite; // for p_UseItem
     [SerializeField] private TextMeshProUGUI usedItemName; // for p_UseItem
+    [Header("pd_BuildStore Variables")]
+    [SerializeField] private BoardNode selectedNode; // for p_UseItem
     [Header("pd_Warp Variables")]
     [SerializeField] private MapNode destination;
     [SerializeField] private bool warpedByItem;
@@ -39,9 +40,8 @@ public class TimelineSignalResponder : MonoBehaviour
     [Header("Broadcast On Event Channels")]
     public IntEventChannelSO m_UpdatePlayerScore;
     [Space]
-    public VoidEventChannelSO m_FinishedUsedItem;
-    public PlayerEventChannelSO m_BuildStore;
-    [Space]
+    //public VoidEventChannelSO m_FinishedUsedItem;
+    //public PlayerEventChannelSO m_BuildStore;
     public PlayerEventChannelSO m_WarpStarted;
     public NodeEventChannelSO m_WarpToNode;
     public PlayerEventChannelSO m_WarpOver;
@@ -53,7 +53,7 @@ public class TimelineSignalResponder : MonoBehaviour
     public VoidEventChannelSO m_GameFinished;
 
     [Header("Listen On Event Channels")]
-    public IntItemEventChannelSO m_ItemUsed;
+    //public IntItemEventChannelSO m_ItemUsed;
     public NodeEventChannelSO m_LandOnWarpNode;
     public NodeEventChannelSO m_WarpByItem;
     public PlayerEventChannelSO m_EnterLevelUp;
@@ -106,6 +106,11 @@ public class TimelineSignalResponder : MonoBehaviour
             {
                 PlayUseItemCutscene(gameState.NewState.UsedItem);
             }
+
+            if (gameState.PrevState.GamePhase is GameplayTest.GamePhase.BuildingStore)
+            {
+                PlayBuildStoreCutscene(gameState.NewState.SelectedBoardNodeId);
+            }
         }
     }
 
@@ -118,6 +123,13 @@ public class TimelineSignalResponder : MonoBehaviour
         usedItemName.text = itemName;
 
         _gameplayTest.QueueCutscene(new UseItemCutscene(usedItem, pd_UseItem));
+    }
+    private void PlayBuildStoreCutscene(int selectedBoardNodeId)
+    {
+        Debug.Log($"PlayUseItemCutscene | Building a store at this node");
+        selectedNode = _gameplayTest.BoardNodeManager.NodeDictionary[selectedBoardNodeId];
+
+        _gameplayTest.QueueCutscene(new BuildStoreCutscene(pd_BuildStore));
     }
     /*
     private void OnItemUsed(int index, ItemStats item)
@@ -188,13 +200,15 @@ public class TimelineSignalResponder : MonoBehaviour
     #region Signals
     public void FinishUsedItem()
     {
-        m_FinishedUsedItem.RaiseEvent();
+        //m_FinishedUsedItem.RaiseEvent();
+        Debug.Log("Signal | FinishUsedItem");
     }
 
-    public void FinishBuildingStore()
+    public void SignalVisualBuildStore()
     {
-        m_BuildStore.RaiseEvent(assignedPlayer);
-        GameplayTest.instance.phase = GameplayTest.GamePhase.StockStore; // change this
+        Debug.Log("Signal | SignalVisualBuildStore");
+        selectedNode.StorefrontComponent.UpdateStoreVisual();
+        selectedNode.StorefrontComponent.ShowStoreVisual();
     }
 
     public void SignalWarpStarted()
@@ -236,27 +250,27 @@ public class TimelineSignalResponder : MonoBehaviour
     public void SignalLevelUpOver()
     {
         //GameplayTest.instance.phase = GameplayTest.instance.expectedPhase;
-        switch (assignedPlayer.RenownLevel)
-        {
-            case 3:
-                // Blessing
-                GameplayTest.instance.phase = GameplayTest.GamePhase.BlessingTree;
-                GameplayTest.instance.expectedPhase = GameplayTest.GamePhase.LevelUp;
-                m_EnterBlessingsTree.RaiseEvent(assignedPlayer);
-                break;
-            case 6:
-                // Blessing again
-                GameplayTest.instance.phase = GameplayTest.GamePhase.BlessingTree;
-                GameplayTest.instance.expectedPhase = GameplayTest.GamePhase.LevelUp;
-                m_EnterBlessingsTree.RaiseEvent(assignedPlayer);
-                break;
-            default:
-                //m_EnterLevelUp.RaiseEvent(assignedPlayer);
-                GameplayTest.instance.phase = GameplayTest.GamePhase.LevelUp;
-                GameplayTest.instance.expectedPhase = GameplayTest.GamePhase.RollDice;
-                m_EnterStatAllocation.RaiseEvent(assignedPlayer);
-                break;
-        }
+        //switch (assignedPlayer.RenownLevel)
+        //{
+        //    case 3:
+        //        // Blessing
+        //        GameplayTest.instance.phase = GameplayTest.GamePhase.BlessingTree;
+        //        GameplayTest.instance.expectedPhase = GameplayTest.GamePhase.LevelUp;
+        //        m_EnterBlessingsTree.RaiseEvent(assignedPlayer);
+        //        break;
+        //    case 6:
+        //        // Blessing again
+        //        GameplayTest.instance.phase = GameplayTest.GamePhase.BlessingTree;
+        //        GameplayTest.instance.expectedPhase = GameplayTest.GamePhase.LevelUp;
+        //        m_EnterBlessingsTree.RaiseEvent(assignedPlayer);
+        //        break;
+        //    default:
+        //        //m_EnterLevelUp.RaiseEvent(assignedPlayer);
+        //        GameplayTest.instance.phase = GameplayTest.GamePhase.LevelUp;
+        //        GameplayTest.instance.expectedPhase = GameplayTest.GamePhase.RollDice;
+        //        m_EnterStatAllocation.RaiseEvent(assignedPlayer);
+        //        break;
+        //}
         //m_EnterLevelUp.RaiseEvent(assignedPlayer);
     }
 

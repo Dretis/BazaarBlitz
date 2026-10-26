@@ -146,10 +146,10 @@ public class PlayerScoreHandler : MonoBehaviour
         SetMoney(assignedPlayerState.EntityData.Money);
         playerMoney.GetComponent<UIEffect>().enabled = false;
 
-        greenStamp.color -= new Color(0, 0, 0, 0.75f);
-        redStamp.color -= new Color(0, 0, 0, 0.75f);
-        blueStamp.color -= new Color(0, 0, 0, 0.75f);
-        orangeStamp.color -= new Color(0, 0, 0, 0.75f);
+        //greenStamp.color -= new Color(0, 0, 0, 0.75f);
+        //redStamp.color -= new Color(0, 0, 0, 0.75f);
+        //blueStamp.color -= new Color(0, 0, 0, 0.75f);
+        //orangeStamp.color -= new Color(0, 0, 0, 0.75f);
         //greenStamp.enabled = false;
         //redStamp.enabled = false;
         //blueStamp.enabled = false;
@@ -182,6 +182,8 @@ public class PlayerScoreHandler : MonoBehaviour
         UpdateInfoInvItems();
 
         UpdateMoneyInterest(); // maybe only if you have interest
+
+        UpdateHeldStamps();
     }
 
     public void ShowScoreVisual()
@@ -329,18 +331,25 @@ public class PlayerScoreHandler : MonoBehaviour
     public void UpdateHeldStamps()
     {
         var notObtainColor = Color.white - new Color(0, 0, 0, 0.75f);
+        var stamps = assignedPlayerState.EntityData.Stamps;
         //Debug.Log($"assignedPlayerState = {assignedPlayerState}");
-        if (assignedPlayerState.EntityData.Stamps.Contains(Stamp.StampType.Green)) greenStamp.color = Color.white;
+
+        if(Array.Exists(stamps, s => s is StampType.Green)) greenStamp.color = Color.white;
         else greenStamp.color = notObtainColor;
 
-        if (assignedPlayerState.EntityData.Stamps.Contains(Stamp.StampType.Red)) redStamp.color = Color.white;
+        if (Array.Exists(stamps, s => s is StampType.Red)) redStamp.color = Color.white;
         else redStamp.color = notObtainColor;
 
-        if (assignedPlayerState.EntityData.Stamps.Contains(Stamp.StampType.Blue)) blueStamp.color = Color.white;
+        if (Array.Exists(stamps, s => s is StampType.Blue)) blueStamp.color = Color.white;
         else blueStamp.color = notObtainColor;
 
-        if (assignedPlayerState.EntityData.Stamps.Contains(Stamp.StampType.Orange)) orangeStamp.color = Color.white;
+        if (Array.Exists(stamps, s => s is StampType.Orange)) orangeStamp.color = Color.white;
         else orangeStamp.color = notObtainColor;
+
+        //for (int i = 0; i < stamps.Length; i++)
+        //{
+        //    if (stamps[i] is not StampType.None) greenStamp.color = Color.white;
+        //}
         /*
         foreach (Stamp.StampType s in assignedPlayerState.stamps)
         {

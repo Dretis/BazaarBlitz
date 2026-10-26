@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using LitMotion;
 using LitMotion.Extensions;
+using Core;
 
 public class StoreSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler
 {
@@ -89,11 +90,12 @@ public class StoreSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClic
         button.interactable = false;
     }
 
-    public void UpdateItemInfo(ItemStats item, StoreManager store)
+    public void UpdateItemInfo(ItemStats item, StorefrontData sd)
     {
 
         heldItem = item;
-        associatedStore = store;
+        //associatedStore = store;
+
         //associatedItemPrice = (int)(item.basePrice * associatedStore.storePriceMultiplier);
         if (item == null)
         {
@@ -108,7 +110,7 @@ public class StoreSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClic
         }
         else
         {
-            associatedItemPrice = (int)(item.basePrice * associatedStore.storePriceMultiplier);
+            associatedItemPrice = (int)(item.basePrice * sd.StorePriceMultiplier);
             itemIcon.sprite = item.itemSprite;
             itemIcon.enabled = true;
             itemPrice.text = $"<sprite=\"Coin Icon\" index=0>{associatedItemPrice}";

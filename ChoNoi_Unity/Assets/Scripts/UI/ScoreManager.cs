@@ -20,7 +20,7 @@ public class ScoreManager : MonoBehaviour
     private MotionHandle currentMotion;
 
     //[SerializeField] private EntityPiece currentPlayer;
-    [SerializeField] private List<EntityPiece> players;
+    //[SerializeField] private List<EntityPiece> players;
 
     [Header("Player Scores")]
     [SerializeField] private List<PlayerScoreHandler> playerScoreHandlers;
@@ -40,13 +40,13 @@ public class ScoreManager : MonoBehaviour
     //public IntEventChannelSO m_PlayerScoreDecreased;
     //public IntEventChannelSO m_PlayerScoreIncreased;
 
-    public PlayerEventChannelSO m_NextPlayerTurn;
+    //public PlayerEventChannelSO m_NextPlayerTurn;
 
     public VoidEventChannelSO m_HoldPlayerInfo;
     public VoidEventChannelSO m_ReleasePlayerInfo;
 
     public PlayerEventChannelSO m_FinishStockingStore;
-    public VoidEventChannelSO m_FinishedUsedItem;
+    //public VoidEventChannelSO m_FinishedUsedItem;
 
     public PlayerEventChannelSO m_PassedByStamp;
     public StampEventChannelSO m_UndoPassByStamp;
@@ -70,14 +70,14 @@ public class ScoreManager : MonoBehaviour
         //m_PlayerScoreDecreased.OnEventRaised += OnPlayerScoreDecreased;
         //m_PlayerScoreIncreased.OnEventRaised += OnPlayerScoreIncreased;
 
-        m_NextPlayerTurn.OnEventRaised += ChangeCurrentPlayer;
+        //m_NextPlayerTurn.OnEventRaised += ChangeCurrentPlayer;
         //m_NextPlayerTurn.OnEventRaised += UpdateHeldStamps;
 
         m_HoldPlayerInfo.OnEventRaised += OnHoldPlayerInfo;
         m_ReleasePlayerInfo.OnEventRaised += OnReleasePlayerInfo;
 
         m_FinishStockingStore.OnEventRaised += OnFinishStockingStore;
-        m_FinishedUsedItem.OnEventRaised += OnFinishedUsedItem;
+        //m_FinishedUsedItem.OnEventRaised += OnFinishedUsedItem;
 
         m_PassedByStamp.OnEventRaised += OnPassedByStamp;
         m_UndoPassByStamp.OnEventRaised += OnUndoPassByStamp;
@@ -102,14 +102,14 @@ public class ScoreManager : MonoBehaviour
         //m_PlayerScoreDecreased.OnEventRaised -= OnPlayerScoreDecreased;
         //m_PlayerScoreIncreased.OnEventRaised -= OnPlayerScoreIncreased;
 
-        m_NextPlayerTurn.OnEventRaised -= ChangeCurrentPlayer;
+        //m_NextPlayerTurn.OnEventRaised -= ChangeCurrentPlayer;
         //m_NextPlayerTurn.OnEventRaised -= UpdateHeldStamps;
 
         m_HoldPlayerInfo.OnEventRaised -= OnHoldPlayerInfo;
         m_ReleasePlayerInfo.OnEventRaised -= OnReleasePlayerInfo;
 
         m_FinishStockingStore.OnEventRaised -= OnFinishStockingStore;
-        m_FinishedUsedItem.OnEventRaised -= OnFinishedUsedItem;
+        //m_FinishedUsedItem.OnEventRaised -= OnFinishedUsedItem;
 
         m_PassedByStamp.OnEventRaised -= OnPassedByStamp;
         m_UndoPassByStamp.OnEventRaised -= OnUndoPassByStamp;
@@ -130,6 +130,12 @@ public class ScoreManager : MonoBehaviour
         {
             //UpdateScoreForPlayer(gameState.NewState.CurrPlayerId);
             //var currPl = gameState.NewState.Players[gameState.NewState.CurrPlayerId];
+            if (gameState.PrevState.GamePhase is GameplayTest.GamePhase.ItemSelection)
+            {
+                playerScoreHandlers[gameState.NewState.CurrPlayerId].ToggleCurrentPlayerEffect(true);
+                UpdateScoreForPlayer(gameState.NewState.CurrentPlayer());
+            }
+
             if (gameState.PrevState.GamePhase is GameplayTest.GamePhase.IncidentHappening)
             {
                 Debug.Log($"UIScoreManager | Show scoreboard");
@@ -140,19 +146,9 @@ public class ScoreManager : MonoBehaviour
                 HideScoreboard();
             }
 
-            if (gameState.UseItemCutsceneStarted())
-            {
-                // Maybe have this update AFTER the cutscene ends?
-                //Debug.Log($"UIScoreManager | {gameState.NewState.CurrentPlayer().EntityData.EntityName} used item, update score!");
-                //UpdateScoreForPlayer(gameState.NewState.Players[gameState.NewState.CurrPlayerId]);
-            } 
-
-            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.StartTurn)
-            {
-                UpdateScoreForPlayer(gameState.NewState.CurrentPlayer());
-            }
             if (gameState.NewState.GamePhase is GameplayTest.GamePhase.EndTurn)
             {
+                playerScoreHandlers[gameState.NewState.CurrPlayerId].ToggleCurrentPlayerEffect(false);
                 UpdateScoreForPlayer(gameState.NewState.CurrentPlayer());
             }
 
@@ -186,14 +182,24 @@ public class ScoreManager : MonoBehaviour
                 playerScoreHandlers[i].AssignPlayerToScore(gameState.NewState.Players[i]);
                 playerScoreHandlers[i].UpdateHealth();
             }
-        }
-    }
+            
+            if (gameState.PrevState.Players[i].EntityData.Experience !=
+                gameState.NewState.Players[i].EntityData.Experience)
+            {
+                Debug.Log($"UIScoreManager | {gameState.NewState.Players[i].EntityData.EntityName}'s EXP changed!");
+                playerScoreHandlers[i].AssignPlayerToScore(gameState.NewState.Players[i]);
+                playerScoreHandlers[i].UpdateExp();
+            }
+            
+            if (gameState.DidChangeStamps(i))
+            {
+                Debug.Log($"UIScoreManager | {gameState.NewState.Players[i].EntityData.EntityName}'s Stamps changed!");
+                playerScoreHandlers[i].AssignPlayerToScore(gameState.NewState.Players[i]);
+                playerScoreHandlers[i].UpdateHeldStamps();
+            }
 
-    void Awake()
-    {
-        Debug.Log("Awake scoremanager");
-        //InitializePlayerScores();
-        Debug.Log("Awake scoremanager2");
+            //Debug.Log($"UIScoreManager | PREV STAMP#: {gameState.PrevState.Players[i].EntityData.Stamps.Count} | NEW  STAMP#: {gameState.NewState.Players[i].EntityData.Stamps.Count}");
+        }
     }
 
     public void Initialize(ref PlayerState[] ps, GameplayTest gt)
@@ -270,20 +276,6 @@ public class ScoreManager : MonoBehaviour
         }
     }
 
-    private void ChangeCurrentPlayer(EntityPiece ps)
-    {
-        //if (currentPlayer != null)
-        //    playerScoreHandlers[currentPlayer.id].ToggleCurrentPlayerEffect(false);
-
-        //currentPlayer = ps;// Move this to EntityVisual
-
-        //playerScoreHandlers[currentPlayer.id].ToggleCurrentPlayerEffect(true);
-        //playerScoreHandlers[currentPlayer.id].UpdateHeldStamps();
-
-        //test!!!
-        //playerScoreHandlers[currentPlayer.id].ShakePlayerSprite(0.2f);
-    }
-
     private void OnPassedByStamp(EntityPiece ps)
     {
         var id = ps.id;
@@ -336,12 +328,6 @@ public class ScoreManager : MonoBehaviour
         var id = ps.id;
         playerScoreHandlers[id].UpdateInfoInvItems();
         playerScoreHandlers[id].UpdateMoneyInterest();
-    }
-    private void OnFinishedUsedItem()
-    {
-        //UpdateInfoInvItemsForPlayer(ps.id);
-        //var id = currentPlayer.id;
-        //playerScoreHandlers[id].UpdateInfoInvItems();
     }
 
     private void OnExitLevelUp()

@@ -12,6 +12,7 @@ using UnityEngine.Localization.SmartFormat.PersistentVariables;
 using UnityEngine.Localization.Components;
 using UnityEngine.UI;
 using UnityEngine.InputSystem.UI;
+using UnityEngine.Analytics;
 
 public class UIPromptManager : MonoBehaviour
 {
@@ -92,7 +93,7 @@ public class UIPromptManager : MonoBehaviour
     //public VoidEventChannelSO m_ExitInventory;
 
     public PlayerEventChannelSO m_TryBuildStore;
-    public PlayerEventChannelSO m_BuildStore; // also listening
+    //public PlayerEventChannelSO m_BuildStore; // also listening
     public PlayerEventChannelSO m_FinishStockingStore;
 
     public PlayerEventChannelSO m_WarpStarted;
@@ -158,7 +159,7 @@ public class UIPromptManager : MonoBehaviour
         //m_RestockStore.OnEventRaised += ClearInputText;
 
         m_TryBuildStore.OnEventRaised += OnTryBuildStore;
-        m_BuildStore.OnEventRaised += OnBuildStore;
+        //m_BuildStore.OnEventRaised += OnBuildStore;
         //m_CancelBuildStore.OnEventRaised += OnCancelBuildStore;
         m_FinishStockingStore.OnEventRaised += OnFinishStockingStore;
 
@@ -204,7 +205,7 @@ public class UIPromptManager : MonoBehaviour
         //m_RestockStore.OnEventRaised -= ClearInputText;
 
         m_TryBuildStore.OnEventRaised -= OnTryBuildStore;
-        m_BuildStore.OnEventRaised -= OnBuildStore;
+        //m_BuildStore.OnEventRaised -= OnBuildStore;
         //m_CancelBuildStore.OnEventRaised -= OnCancelBuildStore;
         m_FinishStockingStore.OnEventRaised -= OnFinishStockingStore;
 
@@ -291,7 +292,7 @@ public class UIPromptManager : MonoBehaviour
     private void UpdateDiceRoll(int diceRoll)
     {
         string roll = "" + diceRoll;
-        rollTypewriter.ShowText("{size a=1.1}"+roll);
+        rollTypewriter.ShowText("{size a=1.1}" + roll);
     }
 
     private void OnTryDiceRollPrep(EntityPiece ps)
@@ -334,7 +335,7 @@ public class UIPromptManager : MonoBehaviour
         inputPrompt.text += "\n<sprite name=right><color=white></color> Back";
         //inputPrompt.text += "\n<color=white>[Scroll Wheel]</color> Zoom In/Out";
     }
-    
+
     // delete this 
     private void DisplayInitialMenu()
     {
@@ -351,9 +352,9 @@ public class UIPromptManager : MonoBehaviour
         //menuPrompt.alpha = 1;
         ShowMenuPrompt();
     }
-    
+
     #region REWRITE
-    
+
     /// <summary>
     /// Partial rewrite to just handle the InitialMenu
     /// </summary>
@@ -373,9 +374,9 @@ public class UIPromptManager : MonoBehaviour
 
             if (gameState.NewState.GamePhase is GameplayTest.GamePhase.InitialTurnMenu)
             {
-                DisplayInitialMenu(assignedPlayer.EntityData);
+                DisplayInitialMenu(gameState.NewState);
 
-                if(gameState.PrevState.GamePhase is GameplayTest.GamePhase.BuildingStore)
+                if (gameState.PrevState.GamePhase is GameplayTest.GamePhase.BuildingStore)
                 {
                     HidePromptInstruction();
                 }
@@ -408,7 +409,7 @@ public class UIPromptManager : MonoBehaviour
             }
 
 
-            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.StockStore)
+            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.StockingStore)
             {
                 if (gameState.PrevState.GamePhase is GameplayTest.GamePhase.BuildingStore)
                 {
@@ -416,21 +417,27 @@ public class UIPromptManager : MonoBehaviour
                 }
             }
 
-            if(gameState.NewState.GamePhase is GameplayTest.GamePhase.IncidentHappening)
+            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.IncidentHappening)
             {
                 // UseItem
                 if (gameState.UseItemCutsceneStarted())
                 {
-                    StrikethroughInventoryPrompt();
+                    StrikethroughInventoryPrompt(assignedPlayer.EntityData);
+                }
+
+                if (gameState.BuildStoreCutsceneStarted())
+                {
+                    HidePromptInstruction();
+                    StrikethroughBuildPrompt();
                 }
             }
         }
     }
-    
-    private void DisplayInitialMenu(EntityData ed)
+
+    private void DisplayInitialMenu(GameState state)
     {
         ClearInputText();
-        NormalizeBuildPrompt(ed);
+        NormalizeBuildPrompt(state);
         // This thing here makes me feel like the rewrite is gonna introduce some bugs but oh well
         /*if (GameplayTest.instance.phase == GameplayTest.GamePhase.PickDirection 
             || GameplayTest.instance.phase == GameplayTest.GamePhase.CombatSelector)
@@ -439,7 +446,7 @@ public class UIPromptManager : MonoBehaviour
         //menuPrompt.alpha = 1;*/
         ShowMenuPrompt();
     }
-    
+
     private void HideInitialMenu()
     {
         //menuPrompt.alpha = 0;
@@ -448,7 +455,7 @@ public class UIPromptManager : MonoBehaviour
     }
 
     #endregion
-    
+
     private void ScaleRectToOne(RectTransform rect, float duration)
     {
         LMotion.Create(rect.localScale, Vector3.one, duration)
@@ -555,8 +562,8 @@ public class UIPromptManager : MonoBehaviour
 
     private void ContextualizeMovePrompt(EntityData ed)
     {
-        if (ed.Statuses.Contains(Status.Fighting) 
-            || ed.Statuses.Contains(Status.FightingParty)) 
+        if (ed.Statuses.Contains(Status.Fighting)
+            || ed.Statuses.Contains(Status.FightingParty))
         {
             movePromptText.text = "Fight";
         }
@@ -573,30 +580,33 @@ public class UIPromptManager : MonoBehaviour
         inventoryLimitText.text = $"{ed.Inventory.Count}/{ed.InventoryLimit}";
     }
 
-    private void StrikethroughInventoryPrompt()
+    private void StrikethroughInventoryPrompt(EntityData ed)
     {
         //inventoryPromptText.text = "<color=grey>Item</color>";
         inventoryPromptText.color = Color.gray;
         inventoryLimitText.color = Color.grey;
+        inventoryLimitText.text = $"{ed.Inventory.Count}/{ed.InventoryLimit}";
         //inventoryLimitText.text = $"{currentPlayer.inventory.Count-1}/{currentPlayer.inventoryLimit}";
         //inventoryLimitText.text = $"{currentPlayer.inventory.Count}/{currentPlayer.inventoryLimit}";
     }
 
-    private void NormalizeBuildPrompt(EntityData ed)
+    private void NormalizeBuildPrompt(GameState state)
     {
-        var buildCount = GameplayTest.instance.currentRuleset.storeLimit - ed.StoreCount;
+        var ed = state.Players[_playerState.Id].EntityData;
+        var occupiedNode = state.BoardNodes[ed.OccupiedNodeId];
+
+        var buildCount = ed.StoreCount;
         //var buildVisual = buildPromptText.text;
         var buildVisual = "Build"; //temp
 
-        if (buildCount <= 0 || !ed.OccupiedNode.CompareTag("Encounter") || ed.Statuses.Contains(Status.Fighting))
+        if (occupiedNode.Type is not NodeType.OpenSpace 
+            || buildCount >= _gameplayTest.currentRuleset.storeLimit
+            || ed.Statuses.Contains(Status.Fighting))
         {
-            //buildPromptText.text = "<color=grey>Build</color>";
             buildPromptText.color = Color.gray;
             buildLimitText.text = "<color=grey>No</color>";
 
             buildVisual = "Build";
-            //buildPromptText.text = "a";
-            //buildPromptText.text = "Build";
         }
         else
         {
@@ -660,17 +670,14 @@ public class UIPromptManager : MonoBehaviour
     // Button functions
     public void ConfirmBuildStoreButton()
     {
-        m_ConfirmBuildStore.RaiseEvent(currentPlayer);
-
-        HidePromptInstruction();
-        StrikethroughBuildPrompt();
-        //m_RestockStore.RaiseEvent(currentPlayer.occupiedNode);
+        //m_ConfirmBuildStore.RaiseEvent(currentPlayer);
+        _gameplayTest.QueueCommand(new BuildStoreCommand());
     }
 
     public void CancelBuildStoreButton()
     {
         //m_CancelBuildStore.RaiseEvent();
-        GameplayTest.instance.QueueCommand(new UICancelCommand());
+        _gameplayTest.QueueCommand(new UICancelCommand());
     }
     // end of button functions
 
@@ -708,20 +715,6 @@ public class UIPromptManager : MonoBehaviour
         }
 
         _eventSystem.SetSelectedGameObject(promptConfirmButtonHolders[0]);
-    }
-
-    private void OnBuildStore(EntityPiece ep)
-    {
-        HidePromptInstruction();
-
-        StrikethroughBuildPrompt();
-    }
-
-    private void OnCancelBuildStore()
-    {
-        ShowMenuPrompt();
-
-        HidePromptInstruction();
     }
 
     private void OnFinishStockingStore(EntityPiece ep)

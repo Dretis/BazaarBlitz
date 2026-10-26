@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 using Febucci.UI.Core;
 using LitMotion;
 using LitMotion.Extensions;
+using Core;
 using Core.Events;
 using UnityEngine.InputSystem.UI;
 
@@ -123,8 +124,9 @@ public class UIStoreManager : MonoBehaviour
 
             if (gameState.NewState.GamePhase is GameplayTest.GamePhase.InStore)
             {
-                var storeNode = gameState.NewState.CurrentPlayer().EntityData.OccupiedNode;
-                EnterStorefront(storeNode);
+                var storeNodeId = gameState.NewState.CurrentPlayer().EntityData.OccupiedNodeId;
+
+                EnterStorefront(gameState.NewState);
             }
         }
     }
@@ -153,13 +155,13 @@ public class UIStoreManager : MonoBehaviour
         confirmBuyGroup.interactable = false;
     }
 
-    private void UpdateItemsInStore(MapNode node)
+    private void UpdateItemsInStore(StorefrontData sd)
     {
-        var store = node.GetComponent<StoreManager>();
+        //var store = node.GetComponent<StoreManager>();
         //var storeItemParentTransform = storeItemGridContainer.transform;
         stockedItems.Clear();
 
-        foreach (ItemStats item in store.storeInventory)
+        foreach (ItemStats item in sd.Storestock)
         {
             stockedItems.Add(item);
         }
@@ -170,7 +172,7 @@ public class UIStoreManager : MonoBehaviour
             var item = storeItemHolders[i];
             //item.transform.localScale = Vector3.one;
             var storeHandler = item.GetComponent<StoreSelectionHandler>();
-            storeHandler.UpdateItemInfo(stockedItems[i], store);
+            storeHandler.UpdateItemInfo(stockedItems[i], sd);
             storeHandler.itemIndex = i;
             //storeHandler.button.interactable = true;
 
@@ -190,7 +192,7 @@ public class UIStoreManager : MonoBehaviour
             }
         }
     }
-
+    /*
     private void SpawnItemsInStore(MapNode node)
     {
         var store = node.GetComponent<StoreManager>();
@@ -246,7 +248,7 @@ public class UIStoreManager : MonoBehaviour
             EnableItemSelection(stockedItems.FindIndex(item => item == cheapestItem));
         }
     }
-
+    */
     private void DestroyAllStoreItems()
     {
         // Clear all the items upon leaving the store
@@ -258,18 +260,22 @@ public class UIStoreManager : MonoBehaviour
         }
     }
 
-    private void EnterStorefront(MapNode mapNode)
+    private void EnterStorefront(GameState state)
     {
+        var storeNodeId = state.CurrentPlayer().EntityData.OccupiedNodeId;
+        var store = state.BoardNodes[storeNodeId].StorefrontData;
+        var owner = state.Players[store.OwnerId].EntityData;
+
         confirmBuyGroup.alpha = 0f;
         confirmBuyGroup.interactable = false;
 
         storefrontFullGroup.alpha = 1f;
         storefrontFullGroup.interactable = true;
 
-        currentStore = mapNode.GetComponent<StoreManager>();
-        currentPlayer = GameplayTest.instance.currentPlayer; //mapNode.playerOccupied;
+        //currentStore = mapNode.GetComponent<StoreManager>();
+        //currentPlayer = GameplayTest.instance.currentPlayer; //mapNode.playerOccupied;
 
-        UpdateItemsInStore(mapNode);
+        UpdateItemsInStore(store);
 
         //storeChatBubble.text = "\"Greetings, customer! Welcome to " + currentStore.playerOwner.entityName + "'s wonderful store! \nPlease purchase something.\"";
         var ownerColor = ColorUtility.ToHtmlStringRGB(currentStore.playerOwner.playerColor);
@@ -280,11 +286,11 @@ public class UIStoreManager : MonoBehaviour
 
         // --- Set colors ---
         //storekeeperImage.color = currentStore.playerOwner.playerColor;
-        storeboat.color = currentStore.playerOwner.playerColor;
+        storeboat.color = owner.MainColor;
         //SetStorekeeperPalette();
 
         //customerObject.SetActive(true);
-        SetStorekeeperPalette(currentStore.playerOwner);
+        SetStorekeeperPalette(owner);
         SetCustomerPalette();
 
         MoveStoreboat();
@@ -293,18 +299,10 @@ public class UIStoreManager : MonoBehaviour
         ChangeStorekeeperSpeed(1f);
     }
 
-    private void SetStorekeeperPalette(EntityPiece storeOwner)
+    private void SetStorekeeperPalette(EntityData ed)
     {
         storekeeperVisual.enabled = true;
-
-        if (storeOwner.TryGetComponent<PlayerPaletteLoader>(out PlayerPaletteLoader paletteLoader))
-        {
-            storekeeperPaletteLoader.SetInspectorPalette(paletteLoader.GetInspectorPalette());
-        }
-        else
-        {
-            storekeeperVisual.color = storeOwner.playerColor;
-        }
+        storekeeperPaletteLoader.SetInspectorPalette(ed.EntityPalette);
     }
 
     private void SetCustomerPalette()

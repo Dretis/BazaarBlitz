@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -24,32 +25,40 @@ namespace Core
 
         public List<CombatState> CurrentCombats;
         public PlayerState[] Players; // player state
-        public List<PlayerState> NextPlayers; // Tracks remaining players that havent gotten a turn
+        public BoardNodeData[] BoardNodes; // all nodes on the current board
+        //public List<PlayerState> NextPlayers; // Tracks remaining players that havent gotten a turn
 
-        public EntityPiece CurrentPlayerObj;
+        public EntityPiece CurrentPlayerObj; // will have to remove this later
         //public PlayerState CurrentPlayer;
         [Header("Current Turn Logic Variables")]
         public int CurrPlayerId;
-        public ItemStats UsedItem;
+        public List<int> TraveledNodeIds; // Tracks the node ids the current player has gone to
+        [Space]
         public bool CurrentPlayerHasUsedItem;
         public bool UsingSpeedDieToMove;
+
+        [Header("Temp Tracking Variables")]
+        //public List<EntityData> CurrentPlayerDataStates; // for Undo'ing a move 
+        public EntityData[] CurrentPlayerDataStates; // for Undo'ing a move 
+        public int WantedNodeId; // node ids the current player wants to go to
+
+        public ItemStats UsedItem;
+        public int SelectedBoardNodeId;
 
         public ref PlayerState CurrentPlayer()
         {
             return ref (Players[CurrPlayerId]);
         }
-        public EntityData CurrentPlayerData()
-        {
-            return (Players[CurrPlayerId].EntityData);
-        }
-        public ref EntityData GetPlayerData(int id)
-        {
-            return ref (Players[id].EntityData);
-        }
 
         public GameState Copy()
         {
             GameState copy = this;
+
+            //copy.BoardNodes = new BoardNodeData[BoardNodes.Length];
+            //for (int i = 0; i < BoardNodes.Length; i++)
+            //{
+            //    copy.BoardNodes[i] = this.BoardNodes[i];
+            //}
 
             copy.Players = new PlayerState[Players.Length];
 
@@ -59,6 +68,32 @@ namespace Core
             }
 
             return copy;
+        }
+        /// <summary>
+        /// Adds the current player's EntityData into an array.
+        /// Used when undo'ing a Move action to revert the player's data to the previous state.  
+        /// </summary>
+        public void SnapshotCurrentPlayerData()
+        {
+            //Debug.Log("SNAP!");
+            Array.Resize(ref CurrentPlayerDataStates, CurrentPlayerDataStates.Length + 1);
+            CurrentPlayerDataStates[^1] = CurrentPlayer().EntityData;
+            //var currentPlayerDataCopy = new EntityData(CurrentPlayer().EntityData);
+            //CurrentPlayerDataStates.Add(currentPlayerDataCopy);
+        }
+
+        public void RevertCurrentPlayerData()
+        {
+            //Debug.Log("REVERT!");
+            Array.Resize(ref CurrentPlayerDataStates, CurrentPlayerDataStates.Length - 1);
+            CurrentPlayer().EntityData = CurrentPlayerDataStates[^1];
+            //CurrentPlayerDataStates.RemoveAt(CurrentPlayerDataStates.Count - 1);
+        }
+
+        public void Add<T>(ref T[] array, T thing)
+        {
+            Array.Resize(ref array, array.Length + 1);
+            array[^1] = thing;
         }
     }
 
@@ -70,26 +105,35 @@ namespace Core
         // asdfasdf
     }
 
+    public interface IEntityState
+    {
+        EntityData EntityData { get; set; }
+    }
+
     [System.Serializable]
-    public struct PlayerState
+    public struct PlayerState // : IEntityState
     {
         public int Id;
-        public EntityData EntityData;
+        public string PlayerName;
+        public EntityData EntityData; // { get; set; }
         public PlayerState(PlayerState ps)
         {
             Id = ps.Id;
+            PlayerName = ps.PlayerName;
             EntityData = new EntityData(ps.EntityData);
         }
 
         public PlayerState(int id, PlayerColorPalettePreset palettePreset)
         {
             Id = id;
+            PlayerName = palettePreset.presetName;
             EntityData = new EntityData(id, palettePreset);
         }
 
         public PlayerState(int id, PlayerCosmeticManager pcm)
         {
             Id = id;
+            PlayerName = pcm.playerName;
             EntityData = new EntityData(id, pcm);
         }
 
@@ -99,20 +143,23 @@ namespace Core
         }
     }
 
+    [System.Serializable]
+    public struct EnemyState : IEntityState
+    {
+        // May need a different Name indicator bc its name should be based on the local language
+        // Name is different between clients!!!
+        //public bool isEnemy;
+        public int favoredAttack;
+        public float spawnRarityModifier;
+        
+        public EntityData EntityData { get; set; }
+    }
+
     public enum PlayerAnims
     {
         Idle,
         Moving,
         Rolling
-    }
-
-    public struct WildCreature
-    {
-        public bool isEnemy;
-        public int favoredAttack;
-        public float spawnRarityModifier;
-
-        public EntityData EntityData;
     }
 
     // Change into a class instead of struct?
@@ -121,37 +168,37 @@ namespace Core
     {
         public string EntityName; // may be unneeded
         //public int Id;
+        public EntityType EntityType;
+        public bool IsEnemy; // remove this later
 
         public Color MainColor; // idk man
-        public List<Color> EntityPalette;
-        public List<Color> BoatPalette;
-
-        public List<Status> Statuses; // originally 'currentStates'
-        public List<ActiveEffect> ActiveEffects; // Item Buffs/Debuffs
-
-        [Header("Categorization")]
-        public EntityType EntityType;
-        public bool IsEnemy;
 
         [Header("Score Stats")]
         public int Money; // originally 'heldPoints'
         public int Health;
         public int BaseMaxHealth;
         public int MaxHealth;
-        public List<Stamp.StampType> Stamps;
+        public StampType[] Stamps;
         public List<ItemStats> Inventory;
 
-        [Header("Overworld Info")] // move to GameplayTest or GameState?
+        [Header("Overworld Info")] // REMOVE THESE
         public MapNode OccupiedNode;     // Node player is currently on
-        public MapNode InitialNode; // Node player's initial node at the start of the turn
-        public MapNode PreviousNode;     // Node player just walked on last turn. They can't go back this way.
-        public List<MapNode> TraveledNodes; // Tracks the nodes the player has gone to
+        //public MapNode InitialNode; // Node player's initial node at the start of the turn
+        //public MapNode PreviousNode;     // Node player just walked on last turn. They can't go back this way.
+        //public List<MapNode> TraveledNodes; // Tracks the nodes the player has gone to
+
+        [Header("Overworld Info 2")] // NEW
+        public int OccupiedNodeId;     // Node player is currently on
+        public int InitialNodeId; // Node player's initial node at the start of the turn
+        public int PreviousNodeId;     // Node player just walked on last turn. They can't go back this way.
+        //public List<int> TraveledNodeIds; // Tracks the nodes the player has gone to
 
         [Header("Storefront Info")]
         [Range(1, 10)] public int InventoryLimit; // Default = 8
         [Range(0, 6)] public int StoreCount; // Defaults - 2P = 8, 3P = 6, 4P = 4,
         public int StorestockTotal;
-        public List<StoreManager> OwnedStores;
+        //public List<StoreManager> OwnedStores;
+        public int[] OwnedStrorefrontIds;
 
         [Header("Augment/Die Info")]
         [Range(1, 99)] public int Level; // Default = 1
@@ -161,6 +208,12 @@ namespace Core
 
         public EntityBaseStats EntityStats;
         public EntityStatsModifiers CurrentStatsModifier;
+        public List<ActiveEffect> ActiveEffects; // Item Buffs/Debuffs
+        public List<Status> Statuses; // originally 'currentStates'
+
+        [Header("Palettes")]
+        public List<Color> EntityPalette;
+        public List<Color> BoatPalette;
 
         public DieConfig StrDie => EntityStats.dieConfigs[(int)EntityBaseStats.DieTypes.Strength];
         public DieConfig DexDie => EntityStats.dieConfigs[(int)EntityBaseStats.DieTypes.Dex];
@@ -195,17 +248,19 @@ namespace Core
             BaseMaxHealth = MaxHealth;
 
             Stamps = ed.Stamps;
-            Inventory = ed.Inventory;
+            Inventory = new List<ItemStats>(ed.Inventory);
 
             OccupiedNode = ed.OccupiedNode;
-            InitialNode = ed.InitialNode;
-            PreviousNode = ed.PreviousNode;
-            TraveledNodes = ed.TraveledNodes;
+
+            OccupiedNodeId = ed.OccupiedNodeId;
+            InitialNodeId = ed.InitialNodeId;
+            PreviousNodeId = ed.PreviousNodeId;
 
             InventoryLimit = ed.InventoryLimit;
             StoreCount = ed.StoreCount;
             StorestockTotal = ed.StorestockTotal;
-            OwnedStores = ed.OwnedStores;
+            //OwnedStores = ed.OwnedStores;
+            OwnedStrorefrontIds = ed.OwnedStrorefrontIds;
 
             Level = ed.Level;
             Experience = ed.Experience;
@@ -237,18 +292,20 @@ namespace Core
             MaxHealth = 75;
             BaseMaxHealth = MaxHealth;
 
-            Stamps = new();
+            Stamps = new StampType[4];
             Inventory = new();
 
             OccupiedNode = null;
-            InitialNode = null;
-            PreviousNode = null;
-            TraveledNodes = new();
+
+            OccupiedNodeId = -1;
+            InitialNodeId = -1;
+            PreviousNodeId = -1;
 
             InventoryLimit = 8;
-            StoreCount = 4;
+            StoreCount = 0;
             StorestockTotal = 0;
-            OwnedStores = new();
+            //OwnedStores = new();
+            OwnedStrorefrontIds = new int[0];
 
             Level = 1;
             Experience = 0;
@@ -280,18 +337,20 @@ namespace Core
             MaxHealth = 75;
             BaseMaxHealth = MaxHealth;
 
-            Stamps = new();
+            Stamps = new StampType[4];
             Inventory = new();
 
             OccupiedNode = null;
-            InitialNode = null;
-            PreviousNode = null;
-            TraveledNodes = new();
+
+            OccupiedNodeId = -1;
+            InitialNodeId = -1;
+            PreviousNodeId = -1;
 
             InventoryLimit = 8;
-            StoreCount = 4;
+            StoreCount = 0;
             StorestockTotal = 0;
-            OwnedStores = new();
+            //OwnedStores = new();
+            OwnedStrorefrontIds = new int[0];
 
             Level = 1;
             Experience = 0;
@@ -313,16 +372,12 @@ namespace Core
             MaxHealth = 75;
             BaseMaxHealth = MaxHealth;
 
-            Stamps = new();
+            Stamps = new StampType[4];
             Inventory = new();
 
             OccupiedNode = null;
-            InitialNode = null;
-            PreviousNode = null;
-            TraveledNodes = new();
-
             InventoryLimit = 8;
-            StoreCount = 4;
+            StoreCount = 0;
             StorestockTotal = 0;
 
             Level = 1;
@@ -334,10 +389,45 @@ namespace Core
             CurrentStatsModifier = new();
         }
 
+        //public void Add<T>(ref T[] array, T thing)
+        //{
+        //    Array.Resize(ref array, array.Length + 1);
+        //    array[^1] = thing;
+        //}
+        public void AddStamp(StampType newStamp)
+        {
+            //var index = Array.FindIndex(Stamps, s => s == StampType.None);
+            //StampType[] newStamps = (StampType[])Stamps.Clone();
+
+            var newStamps = new StampType[Stamps.Length];
+            //Array.Copy(Stamps, newStamps, Stamps.Length);
+            for (int i = 0; i < Stamps.Length; i++)
+            {
+                newStamps[i] = Stamps[i];
+            }
+
+            var index = (int) newStamp - 1;
+            newStamps[index] = newStamp;
+
+            Stamps = newStamps;
+        }
+
+        public int GetStampCount()
+        {
+            var count = 0;
+
+            for (int i = 0; i < Stamps.Length; i++)
+            {
+                if(Stamps[i] is not StampType.None) count++;
+            }
+
+            return count;
+        }
+
         public bool CanLevelUp()
         {
             ExpThreshold = LevelUpFormula();
-            // 100, 230, 396, 608, 874... Every level costs around 30% more (should be tuned in testing).
+            
             if (Experience >= ExpThreshold)
             {
                 Debug.Log("Passed threshold of " + ExpThreshold);
@@ -352,6 +442,7 @@ namespace Core
 
         public int LevelUpFormula()
         {
+            // 100, 230, 396, 608, 874... Every level costs around 30% more (should be tuned in testing).
             return (int)((Level * 100) * (Mathf.Pow(1.15f, Level - 1)));
         }
         #region 'Stat Mod' Function
