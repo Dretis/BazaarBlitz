@@ -131,4 +131,27 @@ namespace Core
     {
         // for speed die atm
     }
+
+    public struct CombatActionCommand : ICommand
+    {
+        public int ActionId;
+        public int EntityId;
+
+        public CombatActionCommand(int entityId, int actionId)
+        {
+            ActionId = actionId;
+            EntityId = entityId;
+        }
+    }
+
+    public struct CombatRollCommand : ICommand
+    {
+        // Does this need anything specific?
+        public int EntityId;
+
+        public CombatRollCommand(int entityId)
+        {
+            EntityId = entityId;
+        }
+    }
 }

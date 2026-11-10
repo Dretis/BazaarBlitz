@@ -1,0 +1,134 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ff5b8b7ed960a340851141e1072e483, type: 3}
+  m_Name: info8_sin
+  m_EditorClassIdentifier: 
+  entityIcon: {fileID: 21300000, guid: d39bf00cd840f4444ad8c25c3e455202, type: 3}
+  entitySpecies: Baggie
+  defaultColor: {r: 0.23529412, g: 0.28235295, b: 0.3764706, a: 1}
+  flavorText: Hides in the shadows and suddenly-
+  DefaultEntityState:
+    PlayerName: Assassin
+    Id: -8
+    EntityData:
+      EntityName: Assassin
+      EntityType: 2
+      IsEnemy: 1
+      MainColor: {r: 0.23529412, g: 0.28235295, b: 0.3764706, a: 1}
+      Money: 0
+      Health: 33
+      BaseMaxHealth: 33
+      MaxHealth: 33
+      Stamps: 
+      Inventory: []
+      OccupiedNodeId: -1
+      InitialNodeId: -1
+      PreviousNodeId: -1
+      InventoryLimit: 1
+      StoreCount: 0
+      StorestockTotal: 0
+      OwnedStrorefrontIds: 
+      Level: 3
+      Experience: 150
+      ExpThreshold: 0
+      UnspentSP: 0
+      EntityStats:
+        dieConfigs:
+        - dieFaces: 020000000200000003000000040000000500000005000000
+        - dieFaces: 030000000300000004000000050000000700000008000000
+        - dieFaces: 010000000200000003000000040000000400000004000000
+        - dieFaces: 010000000200000003000000040000000400000004000000
+      CurrentStatsModifier:
+        dieModifiers:
+        - finalResultAtkFlatModifier: 0
+          finalResultDefFlatModifier: 0
+          finalResultMultModifier: 1
+        - finalResultAtkFlatModifier: 0
+          finalResultDefFlatModifier: 0
+          finalResultMultModifier: 1
+        - finalResultAtkFlatModifier: 0
+          finalResultDefFlatModifier: 0
+          finalResultMultModifier: 1
+        - finalResultAtkFlatModifier: 0
+          finalResultDefFlatModifier: 0
+          finalResultMultModifier: 1
+        deathLossRatio: 0.5
+        rollModifier: 0
+        interestRate: 0
+        storeLevelMultModifier: 0
+        canUseRelocate: 0
+        canRenovateOnPass: 0
+        movementFlatModifier: 0
+        movementMultModifier: 1
+        movementTempoScale: 0
+        canUseSpeedDie: 0
+        redirectOnSpeedDie: 0
+        strongMultModifier: 0
+        neutralMultModifier: 0
+        resistMultModifier: 0
+        strongDefRollShred: 0
+        neutralDefRollShred: 0
+        resistDefRollShred: 0
+        canGreedOnKill: 0
+        defenseModifier: 0
+        lifestealMult: 0
+        healthRegen: 0
+        maxHealthFlatModifier: 0
+        maxHealthMultModifier: 1
+        warpDestination: {fileID: 0}
+        warpMode: 0
+        canStealOnPassBy: 0
+        canInitiateCombatOnPassBy: 0
+        canStopOnStoreOnPassBy: 0
+      ActiveEffects: []
+      Statuses: 
+    CosmeticData:
+      CombatAnimatorController: {fileID: 9100000, guid: d791d6cb6a6adef44995eeb4f9b7c959, type: 2}
+      AttackActions:
+      - {fileID: 11400000, guid: 092cf3b3af66061478bc3530f1af01f9, type: 2}
+      - {fileID: 11400000, guid: 6ca9e4123ea095d4fb087a3cc7c9a44d, type: 2}
+      - {fileID: 11400000, guid: 32a37866383854b4d80b76bd6c92a71b, type: 2}
+      DefendActions:
+      - {fileID: 11400000, guid: 188957564c85adc4a8e2ce5c7b8466f5, type: 2}
+      - {fileID: 11400000, guid: 704ee6dbca2f62140ad5caf58846a975, type: 2}
+      - {fileID: 11400000, guid: 5b8f525effb08414abb503dfc27d55f6, type: 2}
+      EntityPalette:
+      - {r: 0.23673905, g: 0.28361222, b: 0.3773585, a: 1}
+      - {r: 0.45904806, g: 0.41553932, b: 0.5471698, a: 1}
+      - {r: 1, g: 0.98602057, b: 0.3160377, a: 1}
+      - {r: 0.47499955, g: 0.2270826, b: 0.5943396, a: 1}
+      - {r: 0.5566038, g: 0.4651112, b: 0.44370773, a: 1}
+      - {r: 0.4442417, g: 0.6045211, b: 0.6320754, a: 1}
+      - {r: 1, g: 1, b: 1, a: 1}
+      - {r: 0.4039216, g: 0.5764706, b: 0.9215687, a: 1}
+      BoatPalette:
+      - {r: 0.30588236, g: 0.31406963, b: 0.3882353, a: 1}
+      - {r: 0.5660378, g: 0.51370597, b: 0.4352083, a: 1}
+      - {r: 0.9450981, g: 0.8117648, b: 0.61960787, a: 1}
+      - {r: 0.78823537, g: 0.7294118, b: 0.6431373, a: 1}
+      - {r: 0.5, g: 0.5, b: 0.5, a: 1}
+      - {r: 0.5, g: 0.5, b: 0.5, a: 1}
+      - {r: 0.5, g: 0.5, b: 0.5, a: 1}
+      - {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    EnemyData:
+      SpawnWeight: 10
+      LootPool:
+      - Item: {fileID: 11400000, guid: 60ca86fb703db5644bf9c8df549df130, type: 2}
+        Weight: 30
+      - Item: {fileID: 11400000, guid: 58d0b4009d557fc4595aa02754729cc4, type: 2}
+        Weight: 20
+      - Item: {fileID: 11400000, guid: dbbe8d699b09bfd4b8fb2ccdd3d1bbd1, type: 2}
+        Weight: 20
+      - Item: {fileID: 11400000, guid: f678bd587785a29459a91ba38885eef5, type: 2}
+        Weight: 15
+      - Item: {fileID: 11400000, guid: 104cb7ba1879e2b4b8c8b37609f81904, type: 2}
+        Weight: 7

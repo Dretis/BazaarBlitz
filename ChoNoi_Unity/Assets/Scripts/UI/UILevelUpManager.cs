@@ -257,7 +257,7 @@ public class UILevelUpManager : MonoBehaviour
         OnExitStatAllocation();
     }
 
-    private void OnTryAugmentDieFaceValue(Action.WeaponTypes diceType, int diceIndex)
+    private void OnTryAugmentDieFaceValue(Action.WeaponType diceType, int diceIndex)
     {
         Debug.Log($"checking if can upgradfe | {diceType} Dice at id{diceIndex} is []");
         // Debug.Log($"cpsts {costArray[diceIndex]} SP, player has {currentPlayer.unspentLevelUpPoints}");
@@ -267,18 +267,18 @@ public class UILevelUpManager : MonoBehaviour
 
         switch (diceType)
         {
-            case Action.WeaponTypes.Melee:
+            case Action.WeaponType.Melee:
                 selectedDie = currentPlayer.strDie[diceIndex];
                 break;
 
-            case Action.WeaponTypes.Gun:
+            case Action.WeaponType.Gun:
                 selectedDie = currentPlayer.dexDie[diceIndex];
                 break;
 
-            case Action.WeaponTypes.Magic:
+            case Action.WeaponType.Magic:
                 selectedDie = currentPlayer.intDie[diceIndex];
                 break;
-            case Action.WeaponTypes.Speed:
+            case Action.WeaponType.Speed:
                 selectedDie = currentPlayer.spdDie[diceIndex];
                 break;
         }
@@ -292,18 +292,18 @@ public class UILevelUpManager : MonoBehaviour
 
             switch (diceType)
             {
-                case Action.WeaponTypes.Melee:
+                case Action.WeaponType.Melee:
                     currentPlayer.strDie[diceIndex]++;
                     break;
 
-                case Action.WeaponTypes.Gun:
+                case Action.WeaponType.Gun:
                     currentPlayer.dexDie[diceIndex]++;
                     break;
 
-                case Action.WeaponTypes.Magic:
+                case Action.WeaponType.Magic:
                     currentPlayer.intDie[diceIndex]++;
                     break;
-                case Action.WeaponTypes.Speed:
+                case Action.WeaponType.Speed:
                     currentPlayer.spdDie[diceIndex]++;
                     break;
             }

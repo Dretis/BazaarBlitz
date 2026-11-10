@@ -2,13 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerCosmeticManager : MonoBehaviour
+[System.Serializable]
+public class PlayerCosmeticManager
 {
     public string playerName;
     public Color playerColor;
-
     [SerializeField] private PlayerColorPalettePreset palettePreset;
     public PlayerColorPalettePreset PalettePreset { get { return palettePreset; } set { palettePreset = value; } }
+
+    [Header("Combat Cosmetics")]
+    public RuntimeAnimatorController CombatAnimatorController;
+    public Action[] AttackActions = new Action[3];
+    public Action[] DefendActions = new Action[3];
 
     [Header("Color Palettes")]
     [SerializeField] private int baggiePaletteColorCount = 8;

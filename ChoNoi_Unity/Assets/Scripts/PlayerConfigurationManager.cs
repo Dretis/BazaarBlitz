@@ -60,22 +60,22 @@ public class PlayerConfigurationManager : MonoBehaviour
     #region Gameplay Ruleset Config
     public void SetRuleBoard(GameplayTest.GameBoard selectedBoard)
     {
-        ruleset.board = selectedBoard;
+        ruleset.Board = selectedBoard;
     }
 
     public void SetRuleNumberOfPlayers(int playerCount)
     {
-        ruleset.numberOfPlayers = playerCount;
+        ruleset.NumberOfPlayers = playerCount;
     }
 
     public void SetRulePointGoal(int targetGoal)
     {
-        ruleset.pointGoal = targetGoal;
+        ruleset.PointGoal = targetGoal;
     }
 
     public void SetRuleStoreLimit(int storeCount)
     {
-        ruleset.storeLimit = storeCount;
+        ruleset.StoreLimit = storeCount;
     }
 
     public void NumberOfPlayersButton(int playerCount)
@@ -155,7 +155,7 @@ public class PlayerConfigurationManager : MonoBehaviour
     public void ReadyPlayer(int index)
     {
         playerConfigs[index].IsReady = true;
-        if(playerConfigs.Count == ruleset.numberOfPlayers && playerConfigs.All(p=>p.IsReady ==true))
+        if(playerConfigs.Count == ruleset.NumberOfPlayers && playerConfigs.All(p=>p.IsReady ==true))
         {
             Debug.Log("All players ready, going to the board select!");
 
@@ -198,7 +198,7 @@ public class PlayerConfigurationManager : MonoBehaviour
             pi.gameObject.name = $"PLAYER CONFIG [{pi.playerIndex}]";
         }
 
-        if (playerConfigs.Count >= ruleset.numberOfPlayers)
+        if (playerConfigs.Count >= ruleset.NumberOfPlayers)
         {
             Debug.Log($"Hit Max Player Count, stop letting ppl join");
             playerInputManager.DisableJoining();

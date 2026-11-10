@@ -45,7 +45,7 @@ public class ScoreManager : MonoBehaviour
     public VoidEventChannelSO m_HoldPlayerInfo;
     public VoidEventChannelSO m_ReleasePlayerInfo;
 
-    public PlayerEventChannelSO m_FinishStockingStore;
+    //public PlayerEventChannelSO m_FinishStockingStore;
     //public VoidEventChannelSO m_FinishedUsedItem;
 
     public PlayerEventChannelSO m_PassedByStamp;
@@ -76,7 +76,7 @@ public class ScoreManager : MonoBehaviour
         m_HoldPlayerInfo.OnEventRaised += OnHoldPlayerInfo;
         m_ReleasePlayerInfo.OnEventRaised += OnReleasePlayerInfo;
 
-        m_FinishStockingStore.OnEventRaised += OnFinishStockingStore;
+        //m_FinishStockingStore.OnEventRaised += OnFinishStockingStore;
         //m_FinishedUsedItem.OnEventRaised += OnFinishedUsedItem;
 
         m_PassedByStamp.OnEventRaised += OnPassedByStamp;
@@ -108,7 +108,7 @@ public class ScoreManager : MonoBehaviour
         m_HoldPlayerInfo.OnEventRaised -= OnHoldPlayerInfo;
         m_ReleasePlayerInfo.OnEventRaised -= OnReleasePlayerInfo;
 
-        m_FinishStockingStore.OnEventRaised -= OnFinishStockingStore;
+        //m_FinishStockingStore.OnEventRaised -= OnFinishStockingStore;
         //m_FinishedUsedItem.OnEventRaised -= OnFinishedUsedItem;
 
         m_PassedByStamp.OnEventRaised -= OnPassedByStamp;
@@ -134,6 +134,15 @@ public class ScoreManager : MonoBehaviour
             {
                 playerScoreHandlers[gameState.NewState.CurrPlayerId].ToggleCurrentPlayerEffect(true);
                 UpdateScoreForPlayer(gameState.NewState.CurrentPlayer());
+            }
+
+            if (gameState.PrevState.GamePhase is GameplayTest.GamePhase.PrepStockStore &&
+                gameState.NewState.GamePhase is GameplayTest.GamePhase.InitialTurnMenu)
+            {
+                playerScoreHandlers[gameState.NewState.CurrPlayerId].AssignPlayerToScore(gameState.NewState.CurrentPlayer());
+                playerScoreHandlers[gameState.NewState.CurrPlayerId].UpdateScore();
+
+                playerScoreHandlers[gameState.NewState.CurrPlayerId].UpdateInfoInvItems();
             }
 
             if (gameState.PrevState.GamePhase is GameplayTest.GamePhase.IncidentHappening)
@@ -215,7 +224,7 @@ public class ScoreManager : MonoBehaviour
             playerScoreHandlers[i].ToggleCurrentPlayerEffect(false);
         }
 
-        for (int i = 4; i > gt.currentRuleset.numberOfPlayers; i--)
+        for (int i = 4; i > gt.currentRuleset.NumberOfPlayers; i--)
         {
             Debug.Log($"playerScoreHandlers[^1] = {playerScoreHandlers[^1]}");
             //playerUnits.Remove(playerUnits[^1]);
@@ -236,7 +245,7 @@ public class ScoreManager : MonoBehaviour
             .WithEase(Ease.OutBack)
             .Bind(x => coinGainLocalScale = x);
 
-        if (!(entity.heldPoints >= GameplayTest.instance.currentRuleset.pointGoal))
+        if (!(entity.heldPoints >= GameplayTest.instance.currentRuleset.PointGoal))
         {
             entity.coinGainNumber.ShowText($"+{coinGain}<sprite=\"Coin Icon\" index=0> ");
         }

@@ -19,7 +19,7 @@ public class CombatDiceInfoHolder : MonoBehaviour
     private MotionHandle currentMotion;
 
     [Header("Die Info")]
-    [SerializeField] private Action.WeaponTypes statType;
+    [SerializeField] private Action.WeaponType statType;
     [SerializeField] private TMP_ColorGradient defaultStatGradient;
     [SerializeField] private TMP_ColorGradient buffedStatGradient;
     [SerializeField] private TMP_ColorGradient debuffedStatGradient;
@@ -106,16 +106,16 @@ public class CombatDiceInfoHolder : MonoBehaviour
             .AddTo(this.gameObject);
     }
 
-    public void UpdateDiceNumbers(Action.PhaseTypes phase)
+    public void UpdateDiceNumbers(Action.ActionPhase phase)
     {
         bool attacking;
         switch (phase)
         {
-            case Action.PhaseTypes.Attack:
+            case Action.ActionPhase.Attack:
                 attacking = true;
                 break;
 
-            case Action.PhaseTypes.Defend:
+            case Action.ActionPhase.Defend:
                 attacking = false;
                 break;
             default:
@@ -188,7 +188,7 @@ public class CombatDiceInfoHolder : MonoBehaviour
         DiceAppear(scaleDuration);
 
         if (p.currentStatsModifier.rollModifier > 0
-            && action.phase != Action.PhaseTypes.Defend)
+            && action.phase != Action.ActionPhase.Defend)
         {
             for (int i = 0; i < p.currentStatsModifier.rollModifier; i++)
             {

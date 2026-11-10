@@ -1,6 +1,5 @@
 using UnityEngine;
 using Cinemachine;
-using static UnityEngine.EventSystems.EventTrigger;
 using System.Collections.Generic;
 using Core;
 using Core.Events;

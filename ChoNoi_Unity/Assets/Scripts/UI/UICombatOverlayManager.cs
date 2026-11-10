@@ -384,11 +384,11 @@ public class UICombatOverlayManager : MonoBehaviour
 
         }
     }
-    public void UpdatePhaseTextPrompt(EntityPiece entity, Action.PhaseTypes phase)
+    public void UpdatePhaseTextPrompt(EntityPiece entity, Action.ActionPhase phase)
     {
         if (entity.isEnemy)
             return;
-        if(phase == Action.PhaseTypes.Attack)
+        if(phase == Action.ActionPhase.Attack)
             phaseTestPrompt.text = $"{entity.entityName}, choose an action.";
         else
             phaseTestPrompt.text = $"{entity.entityName}, choose an action.";
@@ -421,12 +421,12 @@ public class UICombatOverlayManager : MonoBehaviour
         int typeIcon = 0;
         switch (action.type)
         {
-            case Action.WeaponTypes.Melee: typeIcon = 0; break;
-            case Action.WeaponTypes.Gun: typeIcon = 1; break;
-            case Action.WeaponTypes.Magic: typeIcon = 2; break;
+            case Action.WeaponType.Melee: typeIcon = 0; break;
+            case Action.WeaponType.Gun: typeIcon = 1; break;
+            case Action.WeaponType.Magic: typeIcon = 2; break;
         }
 
-        if(action.phase == Action.PhaseTypes.Attack)
+        if(action.phase == Action.ActionPhase.Attack)
         {
             Debug.Log($"{entity.entityName} is attacking");
             sideSelectedAction.GetComponent<Image>().color = attackColor;
@@ -666,7 +666,7 @@ public class UICombatOverlayManager : MonoBehaviour
                 dieNumber = (int)((entity.strDie[faceIndex]) + strDieDefFlatMod);
             }
 
-            SetDiceNumberColorGradient(Action.WeaponTypes.Melee, diceNumbers[i], baseDieNumber, dieNumber);
+            SetDiceNumberColorGradient(Action.WeaponType.Melee, diceNumbers[i], baseDieNumber, dieNumber);
             diceNumbers[i].text = $"{dieNumber}";
 
             faceIndex++;
@@ -693,7 +693,7 @@ public class UICombatOverlayManager : MonoBehaviour
                 dieNumber = (int)((entity.dexDie[faceIndex]) + dexDieDefFlatMod);
             }
 
-            SetDiceNumberColorGradient(Action.WeaponTypes.Gun, diceNumbers[i], baseDieNumber, dieNumber);
+            SetDiceNumberColorGradient(Action.WeaponType.Gun, diceNumbers[i], baseDieNumber, dieNumber);
             diceNumbers[i].text = $"{dieNumber}";
 
             faceIndex++;
@@ -720,14 +720,14 @@ public class UICombatOverlayManager : MonoBehaviour
                 dieNumber = (int)((entity.intDie[faceIndex]) + intDieDefFlatMod);
             }
 
-            SetDiceNumberColorGradient(Action.WeaponTypes.Magic, diceNumbers[i], baseDieNumber, dieNumber);
+            SetDiceNumberColorGradient(Action.WeaponType.Magic, diceNumbers[i], baseDieNumber, dieNumber);
             diceNumbers[i].text = $"{dieNumber}";
 
             faceIndex++;
         }
     }
 
-    private void SetDiceNumberColorGradient(Action.WeaponTypes type, TextMeshProUGUI diceNumText, int baseValue, int finalValue)
+    private void SetDiceNumberColorGradient(Action.WeaponType type, TextMeshProUGUI diceNumText, int baseValue, int finalValue)
     {
         TMP_ColorGradient typeGradient = actionTypeGradients[(int)type];
 
@@ -1068,7 +1068,7 @@ public class UICombatOverlayManager : MonoBehaviour
         HideInputPrompt(leftAttackPrompt, 0.15f);
     }
 
-    public void SetDiceActionRoll(EntityPiece entity, float roll, Action.WeaponTypes weaponType)
+    public void SetDiceActionRoll(EntityPiece entity, float roll, Action.WeaponType weaponType)
     {
         Debug.Log($"{entity.name} picked {weaponType} with roll[{roll}]");
 

@@ -92,8 +92,8 @@ public class CombatManager : MonoBehaviour
             //m_SwapPhase.RaiseEvent(attacker);
         }
 
-        combatUIManager.UpdateActionText(attacker, Action.PhaseTypes.Attack);
-        combatUIManager.UpdateActionText(defender, Action.PhaseTypes.Defend);
+        combatUIManager.UpdateActionText(attacker, Action.ActionPhase.Attack);
+        combatUIManager.UpdateActionText(defender, Action.ActionPhase.Defend);
 
         m_CombatDiceRolled.OnEventRaised += OnCombatDiceRolled;
         m_StoreDiceRolled.OnEventRaised += OnStoreDiceRolled;
@@ -152,8 +152,8 @@ public class CombatManager : MonoBehaviour
 
         // Has to be done after randomly deciding turn order
 
-        combatUIManager.UpdateActionText(attacker, Action.PhaseTypes.Attack);
-        combatUIManager.UpdateActionText(defender, Action.PhaseTypes.Defend);
+        combatUIManager.UpdateActionText(attacker, Action.ActionPhase.Attack);
+        combatUIManager.UpdateActionText(defender, Action.ActionPhase.Defend);
 
         //m_DecidedTurnOrder.RaiseEvent(attacker);
 
@@ -214,21 +214,21 @@ public class CombatManager : MonoBehaviour
     public void ActionSelected(EntityPiece player, Action action) {
         Debug.Log($"{player} did Action {action}");
 
-        if (action.phase == Action.PhaseTypes.Attack) {
+        if (action.phase == Action.ActionPhase.Attack) {
             attackerAction = action;
-            m_ActionSelected.RaiseEvent(attacker, Action.PhaseTypes.Attack);
-        } else if (action.phase == Action.PhaseTypes.Defend) {
+            m_ActionSelected.RaiseEvent(attacker, Action.ActionPhase.Attack);
+        } else if (action.phase == Action.ActionPhase.Defend) {
             defenderAction = action;
-            m_ActionSelected.RaiseEvent(defender, Action.PhaseTypes.Defend);
+            m_ActionSelected.RaiseEvent(defender, Action.ActionPhase.Defend);
         }
 
-        if (isFightingAI && action.phase == Action.PhaseTypes.Attack) {
+        if (isFightingAI && action.phase == Action.ActionPhase.Attack) {
             defenderAction = decideAttackAI();
-            m_ActionSelected.RaiseEvent(defender, Action.PhaseTypes.Defend);
+            m_ActionSelected.RaiseEvent(defender, Action.ActionPhase.Defend);
             onePlayerSelected = true;
-        } else if (isFightingAI && action.phase == Action.PhaseTypes.Defend) {
+        } else if (isFightingAI && action.phase == Action.ActionPhase.Defend) {
             attackerAction = decideAttackAI();
-            m_ActionSelected.RaiseEvent(attacker, Action.PhaseTypes.Attack);
+            m_ActionSelected.RaiseEvent(attacker, Action.ActionPhase.Attack);
             onePlayerSelected = true;
         }
 
@@ -250,9 +250,9 @@ public class CombatManager : MonoBehaviour
             //damageTypeMultiplier = 1.5f; // Neutral
             damageTypeAdvantage = TypeAdvantage.Neutral;
         }
-        else if ((attack.type == Action.WeaponTypes.Melee && defend.type == Action.WeaponTypes.Gun)
-               || (attack.type == Action.WeaponTypes.Gun && defend.type == Action.WeaponTypes.Magic)
-               || (attack.type == Action.WeaponTypes.Magic && defend.type == Action.WeaponTypes.Melee))
+        else if ((attack.type == Action.WeaponType.Melee && defend.type == Action.WeaponType.Gun)
+               || (attack.type == Action.WeaponType.Gun && defend.type == Action.WeaponType.Magic)
+               || (attack.type == Action.WeaponType.Magic && defend.type == Action.WeaponType.Melee))
         {
             //damageTypeMultiplier = 1f; // Incorrect defense option
             damageTypeAdvantage = TypeAdvantage.Resist;
@@ -532,7 +532,7 @@ public class CombatManager : MonoBehaviour
         }
     }
 
-    private void OnStoreDiceRolled(EntityPiece entity, float rolledNumber, Action.WeaponTypes type)
+    private void OnStoreDiceRolled(EntityPiece entity, float rolledNumber, Action.WeaponType type)
     {
         if (entity == attacker)
         {
@@ -573,8 +573,8 @@ public class CombatManager : MonoBehaviour
 
         m_DamageTaken.RaiseEvent(defender, damageToDeal, damageTypeAdvantage);
 
-        combatUIManager.UpdateActionText(attacker, Action.PhaseTypes.Attack);
-        combatUIManager.UpdateActionText(defender, Action.PhaseTypes.Defend);
+        combatUIManager.UpdateActionText(attacker, Action.ActionPhase.Attack);
+        combatUIManager.UpdateActionText(defender, Action.ActionPhase.Defend);
 
         StartCoroutine(PhaseEndDelay(0.75f));
     }
@@ -592,13 +592,13 @@ public class CombatManager : MonoBehaviour
 
         switch (defType)
         {
-            case Action.WeaponTypes.Melee:
+            case Action.WeaponType.Melee:
                 defShredProcs = strDefShreds;
                 break;
-            case Action.WeaponTypes.Gun:
+            case Action.WeaponType.Gun:
                 defShredProcs = dexDefShreds;
                 break;
-            case Action.WeaponTypes.Magic:
+            case Action.WeaponType.Magic:
                 defShredProcs = intDefShreds;
                 break;
             default:

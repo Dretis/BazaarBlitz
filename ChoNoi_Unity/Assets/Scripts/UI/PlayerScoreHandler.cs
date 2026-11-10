@@ -116,7 +116,7 @@ public class PlayerScoreHandler : MonoBehaviour
         //playerImage.color = assignedPlayerState.playerColor - new Color32(0, 0, 0, 0); // minus transparency
 
         //var palette = assignedPlayer.GetComponent<PlayerPaletteLoader>().GetInspectorPalette();
-        var palette = assignedPlayerState.EntityData.EntityPalette;
+        var palette = assignedPlayerState.CosmeticData.EntityPalette;
         playerPaletteLoader.SetInspectorPalette(palette);
 
         playerMoneyNumber = assignedPlayerState.EntityData.Money;
@@ -223,7 +223,11 @@ public class PlayerScoreHandler : MonoBehaviour
     public void SetMoney(int heldMoney)
     {
         playerMoney.text = heldMoney.ToString();
-        if(heldMoney < 0)
+
+        var handle = LMotion.Create(heldMoney, heldMoney, 0f)
+                        .BindToText(playerMoney, "{0:N0}");
+
+        if (heldMoney < 0)
         {
             playerMoney.color = negativeMoneyColor;
         }
@@ -239,11 +243,11 @@ public class PlayerScoreHandler : MonoBehaviour
         }
 
         var moneyShine = playerMoney.GetComponent<UIEffect>();
-
-        if (moneyShine.enabled && assignedPlayerState.EntityData.Money < GameplayTest.instance.currentRuleset.pointGoal)
+        
+        if (moneyShine.enabled && assignedPlayerState.EntityData.Money < GameplayTest.instance.currentRuleset.PointGoal)
             playerMoney.GetComponent<UIEffect>().enabled = false;
 
-        if (assignedPlayerState.EntityData.Money >= GameplayTest.instance.currentRuleset.pointGoal)
+        if (assignedPlayerState.EntityData.Money >= GameplayTest.instance.currentRuleset.PointGoal)
         {
             playerMoney.color = goalMoneyColor;
             playerMoney.GetComponent<UIEffect>().enabled = true;
@@ -260,8 +264,8 @@ public class PlayerScoreHandler : MonoBehaviour
         }
 
         var handle = LMotion.Create(playerMoneyNumber, assignedPlayerState.EntityData.Money, 1f)
-                        .BindToText(playerMoney);
-
+                        .BindToText(playerMoney, "{0:N0}");
+        
         playerMoneyNumber = assignedPlayerState.EntityData.Money;
     }
 
@@ -416,20 +420,20 @@ public class PlayerScoreHandler : MonoBehaviour
     // "More Info" stuffs
     public void UpdateInfoDiceNumbers()
     {
-        UpdateDiceStat(Action.WeaponTypes.Melee);
-        UpdateDiceStat(Action.WeaponTypes.Gun);
-        UpdateDiceStat(Action.WeaponTypes.Magic);
-        UpdateDiceStat(Action.WeaponTypes.Speed);
+        UpdateDiceStat(Action.WeaponType.Melee);
+        UpdateDiceStat(Action.WeaponType.Gun);
+        UpdateDiceStat(Action.WeaponType.Magic);
+        UpdateDiceStat(Action.WeaponType.Speed);
     }
 
-    public void UpdateDiceStat(Action.WeaponTypes type)
+    public void UpdateDiceStat(Action.WeaponType type)
     {
         var player = assignedPlayerState.EntityData;
         var ti = (int)type; // type index
         float statDieFlatMod = 0;
         float statDieMultMod = 1;
 
-        if (type != Action.WeaponTypes.Speed)
+        if (type != Action.WeaponType.Speed)
         {
             statDieFlatMod = player.CurrentStatsModifier.dieModifiers[ti].finalResultAtkFlatModifier;
             statDieMultMod = player.CurrentStatsModifier.dieModifiers[ti].finalResultMultModifier;
@@ -453,22 +457,22 @@ public class PlayerScoreHandler : MonoBehaviour
 
         switch (type)
         {
-            case Action.WeaponTypes.Melee:
+            case Action.WeaponType.Melee:
                 die = player.StrDie;
                 start = 0;
                 end = 6;
                 break;
-            case Action.WeaponTypes.Gun:
+            case Action.WeaponType.Gun:
                 die = player.DexDie;
                 start = 6;
                 end = 12;
                 break;
-            case Action.WeaponTypes.Magic:
+            case Action.WeaponType.Magic:
                 die = player.IntDie;
                 start = 12;
                 end = 18;
                 break;
-            case Action.WeaponTypes.Speed:
+            case Action.WeaponType.Speed:
                 die = player.SpdDie;
                 start = 18;
                 end = 24;

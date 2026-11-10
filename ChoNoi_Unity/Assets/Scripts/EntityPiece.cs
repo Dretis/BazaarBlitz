@@ -9,6 +9,7 @@ using Core;
 using LitMotion;
 using System.Collections;
 using LitMotion.Extensions;
+using UnityEngine.Analytics;
 
 /// <summary>
 /// Handles the visual aspects of a Player Baggie present on the board.
@@ -122,8 +123,8 @@ public class EntityPiece : MonoBehaviour
         _timelineSignalResponder.Initialize(ps, gt);
 
         // Setup all the visual shit for this player in-game
-        var colorPal = ps.EntityData.EntityPalette;
-        var boatPal = ps.EntityData.BoatPalette;
+        var colorPal = ps.CosmeticData.EntityPalette;
+        var boatPal = ps.CosmeticData.BoatPalette;
 
         playerColor = colorPal[0];
 
@@ -155,7 +156,7 @@ public class EntityPiece : MonoBehaviour
                 gameState.NewState.Players[id].EntityData.Money)
             {
                 var coinGain = gameState.NewState.Players[id].EntityData.Money - gameState.PrevState.Players[id].EntityData.Money;
-                StartCoroutine(ShowCoinGainNumber(gameState.NewState.Players[id].EntityData, coinGain));
+                StartCoroutine(ShowCoinGainNumber(gameState.NewState, coinGain));
 
                 var emission = coinSucking.emission;
                 emission.rateOverTime = coinGain * 0.10f;
@@ -223,8 +224,9 @@ public class EntityPiece : MonoBehaviour
             //Debug.Log($"EntityVisual | Current player moved to {nodeObject}");
         }
     }
-    private IEnumerator ShowCoinGainNumber(EntityData ed, int coinGain)
+    private IEnumerator ShowCoinGainNumber(GameState state, int coinGain)
     {
+        EntityData ed = state.Players[id].EntityData;
         var coinGainLocalScale = coinGainNumber.GetComponent<RectTransform>().localScale;
         coinGainLocalScale = Vector3.zero;
 
@@ -232,7 +234,7 @@ public class EntityPiece : MonoBehaviour
             .WithEase(Ease.OutBack)
             .Bind(x => coinGainLocalScale = x);
 
-        if (!(ed.Money >= GameplayTest.instance.currentRuleset.pointGoal))
+        if (!(ed.Money >= state.GameRuleset.PointGoal))
         {
             coinGainNumber.ShowText($"+{coinGain}<sprite=\"Coin Icon\" index=0> ");
         }

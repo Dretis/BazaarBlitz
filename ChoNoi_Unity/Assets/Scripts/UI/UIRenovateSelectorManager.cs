@@ -56,7 +56,7 @@ public class UIRenovateSelectorManager : MonoBehaviour
 
     [Header("Listen on Event Channel")]
     public PlayerEventChannelSO m_AskRenovateStore; // originally to m_AskRestockStore
-    public NodeEventChannelSO m_RestockStore;
+    public NodeEventChannelSO m_RestockStore; // delete
     //public NodeEventChannelSO m_UpgradeStore;
 
     public NodeEventChannelSO m_PromptRenovateOptions;

@@ -73,7 +73,7 @@ public class UIPromptManager : MonoBehaviour
     [Header("Broadcast on Event Channels")]
     public PlayerEventChannelSO m_ConfirmBuildStore;
     //public VoidEventChannelSO m_CancelBuildStore; // also listening
-    public NodeEventChannelSO m_RestockStore; // also listening
+    //public NodeEventChannelSO m_RestockStore; // also listening
 
     [Header("Listen on Event Channels")]
     public IntEventChannelSO m_RollForMovement;
@@ -600,7 +600,7 @@ public class UIPromptManager : MonoBehaviour
         var buildVisual = "Build"; //temp
 
         if (occupiedNode.Type is not NodeType.OpenSpace 
-            || buildCount >= _gameplayTest.currentRuleset.storeLimit
+            || buildCount >= _gameplayTest.currentRuleset.StoreLimit
             || ed.Statuses.Contains(Status.Fighting))
         {
             buildPromptText.color = Color.gray;
@@ -612,7 +612,7 @@ public class UIPromptManager : MonoBehaviour
         {
             //buildPromptText.text = "Build";
             buildPromptText.color = normalPromptColor;
-            buildLimitText.text = $"{buildCount} Left";
+            buildLimitText.text = $"{_gameplayTest.currentRuleset.StoreLimit - buildCount} Left";
 
             if (ed.Inventory.Count > 3 && !ed.Statuses.Contains(Status.Fighting))
             {

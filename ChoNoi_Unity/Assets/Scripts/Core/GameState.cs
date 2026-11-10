@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor.Localization.Plugins.XLIFF.V20;
 using UnityEngine;
+using static GameplayTest;
 
 namespace Core
 {
@@ -12,19 +14,22 @@ namespace Core
     [System.Serializable]
     public struct GameState
     {
-        public int Round;
+        public GameplayRules GameRuleset;
 
+        public int Round;
+        public float AveragePlayerLevel;
         public GameplayTest.GamePhase GamePhase;
         [Space]
         public GameplayTest.GamePhase LastGamePhase;
-        //public GameplayTest.GamePhase ExpectedPhase;
+        public GameplayTest.GamePhase ExpectedPhase; // goes to this phase after a cutscene
         [Space]
         public int MoveDieRoll; // originally diceRoll | aka MovementTotal
         public int MovementLeft; // originally in EntityPiece
         [Space]
 
-        public List<CombatState> CurrentCombats;
-        public PlayerState[] Players; // player state
+        public CombatInstance CurrentCombatInstance;
+        public PlayerState[] Players; // Num of players should never change
+        public PlayerState[] Enemies; // Dynamically changes based off avg lvl
         public BoardNodeData[] BoardNodes; // all nodes on the current board
         //public List<PlayerState> NextPlayers; // Tracks remaining players that havent gotten a turn
 
@@ -100,10 +105,73 @@ namespace Core
     /// <summary>
     /// State of an ongoing combat instance
     /// </summary>
-    public struct CombatState
+    [System.Serializable]
+    public struct CombatInstance
     {
         // asdfasdf
+        public GameplayTest.CombatPhase CombatPhase;
+        public List<FighterState> Fighters;
+
+        //public int DamageDealt; // is this needed?
+        //public int WinnerId;
+        //public int LoserId;
+        public void ResetCombatInstance()
+        {
+            CombatPhase = GameplayTest.CombatPhase.None;
+            Fighters.Clear();
+        }
     }
+
+    [System.Serializable]
+    public struct FighterState
+    {
+        public int EntityId;
+        public GameplayTest.FighterSide FighterSide; // shouldnt change in a CombatInstance
+        public GameplayTest.FighterPhase FighterPhase;
+        public Action.ActionPhase ActionPhase;
+
+        //[Header("Actions")]
+        //public Action AtkAction1;
+        //public Action AtkAction2;
+        //public Action AtkAction3;
+        //[Space]
+        //public Action DefAction1;
+        //public Action DefAction2;
+        //public Action DefAction3;
+
+        [Header("Selected Action Info")]
+        public int SelectedActionId; // 1 = Left, 2 = Up, 3 = Right
+        public int WeaponActionId; // for the animator to know what to play
+        //public EntityBaseStats.DieTypes ActionType;
+        public Action.WeaponType DieType;
+        [Space]
+        [Range(0, 5)] public int DieFaceNumber; // [0] to [5]
+        public int ActionDieRoll; // Actual number of that die type
+
+        public FighterState(int id, GameplayTest.FighterSide side, Action.ActionPhase actionPhase)
+        {
+            EntityId = id;
+            FighterSide = side;
+            FighterPhase = FighterPhase.SelectingAction;
+            ActionPhase = actionPhase;
+
+            SelectedActionId = -1;
+            WeaponActionId = -1;
+            DieType = Action.WeaponType.None;
+            DieFaceNumber = 0;
+            ActionDieRoll = 0;
+        }
+
+        public void ResetSelectedAction()
+        {
+            SelectedActionId = -1;
+            DieType = Action.WeaponType.None;
+
+            DieFaceNumber = -1;
+            ActionDieRoll = -1;
+        }
+    }
+
 
     public interface IEntityState
     {
@@ -113,54 +181,106 @@ namespace Core
     [System.Serializable]
     public struct PlayerState // : IEntityState
     {
-        public int Id;
         public string PlayerName;
+        public int Id;  
         public EntityData EntityData; // { get; set; }
+        public CosmeticData CosmeticData; // { get; set; }
+        public EnemyData EnemyData; // { get; set; 
         public PlayerState(PlayerState ps)
         {
             Id = ps.Id;
             PlayerName = ps.PlayerName;
             EntityData = new EntityData(ps.EntityData);
-        }
+            CosmeticData = new CosmeticData(ps.CosmeticData);
 
+            if(ps.EntityData.EntityType is EntityType.Player)
+                EnemyData = new();
+            else
+                EnemyData = new EnemyData(ps.EnemyData);
+        }
+        /*
         public PlayerState(int id, PlayerColorPalettePreset palettePreset)
         {
             Id = id;
             PlayerName = palettePreset.presetName;
             EntityData = new EntityData(id, palettePreset);
+            EnemyData = new();
         }
-
+        */
         public PlayerState(int id, PlayerCosmeticManager pcm)
         {
             Id = id;
             PlayerName = pcm.playerName;
             EntityData = new EntityData(id, pcm);
-        }
-
-        public void SetEntityData(EntityData entityData)
-        {
-            EntityData = entityData;
+            CosmeticData = new CosmeticData(pcm);
+            EnemyData = new();
         }
     }
 
     [System.Serializable]
-    public struct EnemyState : IEntityState
+    public struct CosmeticData
     {
-        // May need a different Name indicator bc its name should be based on the local language
-        // Name is different between clients!!!
-        //public bool isEnemy;
-        public int favoredAttack;
-        public float spawnRarityModifier;
-        
-        public EntityData EntityData { get; set; }
+        public RuntimeAnimatorController CombatAnimatorController;
+        public List<Action> AttackActions;
+        public List<Action> DefendActions;
+
+        public List<Color> EntityPalette;
+        public List<Color> BoatPalette;
+
+        public CosmeticData(CosmeticData cd)
+        {
+            CombatAnimatorController = cd.CombatAnimatorController;
+            AttackActions = new List<Action>(cd.AttackActions);
+            DefendActions = new List<Action>(cd.DefendActions);
+
+            EntityPalette = new List<Color>(cd.EntityPalette);
+            BoatPalette = new List<Color>(cd.BoatPalette);
+        }
+
+        public CosmeticData(PlayerCosmeticManager pcm)
+        {
+            CombatAnimatorController = pcm.CombatAnimatorController;
+            AttackActions = new List<Action>(pcm.AttackActions);
+            DefendActions = new List<Action>(pcm.DefendActions);
+
+            EntityPalette = new List<Color>(pcm.baggieColorPalette);
+            BoatPalette = new List<Color>(pcm.boatColorPalette);
+        }
     }
 
-    public enum PlayerAnims
+    /// <summary>
+    /// Holds information on Enemy Entities specifically. Should be unused for Players.
+    /// </summary>
+    [System.Serializable]
+    public struct EnemyData
     {
-        Idle,
-        Moving,
-        Rolling
+        public int SpawnWeight; // how much more likely this Enemy will appear compared to the rest 
+        public List<ItemDrop> LootPool;
+
+        public EnemyData(EnemyData wd)
+        {
+            SpawnWeight = wd.SpawnWeight;
+            LootPool = new List<ItemDrop>(wd.LootPool);
+        }
     }
+    [System.Serializable]
+    public struct ItemDrop
+    {
+        public ItemStats Item;
+        public int Weight;
+    }
+
+    //[System.Serializable]
+    //public struct EnemyState : IEntityState
+    //{
+    //    // May need a different Name indicator bc its name should be based on the local language
+    //    // Name is different between clients!!!
+    //    //public bool isEnemy;
+    //    public int favoredAttack;
+    //    public float spawnRarityModifier;
+
+    //    public EntityData EntityData { get; set; }
+    //}
 
     // Change into a class instead of struct?
     [System.Serializable]
@@ -181,13 +301,7 @@ namespace Core
         public StampType[] Stamps;
         public List<ItemStats> Inventory;
 
-        [Header("Overworld Info")] // REMOVE THESE
-        public MapNode OccupiedNode;     // Node player is currently on
-        //public MapNode InitialNode; // Node player's initial node at the start of the turn
-        //public MapNode PreviousNode;     // Node player just walked on last turn. They can't go back this way.
-        //public List<MapNode> TraveledNodes; // Tracks the nodes the player has gone to
-
-        [Header("Overworld Info 2")] // NEW
+        [Header("Overworld Info")] // NEW
         public int OccupiedNodeId;     // Node player is currently on
         public int InitialNodeId; // Node player's initial node at the start of the turn
         public int PreviousNodeId;     // Node player just walked on last turn. They can't go back this way.
@@ -211,29 +325,26 @@ namespace Core
         public List<ActiveEffect> ActiveEffects; // Item Buffs/Debuffs
         public List<Status> Statuses; // originally 'currentStates'
 
-        [Header("Palettes")]
-        public List<Color> EntityPalette;
-        public List<Color> BoatPalette;
+        //[Header("Combat Actions")]
+        //public List<Action> attackActions;
+        //public List<Action> defendActions;
+
+        //[Header("Cosmetic")]
+        //public List<Color> EntityPalette;
+        //public List<Color> BoatPalette;
 
         public DieConfig StrDie => EntityStats.dieConfigs[(int)EntityBaseStats.DieTypes.Strength];
         public DieConfig DexDie => EntityStats.dieConfigs[(int)EntityBaseStats.DieTypes.Dex];
         public DieConfig IntDie => EntityStats.dieConfigs[(int)EntityBaseStats.DieTypes.Int];
         public DieConfig SpdDie => EntityStats.dieConfigs[(int)EntityBaseStats.DieTypes.Speed];
-        //public Sprite entityIcon;
 
-        //public string entitySpecies;
-
-        //public Color defaultColor;
-
-        //[TextArea(3, 10)]
-        //public string flavorText;
         public EntityData(EntityData ed)
         {
             EntityName = ed.EntityName;
 
             MainColor = ed.MainColor;
-            EntityPalette = ed.EntityPalette;
-            BoatPalette = ed.BoatPalette;
+            //EntityPalette = ed.EntityPalette;
+            //BoatPalette = ed.BoatPalette;
 
             //
 
@@ -249,8 +360,6 @@ namespace Core
 
             Stamps = ed.Stamps;
             Inventory = new List<ItemStats>(ed.Inventory);
-
-            OccupiedNode = ed.OccupiedNode;
 
             OccupiedNodeId = ed.OccupiedNodeId;
             InitialNodeId = ed.InitialNodeId;
@@ -270,7 +379,7 @@ namespace Core
             EntityStats = ed.EntityStats;
             CurrentStatsModifier = ed.CurrentStatsModifier;
         }
-
+        /*
         public EntityData(int id, PlayerColorPalettePreset palettePreset)
         {
             //Id = id;
@@ -295,8 +404,6 @@ namespace Core
             Stamps = new StampType[4];
             Inventory = new();
 
-            OccupiedNode = null;
-
             OccupiedNodeId = -1;
             InitialNodeId = -1;
             PreviousNodeId = -1;
@@ -316,14 +423,15 @@ namespace Core
             CurrentStatsModifier = new();
             //SetDefaultData();
         }
+        */
         public EntityData(int id, PlayerCosmeticManager pcm)
         {
             //Id = id;
             EntityName = pcm.playerName;
 
             MainColor = pcm.playerColor;
-            EntityPalette = pcm.baggieColorPalette;
-            BoatPalette = pcm.boatColorPalette;
+            //EntityPalette = pcm.baggieColorPalette;
+            //BoatPalette = pcm.boatColorPalette;
 
             //
 
@@ -340,8 +448,6 @@ namespace Core
             Stamps = new StampType[4];
             Inventory = new();
 
-            OccupiedNode = null;
-
             OccupiedNodeId = -1;
             InitialNodeId = -1;
             PreviousNodeId = -1;
@@ -361,39 +467,6 @@ namespace Core
             CurrentStatsModifier = new();
             //SetDefaultData();
         }
-
-        private void SetDefaultData()
-        {
-            Statuses = new();
-            ActiveEffects = new();
-
-            Money = 1000;
-            Health = 75;
-            MaxHealth = 75;
-            BaseMaxHealth = MaxHealth;
-
-            Stamps = new StampType[4];
-            Inventory = new();
-
-            OccupiedNode = null;
-            InventoryLimit = 8;
-            StoreCount = 0;
-            StorestockTotal = 0;
-
-            Level = 1;
-            Experience = 0;
-            ExpThreshold = 100;
-            UnspentSP = 0;
-
-            EntityStats = new();
-            CurrentStatsModifier = new();
-        }
-
-        //public void Add<T>(ref T[] array, T thing)
-        //{
-        //    Array.Resize(ref array, array.Length + 1);
-        //    array[^1] = thing;
-        //}
         public void AddStamp(StampType newStamp)
         {
             //var index = Array.FindIndex(Stamps, s => s == StampType.None);
@@ -567,8 +640,18 @@ namespace Core
                 });
             }
         }
-        #endregion 'Stat Mod' Region
+
     }
+
+    [System.Serializable]
+    public class ActiveEffect
+    {
+        public ItemStats OriginalItem;
+        public int TurnsRemaining;
+        public bool IsPermanent;
+        public bool ClearAfterCombat;
+    }
+    #endregion 'Stat Mod' Region
 
     // Player statuses
     public enum Status
@@ -587,14 +670,5 @@ namespace Core
         Player,
         CPU,
         Enemy
-    }
-
-    [System.Serializable]
-    public class ActiveEffect
-    {
-        public ItemStats OriginalItem;
-        public int TurnsRemaining;
-        public bool IsPermanent;
-        public bool ClearAfterCombat;
     }
 }

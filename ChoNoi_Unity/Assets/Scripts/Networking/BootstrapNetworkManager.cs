@@ -22,8 +22,8 @@ public class BootstrapNetworkManager : NetworkBehaviour
         base.OnStartNetwork();
 
         Debug.Log($"BNM | OnStartNetwork().");
-        Debug.Log($"BNM | HasAuthority = {HasAuthority}");
-        Debug.Log($"BNM | IsHost = {IsHost}");
+        //Debug.Log($"BNM | HasAuthority = {HasAuthority}");
+        //Debug.Log($"BNM | IsHost = {IsHost}");
         Debug.Log($"BNM | IsHostStarted = {IsHostStarted}");
         Debug.Log($"BNM | IsHostInitialized = {IsHostInitialized}");
         Debug.Log($"BNM | IsServerStarted = {InstanceFinder.IsServerStarted}");
@@ -50,7 +50,7 @@ public class BootstrapNetworkManager : NetworkBehaviour
     private void ConfigureGameplayRules()
     {
         lobby = FindObjectOfType<LobbyManager>().Lobby;
-        gameplayRules = new GameplayRules(lobby);
+        //gameplayRules = new GameplayRules(lobby);
     }
 
     private void OnFinishConfigureGameplayRules()

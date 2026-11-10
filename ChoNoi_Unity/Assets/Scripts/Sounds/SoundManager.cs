@@ -402,7 +402,7 @@ public class SoundManager : MonoBehaviour
         AudioHelper.PlayOneShotWithParameters("event:/Death", this.transform.position, ("SoundVolume", SFXVolume));
     }
 
-    private void PlaySelectCombatActionSound(EntityPiece entity, Action.PhaseTypes phase)
+    private void PlaySelectCombatActionSound(EntityPiece entity, Action.ActionPhase phase)
     {
         AudioHelper.PlayOneShotWithParameters("event:/SelectCombatAction", this.transform.position, ("SoundVolume", SFXVolume));
     }
@@ -491,7 +491,7 @@ public class SoundManager : MonoBehaviour
         PlayDiceHitSound(0);
     }
     */
-    private void OnStoreDiceRolled(EntityPiece entity, float rolledNumber, Action.WeaponTypes type)
+    private void OnStoreDiceRolled(EntityPiece entity, float rolledNumber, Action.WeaponType type)
     {
         if (entity.isEnemy) return;
 

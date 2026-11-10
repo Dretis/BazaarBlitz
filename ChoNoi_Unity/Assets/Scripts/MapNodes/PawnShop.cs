@@ -84,7 +84,7 @@ public class PawnShop : MapNode
 
         m_UpdatePlayerScore.RaiseEvent(p.id);
 
-        if (p.heldPoints >= gp.currentRuleset.pointGoal)
+        if (p.heldPoints >= gp.currentRuleset.PointGoal)
         {
             Debug.Log("BRO HE WON");
             gp.winner = p;

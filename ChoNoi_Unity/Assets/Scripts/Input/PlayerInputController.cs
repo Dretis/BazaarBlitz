@@ -49,9 +49,9 @@ public class PlayerInputController : MonoBehaviour
 
     public PlayerEventChannelSO m_TryBuildStore;
     //public PlayerEventChannelSO m_BuildStore; 
-    public PlayerEventChannelSO m_FinishStockingStore;
+    //public PlayerEventChannelSO m_FinishStockingStore;
     public VoidEventChannelSO m_BackRenovateStore;
-    public NodeEventChannelSO m_RestockStore; // also listening
+    //public NodeEventChannelSO m_RestockStore; // also listening
 
     //public VoidEventChannelSO m_ExitInventory; // also listening
     public VoidEventChannelSO m_ExitLevelUp;
@@ -141,7 +141,7 @@ public class PlayerInputController : MonoBehaviour
 
         //m_BackRenovateStore.OnEventRaised += OnCancelRestockStore;
         //m_RestockStore.OnEventRaised += OnRestockStore;
-        m_FinishStockingStore.OnEventRaised += OnFinishStockingStore;
+        //m_FinishStockingStore.OnEventRaised += OnFinishStockingStore;
 
         m_LandOnStorefront.OnEventRaised += OnLandOnStorefront;
         m_ExitStorefront.OnEventRaised += OnExitStorefront;
@@ -189,7 +189,7 @@ public class PlayerInputController : MonoBehaviour
 
         //m_BackRenovateStore.OnEventRaised -= OnCancelRestockStore;
         //m_RestockStore.OnEventRaised -= OnRestockStore;
-        m_FinishStockingStore.OnEventRaised -= OnFinishStockingStore;
+        //m_FinishStockingStore.OnEventRaised -= OnFinishStockingStore;
 
         m_LandOnStorefront.OnEventRaised -= OnLandOnStorefront;
         m_ExitStorefront.OnEventRaised -= OnExitStorefront;
@@ -541,27 +541,30 @@ public class PlayerInputController : MonoBehaviour
     {
         //if()
         Debug.Log("CONFIG[" + playerInput.playerIndex + "] | " + "P1 Up action pressed");
-        m_PlayerActionSelected.RaiseEvent(assignedPlayer, 1);
+        //m_PlayerActionSelected.RaiseEvent(assignedPlayer, 1);
         TryRumbling(0.5f, .25f, .15f);
         //sendAction(true, 1); // Player 1 second element (melee)
+        _gameplayTest.QueueCommand(new CombatActionCommand(1, _playerState.Id));
     }
 
     private void OnRightAction()
     {
         Debug.Log("CONFIG["+ playerInput.playerIndex + "] | "+"P1 Right action pressed");
-        m_PlayerActionSelected.RaiseEvent(assignedPlayer, 0);
+        //m_PlayerActionSelected.RaiseEvent(assignedPlayer, 0);
         TryRumbling(0.5f, .25f, .15f);
         //sendAction(true, 0); // Player 1 first element (gun)
+        _gameplayTest.QueueCommand(new CombatActionCommand(0, _playerState.Id));
     }
 
     private void OnDownAction()
     {
         Debug.Log("CONFIG[" + playerInput.playerIndex + "] | " + "P1 Down action pressed");
-        m_PlayerActionSelected.RaiseEvent(assignedPlayer, 2);
+        //m_PlayerActionSelected.RaiseEvent(assignedPlayer, 2);
         TryRumbling(0.5f, .25f, .15f);
         //sendAction(true, 2); // Player 1 first element (magic)
+        _gameplayTest.QueueCommand(new CombatActionCommand(2, _playerState.Id));
     }
-
+    /*
     private void OnUpActionP2()
     {
         Debug.Log("CONFIG[" + playerInput.playerIndex + "] | " + "P2 Upppp action pressed");
@@ -582,6 +585,7 @@ public class PlayerInputController : MonoBehaviour
         m_PlayerActionSelected.RaiseEvent(assignedPlayer, 2);
         //sendAction(false, 2); // Player 2 first element (magic)
     }
+    */
     #endregion
 
     #region 'Combat Roll' Action Map
@@ -591,6 +595,8 @@ public class PlayerInputController : MonoBehaviour
         m_CombatDiceRolled.RaiseEvent(assignedPlayer);
         playerInput.currentActionMap.Disable();
         TryRumbling(0.5f, .25f, .15f);
+
+        _gameplayTest.QueueCommand(new CombatRollCommand(_playerState.Id));
     }
 
     // This is not apart of the action map but its an event func
@@ -774,6 +780,84 @@ public class PlayerInputController : MonoBehaviour
         Debug.Log($"Player [{playerInput.playerIndex}] | {playerInput.currentActionMap}");
         //Debug.Log($"currActionMap | {currActionMap}");
     }
+    public void SwitchActionMapCombat(FighterPhase phase)
+    {
+        var desiredActionMapName = phase switch
+        {
+            FighterPhase.None => "Inactive",
+
+            FighterPhase.SelectingAction => "Combat",
+            FighterPhase.SelectedAction => "Inactive",
+
+            FighterPhase.RollingDie => "Combat Roll",
+            FighterPhase.RolledDie => "Inactive",
+
+            _ => String.Empty
+        };
+
+        if (!playerInput.inputIsActive) return;
+
+        if (desiredActionMapName == String.Empty)
+        {
+            return;
+        }
+
+        if (desiredActionMapName == playerInput.currentActionMap.name)
+        {
+            return;
+        }
+
+        playerInput.currentActionMap.Disable();
+        playerInput.SwitchCurrentActionMap(desiredActionMapName);
+        playerInput.currentActionMap.Enable();
+        currActionMap = playerInput.currentActionMap;
+
+        Debug.Log($"Player [{playerInput.playerIndex}] | {playerInput.currentActionMap}");
+        //Debug.Log($"currActionMap | {currActionMap}");
+    }
+    /*
+    public void SwitchActionMapCombat(CombatPhase phase)
+    {
+        var desiredActionMapName = phase switch
+        {
+            //CombatPhase.None => "Combat",
+            CombatPhase.EnterCombat => "Combat",
+            CombatPhase.ActionSelect => "Combat", // Idling
+            //CombatPhase.ActionReveal => "Combat",
+            CombatPhase.RollDie => "Combat Roll",
+
+            //CombatPhase.ProcessCalculation => "Combat",
+
+            //CombatPhase.PlayOutCombat => "Inactive",
+            //CombatPhase.DecideOutcome => "Combat",
+            CombatPhase.SwapFighterPhase => "Combat",
+
+            CombatPhase.Results => "Inactive", // Victory or Stalemate | 1v2 = HighFive/Backstab
+            CombatPhase.ExitCombat => "Inactive",
+            _ => String.Empty
+        };
+
+        if (!playerInput.inputIsActive) return;
+
+        if (desiredActionMapName == String.Empty)
+        {
+            return;
+        }
+
+        if (desiredActionMapName == playerInput.currentActionMap.name)
+        {
+            return;
+        }
+
+        playerInput.currentActionMap.Disable();
+        playerInput.SwitchCurrentActionMap(desiredActionMapName);
+        playerInput.currentActionMap.Enable();
+        currActionMap = playerInput.currentActionMap;
+
+        Debug.Log($"Player [{playerInput.playerIndex}] | {playerInput.currentActionMap}");
+        //Debug.Log($"currActionMap | {currActionMap}");
+    }
+    */
 
     // change this function later
     public void SetCurrentPlayer(int id)
@@ -882,26 +966,26 @@ public class PlayerInputController : MonoBehaviour
         //m_EnableFreeview.RaiseEvent();
     }
 
-    private void OnFinishStockingStore(EntityPiece ps)
-    {
-        // PUT THIS LOGIC INTO GAMEPLAYTEST / CORE GAME LOGIC
-        if (!playerInput.inputIsActive) return;
+    //private void OnFinishStockingStore(EntityPiece ps)
+    //{
+    //    // PUT THIS LOGIC INTO GAMEPLAYTEST / CORE GAME LOGIC
+    //    if (!playerInput.inputIsActive) return;
 
-        if (previousGamePhase == GamePhase.EncounterTime ||
-            previousGamePhase == GamePhase.PreStockStore)
-        {
-            Debug.Log("What the fc");
-            GameplayTest.instance.phase = GamePhase.EndTurn;
-            previousGamePhase = GamePhase.EndTurn;
-            //SwitchActionMap(GamePhase.StockStore);
-            return;
-        }
+    //    if (previousGamePhase == GamePhase.EncounterTime ||
+    //        previousGamePhase == GamePhase.PreStockStore)
+    //    {
+    //        Debug.Log("What the fc");
+    //        GameplayTest.instance.phase = GamePhase.EndTurn;
+    //        previousGamePhase = GamePhase.EndTurn;
+    //        //SwitchActionMap(GamePhase.StockStore);
+    //        return;
+    //    }
 
-        Debug.Log("finish stocking, go back to ITM plz");
-        previousGamePhase = GamePhase.InitialTurnMenu;
-        SwitchActionMap(GamePhase.InitialTurnMenu);
-        //SwitchActionMap(previousGamePhase);
-    }
+    //    Debug.Log("finish stocking, go back to ITM plz");
+    //    previousGamePhase = GamePhase.InitialTurnMenu;
+    //    SwitchActionMap(GamePhase.InitialTurnMenu);
+    //    //SwitchActionMap(previousGamePhase);
+    //}
 
     private void OnLandOnStorefront(MapNode node)
     {

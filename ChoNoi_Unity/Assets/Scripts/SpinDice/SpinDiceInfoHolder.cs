@@ -22,7 +22,7 @@ public class SpinDiceInfoHolder : MonoBehaviour
     private MotionHandle currentMotion;
 
     [Header("Die Info")]
-    [SerializeField] private Action.WeaponTypes statType;
+    [SerializeField] private Action.WeaponType statType;
     //[SerializeField] private bool isSpeedDie = false;
     [SerializeField] private int index; // 0 = default, 1 = speed
     [SerializeField] private bool currentSelectedDie = true;
@@ -291,9 +291,9 @@ public class SpinDiceInfoHolder : MonoBehaviour
 
         var ti = (int)statType;
         var die = new List<int> { 1,2,3,4,5,6 };
-        if (statType == Action.WeaponTypes.Speed)
+        if (statType == Action.WeaponType.Speed)
         {
-            die = p.EntityStats.dieConfigs[(int)Action.WeaponTypes.Speed].GetAllFaceValues().ToList();
+            die = p.EntityStats.dieConfigs[(int)Action.WeaponType.Speed].GetAllFaceValues().ToList();
         }
 
         for(int i = 0; i < diceStatNumbers.Count; i++)

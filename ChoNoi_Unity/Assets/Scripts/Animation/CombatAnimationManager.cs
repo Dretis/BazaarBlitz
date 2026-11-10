@@ -11,7 +11,7 @@ public class CombatAnimationManager : MonoBehaviour
     [SerializeField] private Animator animator;
 
     [SerializeField] private CombatUIManager.FightingPosition fightingPosition;
-    private Action.PhaseTypes phaseType;
+    private Action.ActionPhase phaseType;
     private int rolledNumber;
 
     private MotionHandle currentMotion;
@@ -155,13 +155,13 @@ public class CombatAnimationManager : MonoBehaviour
         ResetBoatPosition(.2f);
     }
 
-    private void OnActionSelected(EntityPiece entity, Action.PhaseTypes type)
+    private void OnActionSelected(EntityPiece entity, Action.ActionPhase type)
     {
         if (entity.fightingPosition != fightingPosition) return;
 
         // Track if attacking or defending here
         phaseType = type;
-        if(phaseType == Action.PhaseTypes.Attack) 
+        if(phaseType == Action.ActionPhase.Attack) 
             animator.SetBool("IsAttacking", true);
         else 
             animator.SetBool("IsAttacking", false);
@@ -182,13 +182,13 @@ public class CombatAnimationManager : MonoBehaviour
         // Prep which animation to play for attacking
         switch (action.type)
         {
-            case Action.WeaponTypes.Melee:
+            case Action.WeaponType.Melee:
                 animator.SetInteger("Action Type ID", 1);
                 break;
-            case Action.WeaponTypes.Gun:
+            case Action.WeaponType.Gun:
                 animator.SetInteger("Action Type ID", 2);
                 break;
-            case Action.WeaponTypes.Magic:
+            case Action.WeaponType.Magic:
                 animator.SetInteger("Action Type ID", 3);
                 break;
         }
@@ -205,15 +205,15 @@ public class CombatAnimationManager : MonoBehaviour
         GameObject diePrefab;
         switch (action.type)
         {
-            case Action.WeaponTypes.Melee:
+            case Action.WeaponType.Melee:
                 diePrefab = entity.strDieCosmeticPrefab;
                 break;
 
-            case Action.WeaponTypes.Gun:
+            case Action.WeaponType.Gun:
                 diePrefab = entity.dexDieCosmeticPrefab;
                 break;
 
-            case Action.WeaponTypes.Magic:
+            case Action.WeaponType.Magic:
                 diePrefab = entity.intDieCosmeticPrefab;
                 break;
 
@@ -237,7 +237,7 @@ public class CombatAnimationManager : MonoBehaviour
         //animator.ResetTrigger("Reveal Roll");
     }
 
-    private void OnStoreDiceRolled(EntityPiece entity, float roll, Action.WeaponTypes type)
+    private void OnStoreDiceRolled(EntityPiece entity, float roll, Action.WeaponType type)
     {
         if (entity.fightingPosition != fightingPosition) return;
 
@@ -253,7 +253,7 @@ public class CombatAnimationManager : MonoBehaviour
 
     private void OnPlayOutCombat(EntityPiece entity)
     {
-        if(phaseType == Action.PhaseTypes.Attack)
+        if(phaseType == Action.ActionPhase.Attack)
         {
             StartCoroutine(DelayActionAnimation(0.15f));
         }

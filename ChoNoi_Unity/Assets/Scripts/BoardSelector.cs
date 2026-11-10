@@ -89,7 +89,7 @@ public class BoardSelector : MonoBehaviour
     {
         numberOfPlayersSelectGroup.gameObject.SetActive(false);
 
-        headerText.text = $"{PlayerConfigurationManager.instance.ruleset.numberOfPlayers}-Player Setup";
+        headerText.text = $"{PlayerConfigurationManager.instance.ruleset.NumberOfPlayers}-Player Setup";
         bottomText.text = "Press START or [ENTER] to join!";
         //numberOfPlayersSelectGroup
     }

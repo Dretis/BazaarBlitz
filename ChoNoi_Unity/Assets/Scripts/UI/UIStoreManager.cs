@@ -264,7 +264,7 @@ public class UIStoreManager : MonoBehaviour
     {
         var storeNodeId = state.CurrentPlayer().EntityData.OccupiedNodeId;
         var store = state.BoardNodes[storeNodeId].StorefrontData;
-        var owner = state.Players[store.OwnerId].EntityData;
+        var owner = state.Players[store.OwnerId];
 
         confirmBuyGroup.alpha = 0f;
         confirmBuyGroup.interactable = false;
@@ -278,7 +278,7 @@ public class UIStoreManager : MonoBehaviour
         UpdateItemsInStore(store);
 
         //storeChatBubble.text = "\"Greetings, customer! Welcome to " + currentStore.playerOwner.entityName + "'s wonderful store! \nPlease purchase something.\"";
-        var ownerColor = ColorUtility.ToHtmlStringRGB(currentStore.playerOwner.playerColor);
+        var ownerColor = ColorUtility.ToHtmlStringRGB(owner.EntityData.MainColor);
         var greeting = $"\"Greetings, customer! Welcome to the wonderful storefront of <color=#{ownerColor}>{currentStore.playerOwner.entityName}</color>! \nPlease purchase something.\"";
         storeChatTypewriter.ShowText(greeting);
         storeExpGain.text = "";
@@ -286,11 +286,11 @@ public class UIStoreManager : MonoBehaviour
 
         // --- Set colors ---
         //storekeeperImage.color = currentStore.playerOwner.playerColor;
-        storeboat.color = owner.MainColor;
+        storeboat.color = owner.EntityData.MainColor;
         //SetStorekeeperPalette();
 
         //customerObject.SetActive(true);
-        SetStorekeeperPalette(owner);
+        SetStorekeeperPalette(owner.CosmeticData);
         SetCustomerPalette();
 
         MoveStoreboat();
@@ -299,10 +299,10 @@ public class UIStoreManager : MonoBehaviour
         ChangeStorekeeperSpeed(1f);
     }
 
-    private void SetStorekeeperPalette(EntityData ed)
+    private void SetStorekeeperPalette(CosmeticData cd)
     {
         storekeeperVisual.enabled = true;
-        storekeeperPaletteLoader.SetInspectorPalette(ed.EntityPalette);
+        storekeeperPaletteLoader.SetInspectorPalette(cd.EntityPalette);
     }
 
     private void SetCustomerPalette()

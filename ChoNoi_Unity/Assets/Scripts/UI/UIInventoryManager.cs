@@ -446,7 +446,7 @@ public class UIInventoryManager : MonoBehaviour
         selectedItemInfo[3].text = $"{item.l_flavor.GetLocalizedString()}";
 
         //selectedItemRect
-        var cardMotion = LMotion.Create(Vector3.one * 0.95f, Vector3.one, .2f)
+        var cardScaleMotion = LMotion.Create(Vector3.one * 0.95f, Vector3.one, .2f)
             .WithEase(Ease.OutBack)
             .BindToLocalScale(selectedItemRect);
     }

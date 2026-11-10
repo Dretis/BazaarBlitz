@@ -4,7 +4,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
+// BOARD NODE LOGIC - ONLY
 public partial class GameplayTest : MonoBehaviour
 {
     private void HandlePickDirection(GameState prevState, ref GameState newState, Vector2 direction)
@@ -91,7 +93,7 @@ public partial class GameplayTest : MonoBehaviour
         if (lastEle > 1)
             lastNodeId = newState.TraveledNodeIds[^2];
 
-        if (newState.WantedNodeId == lastNodeId) // The direction you picked was the node you just came from (Redo)
+        if (newState.WantedNodeId == lastNodeId) // The direction you picked was the node you just came from (UNDO)
         {
             newState.TraveledNodeIds.RemoveAt(lastEle - 1);
             p.OccupiedNodeId = lastNodeId;
@@ -286,9 +288,9 @@ public partial class GameplayTest : MonoBehaviour
                 else
                 {
                     Debug.Log("enemy Fight");
-                    StartCoroutine(InitiateCombatOnEnemy(.05f, p)); // CHANGE THIS
-
-                    newState.GamePhase = GamePhase.RockPaperScissors; // empty phase
+                    //StartCoroutine(InitiateCombatOnEnemy(.05f, p)); // CHANGE THIS
+                    HandleLandOnOpenSpace(prevState, ref newState);
+                    //newState.GamePhase = GamePhase.RockPaperScissors; // empty phase
                 }
                 break;
             case NodeType.Storefront:
@@ -430,7 +432,7 @@ public partial class GameplayTest : MonoBehaviour
                 }
 
 
-                if (p.Money >= currentRuleset.pointGoal)
+                if (p.Money >= newState.GameRuleset.PointGoal)
                 {
                     Debug.Log("BRO HE WON");
                     //winner = p; // Finish game if player w/ enough points passes by Pawn Shop
@@ -530,4 +532,53 @@ public partial class GameplayTest : MonoBehaviour
         }
     }
     #endregion
+
+    private void HandleLandOnOpenSpace(GameState prevState, ref GameState newState)
+    {
+        var p = newState.Players[newState.CurrPlayerId].EntityData;
+        ref var n = ref newState.BoardNodes[p.OccupiedNodeId];
+        // RNG chance to encounter an NPC instead of an Enemy
+        // if rolled 5% then decide what NPC it is
+
+        // Decide what Enemy to fight from available Enemies
+        var selectedEnemyId = HandleEnemyToEncounter(prevState, ref newState);
+
+        var fighter1 = new FighterState(newState.CurrPlayerId, FighterSide.Left, Action.ActionPhase.Attack);
+        var fighter2 = new FighterState(selectedEnemyId, FighterSide.Right, Action.ActionPhase.Defend);
+
+        newState.CurrentCombatInstance.Fighters.Add(fighter1);
+        newState.CurrentCombatInstance.Fighters.Add(fighter2);
+        newState.CurrentCombatInstance.CombatPhase = CombatPhase.EnterCombat;
+
+        newState.GamePhase = GamePhase.CombatTime;
+    }
+
+    private int HandleEnemyToEncounter(GameState prevState, ref GameState newState)
+    {
+        var weightTotal = 0;
+        foreach (var enemy in newState.Enemies)
+        {
+            weightTotal += enemy.EnemyData.SpawnWeight;
+        }
+
+        var rng = Random.Range(0, weightTotal);
+        Debug.Log($"RNG Number = {rng} | WeightTotal = {weightTotal}");
+
+        //int selectedEnemyId = -1;
+        for (int i = 0; i < newState.Enemies.Length; i++)
+        {
+            if (rng <= newState.Enemies[i].EnemyData.SpawnWeight)
+            {
+                Debug.Log($"Enemy Selected: {newState.Enemies[i].PlayerName} | ID = {newState.Enemies[i].Id}");
+                ref var ed = ref newState.Enemies[i].EntityData;
+                ed.OccupiedNodeId = newState.CurrentPlayer().EntityData.OccupiedNodeId; // have Enemy occupy this node
+                return newState.Enemies[i].Id;
+            }
+            else 
+                rng -= newState.Enemies[i].EnemyData.SpawnWeight;
+        }
+
+
+        return -1;
+    }
 }

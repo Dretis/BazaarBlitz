@@ -96,7 +96,7 @@ public class CombatUIManager : MonoBehaviour
         //player2Renderer.color = CombatManager.Instance.player2.playerColor;
     }
 
-    public void UpdateActionText(EntityPiece ps, Action.PhaseTypes phase)
+    public void UpdateActionText(EntityPiece ps, Action.ActionPhase phase)
     {
         List<TextMeshProUGUI> stateTexts = null;
         List<TextMeshProUGUI> actionTexts = null;
@@ -126,7 +126,7 @@ public class CombatUIManager : MonoBehaviour
         Debug.Log($"HP% = {hpPercent}");
         hpFill.fillAmount = hpPercent;
 
-        if (phase == Action.PhaseTypes.Attack)
+        if (phase == Action.ActionPhase.Attack)
         {
             actions = ps.attackActions;
             //stateTexts[2].text = "<color=#FF6476>[Attacking]</color>";
@@ -145,15 +145,15 @@ public class CombatUIManager : MonoBehaviour
             // Change text color and icon based off action type
             switch (a.type)
             {
-                case Action.WeaponTypes.Melee:
+                case Action.WeaponType.Melee:
                     typeIconIndex = 0;
                     actionColor = new Color32(242, 108, 124, 255);
                     break;
-                case Action.WeaponTypes.Gun:
+                case Action.WeaponType.Gun:
                     typeIconIndex = 1;
                     actionColor = new Color32(109, 159, 242, 255);
                     break;
-                case Action.WeaponTypes.Magic:
+                case Action.WeaponType.Magic:
                     typeIconIndex = 2;
                     actionColor = new Color32(225, 142, 255, 255);
                     break;

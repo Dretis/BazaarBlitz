@@ -16,7 +16,7 @@ public class DiceStatSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerC
     [SerializeField] private TypewriterCore diceFaceText;
     [SerializeField] private int diceFaceIndex;
     [SerializeField] private int diceFaceValue;
-    [SerializeField] private Action.WeaponTypes diceType; // Melee = 0, Gun = 1, Magic = 2
+    [SerializeField] private Action.WeaponType diceType; // Melee = 0, Gun = 1, Magic = 2
     [SerializeField] private TextMeshProUGUI tooltipText;
 
     //private int[] costArray = { -1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 5, 999 }; // SP Cost to augment
