@@ -7,7 +7,7 @@ using Core.Events;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Random = UnityEngine.Random;
+using Random = System.Random;
 
 /// <summary>
 /// Basically the whole ass game
@@ -25,6 +25,7 @@ public partial class GameplayTest : MonoBehaviour
     [Space]
     //
     [SerializeField] private int seed = -1;
+    [SerializeField] private System.Random _rng;
 
     [Space]
     public GameBoard board;
@@ -276,23 +277,24 @@ public partial class GameplayTest : MonoBehaviour
             seed = DateTime.Now.Millisecond;
         }
 
-        Random.InitState(seed);
+        //Random.InitState(seed);
 
-        Debug.Log($"Random State = {seed} ");//| (Seed) = {Random.seed}");
+        Debug.Log($"RNG Seed = {seed} ");//| (Seed) = {Random.seed}");
+        _rng = new Random(seed);
 
-        //SystemRandomUniTest(seed);
+        //SystemRandomUniTest();
     }
 
-    private void SystemRandomUniTest(int seed)
+    private void SystemRandomUniTest()
     {
         //int s = System.Random.Next(2,55);
 
-        var ran = new System.Random(seed);
+        //rng = new System.Random(seed);
 
-        Debug.Log($"** System.Random = {ran} | Seed = {seed} **");
+        Debug.Log($"** System.Random = {_rng} | Seed = {seed} **");
         for (int i = 1; i <= 100; i++)
         {
-            Debug.Log($"Number #{i} = {ran.Next(0, 6)}");
+            Debug.Log($"Number #{i} = {_rng.Next(0, 6)}");
             //Debug.Log($"Number #{i} = {ran.Next(0, 121)}");
             //Debug.Log($"Number #{i} = {ran.Next(1, 100)}");
         }
@@ -565,6 +567,7 @@ public partial class GameplayTest : MonoBehaviour
         _currentGameState.CurrentPlayer().EntityData.InitialNodeId = _currentGameState.CurrentPlayer().EntityData.OccupiedNodeId;
 
         _currentGameState.Round = 1;
+        _currentGameState.UpdateAveragePlayerLevel();
         _currentGameState.TraveledNodeIds.Add(_currentGameState.CurrentPlayer().EntityData.OccupiedNodeId);
 
         _uiScoreManager.Initialize(ref _currentGameState.Players, this);
@@ -599,6 +602,7 @@ public partial class GameplayTest : MonoBehaviour
         debugPhaseText.text += $"\n{_currentGameState.GamePhase}";
         debugPhaseText.text += $"\nLP: {_currentGameState.LastGamePhase}";
         debugPhaseText.text += $"\nEP: {_currentGameState.ExpectedPhase}";
+        debugPhaseText.text += $"\n\n<color=orange>CI: {_currentGameState.CurrentCombatInstance.CombatPhase}";
         #endif
         TickGame();
     }
@@ -782,6 +786,24 @@ public partial class GameplayTest : MonoBehaviour
             {
                 //_currentGameState.CurrentCombatInstance.Fighters.Find
                 var associatedFighterIndex = -99;
+
+                foreach(var team in _currentGameState.CurrentCombatInstance.Teams)
+                {
+                    for (int j = 0; j < team.Fighters.Length; j++)
+                    {
+                        if (team.Fighters[j].EntityId == i)
+                        {
+                            //_inputControllers[i].SwitchActionMapCombat(_currentGameState.CurrentCombatInstance.Fighters[j].FighterPhase);
+                            associatedFighterIndex = j;
+                            break;
+                        }
+                    }
+                    if (associatedFighterIndex != -99)
+                        _inputControllers[i].SwitchActionMapCombat(team.Fighters[associatedFighterIndex].FighterPhase);
+                    else
+                        _inputControllers[i].SwitchActionMapCombat(FighterPhase.None);
+                }
+                /*
                 for (int j = 0; j < _currentGameState.CurrentCombatInstance.Fighters.Count(); j++)
                 {
                     if(_currentGameState.CurrentCombatInstance.Fighters[j].EntityId == i)
@@ -796,6 +818,7 @@ public partial class GameplayTest : MonoBehaviour
                     _inputControllers[i].SwitchActionMapCombat(_currentGameState.CurrentCombatInstance.Fighters[associatedFighterIndex].FighterPhase);
                 else
                     _inputControllers[i].SwitchActionMapCombat(FighterPhase.None);
+                */
             }
             else
                 _inputControllers[i].SwitchActionMapRewrite(_currentGameState.GamePhase);
@@ -1023,6 +1046,8 @@ public partial class GameplayTest : MonoBehaviour
                 // Decide who is fighting who, then make a new combat instance
                 Debug.Log("CombatTime");
                 newState.CurrentCombatInstance = new CombatInstance();
+                newState.CurrentCombatInstance.PhaseSwapCount = 0;
+
                 break;
             // Battle-Event Phase
             case GamePhase.EncounterTime:
@@ -1391,7 +1416,7 @@ public partial class GameplayTest : MonoBehaviour
 
     int CalculateMoveDieRoll(GameState prevState, ref GameState newState)
     {
-        var faceRoll = Random.Range(0, 6); // Roll from 0 to 5
+        var faceRoll = _rng.Next(0, 6); // Roll from 0 to 5
         Debug.Log($"Movement | Rolled [{faceRoll}]");
         var ed = newState.CurrentPlayer().EntityData;
         if (newState.UsingSpeedDieToMove)
@@ -1408,7 +1433,7 @@ public partial class GameplayTest : MonoBehaviour
             while (rollsRemaining > 0)
             {
                 //Debug.Log($"Rolls Left{rollsRemaining}");
-                additionalRollValue = Random.Range(0, 6); // roll again until there's no more
+                additionalRollValue = _rng.Next(0, 6); // roll again until there's no more
                 speedRollValue += die[additionalRollValue];
                 rollsRemaining--;
             }
@@ -1438,7 +1463,7 @@ public partial class GameplayTest : MonoBehaviour
             while (rollsRemaining > 0)
             {
                 Debug.Log($"Rolls Left{rollsRemaining}");
-                faceRoll += 1 + Random.Range(0, 6); // roll again until there's no more
+                faceRoll += 1 + _rng.Next(0, 6); // roll again until there's no more
                 rollsRemaining--;
             }
 
@@ -1717,6 +1742,8 @@ public partial class GameplayTest : MonoBehaviour
 
     public GamePhase HandleNextTurnRound(GameState prevState, ref GameState newState)
     {
+        newState.UpdateAveragePlayerLevel();
+
         bool active = false;
         foreach (SpecialIncidents incidents in matchIncidents)
         {
@@ -2154,7 +2181,7 @@ public partial class GameplayTest : MonoBehaviour
     public void StealFromPlayer(EntityPiece otherPlayer)
     {
 
-        int indexToSteal = Random.Range(0, otherPlayer.inventory.Count);
+        int indexToSteal = _rng.Next(0, otherPlayer.inventory.Count);
         currentPlayer.inventory.Add(otherPlayer.inventory[indexToSteal]);
         Debug.Log($"Stole '{otherPlayer.inventory[indexToSteal]}' from {otherPlayer.entityName}");
         // Only remove the item from a real player

@@ -617,16 +617,16 @@ public class UICombatOverlayManager : MonoBehaviour
         // Get all the die mods for this player
         var strDieAtkFlatMod = entity.currentStatsModifier.dieModifiers[0].finalResultAtkFlatModifier;
         var strDieDefFlatMod = entity.currentStatsModifier.dieModifiers[0].finalResultDefFlatModifier;
-        var strDieMultMod = entity.currentStatsModifier.dieModifiers[0].finalResultMultModifier;
+        var strDieMultMod = entity.currentStatsModifier.dieModifiers[0].finalResultAtkMultModifier;
 
 
         var dexDieAtkFlatMod = entity.currentStatsModifier.dieModifiers[1].finalResultAtkFlatModifier;
         var dexDieDefFlatMod = entity.currentStatsModifier.dieModifiers[1].finalResultDefFlatModifier;
-        var dexDieMultMod = entity.currentStatsModifier.dieModifiers[1].finalResultMultModifier;
+        var dexDieMultMod = entity.currentStatsModifier.dieModifiers[1].finalResultAtkMultModifier;
 
         var intDieAtkFlatMod = entity.currentStatsModifier.dieModifiers[2].finalResultAtkFlatModifier;
         var intDieDefFlatMod = entity.currentStatsModifier.dieModifiers[2].finalResultDefFlatModifier;
-        var intDieMultMod = entity.currentStatsModifier.dieModifiers[2].finalResultMultModifier;
+        var intDieMultMod = entity.currentStatsModifier.dieModifiers[2].finalResultAtkMultModifier;
 
 
 

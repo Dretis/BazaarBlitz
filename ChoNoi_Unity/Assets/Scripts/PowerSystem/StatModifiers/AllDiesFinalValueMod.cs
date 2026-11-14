@@ -12,15 +12,15 @@ public class AllDiesFinalValueMod : StatModifierChangerSO
     {
         currentStats.dieModifiers[(int)EntityBaseStats.DieTypes.Strength].finalResultAtkFlatModifier += flatAtkModifier;
         currentStats.dieModifiers[(int)EntityBaseStats.DieTypes.Strength].finalResultDefFlatModifier += flatDefModifier;
-        currentStats.dieModifiers[(int)EntityBaseStats.DieTypes.Strength].finalResultMultModifier *= multModifier;
+        currentStats.dieModifiers[(int)EntityBaseStats.DieTypes.Strength].finalResultAtkMultModifier *= multModifier;
 
         currentStats.dieModifiers[(int)EntityBaseStats.DieTypes.Int].finalResultAtkFlatModifier += flatAtkModifier;
         currentStats.dieModifiers[(int)EntityBaseStats.DieTypes.Int].finalResultDefFlatModifier += flatDefModifier;
-        currentStats.dieModifiers[(int)EntityBaseStats.DieTypes.Int].finalResultMultModifier *= multModifier;
+        currentStats.dieModifiers[(int)EntityBaseStats.DieTypes.Int].finalResultAtkMultModifier *= multModifier;
 
         currentStats.dieModifiers[(int)EntityBaseStats.DieTypes.Dex].finalResultAtkFlatModifier += flatAtkModifier;
         currentStats.dieModifiers[(int)EntityBaseStats.DieTypes.Dex].finalResultDefFlatModifier += flatDefModifier;
-        currentStats.dieModifiers[(int)EntityBaseStats.DieTypes.Dex].finalResultMultModifier *= multModifier;
+        currentStats.dieModifiers[(int)EntityBaseStats.DieTypes.Dex].finalResultAtkMultModifier *= multModifier;
 
         if (consumable) {
             //currentStats.consumed = true;

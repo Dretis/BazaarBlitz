@@ -432,7 +432,7 @@ public class CombatManager : MonoBehaviour
         DieConfig die = attacker.entityStats.dieConfigs[ti];
 
         var statDieFlatMod = attacker.currentStatsModifier.dieModifiers[ti].finalResultAtkFlatModifier;
-        var statDieMultMod = attacker.currentStatsModifier.dieModifiers[ti].finalResultMultModifier;
+        var statDieMultMod = attacker.currentStatsModifier.dieModifiers[ti].finalResultAtkMultModifier;
 
         var addRollMod = attacker.currentStatsModifier.rollModifier;
         var timesToRoll = 1 + addRollMod + attack.diesToRoll;

@@ -436,7 +436,7 @@ public class PlayerScoreHandler : MonoBehaviour
         if (type != Action.WeaponType.Speed)
         {
             statDieFlatMod = player.CurrentStatsModifier.dieModifiers[ti].finalResultAtkFlatModifier;
-            statDieMultMod = player.CurrentStatsModifier.dieModifiers[ti].finalResultMultModifier;
+            statDieMultMod = player.CurrentStatsModifier.dieModifiers[ti].finalResultAtkMultModifier;
         }
         else
         {

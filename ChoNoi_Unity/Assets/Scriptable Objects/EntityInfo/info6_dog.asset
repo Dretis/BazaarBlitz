@@ -14,6 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entityIcon: {fileID: 21300000, guid: c94ecb90ff3f905458930cbbc179e7c7, type: 3}
   entitySpecies: Bread
+  l_entityName:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   defaultColor: {r: 0.79607844, g: 0.5921569, b: 0.4392157, a: 1}
   flavorText: Takes a bite out of you
   DefaultEntityState:
@@ -121,6 +130,8 @@ MonoBehaviour:
       - {r: 0.5, g: 0.5, b: 0.5, a: 1}
     EnemyData:
       SpawnWeight: 15
+      Behavior: 0
+      ActionWeights: 37000000140000000f000000
       LootPool:
       - Item: {fileID: 11400000, guid: 565f28de6056f2b4cae33d9619b7f5d8, type: 2}
         Weight: 50
@@ -128,3 +139,6 @@ MonoBehaviour:
         Weight: 25
       - Item: {fileID: 11400000, guid: 17f44431f77d4774cbc29d11b9c5d2e9, type: 2}
         Weight: 15
+  references:
+    version: 2
+    RefIds: []

@@ -14,82 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entityIcon: {fileID: -621653181, guid: d6244105ba5d1d141bd28c7314437587, type: 3}
   entitySpecies: Baggie
+  l_entityName:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   defaultColor: {r: 0.7372549, g: 0.15686275, b: 0.3254902, a: 1}
   flavorText: Funny money bags
-  Id: 0
-  CombatAnimatorController: {fileID: 9100000, guid: f5b11b07172c2934b96ced515fcbbaab, type: 2}
-  DefaultEntityData:
-    EntityName: Baggie
-    EntityType: 0
-    IsEnemy: 0
-    MainColor: {r: 0.7372549, g: 0.15686275, b: 0.3254902, a: 1}
-    Money: 0
-    Health: 75
-    BaseMaxHealth: 75
-    MaxHealth: 75
-    Stamps: 
-    Inventory: []
-    OccupiedNodeId: 0
-    InitialNodeId: 0
-    PreviousNodeId: 0
-    InventoryLimit: 1
-    StoreCount: 0
-    StorestockTotal: 0
-    OwnedStrorefrontIds: 
-    Level: 1
-    Experience: 0
-    ExpThreshold: 0
-    UnspentSP: 0
-    EntityStats:
-      dieConfigs:
-      - dieFaces: 010000000200000003000000040000000500000006000000
-      - dieFaces: 010000000200000003000000040000000500000006000000
-      - dieFaces: 010000000200000003000000040000000500000006000000
-      - dieFaces: 010000000200000003000000040000000500000006000000
-    CurrentStatsModifier:
-      dieModifiers:
-      - finalResultAtkFlatModifier: 0
-        finalResultDefFlatModifier: 0
-        finalResultMultModifier: 1
-      - finalResultAtkFlatModifier: 0
-        finalResultDefFlatModifier: 0
-        finalResultMultModifier: 1
-      - finalResultAtkFlatModifier: 0
-        finalResultDefFlatModifier: 0
-        finalResultMultModifier: 1
-      - finalResultAtkFlatModifier: 0
-        finalResultDefFlatModifier: 0
-        finalResultMultModifier: 1
-      deathLossRatio: 0.5
-      rollModifier: 0
-      interestRate: 0
-      storeLevelMultModifier: 0
-      canUseRelocate: 0
-      canRenovateOnPass: 0
-      movementFlatModifier: 0
-      movementMultModifier: 1
-      movementTempoScale: 0
-      canUseSpeedDie: 0
-      redirectOnSpeedDie: 0
-      strongMultModifier: 0
-      neutralMultModifier: 0
-      resistMultModifier: 0
-      strongDefRollShred: 0
-      neutralDefRollShred: 0
-      resistDefRollShred: 0
-      canGreedOnKill: 0
-      defenseModifier: 0
-      lifestealMult: 0
-      healthRegen: 0
-      maxHealthFlatModifier: 0
-      maxHealthMultModifier: 1
-      warpDestination: {fileID: 0}
-      warpMode: 0
-      canStealOnPassBy: 0
-      canInitiateCombatOnPassBy: 0
-      canStopOnStoreOnPassBy: 0
-    ActiveEffects: []
-    Statuses: 
   DefaultEntityState:
     PlayerName: Baggie
     Id: 0
@@ -194,4 +129,10 @@ MonoBehaviour:
       - {r: 0.5, g: 0.5, b: 0.5, a: 1}
       - {r: 0.5, g: 0.5, b: 0.5, a: 1}
     EnemyData:
+      SpawnWeight: 0
+      Behavior: 0
+      ActionWeights: 000000000000000000000000
       LootPool: []
+  references:
+    version: 2
+    RefIds: []

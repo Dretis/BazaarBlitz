@@ -14,6 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entityIcon: {fileID: 21300000, guid: 57a9ed256e25d5a4b8121a1cc1409a4c, type: 3}
   entitySpecies: Phiend
+  l_entityName:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   defaultColor: {r: 0.48235294, g: 0.33333334, b: 0.3137255, a: 1}
   flavorText: Spits on you and takes your money
   DefaultEntityState:
@@ -120,7 +129,9 @@ MonoBehaviour:
       - {r: 0.5, g: 0.5, b: 0.5, a: 1}
       - {r: 0.5, g: 0.5, b: 0.5, a: 1}
     EnemyData:
-      SpawnWeight: 20
+      SpawnWeight: 25
+      Behavior: 0
+      ActionWeights: 280000001900000023000000
       LootPool:
       - Item: {fileID: 11400000, guid: 6b1d9981d4c68bb449fa32f4b096bf76, type: 2}
         Weight: 40
@@ -130,3 +141,6 @@ MonoBehaviour:
         Weight: 25
       - Item: {fileID: 11400000, guid: 38cfb422c459a5246bab8b048c266049, type: 2}
         Weight: 20
+  references:
+    version: 2
+    RefIds: []

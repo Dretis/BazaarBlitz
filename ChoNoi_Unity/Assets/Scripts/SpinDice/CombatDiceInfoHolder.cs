@@ -132,7 +132,7 @@ public class CombatDiceInfoHolder : MonoBehaviour
 
         var statDieAtkFlatMod = p.currentStatsModifier.dieModifiers[ti].finalResultAtkFlatModifier;
         var statDieDefFlatMod = p.currentStatsModifier.dieModifiers[ti].finalResultDefFlatModifier;
-        var statDieMultMod = p.currentStatsModifier.dieModifiers[ti].finalResultMultModifier;
+        var statDieMultMod = p.currentStatsModifier.dieModifiers[ti].finalResultAtkMultModifier;
 
         //TMP_ColorGradient gradient;
         /*

@@ -137,7 +137,7 @@ namespace Core
         public int ActionId;
         public int EntityId;
 
-        public CombatActionCommand(int entityId, int actionId)
+        public CombatActionCommand(int actionId, int entityId)
         {
             ActionId = actionId;
             EntityId = entityId;

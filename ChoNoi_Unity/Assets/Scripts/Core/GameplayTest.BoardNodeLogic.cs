@@ -543,11 +543,23 @@ public partial class GameplayTest : MonoBehaviour
         // Decide what Enemy to fight from available Enemies
         var selectedEnemyId = HandleEnemyToEncounter(prevState, ref newState);
 
-        var fighter1 = new FighterState(newState.CurrPlayerId, FighterSide.Left, Action.ActionPhase.Attack);
-        var fighter2 = new FighterState(selectedEnemyId, FighterSide.Right, Action.ActionPhase.Defend);
+        //var fighter1 = new FighterState(newState.CurrPlayerId, FighterSide.Left, Action.ActionPhase.Attack);
+        //var fighter2 = new FighterState(selectedEnemyId, FighterSide.Right, Action.ActionPhase.Defend);
+        //var leftIds = new List<int>();
+        //var rightIds = new List<int>();
+        //leftIds.Add(newState.CurrPlayerId);
+        //rightIds.Add(selectedEnemyId);
+        //newState.CurrentCombatInstance = new CombatInstance(leftIds, rightIds);
 
-        newState.CurrentCombatInstance.Fighters.Add(fighter1);
-        newState.CurrentCombatInstance.Fighters.Add(fighter2);
+        var leftEntities = new List<PlayerState>();
+        var rightEntities = new List<PlayerState>();
+        leftEntities.Add(newState.Players[newState.CurrPlayerId]);
+        rightEntities.Add(newState.FindEntityById(selectedEnemyId));
+
+        newState.CurrentCombatInstance = new CombatInstance(leftEntities, rightEntities);
+        //var player1 = new FighterState(newState.CurrPlayerId, Action.ActionPhase.Attack);
+        //var enemy1 = new FighterState(selectedEnemyId, Action.ActionPhase.Defend);
+
         newState.CurrentCombatInstance.CombatPhase = CombatPhase.EnterCombat;
 
         newState.GamePhase = GamePhase.CombatTime;
@@ -561,7 +573,7 @@ public partial class GameplayTest : MonoBehaviour
             weightTotal += enemy.EnemyData.SpawnWeight;
         }
 
-        var rng = Random.Range(0, weightTotal);
+        var rng = _rng.Next(0, weightTotal);
         Debug.Log($"RNG Number = {rng} | WeightTotal = {weightTotal}");
 
         //int selectedEnemyId = -1;
@@ -569,6 +581,7 @@ public partial class GameplayTest : MonoBehaviour
         {
             if (rng <= newState.Enemies[i].EnemyData.SpawnWeight)
             {
+                //<color=#{newState.Enemies[i].EntityData.MainColor.ToHexString()}>{newState.Enemies[i].PlayerName}</color>
                 Debug.Log($"Enemy Selected: {newState.Enemies[i].PlayerName} | ID = {newState.Enemies[i].Id}");
                 ref var ed = ref newState.Enemies[i].EntityData;
                 ed.OccupiedNodeId = newState.CurrentPlayer().EntityData.OccupiedNodeId; // have Enemy occupy this node
@@ -577,7 +590,6 @@ public partial class GameplayTest : MonoBehaviour
             else 
                 rng -= newState.Enemies[i].EnemyData.SpawnWeight;
         }
-
 
         return -1;
     }

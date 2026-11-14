@@ -1,6 +1,6 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Localization.Plugins.XLIFF.V20;
 using UnityEngine;
 using static GameplayTest;
 
@@ -95,10 +95,52 @@ namespace Core
             //CurrentPlayerDataStates.RemoveAt(CurrentPlayerDataStates.Count - 1);
         }
 
+        public void UpdateAveragePlayerLevel()
+        {
+            float levelSum = 0.0f;
+            for(int i = 0; i < Players.Length; i++)
+            {
+                levelSum += Players[i].EntityData.Level;
+            }
+            AveragePlayerLevel = levelSum / Players.Length;
+        }
+
         public void Add<T>(ref T[] array, T thing)
         {
             Array.Resize(ref array, array.Length + 1);
             array[^1] = thing;
+        }
+
+        public ref PlayerState FindEntityById(int entityId)
+        {
+            //ref PlayerState ps = ref Players[0];
+            if (entityId >= 0)
+            {
+                return ref Players[entityId];
+            }
+            else
+            {
+                var index = 0;
+                for (int i = 0; i < Enemies.Length; i++)
+                {
+                    if (Enemies[i].Id == entityId)
+                    {
+                        index = i;
+                        break;
+                    }
+                }
+                return ref Enemies[index];
+            }
+            //return ref ps;
+            //ref PlayerState ps = ref Players[0];
+            //if (entityId >= 0)
+            //{
+            //    ps = Array.Find(Players, p => p.Id == entityId);
+            //}
+            //else // is an Enemy
+            //{
+            //    ps = Array.Find(Enemies, e => e.Id == entityId);
+            //}
         }
     }
 
@@ -110,34 +152,251 @@ namespace Core
     {
         // asdfasdf
         public GameplayTest.CombatPhase CombatPhase;
-        public List<FighterState> Fighters;
+        public GameplayTest.CombatPhase ExpectedPhase;
+        //public FighterState[] Fighters;
+        public TeamSide[] Teams;
+        //public TeamSide LeftSide;
+        //public TeamSide RightSide;
+        public List<CombatSequenceData> CombatSequenceDatas;
 
+        public int NumberOfPlayers;
+        public int NumberOfPlayersActed;
+        public int NumberOfEnemies;
+        public int PhaseSwapCount;
         //public int DamageDealt; // is this needed?
         //public int WinnerId;
         //public int LoserId;
+        public CombatInstance(List<int> leftIds, List<int> rightIds)
+        {
+            CombatPhase = CombatPhase.None;
+            ExpectedPhase = CombatPhase.None;
+
+            NumberOfPlayers = 0;
+            NumberOfPlayersActed = 0;
+            NumberOfEnemies = 0;
+            PhaseSwapCount = 0;
+
+            Teams = new TeamSide[2]; // should always be 2 (Left/Right)
+
+            CombatSequenceDatas = new List<CombatSequenceData>();
+
+            SetupTeamFighters(FighterSide.Left, leftIds);
+            SetupTeamFighters(FighterSide.Right, rightIds);
+        }
+        
+        public CombatInstance(List<PlayerState> leftEntities, List<PlayerState> rightEntities)
+        {
+            CombatPhase = CombatPhase.None;
+            ExpectedPhase = CombatPhase.None;
+
+            NumberOfPlayers = 0;
+            NumberOfPlayersActed = 0;
+            NumberOfEnemies = 0;
+            PhaseSwapCount = 0;
+
+            Teams = new TeamSide[2]; // should always be 2 (Left/Right)
+
+            CombatSequenceDatas = new List<CombatSequenceData>();
+
+            SetupTeamFighters(FighterSide.Left, leftEntities);
+            SetupTeamFighters(FighterSide.Right, rightEntities);
+        }
+
+        private void SetupTeamFighters(GameplayTest.FighterSide side, List<int> ids)
+        {
+            var s = (int)side;
+            Teams[s].FighterSide = side;
+            Teams[s].ActionPhase = (Action.ActionPhase) s;
+
+            Teams[s].Fighters = new FighterState[ids.Count];
+            for (int i = 0; i < ids.Count; i++)
+            {
+                Teams[s].Fighters[i] = new FighterState(ids[i]);
+                if (ids[i] >= 0) NumberOfPlayers++;
+                else NumberOfEnemies++;
+            }
+        }
+        
+        private void SetupTeamFighters(GameplayTest.FighterSide side, List<PlayerState> entities)
+        {
+            var s = (int)side;
+            Teams[s].FighterSide = side;
+            Teams[s].ActionPhase = (Action.ActionPhase) s;
+
+            Teams[s].Fighters = new FighterState[entities.Count];
+            for (int i = 0; i < entities.Count; i++)
+            {
+                Teams[s].Fighters[i] = new FighterState(entities[i]);
+                if (entities[i].Id >= 0) NumberOfPlayers++;
+                else NumberOfEnemies++;
+            }
+        }
+
         public void ResetCombatInstance()
         {
             CombatPhase = GameplayTest.CombatPhase.None;
-            Fighters.Clear();
+            //Fighters = new FighterState[0];
+
+            NumberOfPlayers = 0;
+            NumberOfEnemies = 0;
+            PhaseSwapCount = 0;
         }
+
+        //public FighterState[] FindAllFightersByPhase(Action.ActionPhase phase)
+        //{
+        //    return Array.FindAll(Fighters, f => f.ActionPhase == phase);
+        //}
+        public TeamSide FindTeamByPhase(Action.ActionPhase phase)
+        {
+            return Array.Find(Teams, f => f.ActionPhase == phase);
+        }
+
+        [System.Serializable]
+        public struct TeamSide
+        {
+            public GameplayTest.FighterSide FighterSide; // shouldnt change in a CombatInstance
+            public Action.ActionPhase ActionPhase;
+            public FighterState[] Fighters;
+
+            public void SwapActionPhase()
+            {
+                if (ActionPhase is Action.ActionPhase.Attack)
+                    ActionPhase = Action.ActionPhase.Defend;
+                else if (ActionPhase is Action.ActionPhase.Defend)
+                    ActionPhase = Action.ActionPhase.Attack;
+            }
+        }
+
+        /// <summary>
+        /// Container that holds data meant for value changes (DMG and Heals) and Combat Cutscenes/Sequences 
+        /// </summary>
+        [System.Serializable]
+        public struct CombatSequenceData
+        {
+            public int AttackerId;
+            public int DefenderId; // may change to multiple
+            [Space]
+            public TypeAdvantage TypeAdvantage;
+            public float DmgTypeMultiplier;
+            //public int BaseAttackRoll;
+            //public int BaseDefendRoll;
+            public int FinalDamageDealt;
+            public bool IsDamageLethal; // the atk kills the defender
+
+            [Header("Reward Info")]
+            public int MoneyGain;
+            public int ExpGain;
+            public ItemStats[] ItemDrops;
+
+            public void CalculateDamage(FighterState attacker, FighterState defender)
+            {
+                float totalAttackRoll = 0;
+                float totalDefendRoll = 0;
+
+                for (int i = 0; i < attacker.CombatDieRolls.Length; i++)
+                {
+                    totalAttackRoll += attacker.CombatDieRolls[i].FinalDieRoll;
+                }
+
+                for (int i = 0; i < defender.CombatDieRolls.Length; i++)
+                {
+                    totalDefendRoll += defender.CombatDieRolls[i].FinalDieRoll;
+                }
+
+                var dmgCalculation = (int)(((totalAttackRoll * 10.0f) * (1.0f - (0.1f * totalDefendRoll))) * DmgTypeMultiplier);
+
+                Debug.Log($"<color=white>Final DMG = {dmgCalculation}</color>" +
+                    $" | <color=orange>[Base DMG: {totalAttackRoll} x 10]</color> x" +
+                    $" <color=cyan>[DEF Value: {(1 - (0.1f * totalDefendRoll)) * 100}%]</color> " +
+                    //$" (1 - (0.1f x <color=cyan>[DEF Roll: {totalDefendRoll}]</color>)) " +
+                    $" x <color=yellow>[Type Mult: {DmgTypeMultiplier}]</color>");
+                FinalDamageDealt = dmgCalculation;
+            }
+
+            public void DetermineTypeAdvantage(Action.WeaponType attack, Action.WeaponType defend)
+            {
+                if (attack == defend)
+                {
+                    TypeAdvantage = TypeAdvantage.Neutral;
+                }
+                else if ((attack == Action.WeaponType.Melee && defend == Action.WeaponType.Gun)
+                       || (attack == Action.WeaponType.Gun && defend == Action.WeaponType.Magic)
+                       || (attack == Action.WeaponType.Magic && defend == Action.WeaponType.Melee))
+                {
+                    TypeAdvantage = TypeAdvantage.Resist;
+                }
+                else
+                {
+                    TypeAdvantage = TypeAdvantage.Strong;
+                }
+            }
+
+            public void DetermineTypeAdvantageMultiplier(EntityData attackerData, EntityData defenderData)
+            {
+                DmgTypeMultiplier = 1f; // Attacker deals this much times more damage
+                switch (TypeAdvantage)
+                {
+                    case TypeAdvantage.Strong:
+                        DmgTypeMultiplier = 2f;
+                        DmgTypeMultiplier += attackerData.CurrentStatsModifier.strongMultModifier
+                                     - defenderData.CurrentStatsModifier.resistMultModifier;
+                        break;
+                    case TypeAdvantage.Resist:
+                        DmgTypeMultiplier = 1f;
+                        DmgTypeMultiplier += attackerData.CurrentStatsModifier.resistMultModifier
+                                     - defenderData.CurrentStatsModifier.strongMultModifier;
+                        break;
+                    default: // Neutral
+                        DmgTypeMultiplier = 1.5f;
+                        DmgTypeMultiplier += attackerData.CurrentStatsModifier.neutralMultModifier
+                                     - defenderData.CurrentStatsModifier.neutralMultModifier;
+                        break;
+                }
+            }
+        }
+
+
+        public enum TypeAdvantage
+        {
+            Resist,
+            Neutral,
+            Strong
+        }
+
+        //public float DetermineTypeAdvantageMultiplier(TypeAdvantage dmgTypeAdv, EntityData attacker, EntityData defender)
+        //{
+        //    float dmgTypeMult = 1f; // Attacker deals this much times more damage
+        //    switch (dmgTypeAdv)
+        //    {
+        //        case TypeAdvantage.Strong:
+        //            dmgTypeMult = 2f;
+        //            dmgTypeMult += attacker.CurrentStatsModifier.strongMultModifier 
+        //                         - defender.CurrentStatsModifier.resistMultModifier;
+        //            break;
+        //        case TypeAdvantage.Resist:
+        //            dmgTypeMult = 1f;
+        //            dmgTypeMult += attacker.CurrentStatsModifier.resistMultModifier
+        //                         - defender.CurrentStatsModifier.strongMultModifier;
+        //            break;
+        //        default: // Neutral
+        //            dmgTypeMult = 1.5f;
+        //            dmgTypeMult += attacker.CurrentStatsModifier.neutralMultModifier 
+        //                         - defender.CurrentStatsModifier.neutralMultModifier;
+        //            break;
+        //    }
+
+        //    return dmgTypeMult;
+        //}
     }
 
     [System.Serializable]
     public struct FighterState
     {
+        [SerializeField] private string _name;
         public int EntityId;
-        public GameplayTest.FighterSide FighterSide; // shouldnt change in a CombatInstance
+        //public GameplayTest.FighterSide FighterSide; // shouldnt change in a CombatInstance
         public GameplayTest.FighterPhase FighterPhase;
-        public Action.ActionPhase ActionPhase;
-
-        //[Header("Actions")]
-        //public Action AtkAction1;
-        //public Action AtkAction2;
-        //public Action AtkAction3;
-        //[Space]
-        //public Action DefAction1;
-        //public Action DefAction2;
-        //public Action DefAction3;
+        //public Action.ActionPhase ActionPhase;
 
         [Header("Selected Action Info")]
         public int SelectedActionId; // 1 = Left, 2 = Up, 3 = Right
@@ -145,30 +404,61 @@ namespace Core
         //public EntityBaseStats.DieTypes ActionType;
         public Action.WeaponType DieType;
         [Space]
-        [Range(0, 5)] public int DieFaceNumber; // [0] to [5]
-        public int ActionDieRoll; // Actual number of that die type
+        //[Range(0, 5)] public int[] DieFaceNumber; // [0] to [5]
+        //public int[] BaseDieRoll; // Base number of that die face
+        //public int[] FinalDieRoll; // Final die number value after all modifiers are applied
+        public CombatDieRoll[] CombatDieRolls;
 
-        public FighterState(int id, GameplayTest.FighterSide side, Action.ActionPhase actionPhase)
+        public FighterState(int id)
         {
+            _name = $"ID: {id}";
             EntityId = id;
-            FighterSide = side;
-            FighterPhase = FighterPhase.SelectingAction;
-            ActionPhase = actionPhase;
+            //FighterSide = side;
+            FighterPhase = FighterPhase.ActionSelect;
+            //ActionPhase = actionPhase;
 
             SelectedActionId = -1;
             WeaponActionId = -1;
             DieType = Action.WeaponType.None;
-            DieFaceNumber = 0;
-            ActionDieRoll = 0;
+            //DieFaceNumber = new int[1];
+            //BaseDieRoll = new int[1];
+            //FinalDieRoll = new int[1];
+
+            CombatDieRolls = new CombatDieRoll[1];
+        }
+        
+        public FighterState(PlayerState ps)
+        {
+            _name = $"{ps.PlayerName}";
+            EntityId = ps.Id;
+            FighterPhase = FighterPhase.ActionSelect;
+
+            SelectedActionId = -1;
+            WeaponActionId = -1;
+            DieType = Action.WeaponType.None;
+
+            CombatDieRolls = new CombatDieRoll[1];
         }
 
         public void ResetSelectedAction()
         {
             SelectedActionId = -1;
+            WeaponActionId = -1;
             DieType = Action.WeaponType.None;
 
-            DieFaceNumber = -1;
-            ActionDieRoll = -1;
+            //DieFaceNumber = new int[1];
+            //BaseDieRoll = new int[1];
+            //FinalDieRoll = new int[1];
+
+            CombatDieRolls = new CombatDieRoll[1];
+        }
+
+        [System.Serializable]
+        public struct CombatDieRoll
+        {
+            [Range(0, 5)] public int DieFaceNumber; // [0] to [5]
+            public int BaseDieRoll; // Base number of that die face
+            public int FinalDieRoll; // Final die number value after all modifiers are applied
         }
     }
 
@@ -194,7 +484,9 @@ namespace Core
             CosmeticData = new CosmeticData(ps.CosmeticData);
 
             if(ps.EntityData.EntityType is EntityType.Player)
-                EnemyData = new();
+            {
+                EnemyData = new EnemyData(ps.EnemyData);
+            }
             else
                 EnemyData = new EnemyData(ps.EnemyData);
         }
@@ -213,7 +505,10 @@ namespace Core
             PlayerName = pcm.playerName;
             EntityData = new EntityData(id, pcm);
             CosmeticData = new CosmeticData(pcm);
+
             EnemyData = new();
+            EnemyData.ActionWeights = new int[3];
+            EnemyData.LootPool = new();
         }
     }
 
@@ -255,12 +550,81 @@ namespace Core
     public struct EnemyData
     {
         public int SpawnWeight; // how much more likely this Enemy will appear compared to the rest 
+
+        public CombatBehavior Behavior;
+        public int[] ActionWeights; // Index 0 = Melee, 1 = Gun, 2 = Magic
+
         public List<ItemDrop> LootPool;
 
         public EnemyData(EnemyData wd)
         {
             SpawnWeight = wd.SpawnWeight;
+
+            Behavior = wd.Behavior;
+            ActionWeights = new int[3];
+            wd.ActionWeights.CopyTo(ActionWeights, 0);
+            //ActionWeights = new List<int>(wd.ActionWeights);
             LootPool = new List<ItemDrop>(wd.LootPool);
+        }
+
+        public enum CombatBehavior
+        {
+            Simple,
+            Learner,
+            Smart,
+            Reactive,
+            Cheat
+        }
+
+        public int DecideActionByBehavior(System.Random rng)//FighterState fs)
+        {
+            // fs is the opponent it is against
+            var actionId = 0;
+            switch (Behavior)
+            {
+                case CombatBehavior.Simple:
+                    actionId = SimpleBehavior(rng);
+                    break;
+                case CombatBehavior.Learner:
+
+                    break;
+                case CombatBehavior.Smart:
+
+                    break;
+                case CombatBehavior.Reactive:
+
+                    break;
+                case CombatBehavior.Cheat:
+
+                    break;
+            }
+
+            return actionId;
+        }
+
+        private int SimpleBehavior(System.Random rng)
+        {
+            var weightTotal = 0;
+            foreach (var value in ActionWeights)
+            {
+                weightTotal += value;
+            }
+
+            var rngNumber = rng.Next(0, weightTotal);
+            Debug.Log($"SimpleBehavior - {(Action.ActionPhase)rngNumber} | RNG Number = {rngNumber} | WeightTotal = {weightTotal}");
+
+            //int selectedEnemyId = -1;
+            for (int i = 0; i < ActionWeights.Length; i++)
+            {
+                if (rngNumber <= ActionWeights[i])
+                {
+                    return i;
+                }
+                else
+                    rngNumber -= ActionWeights[i];
+            }
+
+            return 0; // 
         }
     }
     [System.Serializable]
@@ -348,8 +712,8 @@ namespace Core
 
             //
 
-            Statuses = ed.Statuses;
-            ActiveEffects = ed.ActiveEffects;
+            Statuses = new List<Status>(ed.Statuses);
+            ActiveEffects = new List<ActiveEffect>(ed.ActiveEffects);
             EntityType = ed.EntityType;
             IsEnemy = ed.IsEnemy;
 
@@ -466,6 +830,24 @@ namespace Core
             EntityStats = new();
             CurrentStatsModifier = new();
             //SetDefaultData();
+        }
+
+        public DieConfig GetDie(Action.WeaponType type)
+        {
+            switch (type)
+            {
+                case Action.WeaponType.Melee:
+                    return StrDie;
+                case Action.WeaponType.Gun:
+                    return DexDie;
+                case Action.WeaponType.Magic:
+                    return IntDie;
+                case Action.WeaponType.Speed:
+                    return SpdDie;
+                default:
+                    Debug.Log($"Cannot find Die Type {type}, defaulting to StrDie");
+                    return StrDie;
+            }
         }
         public void AddStamp(StampType newStamp)
         {

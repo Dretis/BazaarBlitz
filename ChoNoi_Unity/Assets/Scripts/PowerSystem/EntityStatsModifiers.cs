@@ -76,7 +76,7 @@ public class EntityStatsModifiers
         Debug.Log("Original Roll" + baseRollValue);
 
         var dieMod = dieModifiers[(int)dieType];
-        baseRollValue *= dieMod.finalResultMultModifier;
+        baseRollValue *= dieMod.finalResultAtkMultModifier;
         baseRollValue += dieMod.finalResultAtkFlatModifier;
 
         Debug.Log("New Roll after item effect:" + baseRollValue);
@@ -91,5 +91,5 @@ public class DieModifier
     // Offset the final result by this value
     public float finalResultAtkFlatModifier = 0;
     public float finalResultDefFlatModifier = 0;
-    public float finalResultMultModifier = 1;
+    public float finalResultAtkMultModifier = 1;
 }

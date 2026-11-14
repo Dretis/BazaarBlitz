@@ -14,7 +14,7 @@ public class DieFinalValueMod : StatModifierChangerSO
     {
         currentStats.dieModifiers[(int)targetDie].finalResultAtkFlatModifier += flatAtkModifier;
         currentStats.dieModifiers[(int)targetDie].finalResultDefFlatModifier += flatDefModifier;
-        currentStats.dieModifiers[(int)targetDie].finalResultMultModifier *= multModifier;
+        currentStats.dieModifiers[(int)targetDie].finalResultAtkMultModifier *= multModifier;
 
         currentStats.rollModifier = rollModifier;
 

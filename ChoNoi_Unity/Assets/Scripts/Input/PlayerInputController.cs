@@ -540,25 +540,25 @@ public class PlayerInputController : MonoBehaviour
     private void OnUpAction()
     {
         //if()
-        Debug.Log("CONFIG[" + playerInput.playerIndex + "] | " + "P1 Up action pressed");
+        Debug.Log($"CONFIG[{playerInput.playerIndex}] ps.id = {_playerState.Id}| " + "P1 Up action pressed");
         //m_PlayerActionSelected.RaiseEvent(assignedPlayer, 1);
         TryRumbling(0.5f, .25f, .15f);
         //sendAction(true, 1); // Player 1 second element (melee)
-        _gameplayTest.QueueCommand(new CombatActionCommand(1, _playerState.Id));
+        _gameplayTest.QueueCommand(new CombatActionCommand(0, _playerState.Id));
     }
 
     private void OnRightAction()
     {
-        Debug.Log("CONFIG["+ playerInput.playerIndex + "] | "+"P1 Right action pressed");
+        Debug.Log($"CONFIG[{playerInput.playerIndex}] ps.id = {_playerState.Id}| " + "P1 Right action pressed");
         //m_PlayerActionSelected.RaiseEvent(assignedPlayer, 0);
         TryRumbling(0.5f, .25f, .15f);
         //sendAction(true, 0); // Player 1 first element (gun)
-        _gameplayTest.QueueCommand(new CombatActionCommand(0, _playerState.Id));
+        _gameplayTest.QueueCommand(new CombatActionCommand(1, _playerState.Id));
     }
 
     private void OnDownAction()
     {
-        Debug.Log("CONFIG[" + playerInput.playerIndex + "] | " + "P1 Down action pressed");
+        Debug.Log($"CONFIG[{playerInput.playerIndex}] ps.id = {_playerState.Id}| " + "P1 Down action pressed");
         //m_PlayerActionSelected.RaiseEvent(assignedPlayer, 2);
         TryRumbling(0.5f, .25f, .15f);
         //sendAction(true, 2); // Player 1 first element (magic)
@@ -591,9 +591,9 @@ public class PlayerInputController : MonoBehaviour
     #region 'Combat Roll' Action Map
     private void OnCombatRoll()
     {
-        Debug.Log("CONFIG[" + playerInput.playerIndex + "] | " + " Rolling combat die");
+        Debug.Log("CONFIG[" + playerInput.playerIndex + "] | " + " Combat Roll Pressed!");
         m_CombatDiceRolled.RaiseEvent(assignedPlayer);
-        playerInput.currentActionMap.Disable();
+        //playerInput.currentActionMap.Disable();
         TryRumbling(0.5f, .25f, .15f);
 
         _gameplayTest.QueueCommand(new CombatRollCommand(_playerState.Id));
@@ -786,11 +786,12 @@ public class PlayerInputController : MonoBehaviour
         {
             FighterPhase.None => "Inactive",
 
-            FighterPhase.SelectingAction => "Combat",
-            FighterPhase.SelectedAction => "Inactive",
+            FighterPhase.ActionSelect => "Combat",
+            FighterPhase.ActionSelected => "Inactive",
 
-            FighterPhase.RollingDie => "Combat Roll",
-            FighterPhase.RolledDie => "Inactive",
+            FighterPhase.DieRolling => "Combat Roll",
+            FighterPhase.DieRolled => "Inactive",
+            FighterPhase.Dead => "Inactive",
 
             _ => String.Empty
         };
