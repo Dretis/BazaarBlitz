@@ -26,8 +26,6 @@ namespace Core
         public int MoveDieRoll; // originally diceRoll | aka MovementTotal
         public int MovementLeft; // originally in EntityPiece
         [Space]
-
-        public CombatInstance CurrentCombatInstance;
         public PlayerState[] Players; // Num of players should never change
         public PlayerState[] Enemies; // Dynamically changes based off avg lvl
         public BoardNodeData[] BoardNodes; // all nodes on the current board
@@ -49,6 +47,8 @@ namespace Core
 
         public ItemStats UsedItem;
         public int SelectedBoardNodeId;
+
+        public CombatInstance CurrentCombatInstance;
 
         public ref PlayerState CurrentPlayer()
         {

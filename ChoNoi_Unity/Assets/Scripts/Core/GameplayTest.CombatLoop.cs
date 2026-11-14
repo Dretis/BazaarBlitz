@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.InputSystem.LowLevel;
 using static Core.CombatInstance;
 using static Core.FighterState;
 using Random = System.Random;
@@ -249,12 +248,8 @@ public partial class GameplayTest : MonoBehaviour
             case CombatPhase.DecideOutcome:
                 // Decide the Defender die or not (based off info from ProcessCalculation)
                 // If dead, go to results as Victory
-                if (newState.CurrentCombatInstance.CombatSequenceDatas[0].IsDamageLethal)
-                {
-                    newState.CurrentCombatInstance.CombatPhase = CombatPhase.Results;
-                }
-
-                if(newState.CurrentCombatInstance.PhaseSwapCount > 0)
+                if (newState.CurrentCombatInstance.CombatSequenceDatas[0].IsDamageLethal
+                    || newState.CurrentCombatInstance.PhaseSwapCount > 0)
                 {
                     newState.CurrentCombatInstance.CombatPhase = CombatPhase.Results;
                 }
