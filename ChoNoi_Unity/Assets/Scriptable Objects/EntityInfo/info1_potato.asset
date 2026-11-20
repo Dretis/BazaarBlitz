@@ -16,9 +16,9 @@ MonoBehaviour:
   entitySpecies: Sac
   l_entityName:
     m_TableReference:
-      m_TableCollectionName: 
+      m_TableCollectionName: GUID:c5a5d24bd5dd6a1459756bb15eaa5fc3
     m_TableEntryReference:
-      m_KeyId: 0
+      m_KeyId: 3522253676236861
       m_Key: 
     m_FallbackState: 0
     m_WaitForCompletion: 0
@@ -60,16 +60,16 @@ MonoBehaviour:
         dieModifiers:
         - finalResultAtkFlatModifier: 0
           finalResultDefFlatModifier: 0
-          finalResultMultModifier: 1
+          finalResultAtkMultModifier: 1
         - finalResultAtkFlatModifier: 0
           finalResultDefFlatModifier: 0
-          finalResultMultModifier: 1
+          finalResultAtkMultModifier: 1
         - finalResultAtkFlatModifier: 0
           finalResultDefFlatModifier: 0
-          finalResultMultModifier: 1
+          finalResultAtkMultModifier: 1
         - finalResultAtkFlatModifier: 0
           finalResultDefFlatModifier: 0
-          finalResultMultModifier: 1
+          finalResultAtkMultModifier: 1
         deathLossRatio: 0.5
         rollModifier: 0
         interestRate: 0
@@ -130,8 +130,10 @@ MonoBehaviour:
       - {r: 0.5, g: 0.5, b: 0.5, a: 1}
     EnemyData:
       SpawnWeight: 30
-      Behavior: 0
+      BehaviorStyle: 0
       ActionWeights: 320000001e00000014000000
+      BaseMoneyGain: 0
+      BaseExpGain: 50
       LootPool:
       - Item: {fileID: 11400000, guid: c88d8aed1040f9b448f37a2983dd1fdd, type: 2}
         Weight: 25

@@ -14817,6 +14817,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8978cbcb9a4430a478e1d0d86c497c5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _inputActionString: 
+  _inputIsActive: 0
   device: 0
   assignedPlayer: {fileID: 0}
   playerInput: {fileID: 8857930972849304805}
@@ -37181,6 +37183,7 @@ MonoBehaviour:
   - {fileID: 2354796871800048218}
   selectedItemRect: {fileID: 9043400975575579487}
   selectedItemIcon: {fileID: 3709074132159732931}
+  selectedItemBorder: {fileID: 5563173051708886109}
   selectedItemInfo:
   - {fileID: 8640620018351364307}
   - {fileID: 8021701931366969482}
@@ -37212,12 +37215,11 @@ MonoBehaviour:
   _restockConfirmButtonHolders:
   - {fileID: 8869840175894114732}
   - {fileID: 194932597278929643}
-  discardedItemCount: 0
-  _emptyStorestockCount: 0
+  _numOfDiscardItems: 0
+  _numOfEmptyStorestock: 0
   heldItemPrefab: {fileID: 2177283803536277935, guid: 252343393b47fc046904980624cfb6b9, type: 3}
   heldItemHolders: []
   m_RaycastItemUsed: {fileID: 11400000, guid: 988cc46420d364848a8808fb0e91d733, type: 2}
-  m_ItemDiscarded: {fileID: 11400000, guid: b1cc7f46ffa055a4588d794ae7f0cd13, type: 2}
   _gameStateEvent: {fileID: 11400000, guid: 113369b80091b3346b620c7e0c0d9b8c, type: 2}
 --- !u!1 &3951855693468697942
 GameObject:
@@ -68488,7 +68490,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.45882353, g: 0.990566, b: 0.75226945, a: 0.4117647}
+  m_Color: {r: 0.45882353, g: 0.990566, b: 0.75226945, a: 0.54901963}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

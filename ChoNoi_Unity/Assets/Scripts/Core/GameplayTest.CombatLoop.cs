@@ -89,19 +89,20 @@ public partial class GameplayTest : MonoBehaviour
                     //var entityId = combatActionCmd.EntityId;
                     var ps = newState.FindEntityById(combatActionCmd.EntityId);
                     HandleCombatActionSelected(prevState, ref newState, actionId, ps);
+                    newState.CurrentCombatInstance.NumberOfPlayersActed++;
                 }
 
                 //var numberOfPlayersActed = 0;
-                foreach (var team in newState.CurrentCombatInstance.Teams)
-                {
-                    foreach (var fighter in team.Fighters)
-                    {
-                        if (fighter.EntityId >= 0 && fighter.FighterPhase is FighterPhase.ActionSelected)
-                        {
-                            newState.CurrentCombatInstance.NumberOfPlayersActed++;
-                        }
-                    }
-                }
+                //foreach (var team in newState.CurrentCombatInstance.Teams)
+                //{
+                //    foreach (var fighter in team.Fighters)
+                //    {
+                //        if (fighter.EntityId >= 0 && fighter.FighterPhase is FighterPhase.ActionSelected)
+                //        {
+                //            newState.CurrentCombatInstance.NumberOfPlayersActed++;
+                //        }
+                //    }
+                //}
 
                 //if all Player Fighters have picked
                 if (newState.CurrentCombatInstance.NumberOfPlayersActed == newState.CurrentCombatInstance.NumberOfPlayers)
@@ -186,18 +187,19 @@ public partial class GameplayTest : MonoBehaviour
                 {
                     var ps = newState.FindEntityById(combatRollCmd.EntityId);
                     HandleCombatDieRolled(prevState, ref newState, ps);
+                    newState.CurrentCombatInstance.NumberOfPlayersActed++;
                 }
 
-                foreach (var team in newState.CurrentCombatInstance.Teams)
-                {
-                    foreach (var fighter in team.Fighters)
-                    {
-                        if (fighter.EntityId >= 0 && fighter.FighterPhase is FighterPhase.DieRolled)
-                        {
-                            newState.CurrentCombatInstance.NumberOfPlayersActed++;
-                        }
-                    }
-                }
+                //foreach (var team in newState.CurrentCombatInstance.Teams)
+                //{
+                //    foreach (var fighter in team.Fighters)
+                //    {
+                //        if (fighter.EntityId >= 0 && fighter.FighterPhase is FighterPhase.DieRolled)
+                //        {
+                //            newState.CurrentCombatInstance.NumberOfPlayersActed++;
+                //        }
+                //    }
+                //}
 
                 // Once all fighters rolled
                 if (newState.CurrentCombatInstance.NumberOfPlayersActed == newState.CurrentCombatInstance.NumberOfPlayers)
@@ -490,13 +492,14 @@ public partial class GameplayTest : MonoBehaviour
         {
             for(int j = 0; j < defenders.Length; j++)
             {
-                //Setup
+                // Variable Setup
                 var attacker = attackers[i];
                 var defender = defenders[j];
 
                 ref var atkEntity = ref newState.FindEntityById(attacker.EntityId);
                 ref var defEntity = ref newState.FindEntityById(defender.EntityId);
 
+                // DMG Calc
                 var poop = new CombatSequenceData();
 
                 poop.AttackerId = attacker.EntityId;
@@ -505,9 +508,12 @@ public partial class GameplayTest : MonoBehaviour
                 poop.DetermineTypeAdvantage(attacker.DieType, defender.DieType);
                 poop.DetermineTypeAdvantageMultiplier(atkEntity.EntityData, defEntity.EntityData);
                 poop.CalculateDamage(attacker, defender);
+                poop.HealingRecieved = (int)(poop.FinalDamageDealt * atkEntity.EntityData.CurrentStatsModifier.lifestealMult);
 
                 // Actual logic stuffs
                 defEntity.EntityData.Health -= poop.FinalDamageDealt;
+                atkEntity.EntityData.Health += poop.HealingRecieved;
+
                 if(defEntity.EntityData.Health <= 0)
                 {
                     // Add some overkill reward increase here?
@@ -517,23 +523,45 @@ public partial class GameplayTest : MonoBehaviour
                 else
                     poop.IsDamageLethal = false;
 
-                //combatInstance.CombatSequenceDatas.Add(poop);
-
-                // Reward time? move this eleswhere
-                if(defEntity.EntityData.EntityType is EntityType.Enemy
-                    && poop.IsDamageLethal)
+                // Reward Time on Kill? move this eleswhere
+                if(poop.IsDamageLethal)
                 {
-                    poop.MoneyGain = defEntity.EntityData.Money;
-                    defEntity.EntityData.Money = 0;
-
-                    poop.ExpGain = defEntity.EntityData.Experience;
-
-                    poop.ItemDrops = new ItemStats[2];
-                    for(int k = 0; k < poop.ItemDrops.Length; k++)
+                    if (defEntity.EntityData.EntityType is EntityType.Enemy)
                     {
-                        poop.ItemDrops[k] = HandleEnemyItemDrop(defEntity.EnemyData);
-                        atkEntity.EntityData.Inventory.Add(poop.ItemDrops[k]); // temp
+                        poop.MoneyGain = defEntity.EnemyData.BaseMoneyGain + defEntity.EntityData.Money;
+                        poop.ExpGain = defEntity.EnemyData.BaseExpGain;
+
+                        var itemDropCount = 2;
+                        if (atkEntity.EntityData.CurrentStatsModifier.canGreedOnKill) itemDropCount = 3;
+
+                        poop.ItemDrops = new ItemStats[itemDropCount];
+                        for (int k = 0; k < poop.ItemDrops.Length; k++)
+                        {
+                            poop.ItemDrops[k] = HandleEnemyItemDrop(defEntity.EnemyData);
+                            atkEntity.EntityData.Inventory.Add(poop.ItemDrops[k]); // temp
+                        }
+                        atkEntity.EntityData.Money += poop.MoneyGain;
+                        atkEntity.EntityData.Experience += poop.ExpGain;
+
+                        defEntity.EntityData.Money = 0;
+                        defEntity.EntityData.Health = defEntity.EntityData.MaxHealth;
+                        defEntity.EntityData.OccupiedNodeId = -1;
                     }
+                    else // Player Death
+                    {
+                        var moneyLoss = defEntity.EntityData.Money / 2;
+                        var expGain = Math.Max(100, 100 * (defEntity.EntityData.Level - atkEntity.EntityData.Level));
+                        poop.MoneyGain = moneyLoss;
+                        poop.ExpGain = expGain; // Difference in lvl * 100
+
+                        atkEntity.EntityData.Money += poop.MoneyGain;
+                        atkEntity.EntityData.Experience += poop.ExpGain;
+
+                        defEntity.EntityData.Money -= moneyLoss;
+                    }
+
+                    atkEntity.EntityData.Statuses.Remove(Status.Fighting);
+                    defEntity.EntityData.Statuses.Remove(Status.Fighting);
                 }
 
                 combatInstance.CombatSequenceDatas.Add(poop);
@@ -558,7 +586,7 @@ public partial class GameplayTest : MonoBehaviour
         }
 
         var rng = _rng.Next(0, weightTotal);
-        //Debug.Log($"RNG Number = {rng} | WeightTotal = {weightTotal}");
+        Debug.Log($"Starting RNG = {rng} | WeightTotal = {weightTotal}");
 
         //int selectedEnemyId = -1;
         for (int i = 0; i < enemyData.LootPool.Count; i++)
@@ -568,13 +596,14 @@ public partial class GameplayTest : MonoBehaviour
                 //<color=#{newState.Enemies[i].EntityData.MainColor.ToHexString()}>{newState.Enemies[i].PlayerName}</color>
                 //Debug.Log($"Item Dropped: {enemyData.LootPool[i].Item}");
                 drop = enemyData.LootPool[i].Item;
+                Debug.Log($"Remaining RNG = {rng} | Item Weight = {enemyData.LootPool[i].Weight} | Item Dropped: {drop}");
                 break;
             }
             else
                 rng -= enemyData.LootPool[i].Weight;
         }
 
-        Debug.Log($"RNG Number = {rng} | WeightTotal = {weightTotal} | Item Dropped: {drop}");
+        //Debug.Log($"RNG Number = {rng} | WeightTotal = {weightTotal} | Item Dropped: {drop}");
         return drop;
     }
 }

@@ -120,15 +120,13 @@ public class InventorySelectionHandler : MonoBehaviour, ISubmitHandler, IPointer
         }
         else if(_uiInventoryManager.CurrentState is UIInventoryManager.InventoryState.Discard)
         {
+            if (_itemIsUnusable) return;
             Debug.Log($"{heldItem.name} discarded");
 
-            itemIcon.sprite = null;
-            itemIcon.enabled = false;
-            itemName.text = "";
-            itemPrice.text = "";
-
-            GetComponent<Button>().interactable = false;
-            m_ItemDiscarded.RaiseEvent(itemIndex, heldItem);
+            //GetComponent<Button>().interactable = false;
+            RedOutItemSelectionVisual();
+            //m_ItemDiscarded.RaiseEvent(itemIndex, heldItem);
+            _uiInventoryManager.AddToExpectedItemsToDiscard(itemIndex, heldItem);
         }
         else if (_itemIsUnusable)
         {
@@ -215,6 +213,22 @@ public class InventorySelectionHandler : MonoBehaviour, ISubmitHandler, IPointer
         _itemIsUnusable = true;
         //GetComponent<Button>().interactable = true;
     }
+    private void RedOutItemSelectionVisual()
+    {
+        // Cannot use this item atm, grey it out
+        itemIcon.color = Color.red;
+        itemIcon.enabled = true;
+
+        itemName.color = Color.red;
+
+        itemPrice.text = $"<sprite=\"Coin Icon\" index=0 tint=1>{heldItem.basePrice}";
+        itemPrice.color = Color.red;
+
+        heldItemContainer.color = Color.red;
+        _itemIsUnusable = true;
+        //GetComponent<Button>().interactable = true;
+    }
+
     
     private void ResetItemSelectionVisual()
     {

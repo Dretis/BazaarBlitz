@@ -243,7 +243,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2139875765699253377
 Transform:
   m_ObjectHideFlags: 0
@@ -1114,6 +1114,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   storefrontColor: {r: 0, g: 0, b: 0, a: 0}
   storefrontBoatVisual: {fileID: 846972379845080294}
+  storekeepVisual: {fileID: 6761959987979192888}
+  storekeepPaletteLoader: {fileID: 3332389008732450704}
   stockGroup: {fileID: 2271770899688537695}
   stockItems:
   - {fileID: 1459689764620230682}
@@ -1139,7 +1141,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8974697300141568714
 Transform:
   m_ObjectHideFlags: 0
@@ -1865,7 +1867,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4215820021521473204}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -2751,7 +2753,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &4460903135749151957
 Transform:
   m_ObjectHideFlags: 0
@@ -3314,7 +3316,6 @@ MonoBehaviour:
     Type: 1
     DeployableOwnerId: 0
     Deployable: 0
-    occupiedEntities: 
     NorthNode:
       Id: -1
       IsOneWay: 0

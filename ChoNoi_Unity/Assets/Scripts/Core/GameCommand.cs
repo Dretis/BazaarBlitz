@@ -70,61 +70,95 @@ namespace Core
             Direction = direction;
         }
     }
-
+    #region 'UI' Commands
     public struct UICancelCommand : ICommand
     {
         // Basically pressing Back in a UI
     }
-    public struct InventoryUseItemCommand : ICommand
+    public struct UIInventoryUseItemCommand : ICommand
     {
         public int Index; // Position in Inventory
         public ItemStats Item;
 
-        public InventoryUseItemCommand(int index, ItemStats item)
+        public UIInventoryUseItemCommand(int index, ItemStats item)
         {
             Index = index;
             Item = item;
         }
     }
 
-    public struct BuildStoreCommand : ICommand
+    public struct UIBuildStoreCommand : ICommand
     {
         public int ItemCount; // useless?
 
-        public BuildStoreCommand(int itemCount)
+        public UIBuildStoreCommand(int itemCount)
         {
             ItemCount = itemCount;
         }
     }
     
-    public struct RestockStoreCommand : ICommand
+    public struct UIRestockStoreCommand : ICommand
     {
         public Dictionary<int, ItemStats> ItemsToStock; // not useless
 
-        public RestockStoreCommand(Dictionary<int, ItemStats> itemsToStock)
+        public UIRestockStoreCommand(Dictionary<int, ItemStats> itemsToStock)
         {
             ItemsToStock = itemsToStock;
         }
     }
+    public struct UIDiscardItemsCommand : ICommand
+    {
+        public Dictionary<int, ItemStats> ItemsToDiscard; // not useless
+
+        public UIDiscardItemsCommand(Dictionary<int, ItemStats> itemsToDiscard)
+        {
+            ItemsToDiscard = itemsToDiscard;
+        }
+    }
+
+    public struct UIConfirmRenovateCommand : ICommand
+    {
+        // prob blessing selected thingy here
+    }
+
+    // Level Up
+    public struct UIAllocateStatDieCommand : ICommand
+    {
+        public Action.WeaponType DieType;
+        public int FaceIndex; 
+        public int DieNumber; 
+
+        public UIAllocateStatDieCommand(Action.WeaponType dieType, int faceIndex, int dieNumber)
+        {
+            DieType = dieType;
+            FaceIndex = faceIndex;
+            DieNumber = dieNumber;
+        }
+    }
+    public struct UIBlessingSelectedCommand : ICommand
+    {
+        // prob blessing selected thingy here
+    }
+    #endregion
 
     public struct FreeviewExitCommand : ICommand
     {
-        
+        // goo goo
     }
     
     public struct FreeviewExamineCommand : ICommand
     {
-        
+        // gaga
     }
     
     public struct ConfirmationYesCommand : ICommand
     {
-        
+        // ehn-na
     }
     
     public struct ConfirmationNoCommand : ICommand
     {
-        
+        // uhn-na
     }
     
     public struct ConfirmationChangeCommand : ICommand

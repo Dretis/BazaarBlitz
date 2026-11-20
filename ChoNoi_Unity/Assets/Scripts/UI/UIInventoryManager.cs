@@ -17,6 +17,7 @@ public class UIInventoryManager : MonoBehaviour
     private GameplayTest _gameplayTest;
     private List<ItemStats> _storestockHolder = new List<ItemStats>();
     private Dictionary<int, ItemStats> _expectedItemsToStock = new Dictionary<int, ItemStats>(); // int = index in Player Inventory
+    private Dictionary<int, ItemStats> _expectedItemsToDiscard = new Dictionary<int, ItemStats>(); // int = index in Player Inventory
     [SerializeField] public InventoryState CurrentState { get; private set; }
     public enum InventoryState
     {
@@ -44,6 +45,7 @@ public class UIInventoryManager : MonoBehaviour
     [Header("Selected Item Details")]
     [SerializeField] private RectTransform selectedItemRect;
     [SerializeField] private Image selectedItemIcon;
+    [SerializeField] private Image selectedItemBorder; //Background
     [SerializeField] private List<TextMeshProUGUI> selectedItemInfo;
 
     [Header("Inventory Instruction Details")]
@@ -78,8 +80,8 @@ public class UIInventoryManager : MonoBehaviour
 
     [Header("Inventory Stats")]
     //[SerializeField] private int currentItemCount;
-    [SerializeField] private int discardedItemCount;
-    [SerializeField] private int _emptyStorestockCount = 0;
+    [SerializeField] private int _numOfDiscardItems;
+    [SerializeField] private int _numOfEmptyStorestock = 0;
     [SerializeField] private const int INVENTORY_LIMIT = 8;
     [SerializeField] private GameObject heldItemPrefab;
     [SerializeField] private List<InventorySelectionHandler> heldItemHolders;
@@ -98,7 +100,7 @@ public class UIInventoryManager : MonoBehaviour
     //public NodeEventChannelSO m_RestockStore;
 
     //public IntItemEventChannelSO m_ItemStocked;
-    public IntItemEventChannelSO m_ItemDiscarded;
+    //public IntItemEventChannelSO m_ItemDiscarded;
     //public ItemEventChannelSO m_ItemSelected;
 
     //public IntItemEventChannelSO m_TryUseItemAt;
@@ -185,6 +187,7 @@ public class UIInventoryManager : MonoBehaviour
             {
                 CurrentState = InventoryState.Discard;
                 DisplayInventory(ped);
+                SetupDiscardPrompt(ped);
             }
         }
     }
@@ -212,7 +215,7 @@ public class UIInventoryManager : MonoBehaviour
         //m_RestockStore.OnEventRaised += OnRestockStore;
 
         //m_ItemStocked.OnEventRaised += AddItemToStoreStock;
-        m_ItemDiscarded.OnEventRaised += OnItemDiscarded;
+        //m_ItemDiscarded.OnEventRaised += OnItemDiscarded;
         //m_ItemSelected.OnEventRaised += ShowSelectedItemDetails;
 
         //m_TryUseItemAt.OnEventRaised += OnTryUseItemAt;
@@ -232,7 +235,7 @@ public class UIInventoryManager : MonoBehaviour
         //m_RestockStore.OnEventRaised -= OnRestockStore;
         
         //m_ItemStocked.OnEventRaised -= AddItemToStoreStock;
-        m_ItemDiscarded.OnEventRaised -= OnItemDiscarded;
+        //m_ItemDiscarded.OnEventRaised -= OnItemDiscarded;
         //m_ItemSelected.OnEventRaised -= ShowSelectedItemDetails;
 
         //m_TryUseItemAt.OnEventRaised -= OnTryUseItemAt;
@@ -309,6 +312,8 @@ public class UIInventoryManager : MonoBehaviour
 
         //inventoryCanvas.enabled = true;
         HideSelectedItemDetails();
+        var colour = ed.MainColor - new Color32(0,0,0,120);
+        selectedItemBorder.color = colour;
 
         SpawnItemsInInventory(ed);
         //currentPlayerIndex = ps.Id;
@@ -339,7 +344,7 @@ public class UIInventoryManager : MonoBehaviour
 
         if(CurrentState is InventoryState.Restock)
         {
-            _emptyStorestockCount = 0;
+            _numOfEmptyStorestock = 0;
             UpdateRestockInstruction();
         }
 
@@ -422,10 +427,10 @@ public class UIInventoryManager : MonoBehaviour
         storestockNames[storeTotalIndex].text = $"{item.l_itemName.GetLocalizedString()}";
         storestockPrices[storeTotalIndex].text = $"<sprite=\"Coin Icon\" index=0>{(int)(item.basePrice * _selectedStoreData.StorePriceMultiplier)}";
 
-        _emptyStorestockCount--;
+        _numOfEmptyStorestock--;
         UpdateRestockInstruction();
 
-        if(_emptyStorestockCount == 0)
+        if(_numOfEmptyStorestock == 0)
         {
             _gameplayTest.QueueCommand(new UICancelCommand());
             //PromptRestockItems();
@@ -446,9 +451,19 @@ public class UIInventoryManager : MonoBehaviour
         selectedItemInfo[3].text = $"{item.l_flavor.GetLocalizedString()}";
 
         //selectedItemRect
-        var cardScaleMotion = LMotion.Create(Vector3.one * 0.95f, Vector3.one, .2f)
+        var cardScaleMotion = LMotion.Create(Vector3.one * 0.96f, Vector3.one, .2f)
             .WithEase(Ease.OutBack)
             .BindToLocalScale(selectedItemRect);
+
+        var iconRect = selectedItemIcon.GetComponent<RectTransform>();
+
+        var itemIconScaleMotion = LMotion.Create(Vector3.one * 0.5f, Vector3.one, .2f)
+            .WithEase(Ease.OutBack)
+            .BindToLocalScale(iconRect);
+        
+        var itemIconRotMotion = LMotion.Create(new Vector3(0,0,-8), Vector3.zero, .225f)
+            .WithEase(Ease.OutBounce)
+            .BindToLocalEulerAngles(iconRect);
     }
 
     public void HideSelectedItemDetails()
@@ -462,15 +477,50 @@ public class UIInventoryManager : MonoBehaviour
         selectedItemInfo[3].text = "";
     }
 
+    public void SetupDiscardPrompt(EntityData ed)
+    {
+
+        _numOfDiscardItems = ed.Inventory.Count - ed.InventoryLimit;
+        _expectedItemsToDiscard.Clear();
+        //_emptyStorestockCount = 0;
+
+
+        inventoryInputPromptText.text = "<sprite=0> <color=#FF8A8A>Discard Item</color>";
+        instructionGroup.alpha = 1;
+
+        UpdateDiscardInstruction();
+    }
+    public void AddToExpectedItemsToDiscard(int index, ItemStats item)
+    {
+        //discardedItemCount--;
+        _numOfDiscardItems--;
+        _expectedItemsToDiscard.Add(index, item);
+        UpdateDiscardInstruction();
+        //instructionText.text = $"<color=#FF8A8A>Inventory full!\r\nChoose {discardedItemCount} items to discard.</color>";
+
+        if (_numOfDiscardItems <= 0)
+        {
+            instructionText.text = "";
+            instructionGroup.alpha = 0;
+
+            _gameplayTest.QueueCommand(new UIDiscardItemsCommand(_expectedItemsToDiscard));
+            //GameplayTest.instance.QueueCommand(new UICancelCommand()); // temporary
+        }
+    }
+    private void UpdateDiscardInstruction()
+    {
+        instructionText.text = $"<color=#FF8A8A>Inventory full!\r\nChoose {_numOfDiscardItems} items to discard.</color>";
+    }
+
     private void UpdateRestockInstruction()
     {
-        instructionText.text = $"<color=#FFEC75>Store resupply!\r\nStock up to {_emptyStorestockCount} more items.";
+        instructionText.text = $"<color=#FFEC75>Store resupply!\r\nStock up to {_numOfEmptyStorestock} more items.";
     }
 
     public void SetupRestockStore(StorefrontData sd)
     {
         _expectedItemsToStock.Clear();
-        _emptyStorestockCount = 0;
+        _numOfEmptyStorestock = 0;
         //var store = node.GetComponent<StoreManager>();
 
         //DisplayInventory(sd.OwnerId);
@@ -518,7 +568,7 @@ public class UIInventoryManager : MonoBehaviour
 
             if (storeItem == null || i >= _storestockHolder.Count)
             {
-                _emptyStorestockCount++;
+                _numOfEmptyStorestock++;
 
                 storestockIcons[i].sprite = null;
                 storestockIcons[i].enabled = false;
@@ -591,7 +641,7 @@ public class UIInventoryManager : MonoBehaviour
     {
         HideRestockConfirmGroup();
         // Add ExpcectedItems to the storestock for real
-        _gameplayTest.QueueCommand(new RestockStoreCommand(_expectedItemsToStock));
+        _gameplayTest.QueueCommand(new UIRestockStoreCommand(_expectedItemsToStock));
     }
 
     public void CancelRestockItems()
@@ -614,7 +664,7 @@ public class UIInventoryManager : MonoBehaviour
         // **Figure out the type of item being used (this decides the behavior based on type)
         //Debug.Log($"UIInventoryManager | {item.itemName} used. | Item Type: {item.type}");
         //m_ItemUsed.RaiseEvent(index, item); // replace this
-        _gameplayTest.QueueCommand(new InventoryUseItemCommand(index, item));
+        _gameplayTest.QueueCommand(new UIInventoryUseItemCommand(index, item));
 
     }
 
@@ -638,38 +688,5 @@ public class UIInventoryManager : MonoBehaviour
     {
         _restockConfirmGroup.interactable = false;
         FadeTo(_restockConfirmGroup, 0, 0.25f);
-    }
-    public void OnItemDiscarded(int index, ItemStats item)
-    {
-        discardedItemCount--;
-
-        instructionText.text = $"<color=#FF8A8A>Inventory full!\r\nChoose {discardedItemCount} items to discard.</color>";
-
-        if ( discardedItemCount <= 0)
-        {
-            instructionText.text = "";
-            instructionGroup.alpha = 0;
-
-            //m_ExitInventory.RaiseEvent();
-            GameplayTest.instance.QueueCommand(new UICancelCommand()); // temporary
-            //GameplayTest.instance.phase = GameplayTest.GamePhase.EndTurn; // CHANGE THIS LATER PLZ
-        }
-    }
-
-    public void OnFullInventory(EntityData ed)
-    {
-        discardedItemCount = ed.Inventory.Count - ed.InventoryLimit;
-
-        DisplayInventory(ed);
-
-        inventoryInputPromptText.text = "<sprite=0> <color=#FF8A8A>Discard Item</color>";
-        instructionGroup.alpha = 1;
-        //m_RefreshInventory.RaiseEvent(ed);
-        RefreshInventory(ed);
-
-        if (discardedItemCount > 0) 
-        {
-            instructionText.text = $"<color=#FF8A8A>Inventory full!\r\nChoose {discardedItemCount} items to discard.</color>";
-        }
     }
 }

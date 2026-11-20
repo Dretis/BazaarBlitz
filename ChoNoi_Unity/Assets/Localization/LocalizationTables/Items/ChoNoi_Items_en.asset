@@ -28,7 +28,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1733563404288
-    m_Localized: Adds 2 to your <sprite=0> attack roll for 3 turns.
+    m_Localized: Add +2 to <sprite=0>ATK Rolls for 3 turns.
     m_Metadata:
       m_Items: []
   - m_Id: 5430016102400
@@ -36,7 +36,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 5430016102401
-    m_Localized: Adds 2 to your <sprite=1> attack roll for 3 turns.
+    m_Localized: Add +2 to <sprite=1>ATK Rolls for 3 turns.
     m_Metadata:
       m_Items: []
   - m_Id: 5430016102402
@@ -48,7 +48,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 7033259446273
-    m_Localized: Adds 2 to your <sprite=2> attack roll for 3 turns.
+    m_Localized: Add +2 to <sprite=2>ATK Rolls for 3 turns.
     m_Metadata:
       m_Items: []
   - m_Id: 7033259446274
@@ -87,7 +87,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 12284842627072
-    m_Localized: Double your next movement roll for 2 turns.
+    m_Localized: Double your <color=#8FD9D5>MOVE</color> Rolls for 2 turns.
     m_Metadata:
       m_Items: []
   - m_Id: 12294997037056
@@ -100,7 +100,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 12211211620352
-    m_Localized: Double your movement roll this turn.
+    m_Localized: Double your <color=#8FD9D5>MOVE</color> Rolls this turn.
     m_Metadata:
       m_Items: []
   - m_Id: 12235836379136
@@ -109,7 +109,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 11855694024704
-    m_Localized: Adds 3 to your next movement roll for 3 turns.
+    m_Localized: Add +3 to <color=#8FD9D5>MOVE</color> Rolls for 3 turns.
     m_Metadata:
       m_Items: []
   - m_Id: 11902414376960
@@ -127,7 +127,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 11601196240896
-    m_Localized: Heal 10-30 and add 2 to your movement roll.
+    m_Localized: "Heal <color=##4CFF7D>10-30 HP</color> \nAdd +2 to <color=#8FD9D5>MOVE</color>
+      Rolls for 1 turn."
     m_Metadata:
       m_Items: []
   - m_Id: 11545609129984
@@ -135,7 +136,10 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 11476214370304
-    m_Localized: Heal 30 HP and add 1 to your next movement roll.
+    m_Localized: 'Heal <color=##4CFF7D>30 HP</color>
+
+      Add +1 to <color=#8FD9D5>MOVE</color>
+      Rolls for 1 turn.'
     m_Metadata:
       m_Items: []
   - m_Id: 11515871514624
@@ -152,7 +156,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 11297675431936
-    m_Localized: Adds 3 to your next movement roll this turn.
+    m_Localized: Add +3 to <color=#8FD9D5>MOVE</color> Rolls for 1 turn.
     m_Metadata:
       m_Items: []
   - m_Id: 11239185862656
@@ -160,7 +164,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 14322863329280
-    m_Localized: Heal 15 HP at the start of your turn for 4 turns.
+    m_Localized: Regen <color=#4CFF7D>15 HP</color> at the start of your turn for
+      4 turns.
     m_Metadata:
       m_Items: []
   - m_Id: 14332917075968
@@ -173,7 +178,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 14226461446144
-    m_Localized: Heal 15 HP at the start of your turn for 5 turns.
+    m_Localized: Regen <color=#4CFF7D>15 HP</color> at the start of your turn for
+      5 turns.
     m_Metadata:
       m_Items: []
   - m_Id: 14237094006784
@@ -195,7 +201,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 16302096666624
-    m_Localized: Double your Max HP for 4 turns.
+    m_Localized: Double your <color=#24C365>Max HP</color> for 4 turns.
     m_Metadata:
       m_Items: []
   - m_Id: 16327941967872
@@ -203,8 +209,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 16353002934272
-    m_Localized: Double your Max HP and heal 10% of the damage you deal in battle
-      for 3 turns.
+    m_Localized: Double your <color=#24C365>Max HP</color> and gain <color=#D0FF94+10%
+      Lifesteal</color> for 3 turns.
     m_Metadata:
       m_Items: []
   - m_Id: 16365808144384
@@ -217,7 +223,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 18768502607872
-    m_Localized: Heal 10 HP and heal 20% of the damage you deal in battle for 3 turns.
+    m_Localized: Heal <color=#4CFF7D>10 HP</color>. Gain <color=#D0FF94>+20% Lifesteal</color>
+      for 3 turns.
     m_Metadata:
       m_Items: []
   - m_Id: 18781026799616
@@ -226,8 +233,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 18867634982912
-    m_Localized: Heal 30 HP immediately, then heal 10 HP at the start of the next
-      3 turns.
+    m_Localized: "Heal <color=#4CFF7D>30 HP</color>. \nRegen <color=#4CFF7D>10 HP</color>
+      at the start of the next 3 turns."
     m_Metadata:
       m_Items: []
   - m_Id: 18825306066944
@@ -240,7 +247,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 19032278192128
-    m_Localized: Heal 10 HP at the start of the next 3 turns.
+    m_Localized: Regen <color=#4CFF7D>10 HP</color> at the start of your next 3 turns.
     m_Metadata:
       m_Items: []
   - m_Id: 18987629826048
@@ -257,7 +264,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 28263660277760
-    m_Localized: Lowers incoming damage by 20 for 1 turn.
+    m_Localized: Recieve <color=#DB6B6B>-20 DMG</color> in combat for 1 turn.
     m_Metadata:
       m_Items: []
   - m_Id: 28276478070784
@@ -270,7 +277,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 28342529970176
-    m_Localized: Boosts your next attack's die value by 50%.
+    m_Localized: Boost all ATK Rolls by <color=yellow>+50%</color> for 1 turn.
     m_Metadata:
       m_Items: []
   - m_Id: 28354664091648
@@ -282,7 +289,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 28401715793920
-    m_Localized: Boosts your next attack's die value by 100%.
+    m_Localized: Boost all ATK Rolls by <color=yellow>+100%</color> for 1 turn.
     m_Metadata:
       m_Items: []
   - m_Id: 28423815581696
@@ -308,8 +315,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 29458768482304
-    m_Localized: Adds 5 to your <sprite=0> attack roll for 2 turns, but take 35 self-damage
-      on use.
+    m_Localized: Add +5 to <sprite=0>ATK Rolls for 2 turns, but take <color=#FF4C4C>35
+      DMG</color> on use.
     m_Metadata:
       m_Items: []
   - m_Id: 29284855861248
@@ -321,8 +328,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 29720610492416
-    m_Localized: Deploy on a store, which forces the next passing player to stop
-      there. Disappears when triggered.
+    m_Localized: Deploy on a Storefront, which forces the next passing player to
+      stop there. Disappears when triggered.
     m_Metadata:
       m_Items: []
   - m_Id: 29733310844928
@@ -363,7 +370,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 30017110036480
-    m_Localized: Roll three dice for all dice rolls this turn.
+    m_Localized: Add +2 <color=white>DICE</color> to all Rolls for 1 turn.
     m_Metadata:
       m_Items: []
   - m_Id: 30026324922368
@@ -379,7 +386,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3708391103811587
-    m_Localized: Lowers incoming damage by 15 for 2 turns.
+    m_Localized: Lower incoming damage by 15 for 2 turns.
     m_Metadata:
       m_Items: []
   - m_Id: 3708391103811588
@@ -392,7 +399,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3708391103811590
-    m_Localized: Adds 2 to all your defend rolls for 2 turns.
+    m_Localized: Add +2 all DEF Rolls for 2 turns.
     m_Metadata:
       m_Items: []
   - m_Id: 3708391103811591
@@ -429,7 +436,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3708391103811584
-    m_Localized: Heal 30 HP immediately, then heal 10 HP at the start of the next
+    m_Localized: Heal 30 HP immediately, then heal 10 HP at the start of your next
       3 turns.
     m_Metadata:
       m_Items: []

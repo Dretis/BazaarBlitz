@@ -1715,15 +1715,6 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
-                },
-                {
-                    "name": "Info",
-                    "type": "Button",
-                    "id": "3b9b7870-c7cc-4496-8ce0-3d36e4190e72",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "Press(behavior=2)",
-                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -1733,7 +1724,7 @@
                     "path": "<Gamepad>/{Submit}",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";Gamepad",
                     "action": "Quack",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -1744,14 +1735,62 @@
                     "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";Keyboard&Mouse",
                     "action": "Quack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Standby",
+            "id": "f738ce13-711a-4adb-b5a4-6aead8898c39",
+            "actions": [
+                {
+                    "name": "Skip",
+                    "type": "Button",
+                    "id": "6ff96cf1-caac-4a7c-8263-57ef0318490b",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Info",
+                    "type": "Button",
+                    "id": "16b08068-7bcc-4eae-9274-43478828f7f7",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "Press(behavior=2)",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "821e2c7a-b20e-4245-a97e-9dc9e4cec805",
+                    "path": "<Gamepad>/{Submit}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Skip",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "5da6021a-b276-45f3-8887-67d341cacbb8",
+                    "id": "e0781e13-18e3-4cfa-8ef2-9f155838c5d1",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Skip",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ac2e82f6-37e3-4007-a82f-aa8470a394fc",
                     "path": "<Gamepad>/leftTrigger",
                     "interactions": "",
                     "processors": "",
@@ -1762,7 +1801,7 @@
                 },
                 {
                     "name": "",
-                    "id": "9e8af016-12cb-46c0-96be-963fd8cedec0",
+                    "id": "d0da9f3f-f369-49b1-af0d-75f8f1df15ab",
                     "path": "<Keyboard>/tab",
                     "interactions": "",
                     "processors": "",

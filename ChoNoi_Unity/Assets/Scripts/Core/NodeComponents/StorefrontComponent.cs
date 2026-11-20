@@ -16,6 +16,8 @@ public class StorefrontComponent : MonoBehaviour
     [Header("Storefront Variables")]
     [SerializeField] private Color storefrontColor;
     [SerializeField] private SpriteRenderer storefrontBoatVisual;
+    [SerializeField] private SpriteRenderer storekeepVisual;
+    [SerializeField] private PlayerPaletteLoader storekeepPaletteLoader;
     [SerializeField] private CanvasGroup stockGroup;
     [SerializeField] private Image[] stockItems;
     [SerializeField] private TMP_Text soldoutText;
@@ -45,6 +47,8 @@ public class StorefrontComponent : MonoBehaviour
         {
             var selectedStore = gameState.NewState.BoardNodes[_boardNode.Id].StorefrontData;
             UpdateStockVisual(selectedStore);
+            UpdateStoreVisual();
+
         }
 
         if (gameState.BuildStoreCutsceneStarted())
@@ -64,6 +68,8 @@ public class StorefrontComponent : MonoBehaviour
     private void SetStoreColor(PlayerState ps)
     {
         storefrontColor = ps.EntityData.MainColor;
+
+        storekeepPaletteLoader.SetInspectorPalette(ps.CosmeticData.EntityPalette);
     }
 
     #region Additional Functions
@@ -75,6 +81,32 @@ public class StorefrontComponent : MonoBehaviour
 
         //storefrontBoatVisual.enabled = true;
         storefrontBoatVisual.color = storefrontColor;
+
+        //Storekeep
+        var emptySlots = 0;
+        for (int i = 0; i < StorefrontData.STORESTOCK_CAP; i++)
+        {
+            if (sd.Storestock[i] is null)
+            {
+                emptySlots++;
+            }
+            else
+            {
+                //Debug.Log($"{sd.Storestock[i]}");
+                //stockItems[i].enabled = true;
+                stockItems[i].gameObject.SetActive(true);
+                stockItems[i].sprite = sd.Storestock[i].itemSprite;
+            }
+        }
+
+        if( emptySlots >= StorefrontData.STORESTOCK_CAP)
+        {
+            storekeepVisual.enabled = false;
+        }
+        else
+        {
+            storekeepVisual.enabled = true;
+        }
 
         //stockGroup.alpha = 1;
         stockGroup.GetComponent<Image>().color = storefrontColor;

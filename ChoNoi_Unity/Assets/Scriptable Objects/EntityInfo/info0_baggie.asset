@@ -60,16 +60,16 @@ MonoBehaviour:
         dieModifiers:
         - finalResultAtkFlatModifier: 0
           finalResultDefFlatModifier: 0
-          finalResultMultModifier: 1
+          finalResultAtkMultModifier: 1
         - finalResultAtkFlatModifier: 0
           finalResultDefFlatModifier: 0
-          finalResultMultModifier: 1
+          finalResultAtkMultModifier: 1
         - finalResultAtkFlatModifier: 0
           finalResultDefFlatModifier: 0
-          finalResultMultModifier: 1
+          finalResultAtkMultModifier: 1
         - finalResultAtkFlatModifier: 0
           finalResultDefFlatModifier: 0
-          finalResultMultModifier: 1
+          finalResultAtkMultModifier: 1
         deathLossRatio: 0.5
         rollModifier: 0
         interestRate: 0
@@ -130,8 +130,10 @@ MonoBehaviour:
       - {r: 0.5, g: 0.5, b: 0.5, a: 1}
     EnemyData:
       SpawnWeight: 0
-      Behavior: 0
+      BehaviorStyle: 0
       ActionWeights: 000000000000000000000000
+      BaseMoneyGain: 0
+      BaseExpGain: 0
       LootPool: []
   references:
     version: 2

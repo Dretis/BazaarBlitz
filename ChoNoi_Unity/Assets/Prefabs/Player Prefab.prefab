@@ -191,7 +191,9 @@ PlayableDirector:
   - key: {fileID: -1281193105645663038, guid: 94db07dce5d957f499039a6f103efbd3, type: 2}
     value: {fileID: 5894814887159163113}
   - key: {fileID: -9193727451101845629, guid: 94db07dce5d957f499039a6f103efbd3, type: 2}
-    value: {fileID: 0}
+    value: {fileID: 1081277200097079940}
+  - key: {fileID: 4307996843649889547, guid: 94db07dce5d957f499039a6f103efbd3, type: 2}
+    value: {fileID: 1081277200097079940}
   m_ExposedReferences:
     m_References:
     - 73da00737f5bdf241876076fd8e0b65f: {fileID: 702291476796725727}
@@ -27581,13 +27583,13 @@ MonoBehaviour:
     dieModifiers:
     - finalResultAtkFlatModifier: 0
       finalResultDefFlatModifier: 0
-      finalResultMultModifier: 1
+      finalResultAtkMultModifier: 1
     - finalResultAtkFlatModifier: 0
       finalResultDefFlatModifier: 0
-      finalResultMultModifier: 1
+      finalResultAtkMultModifier: 1
     - finalResultAtkFlatModifier: 0
       finalResultDefFlatModifier: 0
-      finalResultMultModifier: 1
+      finalResultAtkMultModifier: 1
     deathLossRatio: 0.5
     rollModifier: 0
     interestRate: 0
@@ -27686,7 +27688,6 @@ MonoBehaviour:
   m_EnterStatAllocation: {fileID: 11400000, guid: d51b7adfc9b8ea14b9653d5f165253ea, type: 2}
   m_EnterBlessingsTree: {fileID: 11400000, guid: 034644062e3eb30488d27269bf7e0c35, type: 2}
   m_GameFinished: {fileID: 11400000, guid: 758e6a2de61d83c49bc29a8ba7fab254, type: 2}
-  m_ItemUsed: {fileID: 11400000, guid: 4c3e0ee6a8a2a4f4ea69a5202dd82790, type: 2}
   m_LandOnWarpNode: {fileID: 11400000, guid: eb198cf8dce206545aea4a7b8addda51, type: 2}
   m_WarpByItem: {fileID: 11400000, guid: 3f85955281bf5f2438e1825f7c0568d4, type: 2}
   m_EnterLevelUp: {fileID: 11400000, guid: 2e765a5770dc0604e9dbf9fa24b60fba, type: 2}
@@ -38646,7 +38647,7 @@ Transform:
   m_GameObject: {fileID: 6380533755000424579}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.75, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

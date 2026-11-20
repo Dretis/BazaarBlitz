@@ -60,16 +60,16 @@ MonoBehaviour:
         dieModifiers:
         - finalResultAtkFlatModifier: 0
           finalResultDefFlatModifier: 0
-          finalResultMultModifier: 1
+          finalResultAtkMultModifier: 1
         - finalResultAtkFlatModifier: 0
           finalResultDefFlatModifier: 0
-          finalResultMultModifier: 1
+          finalResultAtkMultModifier: 1
         - finalResultAtkFlatModifier: 0
           finalResultDefFlatModifier: 0
-          finalResultMultModifier: 1
+          finalResultAtkMultModifier: 1
         - finalResultAtkFlatModifier: 0
           finalResultDefFlatModifier: 0
-          finalResultMultModifier: 1
+          finalResultAtkMultModifier: 1
         deathLossRatio: 0.5
         rollModifier: 0
         interestRate: 0
@@ -130,8 +130,10 @@ MonoBehaviour:
       - {r: 0.5, g: 0.5, b: 0.5, a: 1}
     EnemyData:
       SpawnWeight: 20
-      Behavior: 0
+      BehaviorStyle: 0
       ActionWeights: 140000001e00000028000000
+      BaseMoneyGain: 0
+      BaseExpGain: 60
       LootPool:
       - Item: {fileID: 11400000, guid: fcd4e2d545c541544802d8ade7f75dc1, type: 2}
         Weight: 40

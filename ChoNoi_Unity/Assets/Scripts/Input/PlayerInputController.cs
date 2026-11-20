@@ -20,6 +20,10 @@ public class PlayerInputController : MonoBehaviour
         Switch
     }
 
+    [SerializeField] private string _inputActionString; // just for debugging
+    [SerializeField] private bool _inputIsActive; // just for debugging
+    //[SerializeField] private string _inputActionString; // just for debugging
+    
     private PlayerState _playerState;
     private GameplayTest _gameplayTest;
     public PlayerInput PlayerInput => playerInput;
@@ -76,7 +80,7 @@ public class PlayerInputController : MonoBehaviour
     public PlayerEventChannelSO m_ConfirmBuildStore;
     //public VoidEventChannelSO m_CancelBuildStore;
     public PlayerEventChannelSO m_AskRestockStore;
-    public PlayerEventChannelSO m_TryRestockStore;
+    //public PlayerEventChannelSO m_TryRestockStore;
     public NodeEventChannelSO m_TryRelocateStore;
 
     public NodeEventChannelSO m_LandOnStorefront;
@@ -119,10 +123,18 @@ public class PlayerInputController : MonoBehaviour
 
         playerInput.SwitchCurrentActionMap("UI"); // FUCK YOU
         playerInput.currentActionMap.Disable();
-        playerInput.SwitchCurrentActionMap("Initial Turn Menu");
+        playerInput.SwitchCurrentActionMap("Inactive");
         playerInput.currentActionMap.Enable();
 
+        _inputActionString = playerInput.currentActionMap.name;
         //AssignPlayerToController();
+    }
+
+    // temp delete for real builds
+    private void Update()
+    {
+        _inputActionString = playerInput.currentActionMap.name;
+        _inputIsActive = playerInput.isActiveAndEnabled;
     }
 
     private void OnEnable()
@@ -136,7 +148,7 @@ public class PlayerInputController : MonoBehaviour
         //m_CancelBuildStore.OnEventRaised += OnCancelBuildStore;
 
         m_AskRestockStore.OnEventRaised += OnAskRestockStore;
-        m_TryRestockStore.OnEventRaised += OnTryRestockStore;
+        //m_TryRestockStore.OnEventRaised += OnTryRestockStore;
         m_TryRelocateStore.OnEventRaised += OnTryRelocateStore;
 
         //m_BackRenovateStore.OnEventRaised += OnCancelRestockStore;
@@ -184,7 +196,7 @@ public class PlayerInputController : MonoBehaviour
         //m_CancelBuildStore.OnEventRaised -= OnCancelBuildStore;
 
         m_AskRestockStore.OnEventRaised -= OnAskRestockStore;
-        m_TryRestockStore.OnEventRaised -= OnTryRestockStore;
+        //m_TryRestockStore.OnEventRaised -= OnTryRestockStore;
         m_TryRelocateStore.OnEventRaised -= OnTryRelocateStore;
 
         //m_BackRenovateStore.OnEventRaised -= OnCancelRestockStore;
@@ -627,7 +639,19 @@ public class PlayerInputController : MonoBehaviour
     }
 
     #endregion
+    #region 'Inactive' Action Map
+    private void OnQuack()
+    {
+        Debug.Log($"Inactive | Player [{_playerState.Id}] quacked!");
+    }
+    #endregion
 
+    #region 'Standby' Action Map
+    private void OnSkip()
+    {
+        Debug.Log($"Standby | Player [{_playerState.Id}] wants to skip!!");
+    }
+    #endregion
     public void SwitchActionMap(GameplayTest.GamePhase phase)
     {
         if (!playerInput.inputIsActive) return;
@@ -756,11 +780,11 @@ public class PlayerInputController : MonoBehaviour
             GamePhase.CombatSelector => ("UI"),
             GamePhase.CombatTime => ("Combat"),
             GamePhase.GameOver => ("Confirmation"),
-            GamePhase.IncidentHappening => ("Inactive"),
+            GamePhase.IncidentHappening => ("Standby"),
             _ => String.Empty
         };
         
-        if (!playerInput.inputIsActive) return;
+        if (!playerInput.inputIsActive || playerInput.currentActionMap.name is "Inactive") return;
 
         if (desiredActionMapName == String.Empty)
         {
@@ -778,6 +802,7 @@ public class PlayerInputController : MonoBehaviour
         currActionMap = playerInput.currentActionMap;
         
         Debug.Log($"Player [{playerInput.playerIndex}] | {playerInput.currentActionMap}");
+        _inputActionString = $"Player [{playerInput.playerIndex}] - {playerInput.currentActionMap}";
         //Debug.Log($"currActionMap | {currActionMap}");
     }
     public void SwitchActionMapCombat(FighterPhase phase)
@@ -787,18 +812,19 @@ public class PlayerInputController : MonoBehaviour
             FighterPhase.None => "Inactive",
 
             FighterPhase.ActionSelect => "Combat",
-            FighterPhase.ActionSelected => "Inactive",
+            FighterPhase.ActionSelected => "Standby",
 
             FighterPhase.DieRolling => "Combat Roll",
-            FighterPhase.DieRolled => "Inactive",
-            FighterPhase.Dead => "Inactive",
+            FighterPhase.DieRolled => "Standby",
+            FighterPhase.Dead => "Standby",
 
             _ => String.Empty
         };
 
         if (!playerInput.inputIsActive) return;
 
-        if (desiredActionMapName == String.Empty)
+        if (desiredActionMapName == String.Empty ||
+            desiredActionMapName == "Inactive")
         {
             return;
         }
@@ -814,6 +840,7 @@ public class PlayerInputController : MonoBehaviour
         currActionMap = playerInput.currentActionMap;
 
         Debug.Log($"Player [{playerInput.playerIndex}] | {playerInput.currentActionMap}");
+        _inputActionString = $"Player [{playerInput.playerIndex}] - {playerInput.currentActionMap}";
         //Debug.Log($"currActionMap | {currActionMap}");
     }
     /*
@@ -869,14 +896,15 @@ public class PlayerInputController : MonoBehaviour
         if (_playerState.Id != id)
         {
             // Change this to like a Standby/Inactive action map or something
-            playerInput.DeactivateInput();
+            //playerInput.DeactivateInput();
             //Debug.Log($"SetCurrentPlayer | Player ID: {playerInput.playerIndex} deactivated input.");
+            playerInput.SwitchCurrentActionMap("Inactive");
             if (e != null) e.DisablePlayerCanvases();
         }
         else
         {
 
-            Debug.Log($"SetCurrentPlayer | Player ID: {playerInput.playerIndex} activated input!");
+            //Debug.Log($"SetCurrentPlayer | Player ID: {playerInput.playerIndex} activated input!");
             playerInput.ActivateInput();
             playerInput.SwitchCurrentActionMap("UI"); // FUCK YOU
             playerInput.currentActionMap.Disable();
@@ -954,11 +982,6 @@ public class PlayerInputController : MonoBehaviour
 
         Debug.Log("prev phase = " + previousGamePhase);
         SwitchActionMap(GamePhase.PreStockStore);
-    }
-
-    private void OnTryRestockStore(EntityPiece ps)
-    {
-        previousGamePhase = GamePhase.PreStockStore;
     }
 
     private void OnTryRelocateStore(MapNode storeNode1)

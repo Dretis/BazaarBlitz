@@ -1801,15 +1801,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Info"",
-                    ""type"": ""Button"",
-                    ""id"": ""3b9b7870-c7cc-4496-8ce0-3d36e4190e72"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": ""Press(behavior=2)"",
-                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1819,7 +1810,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/{Submit}"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": "";Gamepad"",
                     ""action"": ""Quack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -1830,14 +1821,62 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""Quack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""Standby"",
+            ""id"": ""f738ce13-711a-4adb-b5a4-6aead8898c39"",
+            ""actions"": [
+                {
+                    ""name"": ""Skip"",
+                    ""type"": ""Button"",
+                    ""id"": ""6ff96cf1-caac-4a7c-8263-57ef0318490b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Info"",
+                    ""type"": ""Button"",
+                    ""id"": ""16b08068-7bcc-4eae-9274-43478828f7f7"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""Press(behavior=2)"",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""821e2c7a-b20e-4245-a97e-9dc9e4cec805"",
+                    ""path"": ""<Gamepad>/{Submit}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Skip"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""5da6021a-b276-45f3-8887-67d341cacbb8"",
+                    ""id"": ""e0781e13-18e3-4cfa-8ef2-9f155838c5d1"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""Skip"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ac2e82f6-37e3-4007-a82f-aa8470a394fc"",
                     ""path"": ""<Gamepad>/leftTrigger"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -1848,7 +1887,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""9e8af016-12cb-46c0-96be-963fd8cedec0"",
+                    ""id"": ""d0da9f3f-f369-49b1-af0d-75f8f1df15ab"",
                     ""path"": ""<Keyboard>/tab"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -1975,7 +2014,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         // Inactive
         m_Inactive = asset.FindActionMap("Inactive", throwIfNotFound: true);
         m_Inactive_Quack = m_Inactive.FindAction("Quack", throwIfNotFound: true);
-        m_Inactive_Info = m_Inactive.FindAction("Info", throwIfNotFound: true);
+        // Standby
+        m_Standby = asset.FindActionMap("Standby", throwIfNotFound: true);
+        m_Standby_Skip = m_Standby.FindAction("Skip", throwIfNotFound: true);
+        m_Standby_Info = m_Standby.FindAction("Info", throwIfNotFound: true);
     }
 
     ~@PlayerInputActions()
@@ -1988,6 +2030,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         UnityEngine.Debug.Assert(!m_Combat.enabled, "This will cause a leak and performance issues, PlayerInputActions.Combat.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_CombatRoll.enabled, "This will cause a leak and performance issues, PlayerInputActions.CombatRoll.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Inactive.enabled, "This will cause a leak and performance issues, PlayerInputActions.Inactive.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Standby.enabled, "This will cause a leak and performance issues, PlayerInputActions.Standby.Disable() has not been called.");
     }
 
     /// <summary>
@@ -3044,7 +3087,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Inactive;
     private List<IInactiveActions> m_InactiveActionsCallbackInterfaces = new List<IInactiveActions>();
     private readonly InputAction m_Inactive_Quack;
-    private readonly InputAction m_Inactive_Info;
     /// <summary>
     /// Provides access to input actions defined in input action map "Inactive".
     /// </summary>
@@ -3060,10 +3102,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Inactive/Quack".
         /// </summary>
         public InputAction @Quack => m_Wrapper.m_Inactive_Quack;
-        /// <summary>
-        /// Provides access to the underlying input action "Inactive/Info".
-        /// </summary>
-        public InputAction @Info => m_Wrapper.m_Inactive_Info;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -3093,9 +3131,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Quack.started += instance.OnQuack;
             @Quack.performed += instance.OnQuack;
             @Quack.canceled += instance.OnQuack;
-            @Info.started += instance.OnInfo;
-            @Info.performed += instance.OnInfo;
-            @Info.canceled += instance.OnInfo;
         }
 
         /// <summary>
@@ -3110,9 +3145,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Quack.started -= instance.OnQuack;
             @Quack.performed -= instance.OnQuack;
             @Quack.canceled -= instance.OnQuack;
-            @Info.started -= instance.OnInfo;
-            @Info.performed -= instance.OnInfo;
-            @Info.canceled -= instance.OnInfo;
         }
 
         /// <summary>
@@ -3146,6 +3178,113 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="InactiveActions" /> instance referencing this action map.
     /// </summary>
     public InactiveActions @Inactive => new InactiveActions(this);
+
+    // Standby
+    private readonly InputActionMap m_Standby;
+    private List<IStandbyActions> m_StandbyActionsCallbackInterfaces = new List<IStandbyActions>();
+    private readonly InputAction m_Standby_Skip;
+    private readonly InputAction m_Standby_Info;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Standby".
+    /// </summary>
+    public struct StandbyActions
+    {
+        private @PlayerInputActions m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public StandbyActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Standby/Skip".
+        /// </summary>
+        public InputAction @Skip => m_Wrapper.m_Standby_Skip;
+        /// <summary>
+        /// Provides access to the underlying input action "Standby/Info".
+        /// </summary>
+        public InputAction @Info => m_Wrapper.m_Standby_Info;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Standby; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="StandbyActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(StandbyActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="StandbyActions" />
+        public void AddCallbacks(IStandbyActions instance)
+        {
+            if (instance == null || m_Wrapper.m_StandbyActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_StandbyActionsCallbackInterfaces.Add(instance);
+            @Skip.started += instance.OnSkip;
+            @Skip.performed += instance.OnSkip;
+            @Skip.canceled += instance.OnSkip;
+            @Info.started += instance.OnInfo;
+            @Info.performed += instance.OnInfo;
+            @Info.canceled += instance.OnInfo;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="StandbyActions" />
+        private void UnregisterCallbacks(IStandbyActions instance)
+        {
+            @Skip.started -= instance.OnSkip;
+            @Skip.performed -= instance.OnSkip;
+            @Skip.canceled -= instance.OnSkip;
+            @Info.started -= instance.OnInfo;
+            @Info.performed -= instance.OnInfo;
+            @Info.canceled -= instance.OnInfo;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="StandbyActions.UnregisterCallbacks(IStandbyActions)" />.
+        /// </summary>
+        /// <seealso cref="StandbyActions.UnregisterCallbacks(IStandbyActions)" />
+        public void RemoveCallbacks(IStandbyActions instance)
+        {
+            if (m_Wrapper.m_StandbyActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="StandbyActions.AddCallbacks(IStandbyActions)" />
+        /// <seealso cref="StandbyActions.RemoveCallbacks(IStandbyActions)" />
+        /// <seealso cref="StandbyActions.UnregisterCallbacks(IStandbyActions)" />
+        public void SetCallbacks(IStandbyActions instance)
+        {
+            foreach (var item in m_Wrapper.m_StandbyActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_StandbyActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="StandbyActions" /> instance referencing this action map.
+    /// </summary>
+    public StandbyActions @Standby => new StandbyActions(this);
     private int m_KeyboardMouseSchemeIndex = -1;
     /// <summary>
     /// Provides access to the input control scheme.
@@ -3526,6 +3665,21 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnQuack(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Standby" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="StandbyActions.AddCallbacks(IStandbyActions)" />
+    /// <seealso cref="StandbyActions.RemoveCallbacks(IStandbyActions)" />
+    public interface IStandbyActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "Skip" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSkip(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "Info" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

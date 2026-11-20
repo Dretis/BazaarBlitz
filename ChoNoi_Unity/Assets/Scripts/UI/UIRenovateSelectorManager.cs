@@ -49,7 +49,7 @@ public class UIRenovateSelectorManager : MonoBehaviour
 
     //public TextMeshProUGUI restockAskText;
     [Header("Broadcast on Event Channel")]
-    public PlayerEventChannelSO m_TryRestockStore; // also listening
+    //public PlayerEventChannelSO m_TryRestockStore; // also listening
     public VoidEventChannelSO m_CancelRestockStore; // also listening
     public NodeEventChannelSO m_UpgradeStore;
     public NodeEventChannelSO m_TryRelocateStore;
@@ -71,7 +71,7 @@ public class UIRenovateSelectorManager : MonoBehaviour
     {
         //m_AskRenovateStore.OnEventRaised += OnAskRenovateStore;
 
-        m_TryRestockStore.OnEventRaised += OnTryRestockStore;
+        //m_TryRestockStore.OnEventRaised += OnTryRestockStore;
         m_CancelRestockStore.OnEventRaised += OnCancelRestockStore;
 
         m_RestockStore.OnEventRaised += OnRestockStore;
@@ -86,7 +86,7 @@ public class UIRenovateSelectorManager : MonoBehaviour
     {
         //m_AskRenovateStore.OnEventRaised -= OnAskRenovateStore;
 
-        m_TryRestockStore.OnEventRaised -= OnTryRestockStore;
+        //m_TryRestockStore.OnEventRaised -= OnTryRestockStore;
         m_CancelRestockStore.OnEventRaised -= OnCancelRestockStore;
 
         m_RestockStore.OnEventRaised -= OnRestockStore;
@@ -123,6 +123,10 @@ public class UIRenovateSelectorManager : MonoBehaviour
         DeactivateAskGroup();
         //m_TryRestockStore.RaiseEvent(promptedPlayerData); // this shows baots
         Debug.Log("m_TryRestockStore is supposed to be raised (This should be a TryRenovateStore thingy tho)");
+        ActivateSelectorContainer();
+        //SpawnStoreboatSelectors(entity);
+
+        _gameplayTest.QueueCommand(new UIConfirmRenovateCommand());
         //m_RestockStore.RaiseEvent(currentPlayer.occupiedNode);
     }
 
@@ -286,7 +290,7 @@ public class UIRenovateSelectorManager : MonoBehaviour
         _eventSystem.SetSelectedGameObject(restockAskButtonHolders[0]);
     }
 
-    private void OnTryRestockStore(EntityPiece entity)
+    private void ShowStorefrontSelectors(EntityPiece entity)
     {
         ActivateSelectorContainer();
         SpawnStoreboatSelectors(entity);

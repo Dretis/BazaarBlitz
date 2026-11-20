@@ -152,21 +152,6 @@ public partial class GameplayTest : MonoBehaviour
         return GamePhase.PickDirection;
     }
 
-    private List<int> GetOtherPlayersOnNode(GameState newState, PlayerState ps, BoardNodeData bnd)
-    {
-        var otherPlayers = bnd.occupiedEntities;
-
-        if (otherPlayers.Contains(ps.Id))
-        {
-            otherPlayers.Remove(ps.Id); // get rid of the currentplayer from the list
-        }
-
-        //otherPlayers = otherPlayers.Where(player => !(player.Statuses.Contains(Status.InsideVendor)
-        //                                        || player.Statuses.Contains(Status.Invulernable))).ToList();
-
-        return otherPlayers;
-    }
-
     GamePhase HandlePassBy(GameState prevState, ref GameState newState)
     {
         ref var p = ref newState.CurrentPlayer().EntityData;
@@ -176,10 +161,11 @@ public partial class GameplayTest : MonoBehaviour
         PassByNode(prevState, ref newState);
 
         // Conditional Things here
-        var otherPlayers = GetOtherPlayersOnNode(newState, newState.CurrentPlayer(), n);
+        //var otherPlayers = GetOtherPlayersOnNode(newState, newState.CurrentPlayer(), n);
+        var otherEntities = newState.GetAllEntitiesOccupyingNode(p.OccupiedNodeId);
 
         // There's other players on the space you pass
-        if (CanFightPlayers(otherPlayers))
+        if (CanFightPlayers(otherEntities))
         {
             //EntityPiece otherPlayer = m.playerOccupied;
             Debug.Log("hello");
@@ -187,7 +173,7 @@ public partial class GameplayTest : MonoBehaviour
             //if (p.currentStatsModifier.canStealOnPassBy && otherPlayer.inventory.Count > 0)
             if (p.CurrentStatsModifier.canStealOnPassBy)
             {
-                foreach (int otherPlayer in otherPlayers)
+                foreach (int otherPlayer in otherEntities)
                 {
                     Debug.Log("Should be a yoink Steal");
                     //m_StealOnPassBy.RaiseEvent(otherPlayer);
@@ -276,12 +262,13 @@ public partial class GameplayTest : MonoBehaviour
         ref var p = ref newState.Players[newState.CurrPlayerId].EntityData;
         ref var n = ref newState.BoardNodes[p.OccupiedNodeId];
 
-        var otherPlayers = n.occupiedEntities;
+        //var otherPlayers = n.occupiedEntities;
+        var otherEntities = newState.GetAllEntitiesOccupyingNode(p.OccupiedNodeId);
 
         switch (n.Type)
         {
             case NodeType.OpenSpace:
-                if (CanFightPlayers(otherPlayers))
+                if (CanFightPlayers(otherEntities))
                 {
                     HandleInitiateCombat(prevState, ref newState);
                 }
@@ -296,7 +283,7 @@ public partial class GameplayTest : MonoBehaviour
             case NodeType.Storefront:
                 //StorefrontComponent.HandleLanding(ref newState);
                 ref var store = ref n.StorefrontData;
-                if (CanFightPlayers(n.occupiedEntities))
+                if (CanFightPlayers(otherEntities))
                 {
                     HandleInitiateCombat(prevState, ref newState);
                 }
@@ -362,9 +349,11 @@ public partial class GameplayTest : MonoBehaviour
                 // update this
                 List<int> exposedPlayersOnVendor = new List<int>();
 
-                foreach (var playerOnVendor in otherPlayers)
+                foreach (var playerOnVendor in otherEntities)
                 {
-                    if (!newState.Players[playerOnVendor].EntityData.Statuses.Contains(Status.InsideVendor))
+                    var exposedEntity = newState.FindEntityById(playerOnVendor);
+
+                    if (!exposedEntity.EntityData.Statuses.Contains(Status.InsideVendor))
                     {
                         exposedPlayersOnVendor.Add(playerOnVendor);
                     }
@@ -400,7 +389,8 @@ public partial class GameplayTest : MonoBehaviour
         ref var p = ref newState.Players[newState.CurrPlayerId].EntityData;
         ref var n = ref newState.BoardNodes[p.OccupiedNodeId];
 
-        var otherPlayers = n.occupiedEntities;
+        //var otherPlayers = n.occupiedEntities;
+        var otherEntities = newState.GetAllEntitiesOccupyingNode(p.OccupiedNodeId);
         var stampIndex = -1;
 
         switch (n.Type)
@@ -492,7 +482,8 @@ public partial class GameplayTest : MonoBehaviour
         ref var p = ref newState.Players[newState.CurrPlayerId].EntityData;
         ref var n = ref newState.BoardNodes[p.OccupiedNodeId];
 
-        var otherPlayers = n.occupiedEntities;
+        //var otherPlayers = n.occupiedEntities;
+        //var otherEntities = newState.GetAllEntitiesOccupyingNode(p.OccupiedNodeId);
         switch (n.Type)
         {
             case NodeType.OpenSpace:
@@ -543,34 +534,46 @@ public partial class GameplayTest : MonoBehaviour
         // Decide what Enemy to fight from available Enemies
         var selectedEnemyId = HandleEnemyToEncounter(prevState, ref newState);
 
-        //var fighter1 = new FighterState(newState.CurrPlayerId, FighterSide.Left, Action.ActionPhase.Attack);
-        //var fighter2 = new FighterState(selectedEnemyId, FighterSide.Right, Action.ActionPhase.Defend);
-        //var leftIds = new List<int>();
-        //var rightIds = new List<int>();
-        //leftIds.Add(newState.CurrPlayerId);
-        //rightIds.Add(selectedEnemyId);
-        //newState.CurrentCombatInstance = new CombatInstance(leftIds, rightIds);
+        if(selectedEnemyId != -99)
+        {
+            HandleCombatEncounterSetup(prevState, ref newState, selectedEnemyId);
+            newState.GamePhase = GamePhase.CombatTime;
+        }
+        else
+        {
+            Debug.Log("[!] No Enemies available to fight, ending turn.");
+            newState.GamePhase = GamePhase.EndTurn;
+        }
+    }
+
+    private void HandleCombatEncounterSetup(GameState prevState, ref GameState newState, int opponentId)
+    {
+        ref var p1 = ref newState.Players[newState.CurrPlayerId];
+        ref var e1 = ref newState.FindEntityById(opponentId);
 
         var leftEntities = new List<PlayerState>();
         var rightEntities = new List<PlayerState>();
-        leftEntities.Add(newState.Players[newState.CurrPlayerId]);
-        rightEntities.Add(newState.FindEntityById(selectedEnemyId));
 
-        newState.CurrentCombatInstance = new CombatInstance(leftEntities, rightEntities);
-        //var player1 = new FighterState(newState.CurrPlayerId, Action.ActionPhase.Attack);
-        //var enemy1 = new FighterState(selectedEnemyId, Action.ActionPhase.Defend);
+        leftEntities.Add(newState.Players[newState.CurrPlayerId]);
+        rightEntities.Add(newState.FindEntityById(opponentId));
+
+        newState.CurrentCombatInstance = new CombatInstance(p1.EntityData.OccupiedNodeId, leftEntities, rightEntities);
+
+        //if()
+        p1.EntityData.TryAddStatus(Status.Fighting);
+        e1.EntityData.TryAddStatus(Status.Fighting);
 
         newState.CurrentCombatInstance.CombatPhase = CombatPhase.EnterCombat;
-
-        newState.GamePhase = GamePhase.CombatTime;
     }
 
     private int HandleEnemyToEncounter(GameState prevState, ref GameState newState)
     {
+        //var selectedEnemyId = -99;
         var weightTotal = 0;
         foreach (var enemy in newState.Enemies)
         {
-            weightTotal += enemy.EnemyData.SpawnWeight;
+            if(!enemy.EntityData.Statuses.Contains(Status.Fighting))
+                weightTotal += enemy.EnemyData.SpawnWeight;
         }
 
         var rng = _rng.Next(0, weightTotal);
@@ -579,18 +582,25 @@ public partial class GameplayTest : MonoBehaviour
         //int selectedEnemyId = -1;
         for (int i = 0; i < newState.Enemies.Length; i++)
         {
-            if (rng <= newState.Enemies[i].EnemyData.SpawnWeight)
+            if (newState.Enemies[i].EntityData.Statuses.Contains(Status.Fighting))
             {
-                //<color=#{newState.Enemies[i].EntityData.MainColor.ToHexString()}>{newState.Enemies[i].PlayerName}</color>
-                Debug.Log($"Enemy Selected: {newState.Enemies[i].PlayerName} | ID = {newState.Enemies[i].Id}");
-                ref var ed = ref newState.Enemies[i].EntityData;
-                ed.OccupiedNodeId = newState.CurrentPlayer().EntityData.OccupiedNodeId; // have Enemy occupy this node
-                return newState.Enemies[i].Id;
+                Debug.Log($"Ignoring {newState.Enemies[i].PlayerName} as it is already Fighting.");
             }
-            else 
-                rng -= newState.Enemies[i].EnemyData.SpawnWeight;
+            else
+            {
+                if (rng <= newState.Enemies[i].EnemyData.SpawnWeight)
+                {
+                    //<color=#{newState.Enemies[i].EntityData.MainColor.ToHexString()}>{newState.Enemies[i].PlayerName}</color>
+                    Debug.Log($"Enemy Selected: {newState.Enemies[i].PlayerName} | ID = {newState.Enemies[i].Id}");
+                    ref var ed = ref newState.Enemies[i].EntityData;
+                    ed.OccupiedNodeId = newState.CurrentPlayer().EntityData.OccupiedNodeId; // have Enemy occupy this node
+                    return newState.Enemies[i].Id;
+                }
+                else
+                    rng -= newState.Enemies[i].EnemyData.SpawnWeight;
+            }
         }
 
-        return -1;
+        return -99;
     }
 }

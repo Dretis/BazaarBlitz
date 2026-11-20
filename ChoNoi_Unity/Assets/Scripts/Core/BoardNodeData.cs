@@ -13,7 +13,7 @@ namespace Core
         public int DeployableOwnerId;
         public Deployable Deployable;
         [Space]
-        public List<int> occupiedEntities;
+        //public List<int> occupiedEntities;
 
         [Header("Nearby Nodes")]
         public NearbyNodeData NorthNode;

@@ -49950,6 +49950,11 @@ CanvasGroup:
   m_Interactable: 0
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
+--- !u!4 &1034825298 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6051827303444443372, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+  m_PrefabInstance: {fileID: 6700546164265674192}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &1036981903 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6051684997082574127, guid: c8e4d3328645e3446ad7ed36310951ab, type: 3}
@@ -152045,6 +152050,10 @@ PrefabInstance:
       propertyPath: m_fontSize
       value: 29.5
       objectReference: {fileID: 0}
+    - target: {fileID: 3117698830837382741, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.5
+      objectReference: {fileID: 0}
     - target: {fileID: 3145997597493592368, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -155023,7 +155032,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5787150737014544002, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: m_SceneBindings.Array.size
-      value: 11
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 5787150737014544002, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: m_SceneBindings.Array.data[9].key
@@ -155031,6 +155040,26 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5787150737014544002, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: m_SceneBindings.Array.data[10].key
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5787150737014544002, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: m_SceneBindings.Array.data[11].key
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5787150737014544002, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: m_SceneBindings.Array.data[12].key
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5787150737014544002, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: m_SceneBindings.Array.data[11].value
+      value: 
+      objectReference: {fileID: 1034825298}
+    - target: {fileID: 5787150737854376437, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: m_SceneBindings.Array.size
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5787150737854376437, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: m_SceneBindings.Array.data[9].key
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5833880852380240765, guid: 84bddb24974478f42b437d61898b6010, type: 3}
@@ -156210,6 +156239,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6480429791762724847, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: m_SceneBindings.Array.size
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 6480429791762724847, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: m_ExposedReferences.m_References.Array.size
       value: 6
       objectReference: {fileID: 0}
@@ -156422,6 +156455,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 58d0b4009d557fc4595aa02754729cc4, type: 2}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: _debugTextOn
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: _respawnNode
       value: 
       objectReference: {fileID: 1888144212}
@@ -156466,6 +156503,18 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 478303134}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: currentRuleset.PointGoal
+      value: 6000
+      objectReference: {fileID: 0}
+    - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: currentRuleset.StoreLimit
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: currentRuleset.NumberOfPlayers
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.size
       value: 4
       objectReference: {fileID: 0}
@@ -156483,7 +156532,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: _currentGameState.GameRuleset.NumberOfPlayers
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: _currentGameState.GameRuleset.numberOfPlayers
@@ -156491,7 +156540,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].playerName
-      value: Coblat
+      value: Bloobis
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[1].playerName
@@ -156515,15 +156564,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].playerColor.b
-      value: 0.65882355
+      value: 0.3254902
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].playerColor.g
-      value: 0.5372549
+      value: 0.15686275
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].playerColor.r
-      value: 0.40784314
+      value: 0.7372549
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[1].palettePreset
@@ -156662,6 +156711,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 9100000, guid: f5b11b07172c2934b96ced515fcbbaab, type: 2}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: debugCosmeticManagers.Array.data[3].DefendActions.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].AttackActions.Array.data[0]
       value: 
       objectReference: {fileID: 11400000, guid: 092cf3b3af66061478bc3530f1af01f9, type: 2}
@@ -156757,6 +156810,18 @@ PrefabInstance:
       propertyPath: debugCosmeticManagers.Array.data[3].AttackActions.Array.data[2]
       value: 
       objectReference: {fileID: 11400000, guid: 32a37866383854b4d80b76bd6c92a71b, type: 2}
+    - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: debugCosmeticManagers.Array.data[3].DefendActions.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 188957564c85adc4a8e2ce5c7b8466f5, type: 2}
+    - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: debugCosmeticManagers.Array.data[3].DefendActions.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: 704ee6dbca2f62140ad5caf58846a975, type: 2}
+    - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: debugCosmeticManagers.Array.data[3].DefendActions.Array.data[2]
+      value: 
+      objectReference: {fileID: 11400000, guid: 5b8f525effb08414abb503dfc27d55f6, type: 2}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[3].boatColorPalette.Array.size
       value: 8
@@ -157311,15 +157376,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].baggieColorPalette.Array.data[0].b
-      value: 0.65882355
+      value: 0.3254902
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].baggieColorPalette.Array.data[0].g
-      value: 0.5372549
+      value: 0.15686275
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].baggieColorPalette.Array.data[0].r
-      value: 0.40784314
+      value: 0.7372549
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].baggieColorPalette.Array.data[1].a
@@ -157327,11 +157392,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].baggieColorPalette.Array.data[1].b
-      value: 0.6
+      value: 0.40784314
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].baggieColorPalette.Array.data[1].g
-      value: 0.67058825
+      value: 0.6627451
+      objectReference: {fileID: 0}
+    - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: debugCosmeticManagers.Array.data[0].baggieColorPalette.Array.data[1].r
+      value: 0.8235294
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].baggieColorPalette.Array.data[2].a
@@ -157339,15 +157408,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].baggieColorPalette.Array.data[2].b
-      value: 1
+      value: 0.3634921
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].baggieColorPalette.Array.data[2].g
-      value: 0.6714
+      value: 0.28057137
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].baggieColorPalette.Array.data[2].r
-      value: 0.6462264
+      value: 0.9150943
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].baggieColorPalette.Array.data[3].a
@@ -157355,11 +157424,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].baggieColorPalette.Array.data[3].b
-      value: 0.6
+      value: 0.40784314
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].baggieColorPalette.Array.data[3].g
-      value: 0.67058825
+      value: 0.6627451
+      objectReference: {fileID: 0}
+    - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: debugCosmeticManagers.Array.data[0].baggieColorPalette.Array.data[3].r
+      value: 0.8235294
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].baggieColorPalette.Array.data[4].a
@@ -157367,15 +157440,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].baggieColorPalette.Array.data[4].b
-      value: 1
+      value: 0.7254902
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].baggieColorPalette.Array.data[4].g
-      value: 1
+      value: 0.9450981
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].baggieColorPalette.Array.data[4].r
-      value: 1
+      value: 0.9921569
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].baggieColorPalette.Array.data[5].a
@@ -157383,15 +157456,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].baggieColorPalette.Array.data[5].b
-      value: 1
+      value: 0.4862745
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].baggieColorPalette.Array.data[5].g
-      value: 0.72264147
+      value: 0.42352942
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].baggieColorPalette.Array.data[5].r
-      value: 0.7028302
+      value: 0.9490196
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].baggieColorPalette.Array.data[6].a
@@ -157399,11 +157472,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].baggieColorPalette.Array.data[6].b
-      value: 0.6
+      value: 0.9490196
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].baggieColorPalette.Array.data[6].g
-      value: 0.67058825
+      value: 0.62352943
+      objectReference: {fileID: 0}
+    - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: debugCosmeticManagers.Array.data[0].baggieColorPalette.Array.data[6].r
+      value: 0.42745098
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].baggieColorPalette.Array.data[7].a
@@ -157415,11 +157492,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].baggieColorPalette.Array.data[7].g
-      value: 0.3537736
+      value: 0.5568628
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[0].baggieColorPalette.Array.data[7].r
-      value: 0.40244815
+      value: 0.88235295
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163175548394, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: debugCosmeticManagers.Array.data[1].baggieColorPalette.Array.data[0].a
@@ -157805,9 +157882,25 @@ PrefabInstance:
       propertyPath: debugCosmeticManagers.Array.data[3].baggieColorPalette.Array.data[7].r
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6700546163252136676, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 720
+      objectReference: {fileID: 0}
+    - target: {fileID: 6700546163252136676, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 900
+      objectReference: {fileID: 0}
     - target: {fileID: 6700546163252136677, guid: 84bddb24974478f42b437d61898b6010, type: 3}
-      propertyPath: m_text
-      value: hiiiiiiiiiiiiiiii
+      propertyPath: m_fontSize
+      value: 32
+      objectReference: {fileID: 0}
+    - target: {fileID: 6700546163252136677, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: m_fontSizeMax
+      value: 32
+      objectReference: {fileID: 0}
+    - target: {fileID: 6700546163252136677, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163252136677, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: m_fontColor32.rgba
@@ -157907,15 +158000,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163749520453, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -1.095766
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163749520453, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.37507194
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163749520453, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -10
+      value: -10.002511
       objectReference: {fileID: 0}
     - target: {fileID: 6700546163752958666, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: _text
@@ -157961,6 +158054,30 @@ PrefabInstance:
       propertyPath: inventory.Array.data[5]
       value: 
       objectReference: {fileID: 11400000, guid: 17f44431f77d4774cbc29d11b9c5d2e9, type: 2}
+    - target: {fileID: 6700546163881176787, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6700546163881176787, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6700546163881176787, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6700546163881176787, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6700546163881176787, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6700546163881176787, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6700546163881176789, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: _gameStateEventChannel
       value: 
@@ -158143,15 +158260,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6700546165155914890, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.095766
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6700546165155914890, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.37507194
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6700546165155914890, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.0025111274
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6700546165155914890, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: m_LocalRotation.w
@@ -159406,8 +159523,16 @@ PrefabInstance:
       value: 29.5
       objectReference: {fileID: 0}
     - target: {fileID: 8097304558414213936, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -1.095766
+      objectReference: {fileID: 0}
+    - target: {fileID: 8097304558414213936, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.37507194
+      objectReference: {fileID: 0}
+    - target: {fileID: 8097304558414213936, guid: 84bddb24974478f42b437d61898b6010, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -10.002511
       objectReference: {fileID: 0}
     - target: {fileID: 8155079036344094901, guid: 84bddb24974478f42b437d61898b6010, type: 3}
       propertyPath: m_AnchorMax.y

@@ -150,6 +150,15 @@ public class EntityPiece : MonoBehaviour
             SetEntityVisualPostCombat(gameState.NewState.Players[id].EntityData);
         }
 
+        if (gameState.NewState.Players[id].EntityData.Statuses.Contains(Status.Fighting))
+        {
+            dustCloud.gameObject.SetActive(true);
+        }
+        else
+        {
+            dustCloud.gameObject.SetActive(false);
+        }
+
         if (gameState.NewState.CurrPlayerId == id)
         {
             if (gameState.PrevState.Players[id].EntityData.Money <

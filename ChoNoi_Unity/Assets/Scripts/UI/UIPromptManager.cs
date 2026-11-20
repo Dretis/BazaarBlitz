@@ -20,8 +20,8 @@ public class UIPromptManager : MonoBehaviour
     private GameplayTest _gameplayTest;
     [SerializeField] private MultiplayerEventSystem _eventSystem;
 
-    private bool NextPlayerGoIsRunning = false;
-    private Coroutine oldNextPlayerGo;
+    //private bool NextPlayerGoIsRunning = false;
+    //private Coroutine oldNextPlayerGo;
     private EntityPiece currentPlayer;
 
     private MotionHandle goTurnMotion;
@@ -233,7 +233,7 @@ public class UIPromptManager : MonoBehaviour
 
     private IEnumerator NotifyNextPlayerGo(EntityPiece ps)
     {
-        NextPlayerGoIsRunning = true;
+        //NextPlayerGoIsRunning = true;
         string goLine = "{offset}{size}Go, " + ps.entityName + "!";
         var localizedString = turnTypewriter.GetComponent<LocalizeStringEvent>().StringReference;
 
@@ -263,7 +263,7 @@ public class UIPromptManager : MonoBehaviour
 
         //turnTypewriter.StartDisappearingText();
 
-        NextPlayerGoIsRunning = false;
+        //NextPlayerGoIsRunning = false;
         yield return null;
     }
 
@@ -671,7 +671,7 @@ public class UIPromptManager : MonoBehaviour
     public void ConfirmBuildStoreButton()
     {
         //m_ConfirmBuildStore.RaiseEvent(currentPlayer);
-        _gameplayTest.QueueCommand(new BuildStoreCommand());
+        _gameplayTest.QueueCommand(new UIBuildStoreCommand());
     }
 
     public void CancelBuildStoreButton()

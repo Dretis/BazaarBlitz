@@ -1,6 +1,8 @@
+using FishNet.Demo.AdditiveScenes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static GameplayTest;
 
@@ -66,10 +68,16 @@ namespace Core
             //}
 
             copy.Players = new PlayerState[Players.Length];
+            copy.Enemies = new PlayerState[Enemies.Length];
 
             for(int i = 0; i < Players.Length; i++)
             {
                 copy.Players[i] = new PlayerState(this.Players[i]);
+            }
+            
+            for(int i = 0; i < Enemies.Length; i++)
+            {
+                copy.Enemies[i] = new PlayerState(this.Enemies[i]);
             }
 
             return copy;
@@ -111,6 +119,35 @@ namespace Core
             array[^1] = thing;
         }
 
+        public List<int> GetAllEntitiesOccupyingNode(int nodeId)
+        {
+            var occupiedEntities = new List<int>();
+            //Debug.Log($"GetAllEntitiesOccupyingNode | Node ID: {nodeId}");
+            //var players = Array.FindAll(Players, p => p.EntityData.OccupiedNodeId == nodeId);
+            //var enemies = Array.FindAll(Enemies, e => e.EntityData.OccupiedNodeId == nodeId);
+
+            foreach (var player in Players)
+            {
+                if(player.EntityData.OccupiedNodeId == nodeId && player.Id != CurrPlayerId)
+                {
+                    //Debug.Log($"{player.PlayerName} is on Node ID: {nodeId}");
+                    occupiedEntities.Add(player.Id);
+
+                }
+            }
+
+            foreach (var enemy in Enemies)
+            {
+                if (enemy.EntityData.OccupiedNodeId == nodeId)
+                {
+                    //Debug.Log($"{enemy.PlayerName} is on Node ID: {nodeId}");
+                    occupiedEntities.Add(enemy.Id);
+                }
+            }
+
+            return occupiedEntities;
+        }
+
         public ref PlayerState FindEntityById(int entityId)
         {
             //ref PlayerState ps = ref Players[0];
@@ -144,6 +181,7 @@ namespace Core
         }
     }
 
+    #region Combat
     /// <summary>
     /// State of an ongoing combat instance
     /// </summary>
@@ -151,6 +189,8 @@ namespace Core
     public struct CombatInstance
     {
         // asdfasdf
+        //public string CombatInstanceName;
+        public int NodeId; // id of the node this combat takes place in
         public GameplayTest.CombatPhase CombatPhase;
         public GameplayTest.CombatPhase ExpectedPhase;
         //public FighterState[] Fighters;
@@ -163,29 +203,12 @@ namespace Core
         public int NumberOfPlayersActed;
         public int NumberOfEnemies;
         public int PhaseSwapCount;
-        //public int DamageDealt; // is this needed?
         //public int WinnerId;
         //public int LoserId;
-        public CombatInstance(List<int> leftIds, List<int> rightIds)
-        {
-            CombatPhase = CombatPhase.None;
-            ExpectedPhase = CombatPhase.None;
-
-            NumberOfPlayers = 0;
-            NumberOfPlayersActed = 0;
-            NumberOfEnemies = 0;
-            PhaseSwapCount = 0;
-
-            Teams = new TeamSide[2]; // should always be 2 (Left/Right)
-
-            CombatSequenceDatas = new List<CombatSequenceData>();
-
-            SetupTeamFighters(FighterSide.Left, leftIds);
-            SetupTeamFighters(FighterSide.Right, rightIds);
-        }
         
-        public CombatInstance(List<PlayerState> leftEntities, List<PlayerState> rightEntities)
+        public CombatInstance(int nodeId, List<PlayerState> leftEntities, List<PlayerState> rightEntities)
         {
+            NodeId = nodeId;
             CombatPhase = CombatPhase.None;
             ExpectedPhase = CombatPhase.None;
 
@@ -200,21 +223,6 @@ namespace Core
 
             SetupTeamFighters(FighterSide.Left, leftEntities);
             SetupTeamFighters(FighterSide.Right, rightEntities);
-        }
-
-        private void SetupTeamFighters(GameplayTest.FighterSide side, List<int> ids)
-        {
-            var s = (int)side;
-            Teams[s].FighterSide = side;
-            Teams[s].ActionPhase = (Action.ActionPhase) s;
-
-            Teams[s].Fighters = new FighterState[ids.Count];
-            for (int i = 0; i < ids.Count; i++)
-            {
-                Teams[s].Fighters[i] = new FighterState(ids[i]);
-                if (ids[i] >= 0) NumberOfPlayers++;
-                else NumberOfEnemies++;
-            }
         }
         
         private void SetupTeamFighters(GameplayTest.FighterSide side, List<PlayerState> entities)
@@ -281,6 +289,7 @@ namespace Core
             //public int BaseAttackRoll;
             //public int BaseDefendRoll;
             public int FinalDamageDealt;
+            public int HealingRecieved;
             public bool IsDamageLethal; // the atk kills the defender
 
             [Header("Reward Info")]
@@ -392,7 +401,7 @@ namespace Core
     [System.Serializable]
     public struct FighterState
     {
-        [SerializeField] private string _name;
+        [SerializeField] public string _name;
         public int EntityId;
         //public GameplayTest.FighterSide FighterSide; // shouldnt change in a CombatInstance
         public GameplayTest.FighterPhase FighterPhase;
@@ -461,7 +470,7 @@ namespace Core
             public int FinalDieRoll; // Final die number value after all modifiers are applied
         }
     }
-
+    #endregion Combat
 
     public interface IEntityState
     {
@@ -551,18 +560,23 @@ namespace Core
     {
         public int SpawnWeight; // how much more likely this Enemy will appear compared to the rest 
 
-        public CombatBehavior Behavior;
+        public CombatBehavior BehaviorStyle;
         public int[] ActionWeights; // Index 0 = Melee, 1 = Gun, 2 = Magic
-
+        [Header("Rewards")]
+        public int BaseMoneyGain; // should ususally be 0 unless Rarified TM
+        public int BaseExpGain;
         public List<ItemDrop> LootPool;
 
         public EnemyData(EnemyData wd)
         {
             SpawnWeight = wd.SpawnWeight;
 
-            Behavior = wd.Behavior;
+            BehaviorStyle = wd.BehaviorStyle;
             ActionWeights = new int[3];
             wd.ActionWeights.CopyTo(ActionWeights, 0);
+
+            BaseMoneyGain = wd.BaseMoneyGain;
+            BaseExpGain = wd.BaseExpGain;
             //ActionWeights = new List<int>(wd.ActionWeights);
             LootPool = new List<ItemDrop>(wd.LootPool);
         }
@@ -580,7 +594,7 @@ namespace Core
         {
             // fs is the opponent it is against
             var actionId = 0;
-            switch (Behavior)
+            switch (BehaviorStyle)
             {
                 case CombatBehavior.Simple:
                     actionId = SimpleBehavior(rng);
@@ -712,8 +726,8 @@ namespace Core
 
             //
 
-            Statuses = new List<Status>(ed.Statuses);
-            ActiveEffects = new List<ActiveEffect>(ed.ActiveEffects);
+            Statuses = new List<Status>(ed.Statuses.ToList());
+            ActiveEffects = new List<ActiveEffect>(ed.ActiveEffects.ToList());
             EntityType = ed.EntityType;
             IsEnemy = ed.IsEnemy;
 
@@ -723,7 +737,7 @@ namespace Core
             BaseMaxHealth = MaxHealth;
 
             Stamps = ed.Stamps;
-            Inventory = new List<ItemStats>(ed.Inventory);
+            Inventory = new List<ItemStats>(ed.Inventory.ToList());
 
             OccupiedNodeId = ed.OccupiedNodeId;
             InitialNodeId = ed.InitialNodeId;
@@ -830,6 +844,14 @@ namespace Core
             EntityStats = new();
             CurrentStatsModifier = new();
             //SetDefaultData();
+        }
+
+        public void TryAddStatus(Status s)
+        {
+            if (!Statuses.Contains(s))
+            {
+                Statuses.Add(s);
+            }
         }
 
         public DieConfig GetDie(Action.WeaponType type)

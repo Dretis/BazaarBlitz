@@ -5,6 +5,7 @@ using System.Linq;
 using Core;
 using Core.Events;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = System.Random;
@@ -14,7 +15,7 @@ using Random = System.Random;
 /// </summary>
 public partial class GameplayTest : MonoBehaviour
 {
-    [SerializeField] private MapNode _respawnNode;
+    //[SerializeField] private MapNode _respawnNode;
     [SerializeField] private int _respawnNodeId = 1;
 
     public BoardNodeManager BoardNodeManager;
@@ -34,6 +35,7 @@ public partial class GameplayTest : MonoBehaviour
     public EntityPiece winner;
 
     [Header("Debugging")]
+    [SerializeField] private bool _debugTextOn = false;
     [SerializeField] private bool _isPlayerConfigurationManagerMissing = false;
     [SerializeField] private List<PlayerColorPalettePreset> debugPresetPalettes;
     [SerializeField] private List<PlayerCosmeticManager> debugCosmeticManagers;
@@ -96,8 +98,11 @@ public partial class GameplayTest : MonoBehaviour
 
         InVendor,
         RockPaperScissors,
-        LevelUp, // change name to 'StatAllocation' ?
+
+        LevelUp, 
+        StatAllocation, // make stuff
         BlessingTree,
+
         CombatSelector,
         CombatTime,
 
@@ -147,7 +152,7 @@ public partial class GameplayTest : MonoBehaviour
     //public bool isStockingStore = false;
 
     // ui stuff for levelup;
-    private int currentPlayerInitialHealth = 0; // for pawn shop healing
+    //private int currentPlayerInitialHealth = 0; // for pawn shop healing
     public int[] costArray = { 0, 1, 1, 2, 2, 2, 3, 3, 3, 4, 5, 999 };
 
     public Canvas howToPlayScreen;
@@ -436,7 +441,7 @@ public partial class GameplayTest : MonoBehaviour
             var enemy = _entityInfoDatabase.GetEntityInfo(initialEnemyPool.EnemyEncounterInfos[i].EnemyId);
             enemy.DefaultEntityState.EnemyData.SpawnWeight = initialEnemyPool.EnemyEncounterInfos[i].EncounterWeight;
 
-            _currentGameState.Enemies[i] = enemy.DefaultEntityState;
+            _currentGameState.Enemies[i] = new PlayerState(enemy.DefaultEntityState);
         }
 
 
@@ -597,13 +602,57 @@ public partial class GameplayTest : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        #if UNITY_EDITOR
-        debugPhaseText.text = $"{phase}";
-        debugPhaseText.text += $"\n{_currentGameState.GamePhase}";
-        debugPhaseText.text += $"\nLP: {_currentGameState.LastGamePhase}";
-        debugPhaseText.text += $"\nEP: {_currentGameState.ExpectedPhase}";
-        debugPhaseText.text += $"\n\n<color=orange>CI: {_currentGameState.CurrentCombatInstance.CombatPhase}";
-        #endif
+#if UNITY_EDITOR
+        if (_debugTextOn)
+        {
+            debugPhaseText.text = $"{phase}";
+            debugPhaseText.text += $"\n{_currentGameState.GamePhase}";
+            debugPhaseText.text += $"\nLP: {_currentGameState.LastGamePhase}";
+            debugPhaseText.text += $"\nEP: {_currentGameState.ExpectedPhase}";
+            // Combat shit
+            debugPhaseText.text += $"\n\n<color=orange>CI: {_currentGameState.CurrentCombatInstance.CombatPhase}";
+            if (_currentGameState.CurrentCombatInstance.CombatPhase != CombatPhase.None)
+            {
+                foreach (var team in _currentGameState.CurrentCombatInstance.Teams)
+                {
+                    debugPhaseText.text += $"\n\n<u>[{team.FighterSide} | {team.ActionPhase}]</u>";
+                    foreach (var fighter in team.Fighters)
+                    {
+                        //debugPhaseText.text += $"\n{fighter._name} | {fighter.FighterPhase} | {fighter.DieType}";
+                        var thing = _currentGameState.FindEntityById(fighter.EntityId);
+                        debugPhaseText.text += $"\nID: {fighter.EntityId} | <color=#{thing.EntityData.MainColor.ToHexString()}>{fighter._name}</color>";
+                        debugPhaseText.text += $"\nHP: {thing.EntityData.Health}/{thing.EntityData.MaxHealth}";
+                        debugPhaseText.text += $"\nFP: {fighter.FighterPhase}";
+                        switch (fighter.DieType)
+                        {
+                            case Action.WeaponType.Melee:
+                                debugPhaseText.text += $"\n<color=red>Melee";
+                                break;
+                            case Action.WeaponType.Gun:
+                                debugPhaseText.text += $"\n<color=lightblue>Gun";
+                                break;
+                            case Action.WeaponType.Magic:
+                                debugPhaseText.text += $"\n<color=purple>Magic";
+                                break;
+                            case Action.WeaponType.Speed:
+                                debugPhaseText.text += $"\n<color=white>Speed";
+                                break;
+                            case Action.WeaponType.None:
+                                debugPhaseText.text += $"\n<color=grey>None";
+                                break;
+                        }
+
+                        foreach (var roll in fighter.CombatDieRolls)
+                        {
+                            debugPhaseText.text += $" [{roll.FinalDieRoll}] ";
+                        }
+                        debugPhaseText.text += $"</color>";
+                    }
+                }
+            }
+        }
+        else debugPhaseText.text = "";
+#endif
         TickGame();
     }
     private void TestFunctions(GameState prevState, ref GameState newState)
@@ -784,24 +833,27 @@ public partial class GameplayTest : MonoBehaviour
         {
             if (_currentGameState.GamePhase is GamePhase.CombatTime)
             {
-                //_currentGameState.CurrentCombatInstance.Fighters.Find
-                var associatedFighterIndex = -99;
+                var playerIsCurrentlyFighting = false;
 
-                foreach(var team in _currentGameState.CurrentCombatInstance.Teams)
+                foreach (var team in _currentGameState.CurrentCombatInstance.Teams)
                 {
                     for (int j = 0; j < team.Fighters.Length; j++)
                     {
                         if (team.Fighters[j].EntityId == i)
                         {
                             //_inputControllers[i].SwitchActionMapCombat(_currentGameState.CurrentCombatInstance.Fighters[j].FighterPhase);
-                            associatedFighterIndex = j;
-                            break;
+                            playerIsCurrentlyFighting = true;
+                            _inputControllers[i].SwitchActionMapCombat(team.Fighters[j].FighterPhase);
+                            //break;
                         }
                     }
-                    if (associatedFighterIndex != -99)
-                        _inputControllers[i].SwitchActionMapCombat(team.Fighters[associatedFighterIndex].FighterPhase);
-                    else
-                        _inputControllers[i].SwitchActionMapCombat(FighterPhase.None);
+
+                    if (playerIsCurrentlyFighting) break;
+                }
+
+                if (!playerIsCurrentlyFighting)
+                {
+                    _inputControllers[i].SwitchActionMapCombat(FighterPhase.None); // not in current fight
                 }
                 /*
                 for (int j = 0; j < _currentGameState.CurrentCombatInstance.Fighters.Count(); j++)
@@ -948,7 +1000,7 @@ public partial class GameplayTest : MonoBehaviour
                     //newState.GamePhase = newState.LastGamePhase;
                 }
 
-                if (cmd is InventoryUseItemCommand invUseItemCommand)
+                if (cmd is UIInventoryUseItemCommand invUseItemCommand)
                 {
                     var index = invUseItemCommand.Index;
                     var item = invUseItemCommand.Item;
@@ -969,6 +1021,15 @@ public partial class GameplayTest : MonoBehaviour
                 //}
                 break;
 
+            case GamePhase.DiscardItem:
+                if (!isCmdToProcess) break;
+                if (cmd is UIDiscardItemsCommand dic) // lol
+                {
+                    var itemsToDiscard = dic.ItemsToDiscard;
+
+                    HandleDiscardItems(prevState, ref newState, itemsToDiscard);
+                }
+                break;
             case GamePhase.BuildingStore:
                 if (!isCmdToProcess)
                 {
@@ -982,7 +1043,7 @@ public partial class GameplayTest : MonoBehaviour
                     newState.GamePhase = newState.LastGamePhase;
                 }
 
-                if (cmd is BuildStoreCommand)
+                if (cmd is UIBuildStoreCommand)
                 {
                     HandleBuildStore(prevState, ref newState);
                 }
@@ -1087,7 +1148,7 @@ public partial class GameplayTest : MonoBehaviour
                 }
                 break;
             case GamePhase.PrepStockStore:
-                if (cmd is RestockStoreCommand restockStoreCommand)
+                if (cmd is UIRestockStoreCommand restockStoreCommand)
                 {
                     var itemsToStock = restockStoreCommand.ItemsToStock;
 
@@ -1104,19 +1165,34 @@ public partial class GameplayTest : MonoBehaviour
                 break;
 
             case GamePhase.LevelUp:
+                // Passing phase
+                HandleLevelUp(prevState, ref newState);
+                break;
+            case GamePhase.StatAllocation:
                 if (!isCmdToProcess)
                 {
                     break;
                 }
                 // UI
-                if (cmd is ConfirmationYesCommand)
+                if (cmd is UIAllocateStatDieCommand)
                 {
-                    //HandleLevelUpExit
+                    //HandleUpgradeStatDie(prevState, ref newState);
                 }
 
                 HandleLevelUp(prevState, ref newState);
                 break;
+            case GamePhase.BlessingTree:
+                if (!isCmdToProcess)
+                {
+                    break;
+                }
+                // UI
+                if (cmd is UIBlessingSelectedCommand)
+                {
+                    //HandleBlessingSelected(prevState, ref newState);
+                }
 
+                break;
             // Confirmation Phase
             case GamePhase.ConfirmContinue:
                 // probably also doesn't work
@@ -1156,6 +1232,7 @@ public partial class GameplayTest : MonoBehaviour
                 break;
         }
     }
+
     private void HandleTryFreeview(GameState prevState, ref GameState newState)
     {
         Debug.Log($"HandleTryFreeview | prevState.GamePhase = {prevState.GamePhase}");
@@ -1174,14 +1251,16 @@ public partial class GameplayTest : MonoBehaviour
         //var p = newState.CurrentPlayer();
         var p = newState.CurrentPlayer();
 
-        if (p.EntityData.CanLevelUp() && !ThisPlayerMustFight(p.EntityData)) {
-
-            //expectedPhase = GamePhase.LevelUp;
-            // not part of rewrite so go back to using the events
-            //m_EnterLevelUp.RaiseEvent(p);
+        if (p.EntityData.CanLevelUp() && !ThisPlayerMustFight(p.EntityData)) 
+        {
             // should play the Level Up cutscene
-            newState.ExpectedPhase = GamePhase.LevelUp;
-            newState.GamePhase = GamePhase.IncidentHappening;
+            //newState.ExpectedPhase = GamePhase.LevelUp;
+            //newState.GamePhase = GamePhase.IncidentHappening;
+
+            // TEMP BEHAVIOR, DELTE THIS FOR ABOVE
+            Debug.Log("[!] Current Player leveled up, but skipping for now");
+            newState.LastGamePhase = GamePhase.InitialTurnMenu;
+            newState.GamePhase = GamePhase.RollDice;
         }
         else if (!ThisPlayerMustFight(p.EntityData))
         {
@@ -1193,6 +1272,7 @@ public partial class GameplayTest : MonoBehaviour
         else
         {
             // In Combat
+            Debug.Log("[!] Continue Combat from before");
             newState.LastGamePhase = prevState.GamePhase;
             newState.GamePhase = GamePhase.EncounterTime;
         }
@@ -1346,6 +1426,20 @@ public partial class GameplayTest : MonoBehaviour
         }
         // newState.GamePhase = GamePhase.IncidentHappening; // play the cutscene
     }
+
+    private void HandleDiscardItems(GameState prevState, ref GameState newState, Dictionary<int, ItemStats> itemsToDiscard)
+    {
+        ref var p = ref newState.CurrentPlayer().EntityData;
+
+        for (int i = 0; i < itemsToDiscard.Count; i++)
+        {
+            var a = itemsToDiscard.ElementAt(i).Value;
+            p.Inventory.Remove(a);
+        }
+
+        newState.GamePhase = newState.ExpectedPhase;
+    }
+
     private void HandleBuildStore(GameState prevState, ref GameState newState)
     {
         ref var p = ref newState.CurrentPlayer().EntityData;
@@ -1537,10 +1631,20 @@ public partial class GameplayTest : MonoBehaviour
         var p = newState.Players[newState.CurrPlayerId].EntityData;
         ref var n = ref newState.BoardNodes[p.OccupiedNodeId];
 
-        var occupiedEntities = n.occupiedEntities;
+        //var occupiedEntities = n.occupiedEntities;
+        var otherEntities = newState.GetAllEntitiesOccupyingNode(p.OccupiedNodeId);
 
-        newState.GamePhase = GamePhase.CombatSelector;
-        newState.GamePhase = GamePhase.CombatTime;
+        //HandleCombatEncounterSetup(prevState, ref newState, selectedEnemyId);
+        if(otherEntities.Count > 1)
+        {
+            Debug.Log("[!] More than 1 other Entities detected. Go to CombatSelector");
+            newState.GamePhase = GamePhase.CombatSelector;
+        }
+        else
+        {
+            HandleCombatEncounterSetup(prevState, ref newState, otherEntities[0]);
+            newState.GamePhase = GamePhase.CombatTime;
+        }
     }
 
     private void BeginCombat(EntityData selectedEntity)
@@ -1622,17 +1726,17 @@ public partial class GameplayTest : MonoBehaviour
         switch (p.Level)
         {
             case 3:
-                newState.ExpectedPhase = GamePhase.BlessingTree;
+                newState.GamePhase = GamePhase.BlessingTree;
                 break;
             case 6:
-                newState.ExpectedPhase = GamePhase.BlessingTree;
+                newState.GamePhase = GamePhase.BlessingTree;
                 break;
             default:
-                //newState.ExpectedPhase = GamePhase.StatAllocation;
+                newState.GamePhase = GamePhase.StatAllocation;
                 break;
         }
         // Invoke / call for the Level Up cutscene
-        newState.GamePhase = GamePhase.IncidentHappening;
+        //newState.GamePhase = GamePhase.IncidentHappening;
     }
 
     void ConfirmContinue(EntityPiece p)
@@ -1677,7 +1781,7 @@ public partial class GameplayTest : MonoBehaviour
             Debug.Log($"{p.EntityData.EntityName} HAS TOO MANY ITEMS");
             //phase = GamePhase.DiscardItem;
             //StartCoroutine(DelayFullInventory(p, .25f)); // Rework this function
-            newState.LastGamePhase = prevState.GamePhase;
+            newState.ExpectedPhase = prevState.GamePhase;
             return GamePhase.DiscardItem;
             //m_FullInventory.RaiseEvent(p);
             //phase = GamePhase.DiscardItem;
@@ -1696,13 +1800,13 @@ public partial class GameplayTest : MonoBehaviour
             var occupiedNode = newState.BoardNodes[p.EntityData.OccupiedNodeId];
             var initalNode = newState.BoardNodes[p.EntityData.InitialNodeId];
 
-            if (initalNode.occupiedEntities.Contains(p.Id))
-            {
-                initalNode.occupiedEntities.Remove(p.Id);
-            }
+            //if (initalNode.occupiedEntities.Contains(p.Id))
+            //{
+            //    initalNode.occupiedEntities.Remove(p.Id);
+            //}
 
             // Was in a third-party situation and is the last one standing!!
-            if (occupiedNode.occupiedEntities.Count == 1 &&
+            if (newState.GetAllEntitiesOccupyingNode(p.EntityData.OccupiedNodeId).Count == 0 &&
                 p.EntityData.Statuses.Contains(Status.FightingParty))
             {
                 Debug.Log($"Wait {p.EntityData.EntityName} is the goat wtf?");
@@ -1790,7 +1894,7 @@ public partial class GameplayTest : MonoBehaviour
         //p.OccupiedNode.occupiedEntities.Add(p);
         //p.InitialNode = p.OccupiedNode;
 
-        n.occupiedEntities.Add(newState.CurrPlayerId);
+        //n.occupiedEntities.Add(newState.CurrPlayerId);
         p1.InitialNodeId = p1.OccupiedNodeId;
 
         //_inputControllers[currentPlayer.id].SwitchActionMapRewrite(_currentGameState.GamePhase);
@@ -1819,7 +1923,7 @@ public partial class GameplayTest : MonoBehaviour
             newState.CurrentPlayerObj.playerSprite.enabled = true; // move this in EntityVisual
         }
 
-        if (newState.BoardNodes[p2.OccupiedNodeId].occupiedEntities.Count == 1 &&
+        if (newState.GetAllEntitiesOccupyingNode(newState.CurrPlayerId).Count == 0 &&
             p2.Statuses.Contains(Status.FightingParty))
         {
             Debug.Log($"Wait {p2.EntityName} is actually goated wtf?");
@@ -2189,52 +2293,6 @@ public partial class GameplayTest : MonoBehaviour
             otherPlayer.inventory.RemoveAt(indexToSteal);
 
         // Raise event to show UI of item stolen. Not sure what to do if other player has no items to steal.
-    }
-
-    public IEnumerator InitiateCombatOnEnemy(float delay, EntityData entity)
-    {
-        EntityData enemy = entity; // chagne this stupid ass
-        /*
-        // Set IDs of players entering combat.
-        sceneManager.player1ID = entity.id;
-
-        // Rework this completetly for Scaling Enemy System
-        bool lookingForTarget = true;
-        while (lookingForTarget)
-        {
-            var monsterType = Random.Range(-8, 0); // int from -6 to -1
-            //monsterType = -9;
-            sceneManager.player2ID = monsterType;
-
-            enemy = sceneManager.entities.Find(entity => sceneManager.player2ID == entity.id);
-            //if (enemy.combatSceneIndex == -1)
-            if (!ThisPlayerMustFight(enemy))
-            {
-                float spawnChance = Random.Range(0f, 1f);
-
-                if (spawnChance < enemy.spawnRarityModifier)
-                {
-                    lookingForTarget = false;
-                }
-            }
-        }
-
-        if(enemy.occupiedNode != null)
-            enemy.occupiedNode.playersOccupied.Remove(enemy);
-
-        enemy.occupiedNode = p.occupiedNode;
-        p.occupiedNode.playersOccupied.Add(enemy);
-        // End rework
-
-
-        //enemy.occupiedNode = p.occupiedNode;
-        //p.occupiedNode.playersOccupied.Add(enemy);
-        */
-        yield return new WaitForSeconds(delay);
-
-        BeginCombat(enemy);
-
-        yield return null;
     }
 
     public void InitiateCombatOnPlayer(EntityPiece otherPlayer)

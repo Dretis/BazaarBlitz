@@ -287,7 +287,7 @@ public class SpinDiceInfoHolder : MonoBehaviour
             gradient = buffedStatGradient;
         }
 
-        Debug.Log($"Flat Mode: {flatMoveMod} | Mult Mod: {multMoveMod}");
+        //Debug.Log($"Flat Mode: {flatMoveMod} | Mult Mod: {multMoveMod}");
 
         var ti = (int)statType;
         var die = new List<int> { 1,2,3,4,5,6 };

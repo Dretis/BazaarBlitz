@@ -11,6 +11,16 @@ using UnityEngine.UI;
 
 public class PlayerScoreHandler : MonoBehaviour
 {
+    public enum PlayerEmotion
+    {
+        Normal,
+        Dead,
+        Happy,
+        Good,
+        Evil,
+        Devious
+    }
+
     //private EntityPiece assignedPlayer;
     //private EntityData assignedEntity;
     private PlayerState assignedPlayerState;
@@ -59,6 +69,7 @@ public class PlayerScoreHandler : MonoBehaviour
     [Space]
     //[SerializeField] private List<Image> playerImages;
     [SerializeField] private SpriteRenderer playerSprite;
+    [SerializeField] private List<Sprite> playerEmotions = new();
     [SerializeField] private PlayerPaletteLoader playerPaletteLoader;
 
     [Header("Stamp Elements")]
@@ -292,6 +303,16 @@ public class PlayerScoreHandler : MonoBehaviour
                         .BindToText(playerCurrentHP);
 
         playerHPNumber = assignedPlayerState.EntityData.Health;
+
+        if (playerHPNumber == 0) UpdateEmotion(PlayerEmotion.Dead);
+        else UpdateEmotion(PlayerEmotion.Normal); // or whatever its set to
+    }
+    
+    public void UpdateEmotion(PlayerEmotion emotion)
+    {
+        // change player sprite to whatever
+        var e = (int)emotion;
+        playerSprite.sprite = playerEmotions[e];
     }
 
     public void UpdateExp()
