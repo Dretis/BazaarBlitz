@@ -16,6 +16,7 @@ Material:
   - DISTORT_ON
   - FADE_ON
   - GHOST_ON
+  - GLOWLIGHT_ON
   - OUTBASEPIXELPERF_ON
   - OVERLAYMULT_ON
   - OVERLAY_ON
@@ -121,9 +122,9 @@ Material:
     - _Contrast: 0.58
     - _CullingOption: 0
     - _DistortAmount: 1
-    - _DistortTexXSpeed: 4
-    - _DistortTexYSpeed: 2
-    - _EditorDrawers: 7
+    - _DistortTexXSpeed: 3
+    - _DistortTexYSpeed: 5
+    - _EditorDrawers: 14
     - _FadeAmount: 0.12
     - _FadeBurnGlow: 2
     - _FadeBurnTransition: 0.075
@@ -152,8 +153,8 @@ Material:
     - _GreyscaleBlend: 0.525
     - _GreyscaleLuminosity: 0
     - _GreyscaleOutline: 0
-    - _HandDrawnAmount: 10.52
-    - _HandDrawnSpeed: 8
+    - _HandDrawnAmount: 8
+    - _HandDrawnSpeed: 15
     - _HitEffectBlend: 1
     - _HitEffectGlow: 5
     - _HologramBlend: 1
@@ -248,7 +249,7 @@ Material:
     - _ColorSwapBlue: {r: 1, g: 1, b: 1, a: 1}
     - _ColorSwapGreen: {r: 1, g: 1, b: 1, a: 1}
     - _ColorSwapRed: {r: 1, g: 1, b: 1, a: 1}
-    - _FadeBurnColor: {r: 0, g: 1, b: 0.39811683, a: 1}
+    - _FadeBurnColor: {r: 0, g: 0.2739539, b: 1, a: 1}
     - _GlowColor: {r: 1, g: 1, b: 1, a: 1}
     - _GradBotLeftCol: {r: 0, g: 0, b: 1, a: 1}
     - _GradBotRightCol: {r: 0, g: 1, b: 0, a: 1}
