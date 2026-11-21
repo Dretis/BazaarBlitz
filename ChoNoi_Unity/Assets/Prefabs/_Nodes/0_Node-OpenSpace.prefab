@@ -804,9 +804,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentShaderType: 0
+  currMaterial: {fileID: 0}
+  prevMaterial: {fileID: 0}
+  subPath: 
+  destroyed: 0
+  matAssigned: 0
   normalStrength: 5
   normalSmoothing: 1
   computingNormal: 0
+  needToWait: 0
+  waitingCycles: 0
+  timesWeWaited: 0
+  normalMapSr: {fileID: 0}
+  normalMapRenderer: {fileID: 0}
+  isSpriteRenderer: 0
+  path: 
+  importer: {fileID: 0}
+  mainTex2D: {fileID: 0}
 --- !u!1 &2217753337233681968
 GameObject:
   m_ObjectHideFlags: 0

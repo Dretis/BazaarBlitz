@@ -96,12 +96,31 @@ namespace Core
             ItemCount = itemCount;
         }
     }
-    
+    public struct UILevelUpStoreCommand : ICommand
+    {
+        public int StoreId; 
+
+        public UILevelUpStoreCommand(int storeId)
+        {
+            StoreId = storeId;
+        }
+    }
+
     public struct UIRestockStoreCommand : ICommand
+    {
+        public int StoreId; // not useless
+
+        public UIRestockStoreCommand(int storeId)
+        {
+            StoreId = storeId;
+        }
+    }
+
+    public struct UIStockItemsCommand : ICommand
     {
         public Dictionary<int, ItemStats> ItemsToStock; // not useless
 
-        public UIRestockStoreCommand(Dictionary<int, ItemStats> itemsToStock)
+        public UIStockItemsCommand(Dictionary<int, ItemStats> itemsToStock)
         {
             ItemsToStock = itemsToStock;
         }

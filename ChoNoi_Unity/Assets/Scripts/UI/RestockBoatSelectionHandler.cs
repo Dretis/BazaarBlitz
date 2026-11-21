@@ -6,13 +6,15 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Febucci.UI.Core;
 using LitMotion;
+using Core;
 
 public class RestockBoatSelectionHandler : MonoBehaviour, ISubmitHandler, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler
 {
-    private int boatIndex;
-    private RectTransform boatRect;
-
+    private UIRenovateSelectorManager _uiRenovateManager;
+    private BoardNodeData _boardNodeData;
+    private StorefrontData _storeData;
     [Header("Store Details")]
+    [SerializeField] private int nodeId;
     [SerializeField] private MapNode storeLocation;
     [SerializeField] private StoreManager storeManager;
     [SerializeField] private EntityPiece owner;
@@ -22,6 +24,7 @@ public class RestockBoatSelectionHandler : MonoBehaviour, ISubmitHandler, IPoint
     [Header("UI Elements")]
     [SerializeField] private Image boatIcon;
     [SerializeField] private TextMeshProUGUI boatNumText;
+    [SerializeField] private TextMeshProUGUI boatLvlText;
     [SerializeField] private TextMeshProUGUI boatStockText;
     [SerializeField] private Color ownerColor;
 
@@ -33,10 +36,13 @@ public class RestockBoatSelectionHandler : MonoBehaviour, ISubmitHandler, IPoint
 
     public NodeEventChannelSO m_PromptRenovateOptions;
 
-    private void Awake()
+    public void Initialize(int index, BoardNodeData bnd, UIRenovateSelectorManager uiRnvManager)
     {
-        boatIcon = GetComponent<Image>();
-        boatRect = GetComponent<RectTransform>();
+        _uiRenovateManager = uiRnvManager;
+        _boardNodeData = bnd;
+        _storeData = bnd.StorefrontData;
+
+        //UpdateStoreBoatVisuals();
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -57,20 +63,8 @@ public class RestockBoatSelectionHandler : MonoBehaviour, ISubmitHandler, IPoint
     {
         Debug.Log("BoatSelector - Submitted | " + eventData);
         // NEW: Show prompt to let player pick Restock or Upgrade!
-        m_PromptRenovateOptions.RaiseEvent(storeLocation);
-        /*
-        // OLD: 
-        if (storestock >= 3)
-        {
-            // Play some goofa noise with this
-            Debug.Log("you can't restock a full store!!");
-        }
-        else
-        {
-            // Let player pick to Restock or Upgrade!
-            m_RestockStore.RaiseEvent(storeLocation);
-        }
-        */
+        //m_PromptRenovateOptions.RaiseEvent(storeLocation);
+        _uiRenovateManager.PromptRenovateOptions(_boardNodeData);
     }
 
     public void OnSelect(BaseEventData eventData)
@@ -82,8 +76,8 @@ public class RestockBoatSelectionHandler : MonoBehaviour, ISubmitHandler, IPoint
             .Bind(x => GetComponent<RectTransform>().localScale = x);
 
         boatStockText.text = storestockIndicator;
-        // Focus the camera on that node's position
-        m_FocusOnNode.RaiseEvent(storeLocation);
+        // Focus the camera on that node's position 
+        //m_FocusOnNode.RaiseEvent(storeLocation);
     }
 
     public void OnDeselect(BaseEventData eventData)
@@ -97,15 +91,15 @@ public class RestockBoatSelectionHandler : MonoBehaviour, ISubmitHandler, IPoint
         boatStockText.text = "";
     }
 
-    public void UpdateBoatInfo(int index, StoreManager store)
+    public void UpdateStoreBoatVisual(int index, StorefrontData store, Color ownerColor)
     {
-        storeLocation = store.GetComponent<MapNode>();
+        //storeLocation = store.GetComponent<MapNode>();
 
-        storeManager = store;
-        owner = store.playerOwner;
-        ownerColor = owner.playerColor;
+        //storeManager = store;
+        //owner = store.playerOwner;
+        //ownerColor = owner.playerColor;
 
-        foreach(ItemStats item in store.storeInventory)
+        foreach(ItemStats item in store.Storestock)
         {
             if(item !=  null) storestock++;
         }
@@ -113,12 +107,17 @@ public class RestockBoatSelectionHandler : MonoBehaviour, ISubmitHandler, IPoint
         if (storestock >= 3) storestockIndicator = "FULL";
         else if (storestock == 0) storestockIndicator = "EMPTY";
 
-        boatIndex = index;
 
-        boatNumText.text = boatIndex.ToString();
-        boatNumText.color = ownerColor;
+        //boatNumText.text = boatIndex.ToString();
+        //boatNumText.color = ownerColor;
         boatStockText.text = "";
         boatStockText.color = ownerColor;
+        boatIcon.color = ownerColor;
+        boatLvlText.text = "";
+        for (int i = 0; i < store.StoreLevel; i++)
+        {
+            boatLvlText.text += "*";
+        }
     }
 
     private void OnDestroy()

@@ -19,10 +19,10 @@ public class InventorySelectionHandler : MonoBehaviour, ISubmitHandler, IPointer
     [SerializeField] private TextMeshProUGUI itemPrice;
     [SerializeField] private bool _itemIsUnusable = false;
 
-    [Header("Broadcast On Event")]
+    //[Header("Broadcast On Event")]
     //public IntItemEventChannelSO m_TryUseItemAt; // aka m_ItemUsed or "I want to Use Inventory Item At"
     //public IntItemEventChannelSO m_ItemStocked;
-    public IntItemEventChannelSO m_ItemDiscarded;
+    //public IntItemEventChannelSO m_ItemDiscarded;
     //public ItemEventChannelSO m_ItemSelected; // basically hovering on item in inv
 
     public ItemStats HeldItem { 
@@ -33,25 +33,16 @@ public class InventorySelectionHandler : MonoBehaviour, ISubmitHandler, IPointer
     
     [Header("UI Elements")]
     [SerializeField] private Image heldItemContainer;
-    [SerializeField] private float verticalMoveAmount = 30f;
-    [SerializeField] private float moveTime = 0.1f;
-    [Range(0f, 2f), SerializeField] private float scaleAmount = 1.1f;
+    //[SerializeField] private float verticalMoveAmount = 30f;
+    //[SerializeField] private float moveTime = 0.1f;
+    //[Range(0f, 2f), SerializeField] private float scaleAmount = 1.1f;
 
     [SerializeField] private UIEffect containerPattern;
-
-    private Vector3 startPos;
-    private Vector3 startScale;
 
     public void Initialize(EntityData ed, UIInventoryManager uiInvManager)
     {
         _uiInventoryManager = uiInvManager;
         assignedEntityData = ed;
-    }
-
-    private void Start()
-    {
-        startPos = transform.position;
-        startScale = transform.localScale;
     }
 
     public void UpdateItemInfo(ItemStats item)
@@ -215,7 +206,7 @@ public class InventorySelectionHandler : MonoBehaviour, ISubmitHandler, IPointer
     }
     private void RedOutItemSelectionVisual()
     {
-        // Cannot use this item atm, grey it out
+        // Want to discard this item atm
         itemIcon.color = Color.red;
         itemIcon.enabled = true;
 
@@ -232,7 +223,6 @@ public class InventorySelectionHandler : MonoBehaviour, ISubmitHandler, IPointer
     
     private void ResetItemSelectionVisual()
     {
-        // Cannot use this item atm, grey it out
         itemIcon.color = Color.white;
         itemIcon.enabled = true;
 

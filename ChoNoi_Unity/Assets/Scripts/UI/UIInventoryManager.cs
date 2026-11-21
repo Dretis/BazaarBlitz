@@ -12,6 +12,8 @@ using LitMotion.Extensions;
 
 public class UIInventoryManager : MonoBehaviour
 {
+    [SerializeField] private Color _playerColor;
+
     private PlayerState _playerState;
     private StorefrontData _selectedStoreData;
     private GameplayTest _gameplayTest;
@@ -56,9 +58,11 @@ public class UIInventoryManager : MonoBehaviour
     [Header("Storestock Inventory")]
     [SerializeField] private CanvasGroup storestockGroup;
     [SerializeField] private TextMeshProUGUI storestockLevelIndicator;
+    [Space]
     [SerializeField] private List<Image> storestockIcons;
     [SerializeField] private List<TextMeshProUGUI> storestockNames;
     [SerializeField] private List<TextMeshProUGUI> storestockPrices;
+    [SerializeField] private List<Button> storestockButtons;
     //[SerializeField] private List<ItemStats> storeInv;
     //[SerializeField] private TextMeshProUGUI storestockTooltip;
 
@@ -111,9 +115,9 @@ public class UIInventoryManager : MonoBehaviour
     public GameStateEventChannelSO _gameStateEvent;
     public void Initialize(PlayerState ps, GameplayTest gt)
     {
+        _playerColor = ps.EntityData.MainColor;
         _playerState = ps;
         _gameplayTest = gt;
-        //storestockHolder.
     }
 
     private void UpdateUIFromGameState(FrameGameState gameState)
@@ -151,14 +155,16 @@ public class UIInventoryManager : MonoBehaviour
                     CurrentState = InventoryState.Restock;
                     _selectedStoreData = gameState.NewState.BoardNodes[ped.OccupiedNodeId].StorefrontData;
                     DisplayInventory(ped);
+                    UpdateStorestockColor(ped);
                     SetupRestockStore(_selectedStoreData);
                 }
-                if (gameState.PrevState.GamePhase is GameplayTest.GamePhase.PreStockStore)
+                if (gameState.PrevState.GamePhase is GameplayTest.GamePhase.RenovateTime)
                 {
                     // After picking Restock during Renovate
                     CurrentState = InventoryState.Restock;
                     _selectedStoreData = gameState.NewState.BoardNodes[gameState.NewState.SelectedBoardNodeId].StorefrontData;
                     DisplayInventory(ped);
+                    UpdateStorestockColor(ped);
                     SetupRestockStore(_selectedStoreData);
                 }
             }
@@ -189,6 +195,17 @@ public class UIInventoryManager : MonoBehaviour
                 DisplayInventory(ped);
                 SetupDiscardPrompt(ped);
             }
+        }
+    }
+
+    private void UpdateStorestockColor(EntityData ed)
+    {
+        for(int i = 0; i < storestockButtons.Count; i++)
+        {
+            var colour = _playerColor - new Color32(0, 0, 0, 150);
+            var cb = storestockButtons[i].colors;
+            cb.disabledColor = colour;
+            storestockButtons[i].colors = cb;
         }
     }
 
@@ -312,7 +329,7 @@ public class UIInventoryManager : MonoBehaviour
 
         //inventoryCanvas.enabled = true;
         HideSelectedItemDetails();
-        var colour = ed.MainColor - new Color32(0,0,0,120);
+        var colour = _playerColor - new Color32(0,0,0,120);
         selectedItemBorder.color = colour;
 
         SpawnItemsInInventory(ed);
@@ -587,6 +604,8 @@ public class UIInventoryManager : MonoBehaviour
 
                 storestockNames[i].GetComponentInParent<Button>().interactable = false;
             }
+
+            //storestockButtons[i].colors.disabledColor
         }
     }
 
@@ -641,7 +660,7 @@ public class UIInventoryManager : MonoBehaviour
     {
         HideRestockConfirmGroup();
         // Add ExpcectedItems to the storestock for real
-        _gameplayTest.QueueCommand(new UIRestockStoreCommand(_expectedItemsToStock));
+        _gameplayTest.QueueCommand(new UIStockItemsCommand(_expectedItemsToStock));
     }
 
     public void CancelRestockItems()

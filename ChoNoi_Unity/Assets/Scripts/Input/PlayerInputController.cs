@@ -701,7 +701,7 @@ public class PlayerInputController : MonoBehaviour
                 playerInput.SwitchCurrentActionMap("UI");
                 break;
 
-            case GamePhase.PreStockStore:
+            case GamePhase.RenovateTime:
                 playerInput.SwitchCurrentActionMap("UI");
                 break;
 
@@ -765,7 +765,7 @@ public class PlayerInputController : MonoBehaviour
             GamePhase.PickDirection => ("Moving"),
             GamePhase.BuildingStore => ("UI"),
             GamePhase.InStore => ("UI"),
-            GamePhase.PreStockStore => ("UI"),
+            GamePhase.RenovateTime => ("UI"),
             GamePhase.StockingStore => ("UI"),
             GamePhase.InVendor => ("Confirmation"),
             GamePhase.EndTurn => ("Combat"),
@@ -977,16 +977,16 @@ public class PlayerInputController : MonoBehaviour
         //playerInput.uiInputModule = FindObjectOfType<InputSystemUIInputModule>();
         //playerInput.uiInputModule.actionsAsset = playerInput.actions;
 
-        if (previousGamePhase == GamePhase.PreStockStore) previousGamePhase = GamePhase.EncounterTime;
+        if (previousGamePhase == GamePhase.RenovateTime) previousGamePhase = GamePhase.EncounterTime;
         else previousGamePhase = instance.phase;
 
         Debug.Log("prev phase = " + previousGamePhase);
-        SwitchActionMap(GamePhase.PreStockStore);
+        SwitchActionMap(GamePhase.RenovateTime);
     }
 
     private void OnTryRelocateStore(MapNode storeNode1)
     {
-        previousGamePhase = GamePhase.PreStockStore;
+        previousGamePhase = GamePhase.RenovateTime;
         //m_EnableFreeview.RaiseEvent();
     }
 

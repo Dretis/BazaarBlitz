@@ -288,6 +288,7 @@ namespace Core
             public float DmgTypeMultiplier;
             //public int BaseAttackRoll;
             //public int BaseDefendRoll;
+            public int TrueDamageValue;
             public int FinalDamageDealt;
             public int HealingRecieved;
             public bool IsDamageLethal; // the atk kills the defender
@@ -312,14 +313,21 @@ namespace Core
                     totalDefendRoll += defender.CombatDieRolls[i].FinalDieRoll;
                 }
 
-                var dmgCalculation = (int)(((totalAttackRoll * 10.0f) * (1.0f - (0.1f * totalDefendRoll))) * DmgTypeMultiplier);
+                var dmgCalculation = (int)(((totalAttackRoll * 10.0f) * (1.0f - (0.1f * totalDefendRoll))) * DmgTypeMultiplier) + TrueDamageValue;
+                if(dmgCalculation < 0 && totalDefendRoll < 10) dmgCalculation = 0; //only heal on Def if roll is super duper high
 
                 Debug.Log($"<color=white>Final DMG = {dmgCalculation}</color>" +
                     $" | <color=orange>[Base DMG: {totalAttackRoll} x 10]</color> x" +
                     $" <color=cyan>[DEF Value: {(1 - (0.1f * totalDefendRoll)) * 100}%]</color> " +
                     //$" (1 - (0.1f x <color=cyan>[DEF Roll: {totalDefendRoll}]</color>)) " +
-                    $" x <color=yellow>[Type Mult: {DmgTypeMultiplier}]</color>");
+                    $" x <color=yellow>[Type Mult: {DmgTypeMultiplier}]</color> + [True DMG Value: {TrueDamageValue}]");
                 FinalDamageDealt = dmgCalculation;
+            }
+
+            public void DetermineTrueDmgValue(EntityData attackerData, EntityData defenderData)
+            {
+                var trueDmg = (int) (0 - defenderData.CurrentStatsModifier.defenseModifier);
+                TrueDamageValue = trueDmg;
             }
 
             public void DetermineTypeAdvantage(Action.WeaponType attack, Action.WeaponType defend)

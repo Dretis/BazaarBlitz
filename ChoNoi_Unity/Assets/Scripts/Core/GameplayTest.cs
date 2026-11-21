@@ -92,7 +92,7 @@ public partial class GameplayTest : MonoBehaviour
 
         BuildingStore,
         InStore, // new for input system
-        PreStockStore,
+        RenovateTime,
         StockingStore,
         PrepStockStore,
 
@@ -1123,7 +1123,27 @@ public partial class GameplayTest : MonoBehaviour
                 // UI Submit/Confirm Command required
                 // HandleTryBuyItem(prevState, ref newState);
                 break;
+            case GamePhase.RenovateTime:
+                if (!isCmdToProcess) break;
 
+                if(cmd is UIRestockStoreCommand restockStoreCommand)
+                {
+                    newState.SelectedBoardNodeId = restockStoreCommand.StoreId;
+                    newState.LastGamePhase = newState.GamePhase;
+                    newState.GamePhase = GamePhase.StockingStore;
+                }
+
+                if (cmd is UILevelUpStoreCommand lvlUpStoreCommand)
+                {
+                    newState.SelectedBoardNodeId = lvlUpStoreCommand.StoreId;
+
+                    // expect the store node's Upgrade cutscene to play
+                    newState.LastGamePhase = newState.GamePhase;
+                    newState.ExpectedPhase = GamePhase.EndTurn;
+                    newState.GamePhase = GamePhase.IncidentHappening;
+                }
+
+                break;
             case GamePhase.StockingStore:
                 if (!isCmdToProcess)
                 {
@@ -1148,9 +1168,9 @@ public partial class GameplayTest : MonoBehaviour
                 }
                 break;
             case GamePhase.PrepStockStore:
-                if (cmd is UIRestockStoreCommand restockStoreCommand)
+                if (cmd is UIStockItemsCommand stockItemsCommand)
                 {
-                    var itemsToStock = restockStoreCommand.ItemsToStock;
+                    var itemsToStock = stockItemsCommand.ItemsToStock;
 
                     HandleStockItemsToStore(prevState, ref newState, itemsToStock);
                 }
@@ -1445,7 +1465,15 @@ public partial class GameplayTest : MonoBehaviour
         ref var p = ref newState.CurrentPlayer().EntityData;
         ref var n = ref newState.BoardNodes[p.OccupiedNodeId];
         p.StoreCount++;
-        //p.OwnedStores.Add(p.OccupiedNode);
+
+        var o = p.OwnedStrorefrontIds;
+        p.OwnedStrorefrontIds = new int[p.OwnedStrorefrontIds.Length + 1];
+        for (int i = 0; i < p.OwnedStrorefrontIds.Length - 1; i++)
+        {
+            p.OwnedStrorefrontIds[i] = o[i];
+        }
+        p.OwnedStrorefrontIds[^1] = p.OccupiedNodeId;
+
         n.Type = NodeType.Storefront;
         n.StorefrontData = new StorefrontData(newState.CurrentPlayer());
 
@@ -1475,8 +1503,16 @@ public partial class GameplayTest : MonoBehaviour
         }
 
         //newState.SelectedBoardNodeId = -1;
-        newState.GamePhase = newState.LastGamePhase; // This should be an expected phase
-        newState.GamePhase = GamePhase.InitialTurnMenu; // This should be an expected phase
+        // Determine where to go next
+        switch (newState.LastGamePhase)
+        {
+            case GamePhase.RenovateTime:
+                newState.GamePhase = GamePhase.EndTurn;
+                break;
+            default:
+                newState.GamePhase = newState.LastGamePhase;
+                break;
+        }
     }
 
     private void HandleFinishStockStore(GameState prevState, ref GameState newState, ItemStats[] newItems)

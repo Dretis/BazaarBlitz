@@ -16,8 +16,10 @@ using UnityEngine.Analytics;
 
 public class UIPromptManager : MonoBehaviour
 {
+    [SerializeField] private Color _playerColor;
     private PlayerState _playerState;
     private GameplayTest _gameplayTest;
+
     [SerializeField] private MultiplayerEventSystem _eventSystem;
 
     //private bool NextPlayerGoIsRunning = false;
@@ -120,6 +122,7 @@ public class UIPromptManager : MonoBehaviour
     public GameStateEventChannelSO _gameStateEvent;
     public void Initialize(PlayerState ps, GameplayTest gt)
     {
+        _playerColor = ps.EntityData.MainColor;
         _playerState = ps;
         _gameplayTest = gt;
     }

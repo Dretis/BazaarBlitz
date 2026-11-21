@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class PlayerDevice : MonoBehaviour
 {
+    [SerializeField] private Color _playerColor;
     [Header("Input")]
     public PlayerInputController playerInputController;
     [SerializeField] private EventSystemEnabler _eventSystemEnabler;
@@ -20,6 +21,8 @@ public class PlayerDevice : MonoBehaviour
 
     public void Initialize(PlayerState ps, GameplayTest gt)
     {
+        _playerColor = ps.EntityData.MainColor;
+
         _playerState = ps;
         _gameplayTest = gt;
 

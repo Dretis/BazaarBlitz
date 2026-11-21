@@ -14,8 +14,10 @@ using Core;
 
 public class UIRenovateSelectorManager : MonoBehaviour
 {
+    [SerializeField] private Color _playerColor;
     private PlayerState _playerState;
     private GameplayTest _gameplayTest;
+
     [SerializeField] private MultiplayerEventSystem _eventSystem;
     public GameStateEventChannelSO _gameStateEvent;
     public enum RenovateSelectorPhase
@@ -24,9 +26,10 @@ public class UIRenovateSelectorManager : MonoBehaviour
         OwnedStoreboats,
         RenovateOptions
     }
-    private EntityData promptedPlayerData;
-    private MapNode selectedNode;
-    private StoreManager selectedStore;
+    private EntityData _promptedEntityData;
+    //private MapNode selectedNode;
+    private BoardNodeData _selectedNodeData;
+    private StorefrontData _selectedStoreData;
     private int selectedStorestock;
 
     [SerializeField] private RenovateSelectorPhase renovatePhase;
@@ -59,10 +62,11 @@ public class UIRenovateSelectorManager : MonoBehaviour
     public NodeEventChannelSO m_RestockStore; // delete
     //public NodeEventChannelSO m_UpgradeStore;
 
-    public NodeEventChannelSO m_PromptRenovateOptions;
+    //public NodeEventChannelSO m_PromptRenovateOptions;
     public VoidEventChannelSO m_BackRenovateStore;
     public void Initialize(PlayerState ps, GameplayTest gt)
     {
+        _playerColor = ps.EntityData.MainColor;
         _playerState = ps;
         _gameplayTest = gt;
     }
@@ -76,7 +80,7 @@ public class UIRenovateSelectorManager : MonoBehaviour
 
         m_RestockStore.OnEventRaised += OnRestockStore;
 
-        m_PromptRenovateOptions.OnEventRaised += OnPromptRenovateOptions;
+        //m_PromptRenovateOptions.OnEventRaised += OnPromptRenovateOptions;
         m_BackRenovateStore.OnEventRaised += OnBackRenovateStore;
 
         _gameStateEvent.OnEventRaised += UpdateUIFromGameState;
@@ -91,7 +95,7 @@ public class UIRenovateSelectorManager : MonoBehaviour
 
         m_RestockStore.OnEventRaised -= OnRestockStore;
 
-        m_PromptRenovateOptions.OnEventRaised -= OnPromptRenovateOptions;
+        //m_PromptRenovateOptions.OnEventRaised -= OnPromptRenovateOptions;
         m_BackRenovateStore.OnEventRaised -= OnBackRenovateStore;
 
         _gameStateEvent.OnEventRaised -= UpdateUIFromGameState;
@@ -101,7 +105,7 @@ public class UIRenovateSelectorManager : MonoBehaviour
     {
         if (gameState.DidChangePhases())
         {
-            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.PreStockStore)
+            if (gameState.NewState.GamePhase is GameplayTest.GamePhase.RenovateTime)
             {
                 OnAskRenovateStore(gameState.NewState.CurrentPlayer().EntityData);
             }
@@ -123,8 +127,9 @@ public class UIRenovateSelectorManager : MonoBehaviour
         DeactivateAskGroup();
         //m_TryRestockStore.RaiseEvent(promptedPlayerData); // this shows baots
         Debug.Log("m_TryRestockStore is supposed to be raised (This should be a TryRenovateStore thingy tho)");
+
         ActivateSelectorContainer();
-        //SpawnStoreboatSelectors(entity);
+        SpawnStoreboatSelectors(_promptedEntityData);
 
         _gameplayTest.QueueCommand(new UIConfirmRenovateCommand());
         //m_RestockStore.RaiseEvent(currentPlayer.occupiedNode);
@@ -139,11 +144,13 @@ public class UIRenovateSelectorManager : MonoBehaviour
     public void ConfirmRestockButton()
     {
         if (selectedStorestock < 3
-            && promptedPlayerData.Inventory.Count != 0)
+            && _promptedEntityData.Inventory.Count != 0)
         {
             DeactivateAskGroup();
             DeactivateSelectorContainer();
-            m_RestockStore.RaiseEvent(selectedNode);
+            Debug.Log($"I am restocking Storefront with ID: {_selectedNodeData.Id}");
+            _gameplayTest.QueueCommand(new UIRestockStoreCommand(_selectedNodeData.Id));
+            //m_RestockStore.RaiseEvent(selectedNode);
         }
         else
         {
@@ -153,12 +160,14 @@ public class UIRenovateSelectorManager : MonoBehaviour
 
     public void ConfirmUpgradeButton()
     {
-        if (promptedPlayerData.Money >= 150 &&
-            promptedPlayerData.Level >= selectedStore.storeLevel)
+        if (_promptedEntityData.Money >= 150 &&
+            _promptedEntityData.Level >= _selectedStoreData.StoreLevel)
         {
             DeactivateAskGroup();
             DeactivateSelectorContainer();
-            m_UpgradeStore.RaiseEvent(selectedNode);
+            _gameplayTest.QueueCommand(new UILevelUpStoreCommand(_selectedNodeData.Id));
+            Debug.Log($"Leveling up Storefront with ID: {_selectedNodeData.Id}");
+            //m_UpgradeStore.RaiseEvent(selectedNode);
         }
         else
         {
@@ -168,13 +177,14 @@ public class UIRenovateSelectorManager : MonoBehaviour
 
     public void ConfirmRelocateButton()
     {
-        if (promptedPlayerData.CurrentStatsModifier.canUseRelocate
-            && promptedPlayerData.Money >= 100)
+        if (_promptedEntityData.CurrentStatsModifier.canUseRelocate
+            && _promptedEntityData.Money >= 100)
         {
             DeactivateAskGroup();
             DeactivateSelectorContainer();
+            Debug.Log($"I am trying to relocate Storefront with ID: {_selectedNodeData.Id}");
             //m_UpgradeStore.RaiseEvent(selectedNode);
-            m_TryRelocateStore.RaiseEvent(selectedNode);
+            //m_TryRelocateStore.RaiseEvent(selectedNode);
         }
         else
         {
@@ -189,7 +199,7 @@ public class UIRenovateSelectorManager : MonoBehaviour
             renovateAskText.text = "<color=grey>Supply additional items from your inventory.";
             renovateAskText.text += "\n<size=24><color=red>[!] Unable to stock, store is full.";
         }
-        else if(promptedPlayerData.Inventory.Count == 0)
+        else if(_promptedEntityData.Inventory.Count == 0)
         {
             renovateAskText.text = "<color=grey>Supply additional items from your inventory.";
             renovateAskText.text += "\n<size=24><color=red>[!] Cannot stock due to lack of inventory items.";
@@ -200,12 +210,12 @@ public class UIRenovateSelectorManager : MonoBehaviour
 
     public void HoverUpgradeButton()
     {
-        if (promptedPlayerData.Level < selectedStore.storeLevel)
+        if (_promptedEntityData.Level < _selectedStoreData.StoreLevel)
         {
             renovateAskText.text = "<color=grey>Increase this storefront prices by 20% for 150<sprite=\"Coin Icon\" index=0 tint=1>.";
             renovateAskText.text += "\n<size=24><color=red>[!] Cannot exceed stars past your Level + 1.";
         }
-        else if (promptedPlayerData.Money >= 150)
+        else if (_promptedEntityData.Money >= 150)
         {
             renovateAskText.text = "Increase this storefront prices by 20% for <color=yellow>150</color><sprite=\"Coin Icon\" index=0>.";
         }
@@ -225,11 +235,11 @@ public class UIRenovateSelectorManager : MonoBehaviour
 
     public void HoverRelocateButton()
     {
-        if (!promptedPlayerData.CurrentStatsModifier.canUseRelocate) 
+        if (!_promptedEntityData.CurrentStatsModifier.canUseRelocate) 
         {
             renovateAskText.text = "<color=grey>Move this storefront to an Open Space for 100<sprite=\"Coin Icon\" index=0 tint=1>.";
         } 
-        else if(promptedPlayerData.Money < 100)
+        else if(_promptedEntityData.Money < 100)
         {
             renovateAskText.text = "Move this storefront to an Open Space for <color=red>100</color><sprite=\"Coin Icon\" index=0>.";
         }
@@ -238,7 +248,7 @@ public class UIRenovateSelectorManager : MonoBehaviour
             renovateAskText.text = "Move this storefront to an Open Space for <color=yellow>100</color><sprite=\"Coin Icon\" index=0>.";
         }
 
-        if (!promptedPlayerData.CurrentStatsModifier.canUseRelocate)
+        if (!_promptedEntityData.CurrentStatsModifier.canUseRelocate)
         {
             renovateAskText.text += "\n<size=24><color=red>[!] Requires the Blessing of Luxury.";
         }
@@ -277,7 +287,7 @@ public class UIRenovateSelectorManager : MonoBehaviour
         DeactivateSelectorContainer();
         DestroyAllStoreboatSelectors();
 
-        promptedPlayerData = ed;
+        _promptedEntityData = ed;
 
         ActivateAskGroup();
 
@@ -288,12 +298,6 @@ public class UIRenovateSelectorManager : MonoBehaviour
         restockAskButtonContainer.interactable = true;
 
         _eventSystem.SetSelectedGameObject(restockAskButtonHolders[0]);
-    }
-
-    private void ShowStorefrontSelectors(EntityPiece entity)
-    {
-        ActivateSelectorContainer();
-        SpawnStoreboatSelectors(entity);
     }
 
     private void OnCancelRestockStore()
@@ -309,9 +313,11 @@ public class UIRenovateSelectorManager : MonoBehaviour
         DestroyAllStoreboatSelectors();
     }
 
-    private void OnPromptRenovateOptions(MapNode node)
+    public  void PromptRenovateOptions(BoardNodeData bnd)
     {
         renovatePhase = RenovateSelectorPhase.RenovateOptions;
+        _selectedNodeData = bnd;
+        _selectedStoreData = bnd.StorefrontData;
 
         ActivateAskGroup();
         DeactivateSelectorContainer();
@@ -322,10 +328,10 @@ public class UIRenovateSelectorManager : MonoBehaviour
         renovateOptionsButtonContainer.gameObject.SetActive(true);
         renovateOptionsButtonContainer.interactable = true;
 
-        selectedNode = node;
-        selectedStore = node.GetComponent<StoreManager>();
-        selectedStorestock = 0;
-        foreach (ItemStats item in selectedStore.storeInventory)
+        //selectedNode = node;
+        //selectedStore = node.GetComponent<StoreManager>();
+        //selectedStorestock = 0;
+        foreach (ItemStats item in _selectedStoreData.Storestock)
         {
             if (item != null) selectedStorestock++;
         }
@@ -333,7 +339,7 @@ public class UIRenovateSelectorManager : MonoBehaviour
         var restockOptionImage = renovateOptionsButtonHolders[0].GetComponent<Image>();
         var upgradeOptionImage = renovateOptionsButtonHolders[1].GetComponent<Image>();
         var relocateOptionImage = renovateOptionsButtonHolders[2].GetComponent<Image>();
-        if (selectedStorestock < 3 && promptedPlayerData.Inventory.Count != 0)
+        if (selectedStorestock < 3 && _promptedEntityData.Inventory.Count != 0)
         {
             restockOptionImage.color = Color.white;
         }
@@ -342,8 +348,8 @@ public class UIRenovateSelectorManager : MonoBehaviour
             restockOptionImage.color = Color.grey;
         }
 
-        if(promptedPlayerData.Money >= 150
-            && promptedPlayerData.Level >= selectedStore.storeLevel)
+        if(_promptedEntityData.Money >= 150
+            && _promptedEntityData.Level >= _selectedStoreData.StoreLevel)
         {
             upgradeOptionImage.color = Color.white;
         }
@@ -352,7 +358,7 @@ public class UIRenovateSelectorManager : MonoBehaviour
             upgradeOptionImage.color = Color.grey;
         }
 
-        if (promptedPlayerData.CurrentStatsModifier.canUseRelocate)
+        if (_promptedEntityData.CurrentStatsModifier.canUseRelocate)
         {
             relocateOptionImage.color = Color.white;
         }
@@ -374,7 +380,7 @@ public class UIRenovateSelectorManager : MonoBehaviour
                 break;
             case RenovateSelectorPhase.OwnedStoreboats:
                 //m_AskRenovateStore.RaiseEvent(promptedPlayerData);
-                OnAskRenovateStore(promptedPlayerData);
+                OnAskRenovateStore(_promptedEntityData);
                 break;
             case RenovateSelectorPhase.RenovateOptions:
                 DestroyAllStoreboatSelectors();
@@ -404,22 +410,27 @@ public class UIRenovateSelectorManager : MonoBehaviour
         restockSelectorContainer.blocksRaycasts = true;
     }
 
-    private void SpawnStoreboatSelectors(EntityPiece player)
+    private void SpawnStoreboatSelectors(EntityData ed)
     {
         var firstBoat = true;
         var index = 1;
         var selectorParentTransform = restockSelectorContainer.transform;
 
         // associatedEntity
-        foreach (StoreManager store in player.ownedStores)
+        foreach (int id in ed.OwnedStrorefrontIds)
         {
-            var fighter = Instantiate(storeboatSelectorPrefab, selectorParentTransform);
-            fighter.GetComponent<RestockBoatSelectionHandler>().UpdateBoatInfo(index, store);
+            var node = _gameplayTest.BoardNodeManager.NodeDictionary[id].BoardNodeData;
+            var store = _gameplayTest.BoardNodeManager.NodeDictionary[id].BoardNodeData.StorefrontData;
+
+            var boatSelectorObj = Instantiate(storeboatSelectorPrefab, selectorParentTransform);
+            var rbs = boatSelectorObj.GetComponent<RestockBoatSelectionHandler>();
+            rbs.Initialize(index, node, this);
+            rbs.UpdateStoreBoatVisual(index, store, _playerColor);
             index++;
 
             if (firstBoat)
             {
-                _eventSystem.SetSelectedGameObject(fighter);
+                _eventSystem.SetSelectedGameObject(boatSelectorObj);
                 firstBoat = false;
             }
         }

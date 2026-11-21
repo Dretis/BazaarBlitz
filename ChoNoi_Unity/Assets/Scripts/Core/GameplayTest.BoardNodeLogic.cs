@@ -290,7 +290,7 @@ public partial class GameplayTest : MonoBehaviour
                 else if(store.OwnerId == newState.CurrPlayerId)
                 {
                     // Renovate Time
-                    newState.GamePhase = GamePhase.PreStockStore;
+                    newState.GamePhase = GamePhase.RenovateTime;
                 }
                 else if(store.IsEmpty())
                 {
@@ -311,13 +311,13 @@ public partial class GameplayTest : MonoBehaviour
                 // Reset direction - PrevNode
                 // Renovate
                 p.PreviousNodeId = -1;
-                newState.GamePhase = GamePhase.PreStockStore;
+                newState.GamePhase = GamePhase.RenovateTime;
                 break;
             case NodeType.Wildcard:
                 // Reset direction - PrevNode
                 // Renovate
                 p.PreviousNodeId = -1;
-                newState.GamePhase = GamePhase.PreStockStore;
+                newState.GamePhase = GamePhase.RenovateTime;
                 break;
             case NodeType.MoveAgain:
                 //p.TraveledNodes.Clear();

@@ -507,6 +507,7 @@ public partial class GameplayTest : MonoBehaviour
 
                 poop.DetermineTypeAdvantage(attacker.DieType, defender.DieType);
                 poop.DetermineTypeAdvantageMultiplier(atkEntity.EntityData, defEntity.EntityData);
+                poop.DetermineTrueDmgValue(atkEntity.EntityData, defEntity.EntityData);
                 poop.CalculateDamage(attacker, defender);
                 poop.HealingRecieved = (int)(poop.FinalDamageDealt * atkEntity.EntityData.CurrentStatsModifier.lifestealMult);
 

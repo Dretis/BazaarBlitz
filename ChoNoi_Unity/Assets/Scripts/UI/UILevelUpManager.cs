@@ -14,6 +14,7 @@ using Core;
 
 public class UILevelUpManager : MonoBehaviour
 {
+    [SerializeField] private Color _playerColor;
     private PlayerState _playerState;
     private GameplayTest _gameplayTest;
 
@@ -59,6 +60,7 @@ public class UILevelUpManager : MonoBehaviour
 
     public void Initialize(PlayerState ps, GameplayTest gt)
     {
+        _playerColor = ps.EntityData.MainColor;
         _playerState = ps;
         _gameplayTest = gt;
     }
